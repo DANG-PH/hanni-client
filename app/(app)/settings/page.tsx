@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import useSWR from "swr";
 import { AvatarEditor } from "@/components/avatar-editor";
+import { InstallCard } from "@/components/pwa/install-card";
 import { Button, Card, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { api, apiFetch } from "@/lib/api";
@@ -36,6 +37,7 @@ export default function SettingsPage() {
       </PageHeading>
 
       <AvatarCard user={user} onChange={() => void refresh()} />
+      <InstallCard />
 
       {error && !data ? (
         <ErrorNote>

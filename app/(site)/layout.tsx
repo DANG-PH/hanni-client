@@ -38,6 +38,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
                 ["Tài khoản của bạn", "/account"],
                 ["Tiến độ học tập", "/progress"],
                 ["Học qua video", "/watch"],
+                ["Cài ứng dụng Hanni", "/install"],
                 ["Câu hỏi thường gặp", "/#cau-hoi"],
               ],
             },
