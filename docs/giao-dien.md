@@ -40,6 +40,19 @@ Xung đột merge là `modify/delete` ở `app/favicon.ico`: giữ logo mới t�
 
 Minh họa sách ở trang chủ dựng trực tiếp bằng CSS trong `components/study-artwork.tsx`; không tải ảnh hay tài nguyên thương hiệu bên thứ ba. Các ký tự trang trí không phải bản ghi học liệu.
 
+## Trang đăng nhập với video thương hiệu
+
+Trang `/login` tham khảo bố cục [đăng nhập Hanbeego](https://hanbeego.com/login), dùng màu sắc và nhận diện Hanni: thẻ biểu mẫu phía trái, phần minh họa trên nền đỏ phía phải. Điện thoại xếp biểu mẫu trước, video sau để dễ đăng nhập.
+
+- `components/login-shell.tsx`: header với logo `/favicon.ico`, nút sáng/tối, khung video và footer quay về trang chủ.
+- `public/videologin.mp4`: dùng nguyên video người dùng cung cấp, giữ tỷ lệ 16:9; `autoPlay`, `loop`, `muted`, `playsInline` giúp tự phát không tiếng, lặp lại và phát trong trang trên điện thoại. Có nút tạm dừng/phát; nếu video lỗi, khung minh họa dùng logo thương hiệu.
+- `app/login/page.tsx`: nhãn email/mật khẩu, hiện/ẩn mật khẩu, liên kết quên mật khẩu và đăng ký giữ tham số `next`, trạng thái gửi và lỗi. Giữ endpoint, cookie và logic xác thực hiện có. Google chỉ xuất hiện khi đã có cấu hình; không thêm nút Apple chưa có backend.
+- Kiểu dáng được giới hạn trong các lớp `login-*` của `app/globals.css`; các màn đăng ký và khôi phục mật khẩu vẫn dùng `AuthShell` hiện có.
+
+Kiểm tra Chrome trên bản production tại 320, 390, 768 và 1440px: không tràn ngang; logo tải đúng; xác nhận video tự phát và thời gian phát quay về đầu khi lặp; tạm dừng/phát, hiện/ẩn mật khẩu, đổi theme, kiểm tra trường bắt buộc và liên kết đăng ký giữ `next` đều đạt. Không gửi thông tin đăng nhập giả tới backend. `npm run build` đạt, lint không lỗi (còn hai cảnh báo cũ).
+
+![Đăng nhập desktop với video](screenshots/dang-nhap-desktop.png)
+
 ## Hiệu ứng và thành phần chung
 
 - `app/globals.css`: token light/dark, panel, hover, focus, skeleton và minh họa.
