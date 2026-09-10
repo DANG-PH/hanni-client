@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Card, ErrorNote } from "@/components/ui";
-import { api, ApiError, googleLoginUrl } from "@/lib/api";
+import { GoogleButton } from "@/components/google-button";
+import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
 export default function LoginPage() {
@@ -40,12 +41,12 @@ export default function LoginPage() {
     <div className="mx-auto max-w-md px-4 py-16">
       <h1 className="text-2xl font-bold">Đăng nhập</h1>
       <Card className="mt-6 space-y-4">
-        <a
-          href={googleLoginUrl}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface-2 px-4 py-2 text-sm font-medium hover:bg-border"
-        >
-          Đăng nhập với Google
-        </a>
+        <GoogleButton
+          onSuccess={async () => {
+            await refresh();
+            router.replace("/dashboard");
+          }}
+        />
         <div className="flex items-center gap-3 text-xs text-muted">
           <div className="h-px flex-1 bg-border" /> hoặc{" "}
           <div className="h-px flex-1 bg-border" />

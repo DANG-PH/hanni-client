@@ -81,6 +81,3 @@ export const api = {
     apiFetch<T>(path, { method: "PATCH", body }),
   del: <T>(path: string) => apiFetch<T>(path, { method: "DELETE" }),
 };
-
-/** URL để trình duyệt điều hướng thẳng (OAuth redirect). */
-export const googleLoginUrl = `${API_BASE}/auth/google`;
