@@ -133,6 +133,7 @@ export default function WatchDetailPage() {
     ? Math.round((read / data.sentenceCount) * 100)
     : 0;
   const activeLine = active ? data.lines.find((l) => l.index === active) : null;
+  const realSync = data.lines.some((l) => l.startMs != null);
 
   function selectLine(index: number) {
     const t = times[index - 1];
@@ -189,6 +190,15 @@ export default function WatchDetailPage() {
           )}
           <span>{data.sentenceCount} câu</span>
           {data.author && <span>· {data.author}</span>}
+          <span
+            className={`rounded-md px-2 py-0.5 text-xs ${
+              realSync
+                ? "bg-good/10 text-good"
+                : "bg-surface-2 text-muted"
+            }`}
+          >
+            {realSync ? "Đồng bộ theo lời nói" : "Thời gian ước lượng"}
+          </span>
         </div>
       </div>
 
