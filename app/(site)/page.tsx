@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/icon";
+import { LearningJourney } from "@/components/learning-journey";
 import { LinkButton } from "@/components/ui";
 import { StudyArtwork } from "@/components/study-artwork";
 import { useAuth } from "@/lib/auth";
@@ -300,6 +301,14 @@ export default function Home() {
               Chọn điểm xuất phát. Học từng bài. Tiến bộ theo cách của bạn.
             </p>
           </div>
+
+          <div className="mt-6">
+            <LearningJourney />
+          </div>
+
+          <p className="reveal mt-8 text-sm font-semibold text-muted">
+            Hoặc chọn thẳng cấp độ của bạn:
+          </p>
           <div className="reveal-group mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-7">
             {[
               { level: 1, name: "Nhập môn", character: "一" },

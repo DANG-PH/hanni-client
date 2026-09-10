@@ -248,7 +248,13 @@
 
 /* Trang chủ: nền giấy sáng, những khối học tập gọn và điểm nhấn đỏ. */
 .home-hero {
-  background: linear-gradient(110deg, var(--surface) 25%, var(--hero-from));
+  background:
+    radial-gradient(
+      90% 120% at 100% 0%,
+      color-mix(in srgb, var(--primary) 12%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(110deg, var(--surface) 20%, var(--hero-from));
 }
 .discovery-card {
   position: relative;
