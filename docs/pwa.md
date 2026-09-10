@@ -10,6 +10,7 @@ Triển khai phía client dựa trên các phần PWA đã đọc ở dự án `
 | Biểu tượng | PNG 192, 512, maskable 512 và Apple Touch 180 tạo từ logo gốc `public/brand/hanni.png`; favicon hiện có được giữ. |
 | Lối tắt | Lộ trình `/learn` và ôn tập `/study` khi thiết bị hỗ trợ. |
 | Cài đặt | Trang công khai `/install`, liên kết ở footer, thẻ cài trong `/settings`. Chỉ gọi lời mời cài từ sự kiện thật của trình duyệt khi người dùng bấm nút. |
+| Popup mời cài | `components/pwa/install-prompt.tsx` — thẻ nổi ở góc phải dưới trong khu vực đã đăng nhập (`app/(app)/layout.tsx`). Chỉ hiện khi trình duyệt phát `beforeinstallprompt` (hoặc iOS Safari). Người dùng bấm **Để sau**/đóng thì tạm ẩn 7 ngày (`localStorage: hanni-pwa-prompt-dismissed`). Ở `npm run dev` hiện bản xem thử để canh giao diện; nút cài thật chỉ chạy ở bản production. |
 | iPhone/iPad | Hướng dẫn cài qua Safari; trình duyệt khác không cung cấp lời mời thì hướng dẫn dùng menu. |
 | Mất mạng | Thông báo ở trang đang mở; khi tải một trang mới mà mạng lỗi, trả màn hướng dẫn thử lại tại chính URL đó. |
 | Cập nhật | Worker mới chờ kích hoạt; thẻ cài hiển thị nút cập nhật. Chỉ tab bấm nút tải lại, các tab khác giữ nguyên trang. |
