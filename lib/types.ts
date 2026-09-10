@@ -291,3 +291,18 @@ export interface ExamHistory {
     best: { hskLevel: number; correctCount: number; totalCount: number } | null;
   };
 }
+
+export interface LeaderboardRow {
+  rank: number;
+  userId: string;
+  displayName: string;
+  avatarUrl: string | null;
+  learnedWords: number;
+  currentStreak: number;
+  isMe: boolean;
+}
+
+export interface Leaderboard {
+  rows: LeaderboardRow[];
+  me: { rank: number | null; learnedWords: number; totalRanked: number };
+}

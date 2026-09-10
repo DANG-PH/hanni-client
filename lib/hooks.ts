@@ -5,6 +5,7 @@ import { apiFetch } from "./api";
 import type {
   Achievement,
   ExamHistory,
+  Leaderboard,
   GrammarDetail,
   GrammarLevel,
   GrammarListItem,
@@ -98,4 +99,8 @@ export function useGrammarPoint(slug: string | null) {
 
 export function useExamHistory() {
   return useSWR<ExamHistory>("/exams/attempts", fetcher);
+}
+
+export function useLeaderboard() {
+  return useSWR<Leaderboard>("/leaderboard", fetcher);
 }
