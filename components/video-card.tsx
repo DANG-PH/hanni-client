@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Icon } from "./icon";
+import { hskBand } from "@/lib/hsk";
 import type { VideoCard as V } from "@/lib/types";
 
 const KIND_VI: Record<string, string> = {
@@ -41,16 +42,26 @@ export function VideoCard({ video }: { video: V }) {
             MIỄN PHÍ
           </span>
         )}
+        {video.hskLevel && (
+          <span className="absolute right-2 top-2 rounded-md bg-black/70 px-2 py-0.5 text-[10px] font-bold text-white">
+            HSK {video.hskLevel}
+          </span>
+        )}
         {video.progressPct > 0 && (
           <span className="absolute bottom-0 left-0 h-1 bg-primary" style={{ width: `${video.progressPct}%` }} />
         )}
       </div>
       <div className="p-4">
-        <div className="flex items-center gap-2 text-[11px] font-medium text-muted">
-          {video.hskLevel && <span>HSK {video.hskLevel}</span>}
-          <span>·</span>
-          <span>{KIND_VI[video.kind] ?? video.kind}</span>
-          <span className="ml-auto">{video.sentenceCount} câu</span>
+        <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium">
+          {video.hskLevel && (
+            <span
+              className={`rounded-md px-1.5 py-0.5 ${hskBand(video.hskLevel).tone}`}
+            >
+              HSK {video.hskLevel} · {hskBand(video.hskLevel).label}
+            </span>
+          )}
+          <span className="text-muted">{KIND_VI[video.kind] ?? video.kind}</span>
+          <span className="ml-auto text-muted">{video.sentenceCount} câu</span>
         </div>
         <h3 className="mt-2 font-semibold leading-snug">{video.title}</h3>
         {video.titleZh && (

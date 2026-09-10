@@ -10,6 +10,7 @@ import { YoutubePlayer } from "@/components/youtube-player";
 import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { useVideo } from "@/lib/hooks";
+import { hskBand } from "@/lib/hsk";
 import type { VideoLine } from "@/lib/types";
 
 /**
@@ -171,11 +172,19 @@ export default function WatchDetailPage() {
             </span>
           )}
         </h1>
-        <p className="mt-1 text-sm text-muted">
-          {data.hskLevel ? `HSK ${data.hskLevel} · ` : ""}
-          {data.sentenceCount} câu
-          {data.author ? ` · ${data.author}` : ""}
-        </p>
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted">
+          {data.hskLevel && (
+            <span
+              className={`rounded-md px-2 py-0.5 text-xs font-semibold ${
+                hskBand(data.hskLevel).tone
+              }`}
+            >
+              HSK {data.hskLevel} · {hskBand(data.hskLevel).label}
+            </span>
+          )}
+          <span>{data.sentenceCount} câu</span>
+          {data.author && <span>· {data.author}</span>}
+        </div>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr]">
