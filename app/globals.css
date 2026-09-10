@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
+/* Hanni dùng một tông màu SÁNG cố định (không theo dark mode của hệ điều hành). */
 :root {
+  color-scheme: light;
+
   --background: #faf7f5;
   --surface: #ffffff;
   --surface-2: #f3efec;
@@ -12,22 +15,6 @@
   --accent: #0f766e;
   --good: #15803d;
   --warn: #b45309;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #14110f;
-    --surface: #1c1917;
-    --surface-2: #262220;
-    --foreground: #f5f0ec;
-    --muted: #a8a29e;
-    --border: #332e2b;
-    --primary: #e2555b;
-    --primary-fg: #1a0d0d;
-    --accent: #2dd4bf;
-    --good: #4ade80;
-    --warn: #fbbf24;
-  }
 }
 
 @theme inline {
@@ -44,6 +31,10 @@
   --color-warn: var(--warn);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  color-scheme: light;
 }
 
 body {
