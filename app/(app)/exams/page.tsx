@@ -20,7 +20,7 @@ import {
 } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
-import { useLevels, useWords } from "@/lib/hooks";
+import { useExamHistory, useLevels, useWords } from "@/lib/hooks";
 import type { Quiz } from "@/lib/types";
 
 export default function ExamsPage() {
@@ -36,10 +36,13 @@ export default function ExamsPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const generationLock = useRef(false);
+  const startedAt = useRef(0);
+  const history = useExamHistory();
 
   async function startQuiz() {
     if (!level || !words.data?.items.length || generationLock.current) return;
     generationLock.current = true;
+    startedAt.current = Date.now();
     setBusy(true);
     setError(null);
     try {
@@ -77,6 +80,21 @@ export default function ExamsPage() {
       })),
     };
     setResult(completed);
+
+    // Lưu kết quả lên server để có lịch sử (chạy nền, không chặn điều hướng).
+    const correctCount = submission.answers.filter((a) => a.isCorrect).length;
+    void api
+      .post("/exams/attempts", {
+        hskLevel: level,
+        totalCount: submission.totalQuestions,
+        correctCount,
+        durationSec: startedAt.current
+          ? Math.round((Date.now() - startedAt.current) / 1000)
+          : undefined,
+      })
+      .then(() => history.mutate())
+      .catch(() => undefined);
+
     if (saveExamResult(user.id, completed))
       router.push(
         `/exams/results?attempt=${encodeURIComponent(completed.attemptId)}`,
@@ -253,6 +271,44 @@ export default function ExamsPage() {
             </div>
           </Card>
           <aside className="space-y-5">
+            {history.data && history.data.summary.count > 0 && (
+              <Card>
+                <h2 className="mb-4 flex items-center gap-2 font-semibold">
+                  <Icon name="chart" size={18} className="text-primary" />
+                  Lịch sử kiểm tra
+                </h2>
+                <div className="mb-4 grid grid-cols-2 gap-3 text-center">
+                  <div className="rounded-xl bg-surface-2 p-3">
+                    <p className="text-xl font-semibold">
+                      {history.data.summary.count}
+                    </p>
+                    <p className="text-[11px] text-muted">lượt làm</p>
+                  </div>
+                  <div className="rounded-xl bg-surface-2 p-3">
+                    <p className="text-xl font-semibold">
+                      {history.data.summary.avgAccuracy ?? "–"}%
+                    </p>
+                    <p className="text-[11px] text-muted">đúng trung bình</p>
+                  </div>
+                </div>
+                <ul className="divide-y divide-border text-sm">
+                  {history.data.attempts.slice(0, 5).map((a) => (
+                    <li
+                      key={a.id}
+                      className="flex items-center justify-between gap-2 py-2.5"
+                    >
+                      <span className="text-muted">
+                        HSK {a.hskLevel} ·{" "}
+                        {new Date(a.createdAt).toLocaleDateString("vi-VN")}
+                      </span>
+                      <span className="font-semibold">
+                        {a.correctCount}/{a.totalCount}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
             <Card>
               <span className="icon-tile mb-4">
                 <Icon name="spark" size={21} />

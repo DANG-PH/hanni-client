@@ -247,3 +247,47 @@ export interface VideoDetail {
   lines: VideoLine[];
   progress: { lastLineIndex: number; linesRead: number; completed: boolean };
 }
+
+export interface GrammarLevel {
+  level: number;
+  count: number;
+}
+
+export interface GrammarListItem {
+  slug: string;
+  hskLevel: number;
+  titleVi: string;
+  titleZh: string;
+  summaryVi: string;
+}
+
+export interface GrammarExample {
+  zh: string;
+  pinyin: string;
+  vi: string;
+}
+
+export interface GrammarDetail extends GrammarListItem {
+  orderIndex: number;
+  explanationVi: string;
+  patterns: string[];
+  examples: GrammarExample[];
+}
+
+export interface ExamAttempt {
+  id: string;
+  hskLevel: number;
+  totalCount: number;
+  correctCount: number;
+  durationSec: number | null;
+  createdAt: string;
+}
+
+export interface ExamHistory {
+  attempts: ExamAttempt[];
+  summary: {
+    count: number;
+    avgAccuracy: number | null;
+    best: { hskLevel: number; correctCount: number; totalCount: number } | null;
+  };
+}

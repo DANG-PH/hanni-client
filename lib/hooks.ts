@@ -4,6 +4,10 @@ import useSWR from "swr";
 import { apiFetch } from "./api";
 import type {
   Achievement,
+  ExamHistory,
+  GrammarDetail,
+  GrammarLevel,
+  GrammarListItem,
   HskLevel,
   LearnPath,
   LessonDetail,
@@ -75,4 +79,23 @@ export function useVideos(params: { level?: number; kind?: string; mine?: boolea
 
 export function useVideo(id: string | null) {
   return useSWR<VideoDetail>(id ? `/videos/${id}` : null, fetcher);
+}
+
+export function useGrammarLevels() {
+  return useSWR<GrammarLevel[]>("/grammar/levels", fetcher);
+}
+
+export function useGrammar(level?: number) {
+  return useSWR<GrammarListItem[]>(
+    `/grammar${level ? `?level=${level}` : ""}`,
+    fetcher,
+  );
+}
+
+export function useGrammarPoint(slug: string | null) {
+  return useSWR<GrammarDetail>(slug ? `/grammar/${slug}` : null, fetcher);
+}
+
+export function useExamHistory() {
+  return useSWR<ExamHistory>("/exams/attempts", fetcher);
 }
