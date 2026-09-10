@@ -101,11 +101,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </header>
         <main className="flex-1">{children}</main>
-        <footer className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-border px-6 py-4 text-[10px] text-muted">
+        <footer className="mt-auto border-t border-border px-6 py-4 text-[10px] text-muted">
           <span>Hanni · Mỗi ngày một chút, tiến xa hơn.</span>
-          <Link href="/nguon-du-lieu" className="hover:text-primary">
-            Nguồn học liệu
-          </Link>
         </footer>
       </div>
     </div>

@@ -11,6 +11,8 @@ import type {
   ProgressOverview,
   StreakInfo,
   StudyStats,
+  VideoCard,
+  VideoDetail,
   Word,
 } from "./types";
 
@@ -60,4 +62,17 @@ export function useWords(params: {
   qs.set("page", String(params.page ?? 1));
   qs.set("pageSize", "24");
   return useSWR<Paginated<Word>>(`/words?${qs.toString()}`, fetcher);
+}
+
+export function useVideos(params: { level?: number; kind?: string; mine?: boolean } = {}) {
+  const qs = new URLSearchParams();
+  if (params.level) qs.set("level", String(params.level));
+  if (params.kind) qs.set("kind", params.kind);
+  if (params.mine) qs.set("mine", "true");
+  const q = qs.toString();
+  return useSWR<VideoCard[]>(`/videos${q ? `?${q}` : ""}`, fetcher);
+}
+
+export function useVideo(id: string | null) {
+  return useSWR<VideoDetail>(id ? `/videos/${id}` : null, fetcher);
 }

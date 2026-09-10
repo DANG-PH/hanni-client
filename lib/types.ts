@@ -197,3 +197,53 @@ export interface Quiz {
   attemptId: string;
   questions: QuizQuestion[];
 }
+
+export type VideoKind =
+  | "PODCAST"
+  | "STORY"
+  | "SONG"
+  | "DIALOGUE"
+  | "CLIP"
+  | "OTHER";
+
+export interface VideoCard {
+  id: string;
+  youtubeId: string;
+  title: string;
+  titleZh: string | null;
+  description: string | null;
+  hskLevel: number | null;
+  kind: VideoKind;
+  sentenceCount: number;
+  thumbnailUrl: string | null;
+  author: string | null;
+  isFree: boolean;
+  isOwner: boolean;
+  progressPct: number;
+  completed: boolean;
+}
+
+export interface VideoLine {
+  id: string;
+  index: number;
+  startMs: number | null;
+  zh: string;
+  pinyin: string;
+  pinyinNum: string;
+  vi: string | null;
+}
+
+export interface VideoDetail {
+  id: string;
+  youtubeId: string;
+  title: string;
+  titleZh: string | null;
+  description: string | null;
+  hskLevel: number | null;
+  kind: VideoKind;
+  sentenceCount: number;
+  author: string | null;
+  isOwner: boolean;
+  lines: VideoLine[];
+  progress: { lastLineIndex: number; linesRead: number; completed: boolean };
+}

@@ -17,6 +17,7 @@ export const NAV_GROUPS: {
       { href: "/dashboard", label: "Tổng quan", icon: "home" },
       { href: "/learn", label: "Lộ trình HSK", icon: "route" },
       { href: "/study", label: "Ôn tập flashcard", icon: "cards" },
+      { href: "/watch", label: "Học qua video", icon: "play" },
     ],
   },
   {
@@ -117,14 +118,6 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           </p>
         </div>
         <div className="border-t border-border pt-3">
-          <Link
-            href="/nguon-du-lieu"
-            onClick={onNavigate}
-            className="nav-item text-xs!"
-          >
-            Nguồn học liệu
-            <Icon name="arrow" size={14} className="ml-auto" />
-          </Link>
           <button
             disabled={busy}
             onClick={async () => {

@@ -37,8 +37,8 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
               links: [
                 ["Tài khoản của bạn", "/account"],
                 ["Tiến độ học tập", "/progress"],
+                ["Học qua video", "/watch"],
                 ["Câu hỏi thường gặp", "/#cau-hoi"],
-                ["Nguồn & giấy phép học liệu", "/nguon-du-lieu"],
               ],
             },
           ].map((group) => (
