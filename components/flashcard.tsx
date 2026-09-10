@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
+import { AudioButton } from "./audio-button";
 import { Icon } from "./icon";
 import type { Rating, Word } from "@/lib/types";
 
@@ -93,7 +94,10 @@ export function Flashcard({
         >
           {word.simplified}
         </div>
-        <p className="mt-4 text-xl text-primary">{word.pinyin}</p>
+        <p className="mt-4 flex items-center justify-center gap-1 text-xl text-primary">
+          {word.pinyin}
+          <AudioButton src={word.audioUrl} />
+        </p>
         {!revealed ? (
           <div className="mt-10">
             <Button

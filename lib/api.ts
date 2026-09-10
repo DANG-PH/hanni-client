@@ -73,6 +73,19 @@ function safeJson(text: string): unknown {
   }
 }
 
+/** Gốc của server (bỏ "/api") — dùng cho file tĩnh như audio phát âm. */
+export const SERVER_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
+
+/** Tuyệt đối hoá đường dẫn tĩnh, vd "/media/audio/cmn-你好.mp3". */
+export function mediaUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  try {
+    return new URL(path, SERVER_ORIGIN || undefined).href;
+  } catch {
+    return null;
+  }
+}
+
 export const api = {
   get: <T>(path: string) => apiFetch<T>(path),
   post: <T>(path: string, body?: unknown) =>

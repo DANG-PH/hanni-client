@@ -12,6 +12,7 @@ import {
   Spinner,
 } from "@/components/ui";
 import { Icon } from "@/components/icon";
+import { AudioButton } from "@/components/audio-button";
 import { useRequireAuth } from "@/lib/auth";
 import { useWords } from "@/lib/hooks";
 
@@ -138,8 +139,9 @@ function VocabularyContent() {
                     HSK {w.hskLevel}
                   </span>
                 </div>
-                <p className="mt-2 text-sm font-medium text-primary">
+                <p className="mt-2 flex items-center gap-1 text-sm font-medium text-primary">
                   {w.pinyin}
+                  <AudioButton src={w.audioUrl} size={16} />
                 </p>
                 <div className="mt-4 border-t border-border pt-4">
                   <p className="text-sm leading-6">

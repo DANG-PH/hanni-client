@@ -4,28 +4,22 @@ export const metadata: Metadata = { title: "Nguồn dữ liệu — Hanni" };
 
 const SOURCES = [
   {
-    name: "complete-hsk-vocabulary",
-    url: "https://github.com/drkameleon/complete-hsk-vocabulary",
-    license: "MIT",
-    use: "Danh sách từ, pinyin, từ loại, tần suất, chữ phồn thể.",
-  },
-  {
-    name: "hsk-syllabus-vocabulary-parser",
-    url: "https://github.com/Punpuf/hsk-syllabus-vocabulary-parser",
-    license: "MIT (dữ liệu từ điển kèm theo: CC BY-SA 4.0)",
-    use: "Phân cấp HSK theo đại cương thi chính thức 2026.",
-  },
-  {
-    name: "CC-CEDICT",
-    url: "https://www.mdbg.net/chinese/dictionary?page=cc-cedict",
-    license: "CC BY-SA 3.0",
-    use: "Nghĩa tiếng Anh, chữ phồn thể, âm đọc.",
+    name: "krmanik/HSK-3.0 (bản 2025-11)",
+    url: "https://github.com/krmanik/HSK-3.0",
+    license: "CC BY-SA 4.0",
+    use: "Đại cương HSK 3.0 chính thức (cấp, pinyin, từ loại), nghĩa tiếng Anh theo cấp, chữ phồn thể và 10.900 file audio phát âm.",
   },
   {
     name: "CVDICT — Từ điển Hán Việt",
     url: "https://github.com/ph0ngp/CVDICT",
     license: "CC BY-SA 4.0",
-    use: "Nghĩa tiếng Việt (dịch máy có rà soát một phần).",
+    use: "Nghĩa tiếng Việt (dịch từ CC-CEDICT bằng AI, rà soát một phần bằng tay).",
+  },
+  {
+    name: "CC-CEDICT · Pleco · SUBTLEX-CH / BCC",
+    url: "https://www.mdbg.net/chinese/dictionary?page=cc-cedict",
+    license: "CC BY-SA 4.0 / MIT",
+    use: "Nghĩa tiếng Anh và tần suất từ (dùng gián tiếp qua krmanik/HSK-3.0).",
   },
 ];
 
