@@ -44,8 +44,13 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 
 ## Trạng thái hiện tại
 Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard + quiz, duyệt từ vựng,
-tiến độ, huy hiệu, cài đặt, học qua video, ngữ pháp (điểm ngữ pháp HSK 1–3), kiểm tra HSK
-(có lịch sử), bảng xếp hạng. Chưa làm (roadmap): RAG chatbot, minigame, social.
+tiến độ, huy hiệu, cài đặt, học qua video, ngữ pháp (HSK 1–3 giải thích + HSK 4–9 đại cương),
+kiểm tra HSK (có lịch sử), bảng xếp hạng. Chưa làm (roadmap): RAG chatbot, minigame, social.
+
+UI nổi bật: `components/hero-banner.tsx` (dùng `StudyArtwork`), `learning-journey.tsx`
+(dải 6 chặng 拼声字词语听), `video-shelf.tsx` (kệ video tự trượt + kéo, ở dashboard),
+`hsk-coverflow.tsx` (băng chuyền 3D 7 cấp HSK, ở trang chủ `/`). Nền tô nhẹ theo token:
+class `.tint-primary/.tint-good/.tint-hero` trong globals.css (tự đổi sáng/tối).
 
 **PWA** (`docs/pwa.md`): manifest + service worker (chỉ cache màn mất mạng), trang `/install`,
 thẻ cài trong `/settings`, popup mời cài nổi góc phải dưới (`components/pwa/`). Test: `npm run test:pwa`.

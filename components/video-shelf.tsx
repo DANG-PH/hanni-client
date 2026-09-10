@@ -17,7 +17,14 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const paused = useRef(false);
   const resume = useRef(0);
-  const drag = useRef({ on: false, x: 0, left: 0, moved: false });
+  const drag = useRef({
+    on: false,
+    x: 0,
+    left: 0,
+    moved: false,
+    id: -1,
+    captured: false,
+  });
 
   const videos = (data ?? []).slice(0, limit);
   const canLoop = videos.length >= 4;
@@ -68,36 +75,49 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
     resume.current = performance.now() + 700;
   };
 
-  // Kéo chuột / vuốt để lướt.
+  // Kéo chuột / vuốt để lướt. KHÔNG bắt con trỏ ngay — chỉ bắt khi đã kéo thật
+  // (>4px), để cú bấm thường vẫn mở được video.
   const onDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
     if (!el || (e.pointerType === "mouse" && e.button !== 0)) return;
-    drag.current = { on: true, x: e.clientX, left: el.scrollLeft, moved: false };
+    drag.current = {
+      on: true,
+      x: e.clientX,
+      left: el.scrollLeft,
+      moved: false,
+      id: e.pointerId,
+      captured: false,
+    };
     paused.current = true;
-    try {
-      el.setPointerCapture(e.pointerId);
-    } catch {
-      /* không hỗ trợ pointer capture */
-    }
   };
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
     const d = drag.current;
     if (!d.on || !el) return;
     const dx = e.clientX - d.x;
-    if (Math.abs(dx) > 3) d.moved = true;
-    el.scrollLeft = d.left - dx;
-  };
-  const onUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    const el = scrollerRef.current;
-    if (el) {
+    if (!d.moved && Math.abs(dx) > 4) {
+      d.moved = true;
       try {
-        el.releasePointerCapture(e.pointerId);
+        el.setPointerCapture(d.id);
+        d.captured = true;
+      } catch {
+        /* không hỗ trợ pointer capture */
+      }
+    }
+    if (d.moved) el.scrollLeft = d.left - dx;
+  };
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = scrollerRef.current;
+    const d = drag.current;
+    if (el && d.captured) {
+      try {
+        el.releasePointerCapture(d.id);
       } catch {
         /* bỏ qua */
       }
     }
-    drag.current.on = false;
+    d.on = false;
+    d.captured = false;
     // Cảm ứng không có "hover" → tự chạy tiếp sau khi nhấc tay.
     if (e.pointerType !== "mouse") {
       paused.current = false;
@@ -146,8 +166,8 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
         onPointerLeave={leave}
         onPointerDown={onDown}
         onPointerMove={onMove}
-        onPointerUp={onUp}
-        onPointerCancel={onUp}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
         onClickCapture={onClickCapture}
         className="-mx-1 flex cursor-grab touch-pan-x select-none gap-3 overflow-x-auto px-1 pb-1 [mask-image:linear-gradient(90deg,transparent,#000_28px,#000_calc(100%-28px),transparent)] [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
       >
