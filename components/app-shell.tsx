@@ -8,6 +8,7 @@ import { useStreak } from "@/lib/hooks";
 import { Brand, NAV_GROUPS, Sidebar } from "./sidebar";
 import { ThemeToggle } from "./theme-toggle";
 import { Icon } from "./icon";
+import { Avatar } from "./avatar";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -91,9 +92,11 @@ export function AppShell({ children }: { children: ReactNode }) {
               aria-label="Mở tài khoản"
               className="flex min-w-0 items-center gap-2 rounded-xl p-1 pr-2 hover:bg-surface-2"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                {user?.displayName?.slice(0, 1).toUpperCase() ?? "H"}
-              </span>
+              {user ? (
+                <Avatar user={user} size={36} />
+              ) : (
+                <span className="h-9 w-9 shrink-0 rounded-full bg-surface-2" />
+              )}
               <span className="hidden max-w-40 truncate text-xs font-medium md:block">
                 {user?.displayName}
               </span>

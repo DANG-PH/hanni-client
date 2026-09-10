@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import useSWR from "swr";
+import { Avatar } from "@/components/avatar";
 import { Button, Card, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { Icon } from "@/components/icon";
-import { api, apiFetch } from "@/lib/api";
+import { api, apiFetch, ApiError } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { TIMEZONES, detectTimezone } from "@/lib/timezones";
 import type { Me, UserSettings } from "@/lib/types";
@@ -33,6 +34,9 @@ export default function SettingsPage() {
           Tài khoản của tôi
         </Link>
       </PageHeading>
+
+      <AvatarCard user={user} onChange={() => void refresh()} />
+
       {error && !data ? (
         <ErrorNote>
           Chưa tải được cài đặt.{" "}
@@ -368,5 +372,82 @@ function SettingsForm({
         </p>
       </aside>
     </form>
+  );
+}
+
+function AvatarCard({
+  user,
+  onChange,
+}: {
+  user: Me;
+  onChange: () => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function upload(file: File) {
+    setBusy(true);
+    setError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      await api.upload("/users/me/avatar", fd);
+      onChange();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Tải ảnh thất bại");
+    } finally {
+      setBusy(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }
+
+  async function remove() {
+    setBusy(true);
+    setError(null);
+    try {
+      await api.del("/users/me/avatar");
+      onChange();
+    } catch {
+      setError("Không xoá được ảnh");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="flex flex-wrap items-center gap-5">
+      <Avatar user={user} size={72} />
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold">{user.displayName}</p>
+        <p className="text-sm text-muted">{user.email}</p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            hidden
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) void upload(f);
+            }}
+          />
+          <Button
+            variant="secondary"
+            disabled={busy}
+            onClick={() => inputRef.current?.click()}
+          >
+            {busy ? "Đang tải…" : "Tải ảnh lên"}
+          </Button>
+          {user.avatarUrl && (
+            <Button variant="ghost" disabled={busy} onClick={() => void remove()}>
+              Xoá ảnh
+            </Button>
+          )}
+        </div>
+        <p className="mt-2 text-xs text-muted">PNG, JPG hoặc WEBP, tối đa 2MB.</p>
+        {error && <p className="mt-1 text-xs text-danger">{error}</p>}
+      </div>
+    </Card>
   );
 }

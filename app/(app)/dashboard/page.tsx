@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Avatar } from "@/components/avatar";
 import { HeroBanner } from "@/components/hero-banner";
 import { Icon, type IconName } from "@/components/icon";
 import { LessonPath } from "@/components/lesson-path";
@@ -78,9 +79,7 @@ export default function DashboardPage() {
           href="/account"
           className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted transition-colors hover:border-primary/30 hover:text-primary"
         >
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary">
-            {user.displayName.trim().charAt(0).toUpperCase()}
-          </span>
+          <Avatar user={user} size={24} />
           {user.displayName}
           <Icon name="arrow" size={13} />
         </Link>

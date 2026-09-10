@@ -86,6 +86,40 @@ export function mediaUrl(path: string | null | undefined): string | null {
   }
 }
 
+/** Upload multipart (FormData) — không set Content-Type để trình duyệt tự thêm boundary. */
+async function apiUpload<T = unknown>(
+  path: string,
+  form: FormData,
+): Promise<T> {
+  let res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    credentials: "include",
+    body: form,
+  });
+  if (res.status === 401) {
+    const r = await fetch(`${API_BASE}/auth/refresh`, {
+      method: "POST",
+      credentials: "include",
+    });
+    if (r.ok)
+      res = await fetch(`${API_BASE}${path}`, {
+        method: "POST",
+        credentials: "include",
+        body: form,
+      });
+  }
+  const text = await res.text();
+  const data = text ? safeJson(text) : null;
+  if (!res.ok) {
+    const msg =
+      data && typeof data === "object" && "message" in data
+        ? String((data as Record<string, unknown>).message)
+        : res.statusText;
+    throw new ApiError(res.status, msg || "Tải lên thất bại", data);
+  }
+  return data as T;
+}
+
 export const api = {
   get: <T>(path: string) => apiFetch<T>(path),
   post: <T>(path: string, body?: unknown) =>
@@ -93,4 +127,5 @@ export const api = {
   patch: <T>(path: string, body?: unknown) =>
     apiFetch<T>(path, { method: "PATCH", body }),
   del: <T>(path: string) => apiFetch<T>(path, { method: "DELETE" }),
+  upload: <T>(path: string, form: FormData) => apiUpload<T>(path, form),
 };
