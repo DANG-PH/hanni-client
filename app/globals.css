@@ -1,20 +1,21 @@
 @import "tailwindcss";
 
-/* Hanni dùng một tông màu SÁNG cố định (không theo dark mode của hệ điều hành). */
+/* Hệ màu sáng cố định. Màu trạng thái độc lập với màu thương hiệu. */
 :root {
   color-scheme: light;
-
-  --background: #faf7f5;
+  --background: #f7f9fc;
   --surface: #ffffff;
-  --surface-2: #f3efec;
-  --foreground: #1c1917;
-  --muted: #78716c;
-  --border: #e7e1dc;
-  --primary: #c1272d;
+  --surface-2: #eef2f8;
+  --foreground: #202d43;
+  --muted: #647189;
+  --border: #e3e9f2;
+  --primary: #4263d5;
   --primary-fg: #ffffff;
-  --accent: #0f766e;
-  --good: #15803d;
-  --warn: #b45309;
+  --accent: #367f87;
+  --good: #27816a;
+  --warn: #a66b14;
+  --danger: #c04758;
+  --lavender: #7a60b5;
 }
 
 @theme inline {
@@ -29,20 +30,182 @@
   --color-accent: var(--accent);
   --color-good: var(--good);
   --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-lavender: var(--lavender);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-html {
-  color-scheme: light;
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+  }
+  button,
+  a,
+  input,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--primary) 55%, transparent);
+    outline-offset: 4px;
+  }
+  input:not([type="range"]),
+  select {
+    min-height: 46px;
+  }
+  input::placeholder {
+    color: var(--muted);
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 18%, white);
+  }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+@layer components {
+  .page-wrap {
+    @apply mx-auto w-full max-w-6xl px-5 py-8 sm:px-8 sm:py-10;
+  }
+  .panel {
+    @apply rounded-2xl border border-border bg-surface;
+    box-shadow: 0 3px 16px -12px
+      color-mix(in srgb, var(--foreground) 25%, transparent);
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.16em] text-primary;
+  }
+  .field {
+    @apply w-full rounded-xl border border-border bg-surface px-3.5 py-3 text-sm transition-colors focus:border-primary;
+  }
+  .icon-tile {
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary;
+  }
+  .soft-grid {
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .hanzi {
+    font-family: "Kaiti SC", "KaiTi", "Noto Serif CJK SC", "Songti SC", serif;
+    font-feature-settings: normal;
+  }
 }
 
-.hanzi {
-  font-family: var(--font-sans);
-  font-feature-settings: normal;
+/* Nhịp chuyển động tham khảo index.html; áp dụng cố định theo thiết kế. */
+:root {
+  --reveal-duration: 1200ms;
+  --reveal-distance: 26px;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --hover-duration: 420ms;
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--reveal-distance);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media screen {
+  .page-enter {
+    animation: page-in 600ms var(--motion-ease) backwards;
+  }
+  .nav-enter {
+    --reveal-distance: -12px;
+    animation: reveal-in 1000ms var(--motion-ease) backwards;
+  }
+  [data-reveal-state="pending"] {
+    opacity: 0;
+    translate: 0 var(--reveal-distance);
+    pointer-events: none;
+  }
+  [data-reveal-state="visible"] {
+    animation: reveal-in var(--reveal-duration) var(--motion-ease)
+      var(--reveal-delay, 0ms) backwards;
+  }
+  [data-reveal-state="focused"],
+  [data-reveal-state]:focus-within {
+    opacity: 1;
+    translate: none;
+    animation: none;
+    pointer-events: auto;
+  }
+
+  .panel,
+  .hover-card,
+  .motion-button,
+  .site-nav a,
+  .site-nav button {
+    transition:
+      transform var(--hover-duration) var(--motion-ease),
+      background-color var(--hover-duration) ease,
+      border-color var(--hover-duration) ease,
+      box-shadow var(--hover-duration) ease,
+      color var(--hover-duration) ease;
+  }
+  .motion-button svg,
+  .hover-card [data-icon="arrow"] {
+    transition: transform var(--hover-duration) var(--motion-ease);
+  }
+  .motion-button:active:not(:disabled) {
+    transform: translateY(1px) scale(0.98);
+    transition-duration: 160ms;
+  }
+  .field {
+    transition:
+      border-color 300ms ease,
+      box-shadow 300ms ease;
+  }
+  .field:focus {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 8%, transparent);
+  }
+}
+
+@media screen and (hover: hover) and (pointer: fine) {
+  .panel:hover,
+  .hover-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+    box-shadow: 0 14px 32px -15px
+      color-mix(in srgb, var(--primary) 25%, transparent);
+  }
+  .hover-card:hover {
+    transform: translateY(-5px);
+  }
+  .motion-button:hover:not(:active):not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px -10px
+      color-mix(in srgb, var(--primary) 45%, transparent);
+  }
+  .motion-button:hover [data-icon="arrow"],
+  .hover-card:hover [data-icon="arrow"] {
+    transform: translateX(3px);
+  }
+  .motion-button:hover [data-icon="refresh"] {
+    transform: rotate(-18deg);
+  }
+}
+
+@media screen and (max-width: 680px) {
+  :root {
+    --reveal-distance: 18px;
+  }
 }

@@ -23,14 +23,16 @@ export default function ForgotPasswordPage() {
       <Card className="mt-6">
         {sent ? (
           <p className="text-sm text-muted">
-            Nếu email tồn tại, chúng tôi đã gửi liên kết đặt lại mật khẩu. Kiểm tra
-            hộp thư (ở môi trường dev, link được in ra console của server).
+            Nếu email tồn tại, chúng tôi đã gửi liên kết đặt lại mật khẩu. Kiểm
+            tra hộp thư và thư mục thư rác của bạn.
           </p>
         ) : (
           <form onSubmit={onSubmit} className="space-y-3">
             <input
               type="email"
               required
+              aria-label="Địa chỉ email"
+              autoComplete="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}

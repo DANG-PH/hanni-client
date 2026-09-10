@@ -50,6 +50,8 @@ function ResetInner() {
             type="password"
             required
             minLength={8}
+            aria-label="Mật khẩu mới"
+            autoComplete="new-password"
             placeholder="Mật khẩu mới (≥ 8 ký tự)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
