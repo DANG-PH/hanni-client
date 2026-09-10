@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Button, Card } from "@/components/ui";
+import { Button, Card, ProgressBar } from "@/components/ui";
 import { api } from "@/lib/api";
 import type { Quiz } from "@/lib/types";
 
@@ -68,23 +68,28 @@ export function QuizRunner({
         </span>
         <span>Chọn nghĩa đúng</span>
       </div>
-      <div className="text-center">
-        <div className="hanzi text-4xl font-semibold">{q.prompt}</div>
-        <div className="text-muted">{q.pinyin}</div>
+      <ProgressBar value={(idx / total) * 100} label="Tiến độ bài kiểm tra" />
+      <div className="py-5 text-center">
+        <div className="hanzi text-6xl">{q.prompt}</div>
+        <div className="mt-3 text-lg text-primary">{q.pinyin}</div>
       </div>
       <div className="space-y-2">
-        {q.options.map((opt) => {
+        {q.options.map((opt, optionIndex) => {
           const isPicked = picked === opt;
           return (
             <button
               key={opt}
+              aria-pressed={isPicked}
               onClick={() => setPicked(opt)}
-              className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
+              className={`flex min-h-14 w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition-colors ${
                 isPicked
                   ? "border-primary bg-primary/10"
                   : "border-border hover:bg-surface-2"
               }`}
             >
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-xs font-semibold text-muted">
+                {String.fromCharCode(65 + optionIndex)}
+              </span>
               {opt}
             </button>
           );
