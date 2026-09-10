@@ -153,6 +153,7 @@ export default function WatchDetailPage() {
     : 0;
   const activeLine = active ? data.lines.find((l) => l.index === active) : null;
   const realSync = data.lines.some((l) => l.startMs != null);
+  const resumeAt = data.progress.lastLineIndex;
 
   function selectLine(index: number) {
     const t = times[index - 1];
@@ -274,6 +275,19 @@ export default function WatchDetailPage() {
           </div>
 
           <div ref={viewportRef} className="relative flex-1 overflow-hidden">
+            {resumeAt > 1 &&
+              resumeAt < data.sentenceCount &&
+              active === null && (
+                <div className="absolute inset-x-0 top-3 z-20 flex justify-center">
+                  <button
+                    onClick={() => selectLine(resumeAt)}
+                    className="motion-button rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-fg shadow-lg"
+                  >
+                    <Icon name="play" size={13} className="-ml-0.5 mr-1 inline" />
+                    Tiếp tục từ câu {resumeAt}
+                  </button>
+                </div>
+              )}
             {/* Khung tiêu điểm cố định — chữ trượt vào đây, khung không di chuyển. */}
             <div
               aria-hidden="true"

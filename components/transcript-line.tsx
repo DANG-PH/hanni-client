@@ -20,6 +20,10 @@ export function TranscriptLine({
     <button
       data-idx={line.index}
       onClick={onSelect}
+      // content-visibility: bỏ qua layout/paint cho dòng ngoài khung nhìn →
+      // bản chép hàng nghìn dòng vẫn mượt. offsetTop vẫn tính được nhờ
+      // contain-intrinsic-size (nhớ kích thước thật lần render gần nhất).
+      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 52px" }}
       className={`block w-full px-4 py-3 text-left transition-all duration-300 ${
         active
           ? "opacity-100"
