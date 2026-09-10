@@ -11,6 +11,7 @@ export function LoginShell({ children }: { children: ReactNode }) {
   const video = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [touchControls, setTouchControls] = useState(false);
 
   async function toggleVideo() {
     if (!video.current) return;
@@ -81,7 +82,23 @@ export function LoginShell({ children }: { children: ReactNode }) {
             <span className="h-1 w-1 rounded-full bg-current" /> MỘT NGÔN NGỮ
             MỚI. MỘT HÀNH TRÌNH MỚI.
           </p>
-          <div className="login-video-frame">
+          <div
+            className="login-video-frame"
+            data-controls-visible={touchControls || undefined}
+            onPointerDown={(event) => {
+              if (
+                event.pointerType === "touch" ||
+                event.pointerType === "pen"
+              ) {
+                setTouchControls(true);
+              }
+            }}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setTouchControls(false);
+              }
+            }}
+          >
             {videoFailed ? (
               <div className="flex aspect-video items-center justify-center bg-primary/20">
                 <Image
@@ -95,6 +112,7 @@ export function LoginShell({ children }: { children: ReactNode }) {
               </div>
             ) : (
               <video
+                id="login-brand-video"
                 ref={video}
                 src="/videologin.mp4"
                 autoPlay
@@ -119,6 +137,7 @@ export function LoginShell({ children }: { children: ReactNode }) {
                 type="button"
                 onClick={() => void toggleVideo()}
                 className="login-video-control"
+                aria-controls="login-brand-video"
                 aria-label={
                   playing ? "Tạm dừng video minh họa" : "Phát video minh họa"
                 }
