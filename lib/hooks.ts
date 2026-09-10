@@ -5,6 +5,8 @@ import { apiFetch } from "./api";
 import type {
   Achievement,
   HskLevel,
+  LearnPath,
+  LessonDetail,
   Paginated,
   ProgressOverview,
   StreakInfo,
@@ -34,6 +36,17 @@ export function useStudyStats() {
 
 export function useAchievements() {
   return useSWR<Achievement[]>("/achievements", fetcher);
+}
+
+export function useLearnPath(level?: number) {
+  return useSWR<LearnPath>(
+    level ? `/learn/path?level=${level}` : "/learn/path",
+    fetcher,
+  );
+}
+
+export function useLesson(id: string | null) {
+  return useSWR<LessonDetail>(id ? `/learn/lessons/${id}` : null, fetcher);
 }
 
 export function useWords(params: {

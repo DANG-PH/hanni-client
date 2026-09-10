@@ -26,6 +26,12 @@ const paths = {
   close: "m6 6 12 12M6 18 18 6",
   lock: "M6 10h12v11H6V10Zm3 0V6a3 3 0 0 1 6 0v4m-3 4v3",
   info: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 8v6m0-10v.1",
+  route:
+    "M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm12-10a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-1 0h-4a4 4 0 0 0 0 8h-2a4 4 0 0 1 0-8",
+  bell: "M18 16H6l1-2V10a5 5 0 0 1 10 0v4l1 2Zm-8 3a2 2 0 0 0 4 0",
+  sun: "M12 6V3m0 18v-3m6-6h3M3 12h3m11.5-5.5 1.5-1.5m-16 16 1.5-1.5m13 0 1.5 1.5m-16-16 1.5 1.5M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z",
+  moon: "M20 14a8 8 0 0 1-10-10 8 8 0 1 0 10 10Z",
+  play: "M8 5v14l11-7L8 5Z",
 } as const;
 
 export type IconName = keyof typeof paths;

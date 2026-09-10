@@ -50,7 +50,44 @@ export interface Word {
   meaningEn: string | null;
   translationStatus: string;
   audioUrl: string | null;
+  lessonId?: string | null;
+  lessonOrder?: number | null;
   examples?: WordExample[];
+  progressState?: string;
+}
+
+export interface LessonNode {
+  id: string;
+  orderIndex: number;
+  title: string;
+  wordCount: number;
+  learnedWords: number;
+  startedWords: number;
+  dueWords: number;
+  status: "COMPLETED" | "IN_PROGRESS" | "AVAILABLE" | "LOCKED";
+  previewWords: string[];
+}
+
+export interface LearnPath {
+  level: number;
+  levelName: string;
+  band: string;
+  totalLessons: number;
+  completedLessons: number;
+  currentLessonId: string | null;
+  lessons: LessonNode[];
+  levels: number[];
+}
+
+export interface LessonDetail {
+  lesson: {
+    id: string;
+    title: string;
+    orderIndex: number;
+    hskLevel: number;
+    wordCount: number;
+  };
+  words: Word[];
 }
 
 export interface WordExample {

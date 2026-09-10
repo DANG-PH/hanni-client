@@ -1,21 +1,42 @@
 @import "tailwindcss";
 
-/* Hệ màu sáng cố định. Màu trạng thái độc lập với màu thương hiệu. */
+/* ===== Bảng màu ===== light là mặc định; có toggle sang dark. ===== */
 :root {
   color-scheme: light;
-  --background: #f7f9fc;
+  --background: #faf6f2;
   --surface: #ffffff;
-  --surface-2: #eef2f8;
-  --foreground: #202d43;
-  --muted: #647189;
-  --border: #e3e9f2;
-  --primary: #4263d5;
+  --surface-2: #f4ede7;
+  --foreground: #2a2320;
+  --muted: #7c6f66;
+  --border: #ece2da;
+  --primary: #c8312b;
   --primary-fg: #ffffff;
-  --accent: #367f87;
-  --good: #27816a;
-  --warn: #a66b14;
-  --danger: #c04758;
-  --lavender: #7a60b5;
+  --accent: #b5852f;
+  --good: #2f8f5b;
+  --warn: #b5761b;
+  --danger: #c0392f;
+  --lavender: #9a5b8f;
+  --hero-from: #fdeee4;
+  --hero-to: #fbe0d3;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #17120f;
+  --surface: #201a16;
+  --surface-2: #2b231e;
+  --foreground: #f3ebe4;
+  --muted: #a9998d;
+  --border: #362c25;
+  --primary: #e2564e;
+  --primary-fg: #1a0e0c;
+  --accent: #d8a24e;
+  --good: #55c489;
+  --warn: #e0a04a;
+  --danger: #e56b60;
+  --lavender: #c489b8;
+  --hero-from: #2c1c16;
+  --hero-to: #37231a;
 }
 
 @theme inline {
@@ -53,7 +74,7 @@
   }
   :focus-visible {
     outline: 3px solid color-mix(in srgb, var(--primary) 55%, transparent);
-    outline-offset: 4px;
+    outline-offset: 3px;
   }
   input:not([type="range"]),
   select {
@@ -63,7 +84,7 @@
     color: var(--muted);
   }
   ::selection {
-    background: color-mix(in srgb, var(--primary) 18%, white);
+    background: color-mix(in srgb, var(--primary) 20%, transparent);
   }
 }
 
@@ -74,7 +95,7 @@
   .panel {
     @apply rounded-2xl border border-border bg-surface;
     box-shadow: 0 3px 16px -12px
-      color-mix(in srgb, var(--foreground) 25%, transparent);
+      color-mix(in srgb, var(--foreground) 22%, transparent);
   }
   .eyebrow {
     @apply text-xs font-semibold uppercase tracking-[0.16em] text-primary;
@@ -83,26 +104,30 @@
     @apply w-full rounded-xl border border-border bg-surface px-3.5 py-3 text-sm transition-colors focus:border-primary;
   }
   .icon-tile {
-    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary;
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary;
   }
-  .soft-grid {
-    background-image:
-      linear-gradient(to right, var(--border) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
-    background-size: 48px 48px;
+  .hero {
+    background: linear-gradient(115deg, var(--hero-from), var(--hero-to));
   }
   .hanzi {
     font-family: "Kaiti SC", "KaiTi", "Noto Serif CJK SC", "Songti SC", serif;
     font-feature-settings: normal;
   }
+  /* item điều hướng trong sidebar */
+  .nav-item {
+    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-foreground;
+  }
+  .nav-item[aria-current="page"] {
+    @apply bg-primary/10 text-primary;
+  }
 }
 
-/* Nhịp chuyển động tham khảo index.html; áp dụng cố định theo thiết kế. */
+/* ===== Nhịp chuyển động (giữ từ thiết kế trước) ===== */
 :root {
-  --reveal-duration: 1200ms;
-  --reveal-distance: 26px;
+  --reveal-duration: 900ms;
+  --reveal-distance: 22px;
   --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --hover-duration: 420ms;
+  --hover-duration: 380ms;
 }
 
 @keyframes reveal-in {
@@ -115,10 +140,9 @@
     translate: 0 0;
   }
 }
-
 @keyframes page-in {
   from {
-    opacity: 0.25;
+    opacity: 0.3;
   }
   to {
     opacity: 1;
@@ -127,11 +151,7 @@
 
 @media screen {
   .page-enter {
-    animation: page-in 600ms var(--motion-ease) backwards;
-  }
-  .nav-enter {
-    --reveal-distance: -12px;
-    animation: reveal-in 1000ms var(--motion-ease) backwards;
+    animation: page-in 500ms var(--motion-ease) backwards;
   }
   [data-reveal-state="pending"] {
     opacity: 0;
@@ -149,12 +169,9 @@
     animation: none;
     pointer-events: auto;
   }
-
   .panel,
   .hover-card,
-  .motion-button,
-  .site-nav a,
-  .site-nav button {
+  .motion-button {
     transition:
       transform var(--hover-duration) var(--motion-ease),
       background-color var(--hover-duration) ease,
@@ -162,50 +179,42 @@
       box-shadow var(--hover-duration) ease,
       color var(--hover-duration) ease;
   }
-  .motion-button svg,
-  .hover-card [data-icon="arrow"] {
-    transition: transform var(--hover-duration) var(--motion-ease);
-  }
   .motion-button:active:not(:disabled) {
     transform: translateY(1px) scale(0.98);
-    transition-duration: 160ms;
+    transition-duration: 140ms;
   }
   .field {
     transition:
-      border-color 300ms ease,
-      box-shadow 300ms ease;
+      border-color 260ms ease,
+      box-shadow 260ms ease;
   }
   .field:focus {
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 8%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 10%, transparent);
   }
 }
 
 @media screen and (hover: hover) and (pointer: fine) {
-  .panel:hover,
   .hover-card:hover {
-    border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
-    box-shadow: 0 14px 32px -15px
-      color-mix(in srgb, var(--primary) 25%, transparent);
-  }
-  .hover-card:hover {
-    transform: translateY(-5px);
+    border-color: color-mix(in srgb, var(--primary) 30%, var(--border));
+    box-shadow: 0 14px 30px -16px
+      color-mix(in srgb, var(--primary) 26%, transparent);
+    transform: translateY(-4px);
   }
   .motion-button:hover:not(:active):not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px -10px
-      color-mix(in srgb, var(--primary) 45%, transparent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px -10px
+      color-mix(in srgb, var(--primary) 42%, transparent);
   }
-  .motion-button:hover [data-icon="arrow"],
-  .hover-card:hover [data-icon="arrow"] {
+  .motion-button:hover [data-icon="arrow"] {
     transform: translateX(3px);
-  }
-  .motion-button:hover [data-icon="refresh"] {
-    transform: rotate(-18deg);
   }
 }
 
-@media screen and (max-width: 680px) {
-  :root {
-    --reveal-distance: 18px;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

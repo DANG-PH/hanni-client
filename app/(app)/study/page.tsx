@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Flashcard } from "@/components/flashcard";
 import { QuizRunner } from "@/components/quiz-runner";
 import {
@@ -14,17 +15,21 @@ import {
 import { Icon } from "@/components/icon";
 import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
+import { useLearnPath, useLesson } from "@/lib/hooks";
 import type { Quiz, Rating, StudyQueue } from "@/lib/types";
 
 type Phase = "loading" | "review" | "review-done" | "quiz" | "done";
-
 interface Item {
   word: StudyQueue["due"][number]["word"];
   isNew: boolean;
 }
 
-export default function StudyPage() {
+function StudyInner() {
   const { user, loading } = useRequireAuth();
+  const lessonId = useSearchParams().get("lesson");
+  const lesson = useLesson(lessonId);
+  const path = useLearnPath();
+
   const [phase, setPhase] = useState<Phase>("loading");
   const [items, setItems] = useState<Item[]>([]);
   const [pos, setPos] = useState(0);
@@ -43,11 +48,16 @@ export default function StudyPage() {
     started.current = true;
     void (async () => {
       const session = await api
-        .post<{ id: string }>("/study/session", { source: "REVIEW" })
+        .post<{ id: string }>("/study/session", {
+          source: lessonId ? "LEARN" : "REVIEW",
+        })
         .catch(() => null);
       sessionId.current = session?.id ?? null;
 
-      const queue = await api.get<StudyQueue>("/study/queue?limit=40");
+      const q = lessonId
+        ? `/study/queue?limit=40&lessonId=${lessonId}`
+        : "/study/queue?limit=40";
+      const queue = await api.get<StudyQueue>(q);
       const list: Item[] = [
         ...queue.due.map((d) => ({ word: d.word, isNew: false })),
         ...queue.newCards.map((n) => ({ word: n.word, isNew: true })),
@@ -55,7 +65,7 @@ export default function StudyPage() {
       setItems(list);
       setPhase(list.length ? "review" : "review-done");
     })().catch(() => setError("Chưa tải được buổi học. Vui lòng thử lại."));
-  }, [loading, user]);
+  }, [loading, user, lessonId]);
 
   const onRate = useCallback(
     async (rating: Rating, durationMs: number) => {
@@ -74,7 +84,7 @@ export default function StudyPage() {
         reviewedIds.current.add(item.word.id);
         if (res.isCorrect) setCorrect((c) => c + 1);
       } catch {
-        setError("Chưa lưu được kết quả. Bạn hãy thử đánh giá lại thẻ này.");
+        setError("Chưa lưu được kết quả. Hãy thử đánh giá lại thẻ này.");
         ratingLock.current = false;
         setBusy(false);
         return;
@@ -125,35 +135,47 @@ export default function StudyPage() {
       <Spinner />
     );
 
+  const title = lesson.data?.lesson.title ?? "Ôn tập flashcard";
+  const nextLesson =
+    lessonId && lesson.data && path.data
+      ? path.data.lessons.find(
+          (l) =>
+            l.orderIndex === lesson.data!.lesson.orderIndex + 1 &&
+            l.status !== "LOCKED",
+        )
+      : undefined;
+
   return (
     <div className="mx-auto max-w-2xl px-5 py-8 sm:py-10">
       <div className="mb-7 flex items-center justify-between">
-        <LinkButton href="/dashboard" variant="ghost">
+        <LinkButton href={lessonId ? "/learn" : "/dashboard"} variant="ghost">
           <Icon name="back" size={17} />
-          Tổng quan
+          {lessonId ? "Lộ trình" : "Tổng quan"}
         </LinkButton>
         <span className="flex items-center gap-2 text-sm font-medium">
-          <Icon name="cards" size={18} />
-          Góc ôn tập
+          <Icon name={lessonId ? "route" : "cards"} size={18} />
+          {lessonId ? title : "Góc ôn tập"}
         </span>
       </div>
+
       {error && (
         <div className="mb-5">
           <ErrorNote>{error}</ErrorNote>
         </div>
       )}
+
       {phase === "review" && items[pos] && (
         <>
           <div className="mb-6">
             <div className="mb-3 flex justify-between text-sm">
-              <h1 className="font-semibold">Ôn tập flashcard</h1>
+              <h1 className="font-semibold">{title}</h1>
               <span className="text-muted">
                 Thẻ {pos + 1} / {items.length}
               </span>
             </div>
             <ProgressBar
               value={(pos / items.length) * 100}
-              label="Tiến độ buổi ôn"
+              label="Tiến độ buổi học"
             />
           </div>
           <Flashcard
@@ -172,26 +194,41 @@ export default function StudyPage() {
             <Icon name="check" size={30} />
           </span>
           <h1 className="text-2xl font-semibold">
-            {items.length ? "Bạn đã hoàn thành buổi ôn!" : "Chưa có thẻ để ôn"}
+            {items.length
+              ? lessonId
+                ? "Xong bài!"
+                : "Bạn đã hoàn thành buổi ôn!"
+              : "Chưa có thẻ để học"}
           </h1>
           <p className="text-muted">
             {items.length > 0
               ? `Bạn nhớ được ${correct}/${items.length} thẻ. Mỗi lần ôn là một lần nhớ lâu hơn.`
-              : "Hiện chưa có thẻ để học. Bạn có thể khám phá thư viện từ vựng hoặc quay lại sau."}
+              : "Hiện chưa có thẻ. Bạn có thể mở bài khác trong lộ trình hoặc quay lại sau."}
           </p>
-          {items.length >= 4 ? (
+          {items.length >= 4 && (
             <Button
               className="w-full"
               disabled={busy}
               onClick={() => void startQuiz()}
             >
-              {busy
-                ? "Đang tạo bài kiểm tra…"
-                : "Kiểm tra nhanh những từ vừa học"}
+              {busy ? "Đang tạo…" : "Kiểm tra nhanh những từ vừa học"}
             </Button>
-          ) : null}
-          <LinkButton href="/dashboard" variant="secondary" className="w-full">
-            Về tổng quan
+          )}
+          {nextLesson && (
+            <LinkButton
+              href={`/study?lesson=${nextLesson.id}`}
+              variant="secondary"
+              className="w-full"
+            >
+              {nextLesson.title} <Icon name="arrow" size={16} />
+            </LinkButton>
+          )}
+          <LinkButton
+            href={lessonId ? "/learn" : "/dashboard"}
+            variant="ghost"
+            className="w-full"
+          >
+            {lessonId ? "Về lộ trình" : "Về tổng quan"}
           </LinkButton>
         </Card>
       )}
@@ -212,14 +249,32 @@ export default function StudyPage() {
           {quizScore != null && (
             <p className="text-3xl font-semibold text-primary">{quizScore}%</p>
           )}
-          <p className="text-muted">
-            Điểm ghi nhớ của buổi này. Hẹn bạn ở buổi học tiếp theo!
-          </p>
-          <LinkButton href="/dashboard" className="w-full">
-            Về tổng quan
-          </LinkButton>
+          <p className="text-muted">Điểm ghi nhớ của buổi này. Hẹn gặp lại!</p>
+          {nextLesson ? (
+            <LinkButton
+              href={`/study?lesson=${nextLesson.id}`}
+              className="w-full"
+            >
+              {nextLesson.title} <Icon name="arrow" size={16} />
+            </LinkButton>
+          ) : (
+            <LinkButton
+              href={lessonId ? "/learn" : "/dashboard"}
+              className="w-full"
+            >
+              {lessonId ? "Về lộ trình" : "Về tổng quan"}
+            </LinkButton>
+          )}
         </Card>
       )}
     </div>
+  );
+}
+
+export default function StudyPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <StudyInner />
+    </Suspense>
   );
 }

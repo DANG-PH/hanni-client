@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { AudioButton } from "./audio-button";
 import { Icon } from "./icon";
+import { mediaUrl } from "@/lib/api";
 import type { Rating, Word } from "@/lib/types";
 
 const RATINGS: { key: Rating; label: string; hint: string; cls: string }[] = [
@@ -47,6 +48,18 @@ export function Flashcard({
   const [revealed, setRevealed] = useState(false);
   const [start] = useState(() => Date.now());
   const example = word.examples?.[0];
+
+  function reveal() {
+    setRevealed(true);
+    const u = mediaUrl(word.audioUrl);
+    if (u) {
+      try {
+        void new Audio(u).play().catch(() => undefined);
+      } catch {
+        /* ignore */
+      }
+    }
+  }
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -100,11 +113,7 @@ export function Flashcard({
         </p>
         {!revealed ? (
           <div className="mt-10">
-            <Button
-              className="w-full"
-              variant="secondary"
-              onClick={() => setRevealed(true)}
-            >
+            <Button className="w-full" variant="secondary" onClick={reveal}>
               <Icon name="refresh" size={17} />
               Lật thẻ xem nghĩa
             </Button>

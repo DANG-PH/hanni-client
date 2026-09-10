@@ -6,6 +6,7 @@ import { Button, Card, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { api, apiFetch } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
+import { TIMEZONES, detectTimezone } from "@/lib/timezones";
 import type { UserSettings } from "@/lib/types";
 
 export default function SettingsPage() {
@@ -154,15 +155,37 @@ export default function SettingsPage() {
 
         <Card className="space-y-3">
           <h2 className="font-semibold">Múi giờ học tập</h2>
-          <input
-            aria-label="Múi giờ học tập"
-            value={tz}
-            onChange={(e) => setTz(e.target.value)}
-            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              aria-label="Chọn múi giờ"
+              value={
+                TIMEZONES.some((t) => t.value === tz) ? tz : "__other__"
+              }
+              onChange={(e) => setTz(e.target.value)}
+              className="field flex-1"
+            >
+              {!TIMEZONES.some((t) => t.value === tz) && tz && (
+                <option value={tz}>{tz} (hiện tại)</option>
+              )}
+              {TIMEZONES.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label} — {t.value}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => {
+                const d = detectTimezone();
+                if (d) setTz(d);
+              }}
+              className="rounded-xl bg-surface-2 px-3 py-2.5 text-sm font-medium text-muted hover:text-foreground"
+            >
+              Tự phát hiện
+            </button>
+          </div>
           <p className="text-xs text-muted">
-            Tên IANA, vd <code>Asia/Ho_Chi_Minh</code>. Streak tính theo múi giờ
-            này.
+            Chuỗi streak và “ngày học” được tính theo múi giờ này.
           </p>
         </Card>
       </div>
