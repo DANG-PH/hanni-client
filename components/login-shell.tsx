@@ -2,27 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Icon } from "./icon";
 import { ThemeToggle } from "./theme-toggle";
 
 /** Bố cục đăng nhập riêng; video minh họa tự phát không tiếng và lặp liên tục. */
 export function LoginShell({ children }: { children: ReactNode }) {
-  const video = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
-  const [touchControls, setTouchControls] = useState(false);
-
-  async function toggleVideo() {
-    if (!video.current) return;
-    if (video.current.paused) {
-      try {
-        await video.current.play();
-      } catch {
-        setPlaying(false);
-      }
-    } else video.current.pause();
-  }
 
   return (
     <div className="login-screen">
@@ -82,25 +68,9 @@ export function LoginShell({ children }: { children: ReactNode }) {
             <span className="h-1 w-1 rounded-full bg-current" /> MỘT NGÔN NGỮ
             MỚI. MỘT HÀNH TRÌNH MỚI.
           </p>
-          <div
-            className="login-video-frame"
-            data-controls-visible={touchControls || undefined}
-            onPointerDown={(event) => {
-              if (
-                event.pointerType === "touch" ||
-                event.pointerType === "pen"
-              ) {
-                setTouchControls(true);
-              }
-            }}
-            onBlur={(event) => {
-              if (!event.currentTarget.contains(event.relatedTarget)) {
-                setTouchControls(false);
-              }
-            }}
-          >
+          <div className="login-video-frame">
             {videoFailed ? (
-              <div className="flex aspect-video items-center justify-center bg-primary/20">
+              <div className="login-video-fallback">
                 <Image
                   src="/favicon.ico"
                   alt="Logo Hanni"
@@ -112,39 +82,24 @@ export function LoginShell({ children }: { children: ReactNode }) {
               </div>
             ) : (
               <video
-                id="login-brand-video"
-                ref={video}
                 src="/videologin.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
+                controls={false}
+                disablePictureInPicture
+                disableRemotePlayback
                 preload="auto"
                 width={1280}
                 height={720}
                 aria-hidden="true"
                 tabIndex={-1}
                 className="login-video"
-                onPlay={() => setPlaying(true)}
-                onPause={() => setPlaying(false)}
                 onError={() => setVideoFailed(true)}
               >
                 Trình duyệt của bạn chưa hỗ trợ video.
               </video>
-            )}
-            {!videoFailed && (
-              <button
-                type="button"
-                onClick={() => void toggleVideo()}
-                className="login-video-control"
-                aria-controls="login-brand-video"
-                aria-label={
-                  playing ? "Tạm dừng video minh họa" : "Phát video minh họa"
-                }
-                title={playing ? "Tạm dừng" : "Phát video"}
-              >
-                <Icon name={playing ? "pause" : "play"} size={15} />
-              </button>
             )}
           </div>
           <div className="login-story-copy">

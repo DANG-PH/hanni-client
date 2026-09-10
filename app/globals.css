@@ -829,12 +829,20 @@ body:has(.mobile-drawer[open]) {
   /* Khung trong suốt để cạnh video hòa trực tiếp vào gradient của panel. */
   background: transparent;
 }
+.login-video-fallback {
+  display: flex;
+  aspect-ratio: 16/9;
+  align-items: center;
+  justify-content: center;
+}
 .login-video {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 16/9;
   object-fit: contain;
+  pointer-events: none;
+  user-select: none;
   /* Chỉ làm mờ cạnh, giữ nguyên màu và độ sáng của nhân vật ở giữa. */
   -webkit-mask-image:
     linear-gradient(to right, transparent, #000 13%, #000 87%, transparent),
@@ -845,39 +853,9 @@ body:has(.mobile-drawer[open]) {
     linear-gradient(to bottom, transparent, #000 7%, #000 84%, transparent);
   mask-composite: intersect;
 }
-.login-video-control {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid #ffffff45;
-  border-radius: 50%;
-  background: #641a1350;
-  color: #fff;
-  backdrop-filter: blur(8px);
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 180ms ease,
-    background-color 180ms ease;
-}
-.login-video-frame:focus-within .login-video-control,
-.login-video-frame[data-controls-visible="true"] .login-video-control {
-  opacity: 1;
-  pointer-events: auto;
-}
-@media (hover: hover) and (pointer: fine) {
-  .login-video-frame:hover .login-video-control {
-    opacity: 1;
-    pointer-events: auto;
-  }
-}
-.login-video-control:hover {
-  background: #641a1390;
+.login-video::-webkit-media-controls,
+.login-video::-webkit-media-controls-start-playback-button {
+  display: none;
 }
 .login-story-copy {
   margin-top: 34px;
@@ -938,37 +916,61 @@ body:has(.mobile-drawer[open]) {
 @media (max-width: 767px) {
   .login-screen {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "header" "mascot" "form" "footer";
+    grid-template-rows: auto auto 1fr auto;
+    background:
+      radial-gradient(
+        ellipse at 0 28%,
+        color-mix(in srgb, var(--primary) 5%, transparent),
+        transparent 48%
+      ),
+      var(--surface);
   }
   .login-entry {
-    min-height: 100svh;
+    /* Giữ một video duy nhất, đặt giữa header và form bằng grid. */
+    display: contents;
   }
   .login-header {
+    grid-area: header;
     padding: 20px 24px;
   }
   .login-main {
-    padding: 20px 24px 30px;
+    grid-area: form;
+    align-items: flex-start;
+    padding: 16px 24px 30px;
   }
   .login-form-card {
     padding: 28px 24px;
     border-radius: 20px;
   }
   .login-footer {
+    grid-area: footer;
     padding: 20px 24px;
   }
   .login-story {
-    padding: 44px 24px;
+    grid-area: mascot;
+    padding: 0 24px;
+    background: none;
+    overflow: visible;
   }
   .login-story-content {
-    max-width: 480px;
+    max-width: 200px;
   }
-  .login-story-eyebrow {
-    margin-bottom: 22px;
-  }
-  .login-story-copy {
-    margin-top: 28px;
-  }
+  .login-story-pattern,
+  .login-story::after,
+  .login-story-eyebrow,
+  .login-story-copy,
   .login-story-note {
-    margin-top: 24px;
+    display: none;
+  }
+  .login-video {
+    -webkit-mask-image: radial-gradient(circle closest-side, #000 78%, transparent);
+    mask-image: radial-gradient(circle closest-side, #000 78%, transparent);
+  }
+  .login-video-fallback img {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
   }
 }
 @media (max-width: 359px) {
