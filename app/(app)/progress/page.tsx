@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   Card,
   EmptyState,
@@ -24,10 +25,13 @@ export default function ProgressPage() {
   const { user, loading } = useRequireAuth();
   const { data, isLoading, error, mutate } = useProgress();
   if (loading || !user) return <Spinner />;
+  const completion = data?.totals.totalWords
+    ? Math.round((data.totals.learned / data.totals.totalWords) * 100)
+    : 0;
   return (
     <div className="page-wrap space-y-8">
       <PageHeading
-        eyebrow="MỖI BƯỚC ĐỀU ĐÁNG NHỚ"
+        eyebrow="HÀNH TRÌNH CỦA BẠN"
         title="Tiến độ học tập"
         description="Nhìn lại những gì đã học và biết mình cần tập trung vào đâu."
       >
@@ -51,6 +55,67 @@ export default function ProgressPage() {
       ) : (
         data && (
           <>
+            <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
+              <Card className="flex flex-wrap items-center gap-6">
+                <div
+                  role="img"
+                  aria-label={`Đã thuộc ${completion}% từ vựng trong các cấp`}
+                  className="relative flex h-28 w-28 shrink-0 items-center justify-center rounded-full"
+                  style={{
+                    background: `conic-gradient(var(--primary) ${Math.min(100, Math.max(0, completion))}%, var(--surface-2) 0)`,
+                  }}
+                >
+                  <div className="absolute inset-2 rounded-full bg-surface" />
+                  <div className="relative text-center">
+                    <span className="text-2xl font-semibold">
+                      {completion}%
+                    </span>
+                    <p className="mt-0.5 text-[10px] text-muted">Đã ghi nhớ</p>
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="eyebrow mb-2">VỐN TỪ TÍCH LŨY</p>
+                  <h2 className="text-xl font-semibold">
+                    {data.totals.learned.toLocaleString("vi-VN")} từ đã thuộc
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-muted">
+                    Trong {data.totals.totalWords.toLocaleString("vi-VN")} từ
+                    vựng thuộc các cấp học. Mỗi lần ôn là một lần nhớ vững hơn.
+                  </p>
+                </div>
+              </Card>
+              <Card className="border-primary/15 bg-primary/5!">
+                <div className="mb-3 flex items-center gap-2 text-primary">
+                  <Icon name="spark" size={19} />
+                  <h2 className="text-sm font-semibold">Gợi ý cho hôm nay</h2>
+                </div>
+                <p className="text-base font-semibold">
+                  {data.totals.atRisk > 0
+                    ? `Củng cố ${data.totals.atRisk} từ sắp quên`
+                    : data.totals.due > 0
+                      ? `Bạn có ${data.totals.due} từ đến lịch ôn`
+                      : "Sẵn sàng cho một bài học mới"}
+                </p>
+                <p className="mt-2 text-sm leading-6 text-muted">
+                  {data.totals.due > 0 || data.totals.atRisk > 0
+                    ? "Mở buổi ôn tập để gặp lại các từ theo lịch học của bạn."
+                    : "Khám phá bài tiếp theo trong lộ trình để mở rộng vốn từ."}
+                </p>
+                <Link
+                  href={
+                    data.totals.due > 0 || data.totals.atRisk > 0
+                      ? "/study"
+                      : "/learn"
+                  }
+                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary"
+                >
+                  {data.totals.due > 0 || data.totals.atRisk > 0
+                    ? "Mở buổi ôn tập"
+                    : "Đến lộ trình HSK"}
+                  <Icon name="arrow" size={16} />
+                </Link>
+              </Card>
+            </div>
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
               <Stat
                 label="Đã thuộc"
@@ -69,7 +134,6 @@ export default function ProgressPage() {
                 label="Đến hạn ôn"
                 value={data.totals.due}
                 icon="clock"
-                tone="text-lavender bg-lavender/8"
                 hint="Cần gặp lại hôm nay"
               />
               <Stat
@@ -90,7 +154,7 @@ export default function ProgressPage() {
               {data.levels.length ? (
                 <div className="space-y-4">
                   {data.levels.map((l) => (
-                    <Card key={l.level}>
+                    <Card key={l.level} className="hover-card">
                       <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
                         <div className="flex items-center gap-4">
                           <span className="icon-tile text-base font-semibold">
@@ -107,7 +171,7 @@ export default function ProgressPage() {
                         </div>
                         <div className="sm:text-right">
                           <span className="text-xl font-semibold text-primary">
-                            {l.percentComplete}%
+                            {Math.round(l.percentComplete)}%
                           </span>
                           <p className="mt-1 text-xs text-muted">
                             {l.learned} / {l.totalWords} từ đã thuộc
@@ -151,6 +215,21 @@ export default function ProgressPage() {
                           </span>
                         ))}
                       </div>
+                      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 text-xs">
+                        <span className="text-muted">
+                          {l.atRisk > 0
+                            ? `${l.atRisk} từ cần củng cố thêm`
+                            : l.learned > 0
+                              ? "Tiếp tục duy trì nhịp ôn tập của bạn"
+                              : "Bắt đầu với những từ đầu tiên"}
+                        </span>
+                        <Link
+                          href={`/vocabulary?level=${l.level}`}
+                          className="inline-flex items-center gap-1.5 font-semibold text-primary"
+                        >
+                          Khám phá từ vựng <Icon name="arrow" size={14} />
+                        </Link>
+                      </div>
                     </Card>
                   ))}
                 </div>
@@ -158,7 +237,11 @@ export default function ProgressPage() {
                 <EmptyState
                   title="Một khởi đầu mới"
                   description="Tiến độ sẽ xuất hiện ở đây khi bạn bắt đầu học từ vựng."
-                />
+                >
+                  <LinkButton href="/learn">
+                    Bắt đầu lộ trình <Icon name="arrow" size={16} />
+                  </LinkButton>
+                </EmptyState>
               )}
             </section>
           </>

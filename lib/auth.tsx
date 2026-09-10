@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { api, ApiError } from "./api";
+import { useSWRConfig } from "swr";
 import type { Me } from "./types";
 
 interface AuthState {
@@ -22,6 +23,7 @@ interface AuthState {
 const AuthContext = createContext<AuthState | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { mutate } = useSWRConfig();
   const [user, setUser] = useState<Me | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +41,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     await api.post("/auth/logout").catch(() => undefined);
     setUser(null);
-  }, []);
+    await mutate(() => true, undefined, { revalidate: false });
+    try {
+      for (const key of Object.keys(sessionStorage)) {
+        if (key.startsWith("hanni:quiz:")) sessionStorage.removeItem(key);
+      }
+    } catch {
+      /* Trình duyệt có thể chặn bộ nhớ phiên. */
+    }
+  }, [mutate]);
 
   useEffect(() => {
     void refresh();
@@ -63,7 +73,10 @@ export function useRequireAuth(): AuthState {
   const auth = useAuth();
   const router = useRouter();
   useEffect(() => {
-    if (!auth.loading && !auth.user) router.replace("/login");
+    if (!auth.loading && !auth.user)
+      router.replace(
+        `/login?next=${encodeURIComponent(window.location.pathname + window.location.search)}`,
+      );
   }, [auth.loading, auth.user, router]);
   return auth;
 }

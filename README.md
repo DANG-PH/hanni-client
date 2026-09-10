@@ -1,40 +1,31 @@
-# hanni-client
+# Hanni client
 
-Giao diện web của **Hanni** — học tiếng Trung theo chuẩn **HSK 3.0**.
-
-Next.js 16 · React 19 · Tailwind v4 · SWR.
+Giao diện học tiếng Trung theo HSK 3.0, dùng Next.js 16, React 19, Tailwind CSS v4 và SWR. Bố cục tham khảo Hanbeego, điều chỉnh cho thương hiệu và API Hanni.
 
 ## Chạy local
 
 ```bash
-cp .env.example .env.local          # NEXT_PUBLIC_API_URL=http://localhost:8000/api
-npm install
-npm run dev                         # http://localhost:3000  (cần hanni-server chạy)
+cp .env.example .env.local
+npm ci
+npm run dev
 ```
+
+Đặt `NEXT_PUBLIC_API_URL` trong `.env.local` theo backend Hanni đang chạy (mặc định `http://localhost:8000/api`). Client và server nên cùng hostname trong môi trường dev để cookie phiên được gửi đúng. Google sign-in chỉ hiển thị khi có client ID được cấu hình.
 
 ## Màn hình
 
-| Route | Nội dung |
-|---|---|
-| `/` | Landing (tự chuyển `/dashboard` nếu đã đăng nhập) |
-| `/login`, `/register` | Email + mật khẩu, hoặc nút Google |
-| `/auth/callback` | Nhận redirect sau Google OAuth2 |
-| `/dashboard` | Streak, mục tiêu ngày, số thẻ đến hạn, tiến độ từng cấp HSK |
-| `/study` | Buổi ôn flashcard (đánh giá 4 mức) → quiz chấm điểm ghi nhớ |
-| `/vocabulary` | Duyệt / tìm từ theo cấp HSK 1–9 |
-| `/progress` | Đã thuộc / đang học / đến hạn / sắp quên theo cấp |
-| `/achievements` | Huy hiệu theo mốc |
-| `/settings` | Mục tiêu ngày, từ mới/ngày, thuật toán SRS (SM-2 / FSRS), múi giờ |
-| `/nguon-du-lieu` | Ghi công nguồn dữ liệu (bắt buộc theo giấy phép CC BY-SA) |
+- Trang chủ, đăng nhập, đăng ký, quên/đặt lại mật khẩu và xác minh email.
+- Tổng quan; lộ trình HSK; chi tiết bài học; flashcard; thư viện từ vựng.
+- Luyện nghe; ghi âm luyện phát âm; mẫu câu/ngữ pháp từ ví dụ trong thư viện.
+- Kiểm tra từ vựng HSK và xem kết quả đã nộp trong tab hiện tại.
+- Tiến độ, huy hiệu, tài khoản, cài đặt và nguồn học liệu.
 
-## Ghi chú
+Không dùng mock data. Các màn riêng tư cần backend và tài khoản hợp lệ. Chưa có API cho bài giảng ngữ pháp riêng, đề HSK đầy đủ, chấm điểm phát âm, lịch sử thi hoặc gói trả phí; giao diện thể hiện đúng phạm vi hiện có.
 
-- Auth dùng **cookie HttpOnly** do server đặt; client không đọc token, chỉ gọi
-  `/users/me` để biết trạng thái. `lib/api.ts` tự gọi `/auth/refresh` một lần khi gặp 401.
-- Client và server phải cùng host (`localhost`) ở dev để cookie `Domain=localhost` được gửi kèm.
+```bash
+npm run lint
+npm run build
+npm start
+```
 
-## Giao diện
-
-Thiết kế sáng riêng cho Hanni, thích ứng desktop và điện thoại. Xem
-[tài liệu giao diện, các commit và ảnh xem trước](docs/giao-dien.md).
-Đợt này không bổ sung dữ liệu từ vựng; các trang đã có trạng thái trống để nối dữ liệu sau.
+Xem [tài liệu giao diện, phạm vi API, favicon và ảnh xem trước](docs/giao-dien.md).

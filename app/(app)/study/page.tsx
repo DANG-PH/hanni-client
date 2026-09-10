@@ -24,11 +24,10 @@ interface Item {
   isNew: boolean;
 }
 
-function StudyInner() {
+function StudyInner({ lessonId }: { lessonId: string | null }) {
   const { user, loading } = useRequireAuth();
-  const lessonId = useSearchParams().get("lesson");
   const lesson = useLesson(lessonId);
-  const path = useLearnPath();
+  const path = useLearnPath(lesson.data?.lesson.hskLevel);
 
   const [phase, setPhase] = useState<Phase>("loading");
   const [items, setItems] = useState<Item[]>([]);
@@ -271,10 +270,15 @@ function StudyInner() {
   );
 }
 
+function StudySession() {
+  const lessonId = useSearchParams().get("lesson");
+  return <StudyInner key={lessonId ?? "review"} lessonId={lessonId} />;
+}
+
 export default function StudyPage() {
   return (
     <Suspense fallback={<Spinner />}>
-      <StudyInner />
+      <StudySession />
     </Suspense>
   );
 }

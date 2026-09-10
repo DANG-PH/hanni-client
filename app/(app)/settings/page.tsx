@@ -1,198 +1,372 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useState, type FormEvent } from "react";
 import useSWR from "swr";
 import { Button, Card, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { api, apiFetch } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { TIMEZONES, detectTimezone } from "@/lib/timezones";
-import type { UserSettings } from "@/lib/types";
+import type { Me, UserSettings } from "@/lib/types";
 
 export default function SettingsPage() {
   const { user, loading, refresh } = useRequireAuth();
   const { data, mutate, error } = useSWR<UserSettings>(
-    "/users/me/settings",
-    (p: string) => apiFetch<UserSettings>(p),
+    user ? "/users/me/settings" : null,
+    (path: string) => apiFetch<UserSettings>(path),
   );
-  const [form, setForm] = useState<UserSettings | null>(null);
-  const [tz, setTz] = useState("");
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    if (data) setForm(data);
-  }, [data]);
-  useEffect(() => {
-    if (user) setTz(user.timezone);
-  }, [user]);
 
   if (loading || !user) return <Spinner />;
-  if (error)
-    return (
-      <div className="page-wrap">
+  return (
+    <div className="page-wrap space-y-7">
+      <PageHeading
+        eyebrow="NHỊP HỌC CỦA BẠN"
+        title="Cài đặt học tập"
+        description="Một mục tiêu vừa sức, một thói quen bền lâu."
+      >
+        <Link
+          href="/account"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-primary"
+        >
+          <Icon name="back" size={16} />
+          Tài khoản của tôi
+        </Link>
+      </PageHeading>
+      {error && !data ? (
         <ErrorNote>
           Chưa tải được cài đặt.{" "}
-          <button className="underline" onClick={() => void mutate()}>
+          <button
+            className="font-semibold underline"
+            onClick={() => void mutate()}
+          >
             Thử lại
           </button>
         </ErrorNote>
-      </div>
-    );
-  if (!form) return <Spinner />;
+      ) : !data ? (
+        <Spinner />
+      ) : (
+        <SettingsForm
+          key={user.id}
+          user={user}
+          initialSettings={data}
+          onSaved={async (next) => {
+            await mutate(next, { revalidate: false });
+          }}
+          refreshUser={refresh}
+        />
+      )}
+    </div>
+  );
+}
 
-  function upd<K extends keyof UserSettings>(k: K, v: UserSettings[K]) {
-    setForm((f) => (f ? { ...f, [k]: v } : f));
+function SettingsForm({
+  user,
+  initialSettings,
+  onSaved,
+  refreshUser,
+}: {
+  user: Me;
+  initialSettings: UserSettings;
+  onSaved: (settings: UserSettings) => Promise<void>;
+  refreshUser: () => Promise<void>;
+}) {
+  const [form, setForm] = useState(initialSettings);
+  const [timezone, setTimezone] = useState(user.timezone);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
+
+  function update<K extends keyof UserSettings>(
+    key: K,
+    value: UserSettings[K],
+  ) {
+    setForm((current) => ({ ...current, [key]: value }));
+    setSaved(false);
   }
 
-  async function save() {
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (saving) return;
+    setSaveError("");
     setSaved(false);
-    const next = await api.patch<UserSettings>("/users/me/settings", {
-      dailyGoalType: form!.dailyGoalType,
-      dailyGoalValue: form!.dailyGoalValue,
-      newCardsPerDay: form!.newCardsPerDay,
-      srsScheduler: form!.srsScheduler,
-      targetRetention: form!.targetRetention,
-    });
-    await mutate(next, { revalidate: false });
-    if (tz && tz !== user!.timezone) {
-      await api.patch("/users/me", { timezone: tz });
-      await refresh();
+    if (
+      !Number.isInteger(form.dailyGoalValue) ||
+      form.dailyGoalValue < 1 ||
+      !Number.isInteger(form.newCardsPerDay) ||
+      form.newCardsPerDay < 0
+    ) {
+      setSaveError(
+        "Mục tiêu cần là số nguyên lớn hơn 0; số từ mới không được âm.",
+      );
+      return;
     }
-    setSaved(true);
+    setSaving(true);
+    try {
+      const next = await api.patch<UserSettings>("/users/me/settings", {
+        dailyGoalType: form.dailyGoalType,
+        dailyGoalValue: form.dailyGoalValue,
+        newCardsPerDay: form.newCardsPerDay,
+        srsScheduler: form.srsScheduler,
+        targetRetention: form.targetRetention,
+      });
+      setForm(next);
+      await onSaved(next);
+      if (timezone && timezone !== user.timezone) {
+        await api.patch("/users/me", { timezone });
+      }
+      await refreshUser();
+      setSaved(true);
+    } catch {
+      setSaveError(
+        "Chưa lưu được đầy đủ thay đổi. Vui lòng kiểm tra kết nối và thử lại.",
+      );
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
-    <div className="page-wrap max-w-4xl! space-y-6">
-      <PageHeading
-        eyebrow="GÓC NHỎ CỦA RIÊNG BẠN"
-        title="Cài đặt học tập"
-        description="Chọn một nhịp học thoải mái để duy trì lâu dài."
-      />
-      <div className="grid items-start gap-5 md:grid-cols-2">
-        <Card className="space-y-4">
-          <h2 className="flex items-center gap-2 font-semibold">
-            <Icon name="target" className="text-primary" />
-            Mục tiêu hằng ngày
-          </h2>
-          <p className="text-sm leading-6 text-muted">
-            Bắt đầu vừa sức, tăng dần khi bạn đã quen.
-          </p>
-          <div className="flex gap-2">
-            {(["WORDS", "MINUTES"] as const).map((t) => (
-              <button
-                key={t}
-                onClick={() => upd("dailyGoalType", t)}
-                className={`rounded-lg px-3 py-1.5 text-sm ${
-                  form.dailyGoalType === t
-                    ? "bg-primary text-primary-fg"
-                    : "bg-surface-2"
-                }`}
-              >
-                {t === "WORDS" ? "Số từ ôn" : "Số phút"}
-              </button>
-            ))}
-          </div>
-          <label className="block text-sm">
-            Mục tiêu / ngày
-            <input
-              type="number"
-              min={1}
-              value={form.dailyGoalValue}
-              onChange={(e) => upd("dailyGoalValue", Number(e.target.value))}
-              className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
-            />
-          </label>
-          <label className="block text-sm">
-            Từ mới / ngày
-            <input
-              type="number"
-              min={0}
-              value={form.newCardsPerDay}
-              onChange={(e) => upd("newCardsPerDay", Number(e.target.value))}
-              className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
-            />
-          </label>
-        </Card>
-
-        <Card className="space-y-4">
-          <h2 className="flex items-center gap-2 font-semibold">
-            <Icon name="cards" className="text-primary" />
-            Cách sắp lịch ôn
-          </h2>
-          <p className="text-sm leading-6 text-muted">
-            Giúp bạn gặp lại từ vựng vào thời điểm phù hợp.
-          </p>
-          <div className="flex gap-2">
-            {(["sm2", "fsrs"] as const).map((s) => (
-              <button
-                key={s}
-                onClick={() => upd("srsScheduler", s)}
-                className={`rounded-lg px-3 py-1.5 text-sm ${
-                  form.srsScheduler === s
-                    ? "bg-primary text-primary-fg"
-                    : "bg-surface-2"
-                }`}
-              >
-                {s === "sm2" ? "SM-2 (kiểu Anki)" : "FSRS"}
-              </button>
-            ))}
-          </div>
-          {form.srsScheduler === "fsrs" && (
-            <label className="block text-sm">
-              Tỷ lệ nhớ mục tiêu: {Math.round(form.targetRetention * 100)}%
-              <input
-                type="range"
-                min={0.8}
-                max={0.97}
-                step={0.01}
-                value={form.targetRetention}
-                onChange={(e) => upd("targetRetention", Number(e.target.value))}
-                className="mt-1 w-full"
-              />
-            </label>
-          )}
-        </Card>
-
-        <Card className="space-y-3">
-          <h2 className="font-semibold">Múi giờ học tập</h2>
-          <div className="flex flex-wrap items-center gap-2">
-            <select
-              aria-label="Chọn múi giờ"
-              value={
-                TIMEZONES.some((t) => t.value === tz) ? tz : "__other__"
-              }
-              onChange={(e) => setTz(e.target.value)}
-              className="field flex-1"
-            >
-              {!TIMEZONES.some((t) => t.value === tz) && tz && (
-                <option value={tz}>{tz} (hiện tại)</option>
-              )}
-              {TIMEZONES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label} — {t.value}
-                </option>
+    <form
+      onSubmit={(event) => void save(event)}
+      className="grid items-start gap-6 lg:grid-cols-[1fr_280px]"
+    >
+      <div className="space-y-5">
+        <fieldset disabled={saving} className="space-y-5 disabled:opacity-70">
+          <Card>
+            <div className="mb-6 flex items-start gap-3">
+              <span className="icon-tile">
+                <Icon name="target" />
+              </span>
+              <div>
+                <h2 className="font-semibold">Mục tiêu hằng ngày</h2>
+                <p className="mt-1 text-sm text-muted">
+                  Chọn nhịp học phù hợp với thời gian của bạn.
+                </p>
+              </div>
+            </div>
+            <div className="mb-5 grid grid-cols-2 gap-3">
+              {(["WORDS", "MINUTES"] as const).map((type) => (
+                <button
+                  type="button"
+                  key={type}
+                  aria-pressed={form.dailyGoalType === type}
+                  onClick={() => update("dailyGoalType", type)}
+                  className={`motion-button flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium ${form.dailyGoalType === type ? "border-primary/35 bg-primary/5 text-primary" : "border-border bg-surface text-muted hover:bg-surface-2"}`}
+                >
+                  <Icon name={type === "WORDS" ? "cards" : "clock"} size={17} />
+                  {type === "WORDS" ? "Theo số từ ôn" : "Theo số phút"}
+                </button>
               ))}
-            </select>
-            <button
-              type="button"
-              onClick={() => {
-                const d = detectTimezone();
-                if (d) setTz(d);
-              }}
-              className="rounded-xl bg-surface-2 px-3 py-2.5 text-sm font-medium text-muted hover:text-foreground"
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <label className="block text-sm font-medium">
+                Mục tiêu mỗi ngày{" "}
+                <span className="font-normal text-muted">
+                  ({form.dailyGoalType === "WORDS" ? "từ" : "phút"})
+                </span>
+                <input
+                  required
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={form.dailyGoalValue}
+                  onChange={(event) =>
+                    update("dailyGoalValue", Number(event.target.value))
+                  }
+                  className="field mt-2"
+                />
+              </label>
+              <label className="block text-sm font-medium">
+                Số từ mới mỗi ngày
+                <input
+                  required
+                  type="number"
+                  min={0}
+                  step={1}
+                  value={form.newCardsPerDay}
+                  onChange={(event) =>
+                    update("newCardsPerDay", Number(event.target.value))
+                  }
+                  className="field mt-2"
+                />
+                <span className="mt-2 block text-xs font-normal text-muted">
+                  Đặt bằng 0 nếu bạn chỉ muốn ôn từ đã học.
+                </span>
+              </label>
+            </div>
+          </Card>
+
+          <Card>
+            <div className="mb-5 flex items-start gap-3">
+              <span className="icon-tile">
+                <Icon name="refresh" />
+              </span>
+              <div>
+                <h2 className="font-semibold">Cách sắp lịch ôn</h2>
+                <p className="mt-1 text-sm text-muted">
+                  Gặp lại từ vựng vào thời điểm phù hợp.
+                </p>
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {(
+                [
+                  {
+                    value: "sm2",
+                    title: "Tiêu chuẩn",
+                    description: "Ôn tập theo mức độ ghi nhớ sau mỗi lượt học.",
+                  },
+                  {
+                    value: "fsrs",
+                    title: "Linh hoạt",
+                    description:
+                      "Điều chỉnh lịch ôn theo tỷ lệ nhớ bạn mong muốn.",
+                  },
+                ] as const
+              ).map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  aria-pressed={form.srsScheduler === option.value}
+                  onClick={() => update("srsScheduler", option.value)}
+                  className={`motion-button rounded-xl border p-4 text-left ${form.srsScheduler === option.value ? "border-primary/35 bg-primary/5" : "border-border hover:bg-surface-2"}`}
+                >
+                  <span className="flex items-center justify-between text-sm font-semibold">
+                    {option.title}
+                    <span
+                      className={`flex h-5 w-5 items-center justify-center rounded-full border ${form.srsScheduler === option.value ? "border-primary bg-primary text-primary-fg" : "border-border"}`}
+                    >
+                      {form.srsScheduler === option.value && (
+                        <Icon name="check" size={12} />
+                      )}
+                    </span>
+                  </span>
+                  <span className="mt-2 block text-xs leading-5 text-muted">
+                    {option.description}
+                  </span>
+                </button>
+              ))}
+            </div>
+            {form.srsScheduler === "fsrs" && (
+              <label className="mt-6 block text-sm">
+                <span className="flex justify-between gap-2">
+                  <span>Tỷ lệ ghi nhớ mong muốn</span>
+                  <strong className="text-primary">
+                    {Math.round(form.targetRetention * 100)}%
+                  </strong>
+                </span>
+                <input
+                  type="range"
+                  min={0.8}
+                  max={0.97}
+                  step={0.01}
+                  value={form.targetRetention}
+                  onChange={(event) =>
+                    update("targetRetention", Number(event.target.value))
+                  }
+                  className="mt-4 w-full accent-primary"
+                />
+                <span className="mt-2 block text-xs leading-5 text-muted">
+                  Tỷ lệ càng cao, bạn sẽ gặp lại từ thường xuyên hơn.
+                </span>
+              </label>
+            )}
+          </Card>
+
+          <Card>
+            <div className="mb-5 flex items-start gap-3">
+              <span className="icon-tile">
+                <Icon name="clock" />
+              </span>
+              <div>
+                <h2 className="font-semibold">Múi giờ học tập</h2>
+                <p className="mt-1 text-sm text-muted">
+                  Dùng để tính ngày học và chuỗi ngày liên tiếp.
+                </p>
+              </div>
+            </div>
+            <label
+              htmlFor="study-timezone"
+              className="mb-2 block text-sm font-medium"
             >
-              Tự phát hiện
-            </button>
-          </div>
-          <p className="text-xs text-muted">
-            Chuỗi streak và “ngày học” được tính theo múi giờ này.
+              Múi giờ của bạn
+            </label>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <select
+                id="study-timezone"
+                required
+                value={timezone}
+                onChange={(event) => {
+                  setTimezone(event.target.value);
+                  setSaved(false);
+                }}
+                className="field min-w-0 flex-1"
+              >
+                {!TIMEZONES.some((item) => item.value === timezone) && (
+                  <option value={timezone}>{timezone || "Chọn múi giờ"}</option>
+                )}
+                {TIMEZONES.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label} — {item.value}
+                  </option>
+                ))}
+              </select>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  const detected = detectTimezone();
+                  if (detected) {
+                    setTimezone(detected);
+                    setSaved(false);
+                  }
+                }}
+              >
+                Tự phát hiện
+              </Button>
+            </div>
+          </Card>
+        </fieldset>
+        {saveError && <ErrorNote>{saveError}</ErrorNote>}
+        <div className="flex flex-wrap items-center gap-4 border-t border-border pt-5">
+          <Button type="submit" disabled={saving}>
+            <Icon
+              name={saving ? "refresh" : "check"}
+              size={17}
+              className={saving ? "animate-spin" : ""}
+            />
+            {saving ? "Đang lưu…" : "Lưu thay đổi"}
+          </Button>
+          {saved && (
+            <p
+              role="status"
+              className="flex items-center gap-1.5 text-sm text-good"
+            >
+              <Icon name="check" size={16} />
+              Đã lưu cài đặt của bạn
+            </p>
+          )}
+        </div>
+      </div>
+      <aside className="space-y-4 lg:sticky lg:top-24">
+        <Card className="border-primary/15 bg-primary/5!">
+          <Icon name="spark" className="mb-4 text-primary" size={25} />
+          <h2 className="font-semibold">Đều đặn là đủ tốt</h2>
+          <p className="mt-3 text-sm leading-6 text-muted">
+            Bắt đầu với một mục tiêu nhỏ. Khi việc học đã trở thành thói quen,
+            bạn có thể quay lại đây để tăng dần nhịp học.
           </p>
+          <Link
+            href="/progress"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary"
+          >
+            Xem tiến độ của tôi <Icon name="arrow" size={16} />
+          </Link>
         </Card>
-      </div>
-      <div className="flex items-center gap-3 border-t border-border pt-6">
-        <Button onClick={() => void save()}>Lưu thay đổi</Button>
-        {saved && <span className="text-sm text-good">Đã lưu ✓</span>}
-      </div>
-    </div>
+        <p className="px-2 text-xs leading-5 text-muted">
+          Cài đặt được lưu vào tài khoản để áp dụng cho những lần học tiếp theo.
+        </p>
+      </aside>
+    </form>
   );
 }

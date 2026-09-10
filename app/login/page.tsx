@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import { AuthShell } from "@/components/auth-shell";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { safeNextPath } from "@/lib/auth-redirect";
+import { Spinner } from "@/components/ui";
+import { Suspense, useEffect, useState } from "react";
 import { Button, Card, ErrorNote } from "@/components/ui";
 import { GoogleButton } from "@/components/google-button";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
-export default function LoginPage() {
+function LoginContent() {
+  const next = safeNextPath(useSearchParams().get("next"));
   const { user, loading, refresh } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -18,8 +21,8 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) router.replace("/dashboard");
-  }, [loading, user, router]);
+    if (!loading && user) router.replace(next);
+  }, [loading, user, router, next]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,7 +31,7 @@ export default function LoginPage() {
     try {
       await api.post("/auth/login", { email, password });
       await refresh();
-      router.replace("/dashboard");
+      router.replace(next);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Không đăng nhập được");
     } finally {
@@ -45,7 +48,7 @@ export default function LoginPage() {
         <GoogleButton
           onSuccess={async () => {
             await refresh();
-            router.replace("/dashboard");
+            router.replace(next);
           }}
         />
         {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
@@ -86,11 +89,22 @@ export default function LoginPage() {
           <Link href="/forgot-password" className="hover:text-foreground">
             Quên mật khẩu?
           </Link>
-          <Link href="/register" className="hover:text-foreground">
+          <Link
+            href={`/register?next=${encodeURIComponent(next)}`}
+            className="hover:text-foreground"
+          >
             Tạo tài khoản
           </Link>
         </div>
       </Card>
     </AuthShell>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <LoginContent />
+    </Suspense>
   );
 }
