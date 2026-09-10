@@ -44,7 +44,8 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 
 ## Trạng thái hiện tại
 Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard + quiz, duyệt từ vựng,
-tiến độ, huy hiệu, cài đặt, học qua video. Chưa làm (roadmap): RAG chatbot, minigame, bảng xếp hạng.
+tiến độ, huy hiệu, cài đặt, học qua video, ngữ pháp (điểm ngữ pháp HSK 1–3), kiểm tra HSK
+(có lưu lịch sử). Chưa làm (roadmap): RAG chatbot, minigame, bảng xếp hạng.
 
 **PWA** (`docs/pwa.md`): manifest + service worker (chỉ cache màn mất mạng), trang `/install`,
 thẻ cài trong `/settings`, popup mời cài nổi góc phải dưới (`components/pwa/`). Test: `npm run test:pwa`.
