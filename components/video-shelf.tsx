@@ -46,7 +46,7 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
   if (isLoading || videos.length === 0) return null;
 
   return (
-    <section className="reveal overflow-hidden rounded-3xl border border-border bg-[linear-gradient(180deg,#f1fbf6,#ffffff)] p-5 sm:p-6">
+    <section className="reveal overflow-hidden tint-good rounded-3xl border border-border p-5 sm:p-6">
       <div className="mb-4 flex flex-wrap items-center gap-2.5">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-good/15 text-good">
           <Icon name="play" size={20} />

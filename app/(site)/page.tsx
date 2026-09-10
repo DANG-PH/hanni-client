@@ -93,7 +93,7 @@ export default function Home() {
               <span className="h-1.5 w-1.5 rounded-full bg-primary" /> MỖI NGÀY
               MỘT CHÚT TIẾNG TRUNG
             </span>
-            <h1 className="mt-5 text-4xl leading-[1.22] font-bold tracking-tight sm:text-5xl lg:text-[54px]">
+            <h1 className="mt-5 text-[34px] font-extrabold leading-[1.12] tracking-tight sm:text-5xl lg:text-[56px]">
               Học thêm mỗi ngày.
               <br />
               <span className="text-primary">Tự tin thêm một chút.</span>
@@ -118,6 +118,23 @@ export default function Home() {
               <Icon name="check" size={15} className="text-good" /> Học theo
               nhịp của bạn · Lưu từng bước tiến
             </p>
+            <ul className="reveal mt-6 flex flex-wrap gap-2.5">
+              {[
+                { n: "10.900+", t: "từ vựng có audio" },
+                { n: "9 cấp", t: "HSK 3.0 · 731 bài" },
+                { n: "8 video", t: "phụ đề chạy đồng bộ" },
+              ].map((f) => (
+                <li
+                  key={f.t}
+                  className="rounded-xl border border-primary/15 bg-surface/70 px-3 py-2 backdrop-blur"
+                >
+                  <span className="block text-sm font-bold text-primary">
+                    {f.n}
+                  </span>
+                  <span className="block text-[11px] text-muted">{f.t}</span>
+                </li>
+              ))}
+            </ul>
           </div>
           <StudyArtwork />
         </div>

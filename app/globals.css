@@ -985,3 +985,32 @@ body:has(.mobile-drawer[open]) {
     font-size: 8px;
   }
 }
+
+/* ===== Nền tô nhẹ theo token (tự đổi sáng/tối) ===== */
+.tint-primary {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary) 7%, var(--surface)),
+    var(--surface)
+  );
+}
+.tint-good {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--good) 9%, var(--surface)),
+    var(--surface)
+  );
+}
+.tint-hero {
+  background:
+    radial-gradient(
+      90% 120% at 88% 12%,
+      color-mix(in srgb, var(--primary) 16%, transparent),
+      transparent 58%
+    ),
+    linear-gradient(
+      115deg,
+      color-mix(in srgb, var(--primary) 8%, var(--surface)) 0%,
+      var(--surface) 62%
+    );
+}

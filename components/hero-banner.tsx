@@ -19,7 +19,7 @@ export function HeroBanner({
   ctaHref: string;
 }) {
   return (
-    <section className="reveal relative isolate overflow-hidden rounded-3xl border border-primary/15 bg-[linear-gradient(115deg,#fff2ef_0%,#fff8f2_45%,#ffffff_100%)] p-6 shadow-sm shadow-primary/5 sm:p-9 lg:min-h-[340px] lg:p-11">
+    <section className="reveal relative isolate overflow-hidden tint-hero rounded-3xl border border-primary/15 p-6 shadow-sm shadow-primary/5 sm:p-9 lg:min-h-[340px] lg:p-11">
       <div className="relative z-10 max-w-lg lg:max-w-[58%]">
         <p className="eyebrow mb-4 flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -44,7 +44,7 @@ export function HeroBanner({
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 right-0 -z-10 hidden w-[42%] select-none items-center justify-center overflow-hidden border-l border-primary/10 bg-[radial-gradient(120%_120%_at_80%_20%,rgba(220,53,38,0.16),transparent_60%)] lg:flex"
+        className="pointer-events-none absolute inset-y-0 right-0 -z-10 hidden w-[42%] select-none items-center justify-center overflow-hidden border-l border-primary/10 bg-primary/[0.06] lg:flex"
       >
         <div className="absolute -right-16 -top-24 h-64 w-64 rounded-full border border-primary/10" />
         <div className="absolute -bottom-28 -left-12 h-72 w-72 rounded-full border border-primary/10" />

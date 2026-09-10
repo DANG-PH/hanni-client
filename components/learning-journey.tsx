@@ -78,7 +78,7 @@ export function LearningJourney() {
   return (
     <section
       aria-label="Lộ trình học tiếng Trung"
-      className="reveal relative overflow-hidden rounded-3xl border border-primary/12 bg-[linear-gradient(180deg,#fff5f3,#ffffff)] p-5 sm:p-7"
+      className="reveal relative overflow-hidden tint-primary rounded-3xl border border-primary/12 p-5 sm:p-7"
     >
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -130,7 +130,7 @@ export function LearningJourney() {
             >
               <span
                 className={`mb-3 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white ${
-                  s.accent === "red" ? "bg-primary" : "bg-[#e0952b]"
+                  s.accent === "red" ? "bg-primary" : "bg-[#b5761b]"
                 }`}
               >
                 {s.n}
