@@ -52,24 +52,48 @@ export default function WatchDetailPage() {
 
   const [showPinyin, setShowPinyin] = useState(true);
   const [showTrans, setShowTrans] = useState(true);
-  const [showCaption, setShowCaption] = useState(true);
-  const [autoScroll, setAutoScroll] = useState(true);
+  const [showCaption, setShowCaption] = useState(false);
   const [active, setActive] = useState<number | null>(null);
   const [readMax, setReadMax] = useState(0);
   const seekRef = useRef<((s: number) => void) | null>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const savedAt = useRef(0);
   const activeRef = useRef(0);
   const readRef = useRef(0);
-  const autoScrollRef = useRef(true);
-  useEffect(() => {
-    autoScrollRef.current = autoScroll;
-  }, [autoScroll]);
+
+  // Máy nhắc chữ: khung tiêu điểm cố định giữa panel, chữ trượt lên qua nó.
+  const [vpH, setVpH] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [frame, setFrame] = useState({ top: 0, height: 72 });
 
   const times = useMemo(
     () => (data ? computeTimes(data.lines) : []),
     [data],
   );
+
+  useEffect(() => {
+    const vp = viewportRef.current;
+    if (!vp) return;
+    const measure = () => setVpH(vp.clientHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(vp);
+    return () => ro.disconnect();
+  }, [data]);
+
+  // Căn câu đang phát vào khung tiêu điểm (giữa panel).
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || !vpH) return;
+    const el = track.querySelector<HTMLElement>(
+      `[data-idx="${active ?? 1}"]`,
+    );
+    if (!el) return;
+    const center = el.offsetTop + el.offsetHeight / 2;
+    setOffset(Math.max(0, center - vpH / 2));
+    setFrame({ top: vpH / 2 - el.offsetHeight / 2, height: el.offsetHeight });
+  }, [active, vpH, showPinyin, showTrans, data]);
 
   const saveProgress = useCallback(
     (index: number, read: number, force = false) => {
@@ -87,18 +111,13 @@ export default function WatchDetailPage() {
   );
 
   const goToLine = useCallback(
-    (lineIndex: number, scroll: boolean) => {
+    (lineIndex: number) => {
       if (lineIndex === activeRef.current) return;
       activeRef.current = lineIndex;
       setActive(lineIndex);
       const nextRead = Math.max(readRef.current, lineIndex);
       readRef.current = nextRead;
       setReadMax(nextRead);
-      if (scroll) {
-        panelRef.current
-          ?.querySelector(`[data-idx="${lineIndex}"]`)
-          ?.scrollIntoView({ block: "center", behavior: "smooth" });
-      }
       saveProgress(lineIndex, nextRead);
     },
     [saveProgress],
@@ -112,7 +131,7 @@ export default function WatchDetailPage() {
         if (times[i] <= t + 0.2) idx = i;
         else break;
       }
-      if (idx >= 0) goToLine(idx + 1, autoScrollRef.current);
+      if (idx >= 0) goToLine(idx + 1);
     },
     [times, goToLine],
   );
@@ -210,33 +229,24 @@ export default function WatchDetailPage() {
               seekRef={seekRef}
               onTick={onTick}
             />
+            {/* Overlay đặt cao hơn thanh điều khiển YouTube (~48px) để không che nút tua. */}
             {showCaption && activeLine && (
-              <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 rounded-xl bg-black/70 px-4 py-2.5 text-center backdrop-blur-sm">
-                <p className="hanzi text-lg leading-snug text-white sm:text-xl">
+              <div className="pointer-events-none absolute inset-x-4 bottom-16 z-10 rounded-lg bg-black/65 px-3 py-2 text-center">
+                <p className="hanzi text-base leading-snug text-white sm:text-lg">
                   {activeLine.zh}
                 </p>
                 {showTrans && activeLine.vi && (
-                  <p className="mt-0.5 text-xs text-white/80 sm:text-sm">
-                    {activeLine.vi}
-                  </p>
+                  <p className="mt-0.5 text-xs text-white/80">{activeLine.vi}</p>
                 )}
               </div>
             )}
-          </div>
-          <div className="flex items-center gap-2 text-xs text-muted">
-            <button
-              onClick={() => setShowCaption((v) => !v)}
-              className={chip(showCaption)}
-            >
-              Phụ đề trên video
-            </button>
           </div>
           {data.description && (
             <p className="text-sm leading-6 text-muted">{data.description}</p>
           )}
         </div>
 
-        <div className="panel flex max-h-[72vh] flex-col overflow-hidden">
+        <div className="panel flex h-[62vh] flex-col overflow-hidden lg:h-[72vh]">
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
             <span className="text-xs font-bold tracking-wide">BẢN CHÉP</span>
             <button
@@ -252,27 +262,45 @@ export default function WatchDetailPage() {
               Dịch
             </button>
             <button
-              onClick={() => setAutoScroll((v) => !v)}
-              className={chip(autoScroll)}
-              title="Tự cuộn theo lời nói"
+              onClick={() => setShowCaption((v) => !v)}
+              className={chip(showCaption)}
+              title="Hiện phụ đề đè lên video"
             >
-              Tự cuộn
+              Phụ đề video
             </button>
             <span className="ml-auto w-9 text-right text-xs font-semibold text-muted">
               {pct}%
             </span>
           </div>
-          <div ref={panelRef} className="flex-1 space-y-1 overflow-y-auto p-2">
-            {data.lines.map((l) => (
-              <TranscriptLine
-                key={l.id}
-                line={l}
-                active={active === l.index}
-                showPinyin={showPinyin}
-                showTrans={showTrans}
-                onSelect={() => selectLine(l.index)}
-              />
-            ))}
+
+          <div ref={viewportRef} className="relative flex-1 overflow-hidden">
+            {/* Khung tiêu điểm cố định — chữ trượt vào đây, khung không di chuyển. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-2 z-0 rounded-xl border border-primary/25 bg-primary/[0.06] transition-all duration-300"
+              style={{ top: frame.top, height: frame.height }}
+            />
+            <div
+              ref={trackRef}
+              className="relative z-10 will-change-transform"
+              style={{
+                transform: `translateY(${-offset}px)`,
+                transition: "transform 480ms cubic-bezier(0.22, 1, 0.36, 1)",
+              }}
+            >
+              <div style={{ height: vpH / 2 }} />
+              {data.lines.map((l) => (
+                <TranscriptLine
+                  key={l.id}
+                  line={l}
+                  active={active === l.index}
+                  showPinyin={showPinyin}
+                  showTrans={showTrans}
+                  onSelect={() => selectLine(l.index)}
+                />
+              ))}
+              <div style={{ height: vpH / 2 }} />
+            </div>
           </div>
         </div>
       </div>

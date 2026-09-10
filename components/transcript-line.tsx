@@ -20,14 +20,18 @@ export function TranscriptLine({
     <button
       data-idx={line.index}
       onClick={onSelect}
-      className={`w-full scroll-mt-4 rounded-xl border px-4 py-3 text-left transition-colors ${
+      className={`block w-full px-4 py-3 text-left transition-all duration-300 ${
         active
-          ? "border-primary/40 bg-primary/8"
-          : "border-transparent hover:bg-surface-2"
+          ? "opacity-100"
+          : "opacity-45 hover:opacity-80"
       }`}
     >
       <div className="flex gap-3">
-        <span className="mt-1 shrink-0 text-[11px] font-semibold text-muted">
+        <span
+          className={`mt-1 shrink-0 text-[11px] font-semibold ${
+            active ? "text-primary" : "text-muted"
+          }`}
+        >
           #{line.index}
         </span>
         <div className="min-w-0">
@@ -36,13 +40,23 @@ export function TranscriptLine({
               zh={line.zh}
               pinyin={line.pinyin}
               pinyinNum={line.pinyinNum}
-              size="sm"
+              size={active ? "base" : "sm"}
             />
           ) : (
-            <p className="hanzi text-xl leading-relaxed">{line.zh}</p>
+            <p
+              className={`hanzi leading-relaxed ${
+                active ? "text-2xl" : "text-xl"
+              }`}
+            >
+              {line.zh}
+            </p>
           )}
           {showTrans && line.vi && (
-            <p className="mt-1.5 text-sm italic leading-6 text-muted">
+            <p
+              className={`mt-1.5 italic leading-6 ${
+                active ? "text-[15px] text-foreground" : "text-sm text-muted"
+              }`}
+            >
               {line.vi}
             </p>
           )}
