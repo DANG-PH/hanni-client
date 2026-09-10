@@ -4,21 +4,13 @@ import { ProgressBar } from "./ui";
 import type { LevelBucket } from "@/lib/types";
 
 export function LevelCard({ level }: { level: LevelBucket }) {
-  const tone =
-    level.level <= 3
-      ? "text-primary bg-primary/8"
-      : level.level <= 6
-        ? "text-accent bg-accent/8"
-        : "text-lavender bg-lavender/8";
   return (
     <Link
       href={`/vocabulary?level=${level.level}`}
       className="reveal hover-card panel group block p-5 transition-colors hover:border-primary/40"
     >
       <div className="flex items-start justify-between">
-        <span
-          className={`flex h-12 w-12 items-center justify-center rounded-2xl text-lg font-semibold ${tone}`}
-        >
+        <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-primary/10 bg-primary/5 text-lg font-semibold text-primary">
           {String(level.level).padStart(2, "0")}
         </span>
         <span className="rounded-lg bg-surface-2 px-2 py-1 text-[11px] text-muted">
@@ -38,7 +30,7 @@ export function LevelCard({ level }: { level: LevelBucket }) {
           {level.learned} / {level.totalWords} từ đã thuộc
         </span>
         <span className="font-medium text-primary">
-          {level.percentComplete}%
+          {Math.round(level.percentComplete)}%
         </span>
       </div>
       <ProgressBar
@@ -49,11 +41,9 @@ export function LevelCard({ level }: { level: LevelBucket }) {
         <span>
           {level.learning} đang học · {level.due} đến hạn
         </span>
-        <Icon
-          name="arrow"
-          size={17}
-          className="text-muted group-hover:text-primary"
-        />
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 text-muted transition-colors group-hover:bg-primary group-hover:text-primary-fg">
+          <Icon name="arrow" size={14} />
+        </span>
       </div>
     </Link>
   );

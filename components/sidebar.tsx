@@ -1,34 +1,63 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Icon, type IconName } from "./icon";
 
-const MAIN: { href: string; label: string; icon: IconName }[] = [
-  { href: "/dashboard", label: "Tổng quan", icon: "home" },
-  { href: "/learn", label: "Lộ trình học", icon: "route" },
-  { href: "/study", label: "Ôn tập", icon: "cards" },
-  { href: "/vocabulary", label: "Từ vựng", icon: "book" },
-  { href: "/progress", label: "Tiến độ", icon: "chart" },
-  { href: "/achievements", label: "Huy hiệu", icon: "trophy" },
+export const NAV_GROUPS: {
+  title: string;
+  links: { href: string; label: string; icon: IconName }[];
+}[] = [
+  {
+    title: "KHÔNG GIAN HỌC TẬP",
+    links: [
+      { href: "/dashboard", label: "Tổng quan", icon: "home" },
+      { href: "/learn", label: "Lộ trình HSK", icon: "route" },
+      { href: "/study", label: "Ôn tập flashcard", icon: "cards" },
+    ],
+  },
+  {
+    title: "LUYỆN TẬP MỖI NGÀY",
+    links: [
+      { href: "/vocabulary", label: "Từ vựng", icon: "book" },
+      { href: "/grammar", label: "Ngữ pháp & mẫu câu", icon: "cards" },
+      { href: "/listening", label: "Luyện nghe", icon: "headphones" },
+      { href: "/pronunciation", label: "Luyện phát âm", icon: "mic" },
+      { href: "/exams", label: "Kiểm tra HSK", icon: "target" },
+    ],
+  },
+  {
+    title: "HÀNH TRÌNH CỦA BẠN",
+    links: [
+      { href: "/progress", label: "Tiến độ học tập", icon: "chart" },
+      { href: "/achievements", label: "Huy hiệu", icon: "trophy" },
+      { href: "/account", label: "Tài khoản", icon: "user" },
+      { href: "/settings", label: "Cài đặt", icon: "settings" },
+    ],
+  },
 ];
-
-const SOON = ["Luyện nghe", "Luyện nói", "Luyện thi HSK"];
 
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <span className="flex items-center gap-2.5">
-      <span className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-primary text-2xl text-primary-fg hanzi">
-        汉
-      </span>
+      <Image
+        src="/icon.svg"
+        alt=""
+        width={40}
+        height={40}
+        className="h-10 w-10 shrink-0 rounded-xl"
+        unoptimized
+      />
       {!compact && (
         <span className="leading-tight">
-          <span className="block text-lg font-bold tracking-tight">
+          <span className="block text-xl font-bold tracking-tight">
             Hanni<span className="text-primary">.</span>
           </span>
-          <span className="block text-[11px] text-muted">
-            Học tiếng Trung dễ dàng
+          <span className="mt-0.5 block text-[10px] text-muted">
+            Học tiếng Trung mỗi ngày
           </span>
         </span>
       )}
@@ -39,75 +68,77 @@ export function Brand({ compact = false }: { compact?: boolean }) {
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { logout } = useAuth();
-  const active = (href: string) =>
-    pathname === href || pathname.startsWith(href + "/");
-
+  const [busy, setBusy] = useState(false);
   return (
-    <div className="flex h-full flex-col gap-6 p-4">
-      <Link href="/dashboard" onClick={onNavigate} className="px-2 pt-2">
+    <div className="flex min-h-full flex-col p-4">
+      <Link
+        href="/"
+        onClick={onNavigate}
+        className="mb-7 px-2 pt-2"
+        aria-label="Hanni — trang chủ"
+      >
         <Brand />
       </Link>
-
-      <nav className="flex flex-col gap-1" aria-label="Điều hướng chính">
-        <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted">
-          Học tập
-        </p>
-        {MAIN.map((l) => (
+      <nav aria-label="Điều hướng học tập" className="space-y-5">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.title}>
+            <p className="mb-2 px-3 text-[9px] font-semibold tracking-[.12em] text-muted">
+              {group.title}
+            </p>
+            <div className="space-y-0.5">
+              {group.links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={onNavigate}
+                  aria-current={
+                    pathname === link.href ||
+                    pathname.startsWith(link.href + "/")
+                      ? "page"
+                      : undefined
+                  }
+                  className="nav-item text-[13px]!"
+                >
+                  <Icon name={link.icon} size={18} />
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
+      </nav>
+      <div className="mt-auto pt-6">
+        <div className="mb-4 rounded-xl border border-primary/10 bg-primary/4 px-3 py-3">
+          <p className="flex items-center gap-2 text-xs font-semibold text-primary">
+            <Icon name="spark" size={15} /> Một chút mỗi ngày
+          </p>
+          <p className="mt-1.5 text-[11px] leading-5 text-muted">
+            Mỗi từ bạn nhớ là một bước tiến.
+          </p>
+        </div>
+        <div className="border-t border-border pt-3">
           <Link
-            key={l.href}
-            href={l.href}
+            href="/nguon-du-lieu"
             onClick={onNavigate}
-            aria-current={active(l.href) ? "page" : undefined}
-            className="nav-item"
+            className="nav-item text-xs!"
           >
-            <Icon name={l.icon} size={18} />
-            {l.label}
+            Nguồn học liệu
+            <Icon name="arrow" size={14} className="ml-auto" />
           </Link>
-        ))}
-      </nav>
-
-      <nav className="flex flex-col gap-1">
-        <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted">
-          Tài khoản
-        </p>
-        <Link
-          href="/settings"
-          onClick={onNavigate}
-          aria-current={active("/settings") ? "page" : undefined}
-          className="nav-item"
-        >
-          <Icon name="settings" size={18} />
-          Cài đặt
-        </Link>
-        <button
-          onClick={() => void logout()}
-          className="nav-item w-full text-left"
-        >
-          <Icon name="logout" size={18} />
-          Đăng xuất
-        </button>
-      </nav>
-
-      <div className="mt-auto">
-        <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted">
-          Sắp có
-        </p>
-        {SOON.map((s) => (
-          <span
-            key={s}
-            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted/70"
+          <button
+            disabled={busy}
+            onClick={async () => {
+              setBusy(true);
+              await logout();
+              onNavigate?.();
+              setBusy(false);
+            }}
+            className="nav-item w-full text-left text-xs! disabled:opacity-50"
           >
-            <Icon name="lock" size={16} />
-            {s}
-          </span>
-        ))}
-        <Link
-          href="/nguon-du-lieu"
-          onClick={onNavigate}
-          className="mt-2 block px-3 text-xs text-muted hover:text-primary"
-        >
-          Nguồn dữ liệu
-        </Link>
+            <Icon name="logout" size={16} />
+            {busy ? "Đang đăng xuất…" : "Đăng xuất"}
+          </button>
+        </div>
       </div>
     </div>
   );

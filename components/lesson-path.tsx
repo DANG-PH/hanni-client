@@ -11,8 +11,8 @@ const STATUS_META: Record<
 > = {
   COMPLETED: { label: "Đã xong", tone: "bg-good/10 text-good" },
   IN_PROGRESS: { label: "Đang học", tone: "bg-primary/10 text-primary" },
-  AVAILABLE: { label: "Mở", tone: "bg-accent/10 text-accent" },
-  LOCKED: { label: "Khoá", tone: "bg-surface-2 text-muted" },
+  AVAILABLE: { label: "Sẵn sàng", tone: "bg-accent/10 text-accent" },
+  LOCKED: { label: "Chưa mở", tone: "bg-surface-2 text-muted" },
 };
 
 export function LessonPath({
@@ -32,7 +32,7 @@ export function LessonPath({
         const locked = l.status === "LOCKED";
         const inner = (
           <div
-            className={`panel flex items-center gap-4 p-4 ${
+            className={`panel group flex items-center gap-4 p-4 sm:p-5 ${
               locked ? "opacity-60" : "hover-card"
             }`}
           >
@@ -55,7 +55,7 @@ export function LessonPath({
             </span>
 
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="font-semibold">{l.title}</span>
                 <span
                   className={`rounded-md px-1.5 py-0.5 text-[11px] font-medium ${meta.tone}`}
@@ -79,7 +79,7 @@ export function LessonPath({
               <Icon
                 name="arrow"
                 size={18}
-                className="shrink-0 text-muted"
+                className="shrink-0 text-muted transition-transform group-hover:translate-x-1 group-hover:text-primary"
                 data-icon="arrow"
               />
             )}
@@ -90,7 +90,13 @@ export function LessonPath({
             {locked ? (
               inner
             ) : (
-              <Link href={`/study?lesson=${l.id}`}>{inner}</Link>
+              <Link
+                href={`/learn/${l.id}`}
+                className="block rounded-2xl"
+                aria-label={`Xem ${l.title}`}
+              >
+                {inner}
+              </Link>
             )}
           </li>
         );

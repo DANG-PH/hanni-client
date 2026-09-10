@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import { AuthShell } from "@/components/auth-shell";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { safeNextPath } from "@/lib/auth-redirect";
+import { Spinner } from "@/components/ui";
+import { Suspense, useEffect, useState } from "react";
 import { Button, Card, ErrorNote } from "@/components/ui";
 import { GoogleButton } from "@/components/google-button";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
-export default function RegisterPage() {
+function RegisterContent() {
+  const next = safeNextPath(useSearchParams().get("next"));
   const { user, loading, refresh } = useAuth();
   const router = useRouter();
   const [form, setForm] = useState({
@@ -21,8 +24,8 @@ export default function RegisterPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) router.replace("/dashboard");
-  }, [loading, user, router]);
+    if (!loading && user) router.replace(next);
+  }, [loading, user, router, next]);
 
   function set(k: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -37,7 +40,7 @@ export default function RegisterPage() {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
       await api.post("/auth/register", { ...form, timezone: tz });
       await refresh();
-      router.replace("/dashboard");
+      router.replace(next);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Không đăng ký được");
     } finally {
@@ -54,7 +57,13 @@ export default function RegisterPage() {
         <GoogleButton
           onSuccess={async (isNewUser) => {
             await refresh();
-            router.replace(isNewUser ? "/settings?welcome=1" : "/dashboard");
+            router.replace(
+              next !== "/dashboard"
+                ? next
+                : isNewUser
+                  ? "/settings?welcome=1"
+                  : "/dashboard",
+            );
           }}
         />
         {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
@@ -103,11 +112,22 @@ export default function RegisterPage() {
 
         <p className="text-sm text-muted">
           Đã có tài khoản?{" "}
-          <Link href="/login" className="text-foreground hover:underline">
+          <Link
+            href={`/login?next=${encodeURIComponent(next)}`}
+            className="text-foreground hover:underline"
+          >
             Đăng nhập
           </Link>
         </p>
       </Card>
     </AuthShell>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <RegisterContent />
+    </Suspense>
   );
 }

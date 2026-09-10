@@ -2,11 +2,55 @@
 
 import Link from "next/link";
 import { HeroBanner } from "@/components/hero-banner";
-import { Icon } from "@/components/icon";
+import { Icon, type IconName } from "@/components/icon";
 import { LessonPath } from "@/components/lesson-path";
-import { Card, ErrorNote, ProgressBar, Spinner, Stat } from "@/components/ui";
+import {
+  Card,
+  EmptyState,
+  ErrorNote,
+  ProgressBar,
+  Spinner,
+  Stat,
+} from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { useLearnPath, useStreak, useStudyStats } from "@/lib/hooks";
+
+const PRACTICE_AREAS: {
+  href: string;
+  title: string;
+  description: string;
+  icon: IconName;
+  character: string;
+}[] = [
+  {
+    href: "/vocabulary",
+    title: "Từ vựng",
+    description: "Ghi nhớ từ mới, ôn đúng lúc",
+    icon: "cards",
+    character: "词",
+  },
+  {
+    href: "/grammar",
+    title: "Ngữ pháp",
+    description: "Hiểu cấu trúc qua ví dụ",
+    icon: "book",
+    character: "句",
+  },
+  {
+    href: "/listening",
+    title: "Luyện nghe",
+    description: "Làm quen với âm thanh",
+    icon: "sound",
+    character: "听",
+  },
+  {
+    href: "/pronunciation",
+    title: "Phát âm",
+    description: "Luyện nói rõ từng âm",
+    icon: "play",
+    character: "说",
+  },
+];
 
 export default function DashboardPage() {
   const { user, loading } = useRequireAuth();
@@ -17,23 +61,56 @@ export default function DashboardPage() {
   if (loading || !user) return <Spinner />;
 
   const goal = streak.data?.goal;
-  const goalPct = goal && goal.value > 0 ? (goal.progress / goal.value) * 100 : 0;
+  const goalPct =
+    goal && goal.value > 0 ? (goal.progress / goal.value) * 100 : 0;
   const current = path.data?.lessons.find(
     (l) => l.id === path.data?.currentLessonId,
   );
 
   return (
     <div className="page-wrap space-y-8">
+      <div className="reveal flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted">
+          Góc học tập <span className="mx-2 text-border">/</span>{" "}
+          <span className="font-medium text-foreground">Tổng quan</span>
+        </p>
+        <Link
+          href="/account"
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted transition-colors hover:border-primary/30 hover:text-primary"
+        >
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary">
+            {user.displayName.trim().charAt(0).toUpperCase()}
+          </span>
+          {user.displayName}
+          <Icon name="arrow" size={13} />
+        </Link>
+      </div>
       <HeroBanner
         title="Học mỗi ngày,"
         highlight="tiến bộ không ngừng!"
-        subtitle={`Chào ${user.displayName}. Học tiếng Trung mỗi ngày một chút — theo lộ trình HSK, nhớ lâu nhờ ôn đúng lúc.`}
-        ctaLabel="Bắt đầu học ngay"
+        subtitle={`Chào ${user.displayName}! Tiếp tục hành trình tiếng Trung của bạn, từ những từ vựng đầu tiên đến từng cột mốc HSK.`}
+        ctaLabel={
+          current?.startedWords ? "Tiếp tục bài học" : "Bắt đầu học ngay"
+        }
         ctaHref={current ? `/study?lesson=${current.id}` : "/learn"}
       />
 
       {(stats.error || streak.error || path.error) && (
-        <ErrorNote>Chưa tải được một số dữ liệu. Thử tải lại trang.</ErrorNote>
+        <ErrorNote>
+          Chưa tải được một số dữ liệu học tập.{" "}
+          <button
+            className="font-semibold underline"
+            onClick={() =>
+              void Promise.allSettled([
+                stats.mutate(),
+                streak.mutate(),
+                path.mutate(),
+              ])
+            }
+          >
+            Thử lại
+          </button>
+        </ErrorNote>
       )}
 
       <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
@@ -45,6 +122,11 @@ export default function DashboardPage() {
           </div>
           {path.isLoading ? (
             <p className="my-6 text-sm text-muted">Đang tải lộ trình…</p>
+          ) : path.error && !path.data ? (
+            <p className="my-6 text-sm text-muted">
+              Lộ trình tạm thời chưa tải được. Bạn có thể thử lại ở thông báo
+              phía trên.
+            </p>
           ) : current ? (
             <>
               <div className="my-4">
@@ -82,8 +164,10 @@ export default function DashboardPage() {
           ) : (
             <div className="my-4">
               <p className="text-sm text-muted">
-                Bạn đã hoàn thành mọi bài đang mở. Xem lộ trình để chọn cấp tiếp
-                theo.
+                {path.data?.totalLessons &&
+                path.data.completedLessons === path.data.totalLessons
+                  ? "Bạn đã hoàn thành các bài trong cấp này. Cùng khám phá bước tiếp theo nhé."
+                  : "Chọn một cấp HSK và bắt đầu bài học đầu tiên của bạn."}
               </p>
               <Link
                 href="/learn"
@@ -101,6 +185,7 @@ export default function DashboardPage() {
             <span className="text-sm font-semibold">Mục tiêu hôm nay</span>
             <Link
               href="/settings"
+              aria-label="Điều chỉnh mục tiêu học tập"
               className="rounded-lg p-2 text-muted hover:bg-surface-2"
             >
               <Icon name="settings" size={16} />
@@ -118,15 +203,25 @@ export default function DashboardPage() {
                   </span>
                   <span className="text-sm text-muted">
                     {" "}
-                    / {goal.value}{" "}
-                    {goal.type === "MINUTES" ? "phút" : "từ ôn"}
+                    / {goal.value} {goal.type === "MINUTES" ? "phút" : "từ ôn"}
                   </span>
                 </div>
               </div>
               <ProgressBar value={goalPct} label="Mục tiêu hôm nay" />
             </>
           ) : (
-            <p className="my-6 text-sm text-muted">Đang tải mục tiêu…</p>
+            <p className="my-6 text-sm text-muted">
+              {streak.isLoading
+                ? "Đang tải mục tiêu…"
+                : "Chưa tải được mục tiêu hôm nay."}
+            </p>
+          )}
+          {goal && (
+            <p className="mt-4 text-xs text-muted">
+              {goal.met
+                ? "Bạn đã đạt mục tiêu hôm nay. Hãy giữ nhịp nhé!"
+                : "Một buổi học ngắn cũng giúp bạn tiến xa hơn."}
+            </p>
           )}
         </Card>
       </div>
@@ -154,7 +249,6 @@ export default function DashboardPage() {
           }
           hint={path.data?.levelName ?? ""}
           icon="route"
-          tone="text-lavender bg-lavender/10"
         />
         <Stat
           label="Từ đã thuộc"
@@ -164,6 +258,49 @@ export default function DashboardPage() {
           tone="text-good bg-good/10"
         />
       </div>
+
+      <section>
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="eyebrow mb-2">HỌC THEO CÁCH CỦA BẠN</p>
+            <h2 className="text-lg font-semibold">Rèn từng kỹ năng</h2>
+          </div>
+          <Link
+            href="/exams"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary"
+          >
+            Kiểm tra kiến thức <Icon name="arrow" size={16} />
+          </Link>
+        </div>
+        <div className="reveal-group grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {PRACTICE_AREAS.map((area) => (
+            <Link
+              key={area.href}
+              href={area.href}
+              className="reveal hover-card panel group relative overflow-hidden p-5"
+            >
+              <span
+                aria-hidden="true"
+                className="hanzi absolute right-4 top-2 text-6xl text-primary/8 transition-transform duration-300 motion-safe:group-hover:-rotate-6 motion-safe:group-hover:scale-110"
+              >
+                {area.character}
+              </span>
+              <span className="icon-tile mb-5">
+                <Icon name={area.icon} size={21} />
+              </span>
+              <h3 className="font-semibold group-hover:text-primary">
+                {area.title}
+              </h3>
+              <p className="mt-1.5 text-xs leading-5 text-muted">
+                {area.description}
+              </p>
+              <span className="mt-5 flex items-center justify-between border-t border-border pt-3 text-xs font-medium text-primary">
+                Bắt đầu luyện <Icon name="arrow" size={15} />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <section>
         <div className="mb-4 flex items-center justify-between">
@@ -179,8 +316,17 @@ export default function DashboardPage() {
         </div>
         {path.isLoading ? (
           <Spinner />
-        ) : path.data ? (
+        ) : path.data?.lessons.length ? (
           <LessonPath lessons={path.data.lessons} limit={5} />
+        ) : !path.error ? (
+          <EmptyState
+            title="Sẵn sàng cho bài học đầu tiên"
+            description="Mở lộ trình HSK để khám phá các bài học dành cho bạn."
+          >
+            <Link href="/learn" className="text-sm font-semibold text-primary">
+              Khám phá lộ trình →
+            </Link>
+          </EmptyState>
         ) : null}
       </section>
     </div>

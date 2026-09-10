@@ -1,175 +1,434 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { LinkButton } from "@/components/ui";
+import Link from "next/link";
 import { Icon, type IconName } from "@/components/icon";
-import { SampleCard } from "@/components/sample-card";
+import { LinkButton } from "@/components/ui";
+import { StudyArtwork } from "@/components/study-artwork";
 import { useAuth } from "@/lib/auth";
+import { useLevels } from "@/lib/hooks";
 
-const FEATURES: {
+// Nội dung giới thiệu tính năng; số liệu học liệu luôn lấy từ API.
+const SKILLS: {
+  href: string;
   icon: IconName;
   title: string;
-  body: string;
-  tone: string;
+  description: string;
+  character: string;
+  tag: string;
 }[] = [
   {
+    href: "/vocabulary",
     icon: "book",
-    title: "Hiểu từng từ, nhớ từng nét",
-    body: "Hán tự, pinyin và nghĩa tiếng Việt giúp bạn học dễ hiểu ngay từ bước đầu.",
-    tone: "bg-primary/8 text-primary",
+    title: "Từ vựng theo cấp độ",
+    description: "Hán tự, pinyin và nghĩa dễ hiểu",
+    character: "词",
+    tag: "Từ vựng",
   },
   {
+    href: "/grammar",
     icon: "cards",
-    title: "Ôn đúng lúc, nhớ lâu hơn",
-    body: "Flashcard và lịch ôn cá nhân giúp bạn dành thời gian cho những từ cần luyện thêm.",
-    tone: "bg-accent/8 text-accent",
+    title: "Hiểu câu, nhớ cách dùng",
+    description: "Khám phá từ qua câu ví dụ",
+    character: "句",
+    tag: "Ngữ pháp",
   },
   {
-    icon: "chart",
-    title: "Nhìn thấy mình tiến bộ",
-    body: "Theo dõi từng cấp HSK, giữ nhịp học mỗi ngày và ghi lại những cột mốc của riêng bạn.",
-    tone: "bg-lavender/8 text-lavender",
+    href: "/listening",
+    icon: "sound",
+    title: "Lắng nghe tiếng Trung",
+    description: "Nghe kỹ hơn, nhận diện tốt hơn",
+    character: "听",
+    tag: "Luyện nghe",
   },
+  {
+    href: "/pronunciation",
+    icon: "mic",
+    title: "Tự tin với phát âm",
+    description: "Nghe mẫu, ghi âm và luyện lại",
+    character: "说",
+    tag: "Luyện nói",
+  },
+];
+const FAQ = [
+  [
+    "Mới bắt đầu học tiếng Trung, mình nên học từ đâu?",
+    "Bạn có thể bắt đầu với lộ trình HSK 1. Làm quen với Hán tự và pinyin trong từng bài, nghe phát âm rồi dùng flashcard để ôn lại những từ đã học.",
+  ],
+  [
+    "Hanni giúp mình ghi nhớ từ vựng như thế nào?",
+    "Sau mỗi thẻ, bạn đánh giá mức độ ghi nhớ. Lịch ôn được điều chỉnh để bạn gặp lại từ vựng đúng lúc. Bạn có thể chọn cách ôn và số từ mới mỗi ngày trong cài đặt.",
+  ],
+  [
+    "Mình có thể chọn cấp HSK phù hợp không?",
+    "Có. Lộ trình và thư viện từ vựng có bộ lọc cấp HSK. Chọn cấp phù hợp với kiến thức hiện tại, sau đó theo dõi những từ đang học và đã thuộc trong trang tiến độ.",
+  ],
+  [
+    "Có cần biết tiếng Anh để sử dụng Hanni không?",
+    "Giao diện được viết bằng tiếng Việt. Từ vựng hiển thị nghĩa tiếng Việt khi đã có bản dịch; những mục chưa có sẽ ghi rõ nghĩa tiếng Anh hoặc trạng thái đang cập nhật.",
+  ],
+  [
+    "Mình có thể luyện tập trên điện thoại không?",
+    "Có. Bạn có thể mở Hanni bằng trình duyệt trên điện thoại, dùng flashcard, nghe âm thanh và tiếp tục học với cùng tài khoản. Tính năng ghi âm cần quyền truy cập micro của trình duyệt.",
+  ],
+  [
+    "Tiến độ học có được lưu lại không?",
+    "Các lượt ôn đã gửi thành công được lưu vào tài khoản. Trang tổng quan, tiến độ và huy hiệu sẽ giúp bạn theo dõi hành trình học. Phần ghi âm luyện nói dùng để nghe lại trên thiết bị trong buổi luyện hiện tại.",
+  ],
 ];
 
 export default function Home() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-  useEffect(() => {
-    if (!loading && user) router.replace("/dashboard");
-  }, [loading, user, router]);
+  const { user } = useAuth();
+  const levels = useLevels();
+  const totalWords = levels.data?.reduce(
+    (sum, level) => sum + level.wordsInDb,
+    0,
+  );
   return (
     <div>
-      <section className="relative overflow-hidden border-b border-border bg-surface">
-        <div
-          aria-hidden="true"
-          className="absolute -right-32 top-0 h-[650px] w-[650px] rounded-full bg-primary/4 blur-3xl"
-        />
-        <div className="page-wrap relative grid items-center gap-14 py-16! lg:grid-cols-[1.2fr_1fr] lg:gap-24 lg:py-24!">
-          <div className="reveal-group">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              TIẾNG TRUNG CHO NGƯỜI VIỆT
+      <section className="home-hero overflow-hidden border-b border-border">
+        <div className="page-wrap relative grid items-center gap-4 py-10! md:grid-cols-[1.05fr_1fr] md:py-12!">
+          <div className="reveal-group relative z-10 max-w-xl">
+            <span className="section-label">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> MỖI NGÀY
+              MỘT CHÚT TIẾNG TRUNG
             </span>
-            <h1 className="mt-7 text-[40px] leading-[1.2] font-semibold tracking-tight sm:text-5xl lg:text-[58px]">
-              Tiếng Trung,
+            <h1 className="mt-5 text-4xl leading-[1.22] font-bold tracking-tight sm:text-5xl lg:text-[54px]">
+              Học thêm mỗi ngày.
               <br />
-              mỗi ngày <span className="text-primary">gần hơn.</span>
+              <span className="text-primary">Tự tin thêm một chút.</span>
             </h1>
-            <p className="mt-6 max-w-lg text-base leading-8 text-muted">
-              Bắt đầu từ một từ mới. Xây dựng vốn tiếng Trung vững vàng cùng lộ
-              trình HSK 3.0 và cách ôn tập phù hợp với bạn.
+            <p className="mt-5 max-w-md text-sm leading-7 text-muted sm:text-base">
+              Từ những lời chào đầu tiên đến hành trình chinh phục HSK. Hanni
+              cùng bạn học, luyện tập và nhìn thấy mình tiến bộ.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <LinkButton href="/register" className="px-6!">
-                Bắt đầu hành trình <Icon name="arrow" size={18} />
+            <div className="mt-7 flex flex-wrap gap-3">
+              <LinkButton
+                href={user ? "/learn" : "/register"}
+                className="px-6!"
+              >
+                {user ? "Tiếp tục hành trình" : "Bắt đầu học ngay"}
+                <Icon name="arrow" size={17} />
               </LinkButton>
-              <LinkButton href="#cach-hoc" variant="secondary">
-                Khám phá cách học
+              <LinkButton href="#lo-trinh" variant="secondary">
+                Khám phá lộ trình
               </LinkButton>
             </div>
-            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
-              <span className="flex items-center gap-1.5">
-                <Icon name="check" size={15} className="text-good" />
-                Học theo nhịp của bạn
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Icon name="check" size={15} className="text-good" />
-                Từ cơ bản đến nâng cao
-              </span>
+            <p className="mt-5 flex items-center gap-2 text-xs text-muted">
+              <Icon name="check" size={15} className="text-good" /> Học theo
+              nhịp của bạn · Lưu từng bước tiến
+            </p>
+          </div>
+          <StudyArtwork />
+        </div>
+      </section>
+      <div className="page-wrap space-y-10 py-8! sm:space-y-12 sm:py-10!">
+        <section
+          id="cach-hoc"
+          className="grid scroll-mt-24 gap-6 lg:grid-cols-[1.55fr_1fr]"
+        >
+          <div>
+            <SectionHeading
+              icon="spark"
+              title="Một góc học, nhiều cách khám phá"
+            />
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  href: "/learn",
+                  icon: "route" as const,
+                  title: "Học theo lộ trình",
+                  text: "Từng bài nhỏ, nền tảng vững vàng.",
+                  className: "discovery-red",
+                  label: "BẮT ĐẦU TỪ ĐÂY",
+                  word: "学",
+                },
+                {
+                  href: "/study",
+                  icon: "cards" as const,
+                  title: "Ôn tập flashcard",
+                  text: "Gặp lại từ cũ, ghi nhớ lâu hơn.",
+                  className: "discovery-gold",
+                  label: "DUY TRÌ MỖI NGÀY",
+                  word: "记",
+                },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`reveal hover-card discovery-card ${item.className}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-semibold tracking-widest">
+                      {item.label}
+                    </span>
+                    <Icon name={item.icon} size={19} />
+                  </div>
+                  <div
+                    aria-hidden="true"
+                    className="hanzi my-5 text-center text-7xl"
+                  >
+                    {item.word}
+                  </div>
+                  <div className="flex items-end justify-between gap-3">
+                    <div>
+                      <h3 className="font-semibold">{item.title}</h3>
+                      <p className="mt-1.5 text-xs opacity-80">{item.text}</p>
+                    </div>
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/80 text-foreground">
+                      <Icon name="arrow" size={15} />
+                    </span>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
-          <div className="relative px-3 pb-5">
-            <SampleCard />
-            <span className="absolute -bottom-1 left-0 flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-xs font-medium shadow-sm sm:-left-5">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-good/10 text-good">
-                <Icon name="check" size={16} />
-              </span>
-              Mỗi từ mới là một bước tiến
+          <div>
+            <SectionHeading icon="book" title="Kho học liệu của bạn" />
+            <div className="reveal panel mt-4 overflow-hidden">
+              <div className="grid grid-cols-2 gap-px bg-border">
+                {[
+                  {
+                    icon: "book" as const,
+                    value:
+                      totalWords === undefined
+                        ? "—"
+                        : totalWords.toLocaleString("vi-VN"),
+                    label: "Từ vựng trong thư viện",
+                  },
+                  {
+                    icon: "route" as const,
+                    value: levels.data ? String(levels.data.length) : "—",
+                    label: "Cấp độ đang có",
+                  },
+                  {
+                    icon: "cards" as const,
+                    value: "Flashcard",
+                    label: "Ôn theo mức độ ghi nhớ",
+                  },
+                  {
+                    icon: "chart" as const,
+                    value: "Tiến độ",
+                    label: "Theo dõi từng cấp HSK",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="flex items-start gap-3 bg-surface px-4 py-5"
+                  >
+                    <span className="mt-1 text-primary">
+                      <Icon name={item.icon} size={20} />
+                    </span>
+                    <div>
+                      <p className="text-lg font-bold tracking-tight">
+                        {item.value}
+                      </p>
+                      <p className="mt-1 text-[11px] text-muted">
+                        {item.label}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {levels.error && (
+                <p className="px-4 pt-3 text-xs text-muted">
+                  Chưa tải được số liệu.{" "}
+                  <button
+                    className="text-primary underline underline-offset-2"
+                    onClick={() => void levels.mutate()}
+                  >
+                    Tải lại
+                  </button>
+                </p>
+              )}
+              <Link
+                href="/vocabulary"
+                className="flex items-center justify-between px-4 py-3.5 text-xs font-medium text-muted transition-colors hover:bg-primary/5 hover:text-primary"
+              >
+                Khám phá thư viện từ vựng
+                <Icon name="arrow" size={15} />
+              </Link>
+            </div>
+          </div>
+        </section>
+        <section>
+          <SectionHeading
+            icon="target"
+            title="Hôm nay, bạn muốn luyện gì?"
+            href="/dashboard"
+            label="Góc học tập"
+          />
+          <div className="reveal-group mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {SKILLS.map((skill) => (
+              <Link
+                key={skill.href}
+                href={skill.href}
+                className="hover-card skill-card panel group overflow-hidden"
+              >
+                <div className="relative flex h-28 items-center justify-center overflow-hidden bg-primary/4">
+                  <span className="absolute left-3 top-3 rounded-md border border-primary/10 bg-surface px-2 py-1 text-[10px] font-medium text-primary">
+                    {skill.tag}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="hanzi skill-character text-6xl text-primary/65"
+                  >
+                    {skill.character}
+                  </span>
+                  <span className="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-fg">
+                    <Icon name={skill.icon} size={15} />
+                  </span>
+                </div>
+                <div className="p-4">
+                  <h3 className="text-sm font-semibold group-hover:text-primary">
+                    {skill.title}
+                  </h3>
+                  <p className="mt-1.5 text-xs leading-5 text-muted">
+                    {skill.description}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+        <section id="lo-trinh" className="scroll-mt-24">
+          <div className="reveal">
+            <span className="section-label">LỘ TRÌNH HSK</span>
+            <h2 className="mt-3 text-2xl font-bold tracking-tight">
+              Từ bước đầu đến những điều xa hơn
+            </h2>
+            <p className="mt-2 text-sm text-muted">
+              Chọn điểm xuất phát. Học từng bài. Tiến bộ theo cách của bạn.
+            </p>
+          </div>
+          <div className="reveal-group mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-7">
+            {[
+              { level: 1, name: "Nhập môn", character: "一" },
+              { level: 2, name: "Sơ cấp", character: "二" },
+              { level: 3, name: "Sơ cấp mở rộng", character: "三" },
+              { level: 4, name: "Trung cấp", character: "四" },
+              { level: 5, name: "Trung cấp mở rộng", character: "五" },
+              { level: 6, name: "Trung cấp nâng cao", character: "六" },
+              { level: 7, name: "Cao cấp", character: "七" },
+            ].map((level) => (
+              <Link
+                key={level.level}
+                href={`/learn?level=${level.level}`}
+                className="hover-card panel group relative flex min-h-36 flex-col items-center justify-center gap-2 overflow-hidden px-3 py-5 text-center"
+              >
+                <span
+                  aria-hidden="true"
+                  className="hanzi text-3xl text-primary/65 transition-transform group-hover:scale-110"
+                >
+                  {level.character}
+                </span>
+                <h3 className="mt-1 text-sm font-bold">
+                  HSK {level.level === 7 ? "7–9" : level.level}
+                </h3>
+                <p className="text-[11px] text-muted">{level.name}</p>
+                <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 bg-primary transition-all group-hover:w-full" />
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
+      <section className="border-y border-border bg-surface">
+        <div className="page-wrap grid items-center gap-8 py-10! md:grid-cols-[1fr_auto]">
+          <div className="reveal">
+            <span className="section-label">
+              <Icon name="flame" size={14} /> THÓI QUEN NHỎ, HÀNH TRÌNH DÀI
+            </span>
+            <h2 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">
+              Dành một chút thời gian cho chính mình.
+            </h2>
+            <p className="mt-3 max-w-xl text-sm leading-7 text-muted">
+              Một bài học trên máy tính, vài từ mới trên điện thoại. Đăng nhập
+              cùng tài khoản để tiếp tục hành trình ở nơi bạn thấy thoải mái
+              nhất.
+            </p>
+            <LinkButton
+              href={user ? "/settings" : "/register"}
+              className="mt-5"
+            >
+              {user ? "Đặt mục tiêu mỗi ngày" : "Tạo góc học của bạn"}
+              <Icon name="arrow" size={16} />
+            </LinkButton>
+          </div>
+          <div
+            aria-hidden="true"
+            className="reveal habit-illustration hidden md:flex"
+          >
+            <div className="habit-orbit" />
+            <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/8 text-primary">
+              <Icon name="flame" size={48} />
+            </div>
+            <span className="absolute bottom-5 rounded-full border border-border bg-surface px-4 py-2 text-xs font-medium shadow-sm">
+              Hôm nay, cùng tiến thêm một bước.
             </span>
           </div>
         </div>
       </section>
-      <section id="cach-hoc" className="page-wrap scroll-mt-24 py-16!">
-        <div className="reveal mb-8">
-          <p className="eyebrow">NHẸ NHÀNG MÀ HIỆU QUẢ</p>
-          <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-            Một góc học tập dành riêng cho bạn
+      <section
+        id="cau-hoi"
+        className="page-wrap max-w-3xl! scroll-mt-24 py-12! sm:py-16!"
+      >
+        <div className="reveal text-center">
+          <span className="section-label">HỎI & ĐÁP</span>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight">
+            Bạn hỏi, <span className="text-primary">Hanni trả lời.</span>
           </h2>
+          <p className="mt-3 text-sm text-muted">
+            Một vài điều trước khi bắt đầu hành trình tiếng Trung.
+          </p>
         </div>
-        <div className="grid gap-5 md:grid-cols-3">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="reveal hover-card panel p-7">
-              <span
-                className={`flex h-12 w-12 items-center justify-center rounded-2xl ${f.tone}`}
-              >
-                <Icon name={f.icon} size={23} />
-              </span>
-              <h3 className="mt-5 font-semibold">{f.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-muted">{f.body}</p>
-            </div>
+        <div className="mt-7 space-y-3">
+          {FAQ.map(([question, answer]) => (
+            <details key={question} className="reveal faq-item panel group">
+              <summary className="flex items-center justify-between gap-4 px-5 py-4 text-sm font-medium">
+                {question}
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-muted">
+                  <Icon
+                    name="plus"
+                    size={13}
+                    className="transition-transform group-open:rotate-45"
+                  />
+                </span>
+              </summary>
+              <p className="px-5 pb-5 text-sm leading-7 text-muted">{answer}</p>
+            </details>
           ))}
         </div>
       </section>
-      <section id="lo-trinh" className="page-wrap scroll-mt-24 pb-16! pt-0!">
-        <div className="reveal panel overflow-hidden lg:flex">
-          <div className="bg-primary/5 p-8 lg:w-[38%] lg:p-10">
-            <p className="eyebrow">LỘ TRÌNH HSK 3.0</p>
-            <h2 className="mt-3 text-3xl leading-tight font-semibold">
-              Đi từng bước.
-              <br />
-              Vững từng cấp.
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-muted">
-              Chọn điểm bắt đầu phù hợp và dần mở rộng khả năng sử dụng tiếng
-              Trung.
-            </p>
-            <LinkButton href="/register" variant="secondary" className="mt-6">
-              Tạo tài khoản <Icon name="arrow" size={16} />
-            </LinkButton>
-          </div>
-          <div className="grid flex-1 gap-6 p-8 sm:grid-cols-3 lg:p-10">
-            {[
-              {
-                label: "Sơ cấp",
-                level: "1–3",
-                word: "启",
-                body: "Làm quen và xây nền tảng",
-                color: "text-primary bg-primary/8",
-              },
-              {
-                label: "Trung cấp",
-                level: "4–6",
-                word: "进",
-                body: "Mở rộng vốn từ, tự tin hơn",
-                color: "text-accent bg-accent/8",
-              },
-              {
-                label: "Cao cấp",
-                level: "7–9",
-                word: "达",
-                body: "Diễn đạt sâu và linh hoạt",
-                color: "text-lavender bg-lavender/8",
-              },
-            ].map((b) => (
-              <div key={b.label}>
-                <div
-                  aria-hidden="true"
-                  className={`hanzi mb-5 flex h-16 w-16 items-center justify-center rounded-2xl text-4xl ${b.color}`}
-                >
-                  {b.word}
-                </div>
-                <p className="text-xs font-semibold text-muted">
-                  HSK {b.level}
-                </p>
-                <h3 className="mt-1 text-lg font-semibold">{b.label}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted">{b.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+    </div>
+  );
+}
+function SectionHeading({
+  icon,
+  title,
+  href,
+  label,
+}: {
+  icon: IconName;
+  title: string;
+  href?: string;
+  label?: string;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <h2 className="flex items-center gap-2 text-sm font-semibold sm:text-base">
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/8 text-primary">
+          <Icon name={icon} size={15} />
+        </span>
+        {title}
+      </h2>
+      {href && (
+        <Link
+          href={href}
+          className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+        >
+          {label}
+          <Icon name="arrow" size={14} />
+        </Link>
+      )}
     </div>
   );
 }
