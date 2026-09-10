@@ -18,10 +18,11 @@ export function TranscriptLine({
 }) {
   return (
     <button
+      data-idx={line.index}
       onClick={onSelect}
-      className={`w-full rounded-xl border px-4 py-3 text-left transition-colors ${
+      className={`w-full scroll-mt-4 rounded-xl border px-4 py-3 text-left transition-colors ${
         active
-          ? "border-primary/40 bg-primary/6"
+          ? "border-primary/40 bg-primary/8"
           : "border-transparent hover:bg-surface-2"
       }`}
     >

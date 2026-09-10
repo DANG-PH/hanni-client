@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Icon } from "@/components/icon";
 import { VideoCard } from "@/components/video-card";
-import { EmptyState, LinkButton, PageHeading, Spinner } from "@/components/ui";
+import { EmptyState, PageHeading, Spinner } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { useVideos } from "@/lib/hooks";
 
@@ -27,12 +26,8 @@ export default function WatchPage() {
       <PageHeading
         eyebrow="MIỄN PHÍ CHO MỌI NGƯỜI"
         title="Học qua video"
-        description="Xem clip tiếng Trung với phụ đề đồng bộ — chữ Hán, pinyin và nghĩa. Bấm vào câu để tua lại và nghe kỹ."
-      >
-        <LinkButton href="/watch/new">
-          <Icon name="plus" size={16} /> Thêm video
-        </LinkButton>
-      </PageHeading>
+        description="Xem clip tiếng Trung với phụ đề đồng bộ — chữ Hán, pinyin và nghĩa. Bấm vào câu để nghe kỹ."
+      />
 
       <div className="flex flex-wrap gap-2">
         {KINDS.map(([v, label]) => (
@@ -61,10 +56,8 @@ export default function WatchPage() {
       ) : (
         <EmptyState
           title="Chưa có video nào"
-          description="Thêm một video YouTube kèm bản chép để bắt đầu học qua video."
-        >
-          <LinkButton href="/watch/new">Thêm video đầu tiên</LinkButton>
-        </EmptyState>
+          description="Nội dung video sẽ được cập nhật sớm."
+        />
       )}
     </div>
   );
