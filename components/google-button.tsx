@@ -14,10 +14,7 @@ interface GoogleAccountsId {
     client_id: string;
     callback: (res: CredentialResponse) => void;
   }) => void;
-  renderButton: (
-    el: HTMLElement,
-    opts: Record<string, unknown>,
-  ) => void;
+  renderButton: (el: HTMLElement, opts: Record<string, unknown>) => void;
 }
 declare global {
   interface Window {
@@ -35,7 +32,8 @@ function loadGsi(): Promise<void> {
       s.src = GSI_SRC;
       s.async = true;
       s.onload = () => resolve();
-      s.onerror = () => reject(new Error("Không tải được Google Identity Services"));
+      s.onerror = () =>
+        reject(new Error("Không tải được Google Identity Services"));
       document.head.appendChild(s);
     });
   }
@@ -56,7 +54,6 @@ export function GoogleButton({
 
   useEffect(() => {
     if (!CLIENT_ID) {
-      setError("Chưa cấu hình NEXT_PUBLIC_GOOGLE_CLIENT_ID");
       return;
     }
     let cancelled = false;
@@ -76,7 +73,9 @@ export function GoogleButton({
               .then((r) => onSuccess(r.isNewUser))
               .catch((e) =>
                 setError(
-                  e instanceof ApiError ? e.message : "Đăng nhập Google thất bại",
+                  e instanceof ApiError
+                    ? e.message
+                    : "Đăng nhập Google thất bại",
                 ),
               );
           },
@@ -88,7 +87,7 @@ export function GoogleButton({
           text: "continue_with",
           shape: "rectangular",
           logo_alignment: "center",
-          width: 320,
+          width: Math.min(320, ref.current.clientWidth),
         });
       })
       .catch(() => setError("Không tải được Google Identity Services"));
@@ -97,10 +96,12 @@ export function GoogleButton({
     };
   }, [onSuccess]);
 
+  if (!CLIENT_ID) return null;
+
   return (
     <div className="space-y-2">
       <div ref={ref} className="flex justify-center" />
-      {error && <p className="text-center text-xs text-primary">{error}</p>}
+      {error && <p className="text-center text-xs text-danger">{error}</p>}
     </div>
   );
 }

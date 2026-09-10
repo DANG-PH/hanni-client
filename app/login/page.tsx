@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AuthShell } from "@/components/auth-shell";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Card, ErrorNote } from "@/components/ui";
@@ -29,17 +30,17 @@ export default function LoginPage() {
       await refresh();
       router.replace("/dashboard");
     } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : "Không đăng nhập được",
-      );
+      setError(err instanceof ApiError ? err.message : "Không đăng nhập được");
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
-      <h1 className="text-2xl font-bold">Đăng nhập</h1>
+    <AuthShell
+      title="Chào mừng bạn trở lại"
+      description="Góc học tập của bạn đang chờ. Cùng tiếp tục hành trình nhé."
+    >
       <Card className="mt-6 space-y-4">
         <GoogleButton
           onSuccess={async () => {
@@ -47,27 +48,33 @@ export default function LoginPage() {
             router.replace("/dashboard");
           }}
         />
-        <div className="flex items-center gap-3 text-xs text-muted">
-          <div className="h-px flex-1 bg-border" /> hoặc{" "}
-          <div className="h-px flex-1 bg-border" />
-        </div>
+        {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
+          <div className="flex items-center gap-3 text-xs text-muted">
+            <div className="h-px flex-1 bg-border" /> hoặc{" "}
+            <div className="h-px flex-1 bg-border" />
+          </div>
+        )}
 
-        <form onSubmit={onSubmit} className="space-y-3">
+        <form onSubmit={onSubmit} className="space-y-4">
           <input
             type="email"
             required
-            placeholder="Email"
+            aria-label="Địa chỉ email"
+            autoComplete="email"
+            placeholder="Email của bạn"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            className="field"
           />
           <input
             type="password"
             required
+            aria-label="Mật khẩu"
+            autoComplete="current-password"
             placeholder="Mật khẩu"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            className="field"
           />
           {error && <ErrorNote>{error}</ErrorNote>}
           <Button type="submit" disabled={busy} className="w-full">
@@ -84,6 +91,6 @@ export default function LoginPage() {
           </Link>
         </div>
       </Card>
-    </div>
+    </AuthShell>
   );
 }
