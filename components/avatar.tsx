@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { mediaUrl } from "@/lib/api";
 
 const PALETTE = [
@@ -34,19 +35,21 @@ export function Avatar({
   className?: string;
 }) {
   const src = user.avatarUrl ? mediaUrl(user.avatarUrl) : null;
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [src]);
+
   const initial =
     Array.from((user.displayName || user.email || "H").trim())[0]?.toUpperCase() ??
     "H";
 
-  if (src) {
+  if (src && !failed) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src={src}
         alt=""
-        width={size}
-        height={size}
-        className={`shrink-0 rounded-full object-cover ${className}`}
+        onError={() => setFailed(true)}
+        className={`shrink-0 rounded-full bg-surface-2 object-cover ${className}`}
         style={{ width: size, height: size }}
       />
     );

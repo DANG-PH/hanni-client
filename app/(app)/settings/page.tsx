@@ -8,6 +8,7 @@ import { Button, Card, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { api, apiFetch, ApiError } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
+import { resizeImage } from "@/lib/image";
 import { TIMEZONES, detectTimezone } from "@/lib/timezones";
 import type { Me, UserSettings } from "@/lib/types";
 
@@ -385,19 +386,29 @@ function AvatarCard({
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
-  async function upload(file: File) {
-    setBusy(true);
+  async function pick(file: File) {
+    if (!file.type.startsWith("image/")) {
+      setError("Vui lòng chọn một tệp ảnh.");
+      return;
+    }
     setError(null);
+    setBusy(true);
+    const local = URL.createObjectURL(file);
+    setPreview(local);
     try {
+      const blob = await resizeImage(file, 512);
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", blob, "avatar.webp");
       await api.upload("/users/me/avatar", fd);
-      onChange();
+      await Promise.resolve(onChange());
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Tải ảnh thất bại");
+      setPreview(null);
     } finally {
       setBusy(false);
+      URL.revokeObjectURL(local);
       if (inputRef.current) inputRef.current.value = "";
     }
   }
@@ -405,9 +416,10 @@ function AvatarCard({
   async function remove() {
     setBusy(true);
     setError(null);
+    setPreview(null);
     try {
       await api.del("/users/me/avatar");
-      onChange();
+      await Promise.resolve(onChange());
     } catch {
       setError("Không xoá được ảnh");
     } finally {
@@ -417,35 +429,60 @@ function AvatarCard({
 
   return (
     <Card className="flex flex-wrap items-center gap-5">
-      <Avatar user={user} size={72} />
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        disabled={busy}
+        aria-label="Đổi ảnh đại diện"
+        className="group relative h-20 w-20 shrink-0 overflow-hidden rounded-full ring-2 ring-border transition hover:ring-primary/40 disabled:opacity-70"
+      >
+        {preview ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={preview} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <Avatar user={user} size={80} />
+        )}
+        <span className="absolute inset-0 flex items-center justify-center bg-black/45 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100">
+          {busy ? "Đang tải…" : "Đổi ảnh"}
+        </span>
+      </button>
+
       <div className="min-w-0 flex-1">
         <p className="font-semibold">{user.displayName}</p>
         <p className="text-sm text-muted">{user.email}</p>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
           <input
             ref={inputRef}
             type="file"
-            accept="image/png,image/jpeg,image/webp"
+            accept="image/png,image/jpeg,image/jpg,image/webp"
             hidden
             onChange={(e) => {
               const f = e.target.files?.[0];
-              if (f) void upload(f);
+              if (f) void pick(f);
             }}
           />
-          <Button
-            variant="secondary"
+          <button
+            type="button"
             disabled={busy}
             onClick={() => inputRef.current?.click()}
+            className="font-medium text-primary hover:underline disabled:opacity-50"
           >
-            {busy ? "Đang tải…" : "Tải ảnh lên"}
-          </Button>
+            Tải ảnh lên
+          </button>
           {user.avatarUrl && (
-            <Button variant="ghost" disabled={busy} onClick={() => void remove()}>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void remove()}
+              className="text-muted hover:text-danger disabled:opacity-50"
+            >
               Xoá ảnh
-            </Button>
+            </button>
           )}
         </div>
-        <p className="mt-2 text-xs text-muted">PNG, JPG hoặc WEBP, tối đa 2MB.</p>
+        <p className="mt-2 text-xs text-muted">
+          Ảnh sẽ tự cắt vuông, thu nhỏ về 512px. PNG, JPG hoặc WEBP.
+        </p>
         {error && <p className="mt-1 text-xs text-danger">{error}</p>}
       </div>
     </Card>

@@ -74,16 +74,15 @@ function safeJson(text: string): unknown {
 }
 
 /** Gốc của server (bỏ "/api") — dùng cho file tĩnh như audio phát âm. */
-export const SERVER_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
+export const SERVER_ORIGIN =
+  API_BASE.replace(/\/api\/?$/, "") ||
+  (typeof window !== "undefined" ? window.location.origin : "");
 
-/** Tuyệt đối hoá đường dẫn tĩnh, vd "/media/audio/cmn-你好.mp3". */
+/** Tuyệt đối hoá đường dẫn tĩnh, vd "/media/audio/cmn-你好.mp3" hoặc URL Google. */
 export function mediaUrl(path: string | null | undefined): string | null {
   if (!path) return null;
-  try {
-    return new URL(path, SERVER_ORIGIN || undefined).href;
-  } catch {
-    return null;
-  }
+  if (/^(https?:|data:|blob:)/.test(path)) return path;
+  return `${SERVER_ORIGIN}${path.startsWith("/") ? "" : "/"}${path}`;
 }
 
 /** Upload multipart (FormData) — không set Content-Type để trình duyệt tự thêm boundary. */
