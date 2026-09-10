@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import useSWR from "swr";
-import { Avatar } from "@/components/avatar";
+import { AvatarEditor } from "@/components/avatar-editor";
 import { Button, Card, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { Icon } from "@/components/icon";
-import { api, apiFetch, ApiError } from "@/lib/api";
+import { api, apiFetch } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
-import { resizeImage } from "@/lib/image";
 import { TIMEZONES, detectTimezone } from "@/lib/timezones";
 import type { Me, UserSettings } from "@/lib/types";
 
@@ -383,107 +382,16 @@ function AvatarCard({
   user: Me;
   onChange: () => void;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-
-  async function pick(file: File) {
-    if (!file.type.startsWith("image/")) {
-      setError("Vui lòng chọn một tệp ảnh.");
-      return;
-    }
-    setError(null);
-    setBusy(true);
-    const local = URL.createObjectURL(file);
-    setPreview(local);
-    try {
-      const blob = await resizeImage(file, 512);
-      const fd = new FormData();
-      fd.append("file", blob, "avatar.webp");
-      await api.upload("/users/me/avatar", fd);
-      await Promise.resolve(onChange());
-    } catch (e) {
-      setError(e instanceof ApiError ? e.message : "Tải ảnh thất bại");
-      setPreview(null);
-    } finally {
-      setBusy(false);
-      URL.revokeObjectURL(local);
-      if (inputRef.current) inputRef.current.value = "";
-    }
-  }
-
-  async function remove() {
-    setBusy(true);
-    setError(null);
-    setPreview(null);
-    try {
-      await api.del("/users/me/avatar");
-      await Promise.resolve(onChange());
-    } catch {
-      setError("Không xoá được ảnh");
-    } finally {
-      setBusy(false);
-    }
-  }
-
   return (
     <Card className="flex flex-wrap items-center gap-5">
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        disabled={busy}
-        aria-label="Đổi ảnh đại diện"
-        className="group relative h-20 w-20 shrink-0 overflow-hidden rounded-full ring-2 ring-border transition hover:ring-primary/40 disabled:opacity-70"
-      >
-        {preview ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <Avatar user={user} size={80} />
-        )}
-        <span className="absolute inset-0 flex items-center justify-center bg-black/45 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100">
-          {busy ? "Đang tải…" : "Đổi ảnh"}
-        </span>
-      </button>
-
+      <AvatarEditor user={user} size={80} onChange={onChange} />
       <div className="min-w-0 flex-1">
         <p className="font-semibold">{user.displayName}</p>
         <p className="text-sm text-muted">{user.email}</p>
-        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/png,image/jpeg,image/jpg,image/webp"
-            hidden
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) void pick(f);
-            }}
-          />
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => inputRef.current?.click()}
-            className="font-medium text-primary hover:underline disabled:opacity-50"
-          >
-            Tải ảnh lên
-          </button>
-          {user.avatarUrl && (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => void remove()}
-              className="text-muted hover:text-danger disabled:opacity-50"
-            >
-              Xoá ảnh
-            </button>
-          )}
-        </div>
         <p className="mt-2 text-xs text-muted">
-          Ảnh sẽ tự cắt vuông, thu nhỏ về 512px. PNG, JPG hoặc WEBP.
+          Di chuột lên ảnh rồi bấm để đổi. Ảnh tự cắt vuông, thu nhỏ về 512px.
+          PNG, JPG hoặc WEBP.
         </p>
-        {error && <p className="mt-1 text-xs text-danger">{error}</p>}
       </div>
     </Card>
   );

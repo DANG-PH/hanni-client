@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AvatarEditor } from "@/components/avatar-editor";
 import { Icon } from "@/components/icon";
 import {
   Button,
@@ -15,7 +16,7 @@ import { useRequireAuth } from "@/lib/auth";
 import { TIMEZONES } from "@/lib/timezones";
 
 export default function AccountPage() {
-  const { user, loading, logout } = useRequireAuth();
+  const { user, loading, logout, refresh } = useRequireAuth();
   const [leaving, setLeaving] = useState(false);
   const router = useRouter();
   if (loading || !user) return <Spinner />;
@@ -27,13 +28,6 @@ export default function AccountPage() {
   }
 
   const timezone = TIMEZONES.find((item) => item.value === user.timezone);
-  const initials = user.displayName
-    .trim()
-    .split(/\s+/)
-    .slice(-2)
-    .map((word) => word.charAt(0))
-    .join("")
-    .toUpperCase();
 
   return (
     <div className="page-wrap space-y-7">
@@ -60,9 +54,11 @@ export default function AccountPage() {
             </div>
             <div className="relative px-6 pb-6 sm:px-7">
               <div className="-mt-9 mb-5 flex flex-wrap items-end justify-between gap-4">
-                <span className="flex h-20 w-20 items-center justify-center rounded-2xl border-4 border-surface bg-primary text-2xl font-semibold text-primary-fg">
-                  {initials || "H"}
-                </span>
+                <AvatarEditor
+                  user={user}
+                  size={80}
+                  onChange={refresh}
+                />
                 <span className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1.5 text-xs text-muted">
                   <Icon
                     name={user.emailVerifiedAt ? "check" : "info"}
