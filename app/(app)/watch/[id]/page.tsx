@@ -12,10 +12,14 @@ import { useRequireAuth } from "@/lib/auth";
 import { useVideo } from "@/lib/hooks";
 import type { VideoLine } from "@/lib/types";
 
-/** Thời điểm (giây) mỗi câu. Ưu tiên startMs; nếu không có, chia đều theo thời lượng. */
+/**
+ * Thời điểm bắt đầu (giây) mỗi câu.
+ * - Nếu bản chép có mốc `startMs` → dùng đúng (chuẩn nhất).
+ * - Nếu không → ước lượng theo thời lượng video, chia theo ĐỘ DÀI từng câu
+ *   (câu dài chiếm nhiều thời gian hơn). Chỉ là gần đúng, sẽ lệch dần.
+ */
 function computeTimes(lines: VideoLine[], duration: number): number[] {
-  const hasReal = lines.some((l) => l.startMs != null);
-  if (hasReal) {
+  if (lines.some((l) => l.startMs != null)) {
     let last = 0;
     return lines.map((l) => {
       if (l.startMs != null) last = l.startMs / 1000;
@@ -23,8 +27,14 @@ function computeTimes(lines: VideoLine[], duration: number): number[] {
     });
   }
   if (!duration) return lines.map(() => Number.POSITIVE_INFINITY);
-  const per = duration / lines.length;
-  return lines.map((_, i) => i * per);
+  const weights = lines.map((l) => Math.max(1, Array.from(l.zh).length));
+  const total = weights.reduce((a, b) => a + b, 0);
+  let acc = 0;
+  return lines.map((_, i) => {
+    const start = (acc / total) * duration;
+    acc += weights[i];
+    return start;
+  });
 }
 
 export default function WatchDetailPage() {
@@ -35,6 +45,7 @@ export default function WatchDetailPage() {
 
   const [showPinyin, setShowPinyin] = useState(true);
   const [showTrans, setShowTrans] = useState(true);
+  const [showCaption, setShowCaption] = useState(true);
   const [autoScroll, setAutoScroll] = useState(true);
   const [active, setActive] = useState<number | null>(null);
   const [readMax, setReadMax] = useState(0);
@@ -115,6 +126,7 @@ export default function WatchDetailPage() {
   const pct = data.sentenceCount
     ? Math.round((read / data.sentenceCount) * 100)
     : 0;
+  const activeLine = active ? data.lines.find((l) => l.index === active) : null;
 
   function selectLine(index: number) {
     const t = times[index - 1];
@@ -168,12 +180,34 @@ export default function WatchDetailPage() {
 
       <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr]">
         <div className="space-y-3">
-          <YoutubePlayer
-            youtubeId={data.youtubeId}
-            seekRef={seekRef}
-            onTick={onTick}
-            onReady={setDuration}
-          />
+          <div className="relative">
+            <YoutubePlayer
+              youtubeId={data.youtubeId}
+              seekRef={seekRef}
+              onTick={onTick}
+              onReady={setDuration}
+            />
+            {showCaption && activeLine && (
+              <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 rounded-xl bg-black/70 px-4 py-2.5 text-center backdrop-blur-sm">
+                <p className="hanzi text-lg leading-snug text-white sm:text-xl">
+                  {activeLine.zh}
+                </p>
+                {showTrans && activeLine.vi && (
+                  <p className="mt-0.5 text-xs text-white/80 sm:text-sm">
+                    {activeLine.vi}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted">
+            <button
+              onClick={() => setShowCaption((v) => !v)}
+              className={chip(showCaption)}
+            >
+              Phụ đề trên video
+            </button>
+          </div>
           {data.description && (
             <p className="text-sm leading-6 text-muted">{data.description}</p>
           )}
