@@ -7,11 +7,10 @@ import { useVideos } from "@/lib/hooks";
 import type { VideoCard } from "@/lib/types";
 
 /**
- * Kệ video ngang: TỰ TRƯỢT sang trái ~40px/giây, và người dùng KÉO / LĂN CHUỘT
+ * Kệ video ngang: TỰ TRƯỢT sang trái đều đều, và người dùng KÉO / LĂN CHUỘT
  * để tự xem được. Rê chuột / chạm vào là auto dừng; rời ra thì chạy tiếp từ
- * đúng vị trí. Tắt hẳn khi bật "giảm chuyển động".
+ * đúng vị trí. Chạy chậm lại (không tắt hẳn) khi bật "giảm chuyển động".
  */
-const SPEED = 40; // px / giây
 
 export function VideoShelf({ limit = 8 }: { limit?: number }) {
   const { data, isLoading } = useVideos();
@@ -27,7 +26,10 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el || !canLoop) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const speed = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? 18
+      : 38; // px / giây
 
     let raf = 0;
     let last = performance.now();
@@ -48,7 +50,7 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
       resume.current = 0;
       const half = el.scrollWidth / 2;
       if (half <= el.clientWidth) return;
-      pos += (dt / 1000) * SPEED;
+      pos += (dt / 1000) * speed;
       if (pos >= half) pos -= half;
       el.scrollLeft = pos;
     };
@@ -61,29 +63,46 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
   const hold = () => {
     paused.current = true;
   };
-  const release = () => {
+  const leave = () => {
     paused.current = false;
-    resume.current = performance.now() + 1200; // nghỉ 1.2s rồi chạy tiếp
+    resume.current = performance.now() + 700;
   };
 
-  // Kéo chuột để lướt (như vuốt trên điện thoại).
+  // Kéo chuột / vuốt để lướt.
   const onDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
-    if (!el || e.button !== 0) return;
+    if (!el || (e.pointerType === "mouse" && e.button !== 0)) return;
     drag.current = { on: true, x: e.clientX, left: el.scrollLeft, moved: false };
     paused.current = true;
+    try {
+      el.setPointerCapture(e.pointerId);
+    } catch {
+      /* không hỗ trợ pointer capture */
+    }
   };
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
     const d = drag.current;
     if (!d.on || !el) return;
     const dx = e.clientX - d.x;
-    if (Math.abs(dx) > 4) d.moved = true;
+    if (Math.abs(dx) > 3) d.moved = true;
     el.scrollLeft = d.left - dx;
   };
-  const onUp = () => {
+  const onUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = scrollerRef.current;
+    if (el) {
+      try {
+        el.releasePointerCapture(e.pointerId);
+      } catch {
+        /* bỏ qua */
+      }
+    }
     drag.current.on = false;
-    release();
+    // Cảm ứng không có "hover" → tự chạy tiếp sau khi nhấc tay.
+    if (e.pointerType !== "mouse") {
+      paused.current = false;
+      resume.current = performance.now() + 1500;
+    }
   };
   const onClickCapture = (e: React.MouseEvent) => {
     if (drag.current.moved) {
@@ -124,7 +143,7 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
       <div
         ref={scrollerRef}
         onPointerEnter={hold}
-        onPointerLeave={onUp}
+        onPointerLeave={leave}
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
