@@ -32,3 +32,9 @@ npm run dev                         # http://localhost:3000  (cần hanni-server
 - Auth dùng **cookie HttpOnly** do server đặt; client không đọc token, chỉ gọi
   `/users/me` để biết trạng thái. `lib/api.ts` tự gọi `/auth/refresh` một lần khi gặp 401.
 - Client và server phải cùng host (`localhost`) ở dev để cookie `Domain=localhost` được gửi kèm.
+
+## Giao diện
+
+Thiết kế sáng riêng cho Hanni, thích ứng desktop và điện thoại. Xem
+[tài liệu giao diện, các commit và ảnh xem trước](docs/giao-dien.md).
+Đợt này không bổ sung dữ liệu từ vựng; các trang đã có trạng thái trống để nối dữ liệu sau.
