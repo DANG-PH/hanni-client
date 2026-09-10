@@ -123,8 +123,6 @@ export default function DashboardPage() {
         </ErrorNote>
       )}
 
-      <VideoShelf />
-
       <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
         {/* Tiếp tục học */}
         <Card className="flex flex-col justify-between">
@@ -237,6 +235,8 @@ export default function DashboardPage() {
           )}
         </Card>
       </div>
+
+      <VideoShelf />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat

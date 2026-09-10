@@ -7,9 +7,11 @@ import { useVideos } from "@/lib/hooks";
 import type { VideoCard } from "@/lib/types";
 
 /**
- * Kệ video ngang, TỰ TRƯỢT SANG TRÁI theo chu kỳ (kiểu băng chuyền vô tận).
+ * Kệ video ngang TRƯỢT LIÊN TỤC sang trái (băng chuyền vô tận, ~44px/giây).
  * Dừng khi rê chuột / chạm / focus, và khi người dùng bật giảm chuyển động.
  */
+const SPEED = 44; // px / giây
+
 export function VideoShelf({ limit = 8 }: { limit?: number }) {
   const { data, isLoading } = useVideos();
   const trackRef = useRef<HTMLUListElement>(null);
@@ -24,19 +26,20 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
     if (!el || loop.length === 0) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const step = () => {
-      if (paused.current) return;
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      const dt = now - last;
+      last = now;
+      if (paused.current || document.hidden) return;
       const half = el.scrollWidth / 2;
-      // gần hết nửa đầu → nhảy về đầu (không hiệu ứng) rồi đẩy tiếp.
-      if (el.scrollLeft >= half - 4) {
-        el.scrollTo({ left: el.scrollLeft - half });
-      }
-      const card = el.querySelector<HTMLElement>("li");
-      el.scrollBy({ left: (card?.offsetWidth ?? 180) + 12, behavior: "smooth" });
+      if (half <= 0) return;
+      el.scrollLeft += (dt / 1000) * SPEED;
+      if (el.scrollLeft >= half) el.scrollLeft -= half;
     };
-
-    const id = window.setInterval(step, 3200);
-    return () => window.clearInterval(id);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [loop.length]);
 
   const setPaused = useCallback((v: boolean) => {
