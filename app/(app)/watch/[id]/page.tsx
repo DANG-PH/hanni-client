@@ -15,11 +15,16 @@ import type { VideoLine } from "@/lib/types";
 
 /**
  * Thời điểm bắt đầu (giây) mỗi câu.
- * - Nếu bản chép có mốc `startMs` → dùng đúng (chuẩn nhất).
- * - Nếu không → ước lượng theo thời lượng video, chia theo ĐỘ DÀI từng câu
- *   (câu dài chiếm nhiều thời gian hơn). Chỉ là gần đúng, sẽ lệch dần.
+ * - Nếu bản chép có mốc `startMs` → dùng đúng (chuẩn tuyệt đối).
+ * - Nếu không → ước lượng theo NHỊP ĐỌC (chữ/giây) + khoảng nghỉ, KHÔNG kéo giãn
+ *   theo độ dài video. Highlight chạy đều đặn ~3–5s/câu; sau khi hết bản chép mẫu
+ *   thì dừng ở câu cuối. Chỉ gần đúng, có thể lệch với lời nói thật.
  */
-function computeTimes(lines: VideoLine[], duration: number): number[] {
+const LEAD_IN = 1.2; // giây chờ phần mở đầu video
+const CHARS_PER_SEC = 3.2; // nhịp đọc chậm kiểu học tiếng
+const GAP = 0.6; // nghỉ giữa hai câu
+
+function computeTimes(lines: VideoLine[]): number[] {
   if (lines.some((l) => l.startMs != null)) {
     let last = 0;
     return lines.map((l) => {
@@ -27,13 +32,14 @@ function computeTimes(lines: VideoLine[], duration: number): number[] {
       return last;
     });
   }
-  if (!duration) return lines.map(() => Number.POSITIVE_INFINITY);
-  const weights = lines.map((l) => Math.max(1, Array.from(l.zh).length));
-  const total = weights.reduce((a, b) => a + b, 0);
-  let acc = 0;
-  return lines.map((_, i) => {
-    const start = (acc / total) * duration;
-    acc += weights[i];
+  let acc = LEAD_IN;
+  return lines.map((l) => {
+    const start = acc;
+    const chars = Math.max(
+      2,
+      Array.from(l.zh.replace(/[，。、！？：；…·\s]/g, "")).length,
+    );
+    acc += chars / CHARS_PER_SEC + GAP;
     return start;
   });
 }
@@ -50,7 +56,6 @@ export default function WatchDetailPage() {
   const [autoScroll, setAutoScroll] = useState(true);
   const [active, setActive] = useState<number | null>(null);
   const [readMax, setReadMax] = useState(0);
-  const [duration, setDuration] = useState(0);
   const seekRef = useRef<((s: number) => void) | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const savedAt = useRef(0);
@@ -62,8 +67,8 @@ export default function WatchDetailPage() {
   }, [autoScroll]);
 
   const times = useMemo(
-    () => (data ? computeTimes(data.lines, duration) : []),
-    [data, duration],
+    () => (data ? computeTimes(data.lines) : []),
+    [data],
   );
 
   const saveProgress = useCallback(
@@ -194,7 +199,6 @@ export default function WatchDetailPage() {
               youtubeId={data.youtubeId}
               seekRef={seekRef}
               onTick={onTick}
-              onReady={setDuration}
             />
             {showCaption && activeLine && (
               <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 rounded-xl bg-black/70 px-4 py-2.5 text-center backdrop-blur-sm">
