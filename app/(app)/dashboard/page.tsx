@@ -23,6 +23,8 @@ const PRACTICE_AREAS: {
   description: string;
   icon: IconName;
   character: string;
+  tile: string;
+  hanzi: string;
 }[] = [
   {
     href: "/vocabulary",
@@ -30,6 +32,8 @@ const PRACTICE_AREAS: {
     description: "Ghi nhớ từ mới, ôn đúng lúc",
     icon: "cards",
     character: "词",
+    tile: "bg-primary/10 text-primary",
+    hanzi: "text-primary/12",
   },
   {
     href: "/grammar",
@@ -37,6 +41,8 @@ const PRACTICE_AREAS: {
     description: "Hiểu cấu trúc qua ví dụ",
     icon: "book",
     character: "句",
+    tile: "bg-lavender/12 text-lavender",
+    hanzi: "text-lavender/15",
   },
   {
     href: "/listening",
@@ -44,6 +50,8 @@ const PRACTICE_AREAS: {
     description: "Làm quen với âm thanh",
     icon: "sound",
     character: "听",
+    tile: "bg-accent/12 text-accent",
+    hanzi: "text-accent/15",
   },
   {
     href: "/pronunciation",
@@ -51,6 +59,8 @@ const PRACTICE_AREAS: {
     description: "Luyện nói rõ từng âm",
     icon: "play",
     character: "说",
+    tile: "bg-good/12 text-good",
+    hanzi: "text-good/15",
   },
 ];
 
@@ -239,6 +249,7 @@ export default function DashboardPage() {
           value={stats.data?.dueNow ?? "—"}
           hint="Từ đã đến lịch ôn"
           icon="cards"
+          tone="text-primary bg-primary/10"
         />
         <Stat
           label="Bài đã xong"
@@ -249,6 +260,7 @@ export default function DashboardPage() {
           }
           hint={path.data?.levelName ?? ""}
           icon="route"
+          tone="text-lavender bg-lavender/12"
         />
         <Stat
           label="Từ đã thuộc"
@@ -281,11 +293,13 @@ export default function DashboardPage() {
             >
               <span
                 aria-hidden="true"
-                className="hanzi absolute right-4 top-2 text-6xl text-primary/8 transition-transform duration-300 motion-safe:group-hover:-rotate-6 motion-safe:group-hover:scale-110"
+                className={`hanzi absolute right-4 top-2 text-6xl transition-transform duration-300 motion-safe:group-hover:-rotate-6 motion-safe:group-hover:scale-110 ${area.hanzi}`}
               >
                 {area.character}
               </span>
-              <span className="icon-tile mb-5">
+              <span
+                className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl ${area.tile}`}
+              >
                 <Icon name={area.icon} size={21} />
               </span>
               <h3 className="font-semibold group-hover:text-primary">
