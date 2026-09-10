@@ -1,17 +1,52 @@
 "use client";
 
 import Link from "next/link";
+import { useCallback, useEffect, useRef } from "react";
 import { Icon } from "./icon";
 import { useVideos } from "@/lib/hooks";
+import type { VideoCard } from "@/lib/types";
 
-/** Kệ video ngang cho Tổng quan — vài video mới nhất, bấm vào là xem. */
-export function VideoShelf({ limit = 6 }: { limit?: number }) {
+/**
+ * Kệ video ngang, TỰ TRƯỢT SANG TRÁI theo chu kỳ (kiểu băng chuyền vô tận).
+ * Dừng khi rê chuột / chạm / focus, và khi người dùng bật giảm chuyển động.
+ */
+export function VideoShelf({ limit = 8 }: { limit?: number }) {
   const { data, isLoading } = useVideos();
-  if (isLoading || !data?.length) return null;
-  const videos = data.slice(0, limit);
+  const trackRef = useRef<HTMLUListElement>(null);
+  const paused = useRef(false);
+
+  const videos = (data ?? []).slice(0, limit);
+  // Nhân đôi để cuộn vòng không thấy điểm nối.
+  const loop = videos.length ? [...videos, ...videos] : [];
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el || loop.length === 0) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const step = () => {
+      if (paused.current) return;
+      const half = el.scrollWidth / 2;
+      // gần hết nửa đầu → nhảy về đầu (không hiệu ứng) rồi đẩy tiếp.
+      if (el.scrollLeft >= half - 4) {
+        el.scrollTo({ left: el.scrollLeft - half });
+      }
+      const card = el.querySelector<HTMLElement>("li");
+      el.scrollBy({ left: (card?.offsetWidth ?? 180) + 12, behavior: "smooth" });
+    };
+
+    const id = window.setInterval(step, 3200);
+    return () => window.clearInterval(id);
+  }, [loop.length]);
+
+  const setPaused = useCallback((v: boolean) => {
+    paused.current = v;
+  }, []);
+
+  if (isLoading || videos.length === 0) return null;
 
   return (
-    <section className="reveal rounded-3xl border border-border bg-[linear-gradient(180deg,#f2fbf6,#ffffff)] p-5 sm:p-6">
+    <section className="reveal overflow-hidden rounded-3xl border border-border bg-[linear-gradient(180deg,#f1fbf6,#ffffff)] p-5 sm:p-6">
       <div className="mb-4 flex flex-wrap items-center gap-2.5">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-good/15 text-good">
           <Icon name="play" size={20} />
@@ -21,7 +56,7 @@ export function VideoShelf({ limit = 6 }: { limit?: number }) {
           MIỄN PHÍ
         </span>
         <span className="hidden gap-1.5 sm:flex">
-          {["Phụ đề đồng bộ", "Luyện nghe", "Gõ nghe"].map((t) => (
+          {["Phụ đề đồng bộ", "Máy nhắc chữ", "Dịch tiếng Việt"].map((t) => (
             <span
               key={t}
               className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted"
@@ -38,39 +73,53 @@ export function VideoShelf({ limit = 6 }: { limit?: number }) {
         </Link>
       </div>
 
-      <ul className="flex snap-x gap-3 overflow-x-auto pb-1">
-        {videos.map((v) => (
-          <li key={v.id} className="w-40 shrink-0 snap-start sm:w-44">
-            <Link href={`/watch/${v.id}`} className="group block">
-              <div className="relative aspect-video overflow-hidden rounded-xl bg-surface-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={
-                    v.thumbnailUrl ??
-                    `https://i.ytimg.com/vi/${v.youtubeId}/hqdefault.jpg`
-                  }
-                  alt=""
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                />
-                <span className="absolute inset-0 flex items-center justify-center">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/90 text-primary-fg shadow-lg transition-transform group-hover:scale-110">
-                    <Icon name="play" size={16} />
-                  </span>
-                </span>
-                {v.hskLevel != null && (
-                  <span className="absolute left-1.5 top-1.5 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-                    HSK {v.hskLevel}
-                  </span>
-                )}
-              </div>
-              <p className="mt-1.5 line-clamp-2 text-xs font-medium leading-snug">
-                {v.title}
-              </p>
-            </Link>
-          </li>
+      <ul
+        ref={trackRef}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocusCapture={() => setPaused(true)}
+        onBlurCapture={() => setPaused(false)}
+        onTouchStart={() => setPaused(true)}
+        className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {loop.map((v, i) => (
+          <ShelfCard key={`${v.id}-${i}`} v={v} />
         ))}
       </ul>
     </section>
+  );
+}
+
+function ShelfCard({ v }: { v: VideoCard }) {
+  return (
+    <li className="w-44 shrink-0 sm:w-48">
+      <Link href={`/watch/${v.id}`} className="group block">
+        <div className="relative aspect-video overflow-hidden rounded-xl bg-surface-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={
+              v.thumbnailUrl ??
+              `https://i.ytimg.com/vi/${v.youtubeId}/hqdefault.jpg`
+            }
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <span className="absolute inset-0 flex items-center justify-center">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/90 text-primary-fg shadow-lg transition-transform group-hover:scale-110">
+              <Icon name="play" size={16} />
+            </span>
+          </span>
+          {v.hskLevel != null && (
+            <span className="absolute left-1.5 top-1.5 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+              HSK {v.hskLevel}
+            </span>
+          )}
+        </div>
+        <p className="mt-1.5 line-clamp-2 text-xs font-medium leading-snug">
+          {v.title}
+        </p>
+      </Link>
+    </li>
   );
 }
