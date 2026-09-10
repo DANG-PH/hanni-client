@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Brand } from "./sidebar";
 import { Icon } from "./icon";
+import { ThemeToggle } from "./theme-toggle";
 
 export function AuthShell({
   title,
@@ -13,7 +14,7 @@ export function AuthShell({
   children: ReactNode;
 }) {
   return (
-    <div className="page-wrap grid min-h-[calc(100vh-170px)] items-center gap-12 py-10! lg:grid-cols-2 lg:gap-24">
+    <div className="auth-screen page-wrap grid min-h-[calc(100vh-170px)] items-center gap-12 py-5! md:py-10! lg:grid-cols-2 lg:gap-24">
       <aside className="reveal relative hidden overflow-hidden rounded-3xl border border-primary/10 bg-primary/5 p-10 lg:block">
         <Link href="/" aria-label="Hanni — trang chủ">
           <Brand />
@@ -43,17 +44,42 @@ export function AuthShell({
           Học theo nhịp của bạn. Tiến bộ theo cách của bạn.
         </div>
       </aside>
-      <div className="reveal mx-auto w-full max-w-md">
-        <Link
-          href="/"
-          className="mb-8 inline-block"
-          aria-label="Hanni — trang chủ"
-        >
-          <Brand />
-        </Link>
-        <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
-        <p className="mt-3 text-sm leading-6 text-muted">{description}</p>
-        {children}
+      <div className="auth-content reveal mx-auto w-full max-w-md">
+        <header className="auth-header contents">
+          <Link
+            href="/"
+            className="auth-brand mb-8 inline-block"
+            aria-label="Hanni — trang chủ"
+          >
+            <Brand />
+          </Link>
+          <div className="hidden items-center gap-3 max-md:flex">
+            <ThemeToggle />
+            <span
+              aria-label="Ngôn ngữ: Tiếng Việt"
+              className="rounded-md bg-primary/8 px-2 py-1 text-[10px] font-bold tracking-wider text-primary"
+            >
+              VI
+            </span>
+          </div>
+        </header>
+        <main id="main-content" className="auth-form-card">
+          <span className="auth-mobile-label section-label hidden">
+            <Icon name="spark" size={12} /> MỖI NGÀY MỘT CHÚT TIẾNG TRUNG
+          </span>
+          <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+          <p className="mt-3 text-sm leading-6 text-muted">{description}</p>
+          {children}
+        </main>
+        <footer className="auth-mobile-footer hidden">
+          <span>© {new Date().getFullYear()} Hanni</span>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 transition-colors hover:text-primary"
+          >
+            <Icon name="back" size={13} /> Về trang chủ
+          </Link>
+        </footer>
       </div>
     </div>
   );

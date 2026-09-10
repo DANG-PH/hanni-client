@@ -53,7 +53,7 @@ function RegisterContent() {
       title="Bắt đầu cùng Hanni"
       description="Tạo tài khoản để lưu tiến độ và học theo nhịp của riêng bạn."
     >
-      <Card className="mt-6 space-y-4">
+      <Card className="register-fields mt-6 space-y-4">
         <GoogleButton
           onSuccess={async (isNewUser) => {
             await refresh();
@@ -74,7 +74,11 @@ function RegisterContent() {
         )}
 
         <form onSubmit={onSubmit} className="space-y-4">
+          <label htmlFor="register-name" className="register-field-label hidden">
+            Tên hiển thị
+          </label>
           <input
+            id="register-name"
             required
             aria-label="Tên hiển thị"
             autoComplete="nickname"
@@ -83,7 +87,11 @@ function RegisterContent() {
             onChange={set("displayName")}
             className="field"
           />
+          <label htmlFor="register-email" className="register-field-label hidden">
+            Email
+          </label>
           <input
+            id="register-email"
             type="email"
             required
             aria-label="Địa chỉ email"
@@ -93,7 +101,11 @@ function RegisterContent() {
             onChange={set("email")}
             className="field"
           />
+          <label htmlFor="register-password" className="register-field-label hidden">
+            Mật khẩu
+          </label>
           <input
+            id="register-password"
             type="password"
             required
             minLength={8}
@@ -110,7 +122,7 @@ function RegisterContent() {
           </Button>
         </form>
 
-        <p className="text-sm text-muted">
+        <p className="register-signin text-sm text-muted">
           Đã có tài khoản?{" "}
           <Link
             href={`/login?next=${encodeURIComponent(next)}`}

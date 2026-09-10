@@ -988,6 +988,127 @@ body:has(.mobile-drawer[open]) {
   }
 }
 
+/* Đăng ký mobile: header gọn và một thẻ chung cho tiêu đề, biểu mẫu. */
+@media (max-width: 767px) {
+  .auth-screen {
+    display: block;
+    min-height: 100svh;
+    padding-inline: 24px;
+    background:
+      radial-gradient(
+        ellipse at 0 28%,
+        color-mix(in srgb, var(--primary) 5%, transparent),
+        transparent 48%
+      ),
+      var(--surface);
+  }
+  .auth-content {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - 40px);
+    max-width: 430px;
+  }
+  .auth-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .auth-brand {
+    margin-bottom: 0;
+  }
+  .auth-brand .text-muted {
+    display: none;
+  }
+  .auth-form-card {
+    padding: 28px 24px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--primary) 3%, var(--surface));
+    box-shadow:
+      0 20px 55px -35px #202b3e55,
+      0 3px 5px #202b3e08;
+  }
+  .auth-mobile-label {
+    display: inline-flex;
+    margin-bottom: 20px;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+  .auth-form-card h1 {
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .auth-form-card > p {
+    margin-top: 10px;
+  }
+  .register-fields {
+    margin-top: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .register-fields form {
+    display: flex;
+    flex-direction: column;
+  }
+  .register-field-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .register-fields .field {
+    min-height: 48px;
+    font-size: 16px;
+  }
+  .register-fields button[type="submit"] {
+    min-height: 48px;
+    box-shadow: 0 5px 12px color-mix(in srgb, var(--primary) 18%, transparent);
+  }
+  .register-signin {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 24px;
+  }
+  .register-signin a {
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .auth-mobile-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: auto;
+    padding-top: 28px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+  :root[data-theme="dark"] .auth-form-card {
+    box-shadow: 0 20px 55px -35px #0009;
+  }
+}
+@media (max-width: 359px) {
+  .auth-screen {
+    padding-inline: 16px;
+  }
+  .auth-form-card {
+    padding: 24px 18px;
+  }
+  .auth-form-card h1 {
+    font-size: 25px;
+  }
+  .auth-mobile-label {
+    font-size: 8px;
+  }
+}
+
 /* ===== Nền tô nhẹ theo token (tự đổi sáng/tối) ===== */
 .tint-primary {
   background: linear-gradient(
