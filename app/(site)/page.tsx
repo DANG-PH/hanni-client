@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/icon";
+import { HskCoverflow } from "@/components/hsk-coverflow";
 import { LearningJourney } from "@/components/learning-journey";
 import { LinkButton } from "@/components/ui";
 import { StudyArtwork } from "@/components/study-artwork";
@@ -323,37 +324,11 @@ export default function Home() {
             <LearningJourney />
           </div>
 
-          <p className="reveal mt-8 text-sm font-semibold text-muted">
-            Hoặc chọn thẳng cấp độ của bạn:
+          <p className="reveal mt-9 text-sm font-semibold text-muted">
+            Chín cấp HSK 3.0 — chọn nơi bạn muốn bắt đầu:
           </p>
-          <div className="reveal-group mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-7">
-            {[
-              { level: 1, name: "Nhập môn", character: "一" },
-              { level: 2, name: "Sơ cấp", character: "二" },
-              { level: 3, name: "Sơ cấp mở rộng", character: "三" },
-              { level: 4, name: "Trung cấp", character: "四" },
-              { level: 5, name: "Trung cấp mở rộng", character: "五" },
-              { level: 6, name: "Trung cấp nâng cao", character: "六" },
-              { level: 7, name: "Cao cấp", character: "七" },
-            ].map((level) => (
-              <Link
-                key={level.level}
-                href={`/learn?level=${level.level}`}
-                className="hover-card panel group relative flex min-h-36 flex-col items-center justify-center gap-2 overflow-hidden px-3 py-5 text-center"
-              >
-                <span
-                  aria-hidden="true"
-                  className="hanzi text-3xl text-primary/65 transition-transform group-hover:scale-110"
-                >
-                  {level.character}
-                </span>
-                <h3 className="mt-1 text-sm font-bold">
-                  HSK {level.level === 7 ? "7–9" : level.level}
-                </h3>
-                <p className="text-[11px] text-muted">{level.name}</p>
-                <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 bg-primary transition-all group-hover:w-full" />
-              </Link>
-            ))}
+          <div className="reveal mt-2">
+            <HskCoverflow />
           </div>
         </section>
       </div>
