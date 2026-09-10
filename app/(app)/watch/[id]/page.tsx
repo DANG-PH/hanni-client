@@ -72,6 +72,16 @@ export default function WatchDetailPage() {
     [data],
   );
 
+  // Đổi tiêu đề tab trình duyệt theo tên video đang xem.
+  useEffect(() => {
+    if (!data) return;
+    const prev = document.title;
+    document.title = `${data.title} · Hanni`;
+    return () => {
+      document.title = prev;
+    };
+  }, [data]);
+
   useEffect(() => {
     const vp = viewportRef.current;
     if (!vp) return;

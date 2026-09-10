@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Icon } from "@/components/icon";
+import { LearningJourney } from "@/components/learning-journey";
 import { LessonPath } from "@/components/lesson-path";
 import {
   Button,
@@ -51,6 +52,8 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
           <Icon name="cards" size={17} /> Ôn tập hôm nay
         </LinkButton>
       </PageHeading>
+
+      <LearningJourney />
 
       {!!data?.levels.length && (
         <div className="flex flex-wrap gap-2" aria-label="Chọn cấp độ HSK">
