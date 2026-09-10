@@ -1,17 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AvatarEditor } from "@/components/avatar-editor";
 import { Icon } from "@/components/icon";
 import {
   Button,
   Card,
+  ErrorNote,
   LinkButton,
   PageHeading,
   Spinner,
 } from "@/components/ui";
+import { api, ApiError } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { TIMEZONES } from "@/lib/timezones";
 
@@ -108,16 +110,21 @@ export default function AccountPage() {
                 <h2 className="font-semibold">Bảo mật tài khoản</h2>
                 <p className="mt-1 text-sm leading-6 text-muted">
                   {user.hasPassword
-                    ? "Bạn có thể yêu cầu đặt lại mật khẩu qua email đã đăng ký."
-                    : "Tài khoản của bạn hiện đăng nhập qua dịch vụ liên kết."}
+                    ? "Đổi mật khẩu ngay tại đây, hoặc đặt lại qua email nếu bạn quên."
+                    : "Bạn đang đăng nhập qua Google. Có thể đặt thêm mật khẩu để đăng nhập bằng email."}
                 </p>
               </div>
             </div>
-            <div className="mt-5 flex flex-wrap items-center gap-3">
+
+            <PasswordForm
+              hasPassword={user.hasPassword}
+              onChanged={() => void refresh()}
+            />
+
+            <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-4">
               {user.hasPassword && (
-                <LinkButton href="/forgot-password" variant="secondary">
-                  Đặt lại mật khẩu
-                  <Icon name="arrow" size={15} />
+                <LinkButton href="/forgot-password" variant="ghost">
+                  Quên mật khẩu?
                 </LinkButton>
               )}
               <Button
@@ -199,5 +206,127 @@ export default function AccountPage() {
         </aside>
       </div>
     </div>
+  );
+}
+
+function PasswordForm({
+  hasPassword,
+  onChanged,
+}: {
+  hasPassword: boolean;
+  onChanged: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [cur, setCur] = useState("");
+  const [next, setNext] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    setError("");
+    if (next.length < 8) {
+      setError("Mật khẩu mới cần ít nhất 8 ký tự.");
+      return;
+    }
+    if (next !== confirm) {
+      setError("Hai ô mật khẩu mới không khớp.");
+      return;
+    }
+    setBusy(true);
+    try {
+      await api.post("/users/me/password", {
+        currentPassword: hasPassword ? cur : undefined,
+        newPassword: next,
+      });
+      setDone(true);
+      setOpen(false);
+      setCur("");
+      setNext("");
+      setConfirm("");
+      onChanged();
+    } catch (err) {
+      setError(
+        err instanceof ApiError ? err.message : "Chưa đổi được mật khẩu.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!open) {
+    return (
+      <div className="mt-5">
+        <Button variant="secondary" onClick={() => setOpen(true)}>
+          <Icon name="lock" size={16} />
+          {hasPassword ? "Đổi mật khẩu" : "Đặt mật khẩu"}
+        </Button>
+        {done && (
+          <p className="mt-2 flex items-center gap-1.5 text-sm text-good">
+            <Icon name="check" size={15} /> Đã cập nhật mật khẩu.
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={(e) => void submit(e)} className="mt-5 space-y-3">
+      {hasPassword && (
+        <label className="block text-sm font-medium">
+          Mật khẩu hiện tại
+          <input
+            type="password"
+            autoComplete="current-password"
+            required
+            value={cur}
+            onChange={(e) => setCur(e.target.value)}
+            className="field mt-1.5"
+          />
+        </label>
+      )}
+      <label className="block text-sm font-medium">
+        Mật khẩu mới
+        <input
+          type="password"
+          autoComplete="new-password"
+          required
+          minLength={8}
+          value={next}
+          onChange={(e) => setNext(e.target.value)}
+          className="field mt-1.5"
+        />
+      </label>
+      <label className="block text-sm font-medium">
+        Nhập lại mật khẩu mới
+        <input
+          type="password"
+          autoComplete="new-password"
+          required
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          className="field mt-1.5"
+        />
+      </label>
+      {error && <ErrorNote>{error}</ErrorNote>}
+      <div className="flex gap-3">
+        <Button type="submit" disabled={busy}>
+          {busy ? "Đang lưu…" : "Lưu mật khẩu"}
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={busy}
+          onClick={() => {
+            setOpen(false);
+            setError("");
+          }}
+        >
+          Huỷ
+        </Button>
+      </div>
+    </form>
   );
 }

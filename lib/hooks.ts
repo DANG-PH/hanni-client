@@ -6,6 +6,8 @@ import type {
   Achievement,
   ExamHistory,
   Leaderboard,
+  LeaderboardMetric,
+  LeaderboardMetricKey,
   GrammarDetail,
   GrammarLevel,
   GrammarListItem,
@@ -101,6 +103,10 @@ export function useExamHistory() {
   return useSWR<ExamHistory>("/exams/attempts", fetcher);
 }
 
-export function useLeaderboard() {
-  return useSWR<Leaderboard>("/leaderboard", fetcher);
+export function useLeaderboardMetrics() {
+  return useSWR<LeaderboardMetric[]>("/leaderboard/metrics", fetcher);
+}
+
+export function useLeaderboard(metric: LeaderboardMetricKey) {
+  return useSWR<Leaderboard>(`/leaderboard?metric=${metric}`, fetcher);
 }

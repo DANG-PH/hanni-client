@@ -292,17 +292,28 @@ export interface ExamHistory {
   };
 }
 
+export type LeaderboardMetricKey = "learned" | "streak" | "longest" | "lessons";
+
+export interface LeaderboardMetric {
+  key: LeaderboardMetricKey;
+  label: string;
+  unit: string;
+}
+
 export interface LeaderboardRow {
   rank: number;
   userId: string;
   displayName: string;
   avatarUrl: string | null;
-  learnedWords: number;
+  value: number;
   currentStreak: number;
   isMe: boolean;
 }
 
 export interface Leaderboard {
+  metric: LeaderboardMetricKey;
+  label: string;
+  unit: string;
   rows: LeaderboardRow[];
-  me: { rank: number | null; learnedWords: number; totalRanked: number };
+  me: { rank: number | null; value: number; totalRanked: number };
 }
