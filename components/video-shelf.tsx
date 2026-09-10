@@ -149,7 +149,7 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
         onPointerUp={onUp}
         onPointerCancel={onUp}
         onClickCapture={onClickCapture}
-        className="-mx-1 flex cursor-grab touch-pan-x select-none gap-3 overflow-x-auto px-1 pb-1 [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
+        className="-mx-1 flex cursor-grab touch-pan-x select-none gap-3 overflow-x-auto px-1 pb-1 [mask-image:linear-gradient(90deg,transparent,#000_28px,#000_calc(100%-28px),transparent)] [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
       >
         {list.map((v, i) => (
           <ShelfCard key={`${v.id}-${i}`} v={v} dup={i >= videos.length} />
