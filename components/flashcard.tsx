@@ -73,7 +73,7 @@ export function Flashcard({
   }, [revealed, busy, onRate, start]);
 
   return (
-    <div className="panel overflow-hidden">
+    <div className="reveal panel overflow-hidden">
       <div className="flex items-center justify-between border-b border-border px-5 py-4 text-xs text-muted">
         <span className="flex items-center gap-2">
           <Icon name="cards" size={16} />
@@ -141,7 +141,7 @@ export function Flashcard({
                     key={r.key}
                     disabled={busy}
                     onClick={() => onRate(r.key, Date.now() - start)}
-                    className={`rounded-xl border px-2 py-3 transition-opacity hover:opacity-75 disabled:pointer-events-none disabled:opacity-40 ${r.cls}`}
+                    className={`motion-button rounded-xl border px-2 py-3 transition-opacity hover:opacity-75 disabled:pointer-events-none disabled:opacity-40 ${r.cls}`}
                   >
                     <span className="text-sm font-semibold">{r.label}</span>
                     <span className="mt-1 block text-[10px]">{r.hint}</span>

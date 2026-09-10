@@ -13,7 +13,7 @@ export function LevelCard({ level }: { level: LevelBucket }) {
   return (
     <Link
       href={`/vocabulary?level=${level.level}`}
-      className="panel group block p-5 transition-colors hover:border-primary/40"
+      className="reveal hover-card panel group block p-5 transition-colors hover:border-primary/40"
     >
       <div className="flex items-start justify-between">
         <span

@@ -32,7 +32,7 @@ export function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur-lg">
+    <header className="site-nav nav-enter sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur-lg">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:p-3"

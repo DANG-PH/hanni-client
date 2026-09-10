@@ -71,7 +71,7 @@ export default function AchievementsPage() {
               {data.map((a) => (
                 <div
                   key={a.id}
-                  className={`panel p-6 ${a.unlocked ? "border-primary/25" : ""}`}
+                  className={`reveal hover-card panel p-6 ${a.unlocked ? "border-primary/25" : ""}`}
                 >
                   <div className="flex items-start justify-between">
                     <span

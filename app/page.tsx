@@ -47,7 +47,7 @@ export default function Home() {
           className="absolute -right-32 top-0 h-[650px] w-[650px] rounded-full bg-primary/4 blur-3xl"
         />
         <div className="page-wrap relative grid items-center gap-14 py-16! lg:grid-cols-[1.2fr_1fr] lg:gap-24 lg:py-24!">
-          <div>
+          <div className="reveal-group">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
               TIẾNG TRUNG CHO NGƯỜI VIỆT
@@ -92,7 +92,7 @@ export default function Home() {
         </div>
       </section>
       <section id="cach-hoc" className="page-wrap scroll-mt-24 py-16!">
-        <div className="mb-8">
+        <div className="reveal mb-8">
           <p className="eyebrow">NHẸ NHÀNG MÀ HIỆU QUẢ</p>
           <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
             Một góc học tập dành riêng cho bạn
@@ -100,7 +100,7 @@ export default function Home() {
         </div>
         <div className="grid gap-5 md:grid-cols-3">
           {FEATURES.map((f) => (
-            <div key={f.title} className="panel p-7">
+            <div key={f.title} className="reveal hover-card panel p-7">
               <span
                 className={`flex h-12 w-12 items-center justify-center rounded-2xl ${f.tone}`}
               >
@@ -113,7 +113,7 @@ export default function Home() {
         </div>
       </section>
       <section id="lo-trinh" className="page-wrap scroll-mt-24 pb-16! pt-0!">
-        <div className="panel overflow-hidden lg:flex">
+        <div className="reveal panel overflow-hidden lg:flex">
           <div className="bg-primary/5 p-8 lg:w-[38%] lg:p-10">
             <p className="eyebrow">LỘ TRÌNH HSK 3.0</p>
             <h2 className="mt-3 text-3xl leading-tight font-semibold">

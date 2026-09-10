@@ -81,7 +81,7 @@ export function QuizRunner({
               key={opt}
               aria-pressed={isPicked}
               onClick={() => setPicked(opt)}
-              className={`flex min-h-14 w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition-colors ${
+              className={`motion-button flex min-h-14 w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition-colors ${
                 isPicked
                   ? "border-primary bg-primary/10"
                   : "border-border hover:bg-surface-2"

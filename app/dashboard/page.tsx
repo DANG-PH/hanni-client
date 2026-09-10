@@ -38,7 +38,7 @@ export default function DashboardPage() {
         </ErrorNote>
       )}
       <div className="grid gap-5 lg:grid-cols-[1.8fr_1fr]">
-        <section className="relative overflow-hidden rounded-2xl border border-primary/15 bg-primary/6 p-6 sm:p-8">
+        <section className="reveal relative overflow-hidden rounded-2xl border border-primary/15 bg-primary/6 p-6 sm:p-8">
           <span
             aria-hidden="true"
             className="hanzi absolute -bottom-10 right-4 rotate-[-12deg] text-[180px] leading-none text-primary/6"

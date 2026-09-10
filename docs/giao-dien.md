@@ -52,3 +52,18 @@ Chạy `npm ci`, sau đó `npm run dev`. Trang chủ và màn đăng nhập có 
 - Chromium/Playwright: kiểm tra bố cục tại 320, 390, 768 và 1440px; không tràn ngang ở các màn đã kiểm tra.
 - Kiểm tra lật thẻ minh họa, liên kết chọn HSK, tìm kiếm, trạng thái trống/lỗi/thử lại, menu mobile, flashcard bàn phím/chạm, chọn đáp án và hoàn tất quiz.
 - Các kiểm tra tương tác dùng mock API ngoài repository. Chưa xác nhận tích hợp với backend thật trong đợt chỉnh giao diện này.
+
+## Hiệu ứng vào trang và hover
+
+Hiệu ứng tham khảo CSS trong `../index.html`, giữ bảng màu sáng của Hanni.
+
+- Vào trang: mờ hiện trong 600ms; header xuất hiện nhẹ trong 1000ms.
+- Khối nội dung hiện khi cuộn vào màn hình: 1200ms, dịch lên 26px (18px trên mobile), lệch nhau 80ms và tối đa 320ms cho mỗi nhóm.
+- Hover: chuyển tiếp 420ms, thẻ nâng 5px và tăng bóng/viền; nút nâng 3px, mũi tên dịch nhẹ. Nhấn nút thu nhẹ trong 160ms.
+- Hiệu ứng áp dụng cố định, không phụ thuộc cài đặt giảm chuyển động của hệ điều hành, theo yêu cầu thiết kế.
+- Reveal chạy một lần mỗi lần vào trang và hỗ trợ nội dung được nạp sau. Tab vào phần tử sẽ hiện ngay; không thêm thời gian chờ vào API.
+- `app/template.tsx` khởi động hiệu ứng khi đổi trang; `components/page-motion.tsx` quản lý observer và dọn dẹp khi rời trang. Header và auth context vẫn giữ nguyên giữa các trang.
+- Chỉnh nhịp bằng `--reveal-duration`, `--reveal-distance`, `--motion-ease`, `--hover-duration` trong `app/globals.css`. Thêm class `reveal` vào khối, `reveal-group` vào nhóm cần hiện lần lượt, `hover-card` hoặc `motion-button` cho hover.
+- Nội dung vẫn hiển thị khi JavaScript/IntersectionObserver không khả dụng; bản in không giữ trạng thái ẩn của reveal.
+
+Kiểm tra hiệu ứng bằng Chromium: thời lượng và độ trễ, reveal khi cuộn, hover nâng thẻ, chuyển trang, nội dung API nạp sau, focus bàn phím, mobile, JavaScript tắt và bản in đều đạt. Đã xác nhận hiệu ứng vẫn chạy khi hệ điều hành bật giảm chuyển động theo yêu cầu.

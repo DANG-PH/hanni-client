@@ -83,7 +83,7 @@ function VocabularyContent() {
               key={l ?? "all"}
               onClick={() => selectLevel(l)}
               aria-pressed={level === l}
-              className={`min-h-10 rounded-xl border px-3.5 py-2 text-xs font-medium transition-colors ${level === l ? "border-primary bg-primary text-primary-fg" : "border-border bg-surface text-muted hover:border-primary/40 hover:text-primary"}`}
+              className={`motion-button min-h-10 rounded-xl border px-3.5 py-2 text-xs font-medium transition-colors ${level === l ? "border-primary bg-primary text-primary-fg" : "border-border bg-surface text-muted hover:border-primary/40 hover:text-primary"}`}
             >
               {l ? `HSK ${l}` : "Tất cả"}
             </button>
@@ -126,10 +126,7 @@ function VocabularyContent() {
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {words.data.items.map((w) => (
-              <Card
-                key={w.id}
-                className="transition-colors hover:border-primary/30"
-              >
+              <Card key={w.id} className="hover-card">
                 <div className="flex items-start justify-between gap-3">
                   <span
                     lang="zh"

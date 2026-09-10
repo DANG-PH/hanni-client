@@ -12,7 +12,7 @@ export function AuthShell({
 }) {
   return (
     <div className="page-wrap grid min-h-[calc(100vh-170px)] items-center gap-12 py-10! lg:grid-cols-2 lg:gap-24">
-      <aside className="relative hidden overflow-hidden rounded-3xl border border-primary/10 bg-primary/5 p-10 lg:block">
+      <aside className="reveal relative hidden overflow-hidden rounded-3xl border border-primary/10 bg-primary/5 p-10 lg:block">
         <p className="eyebrow">MỖI NGÀY MỘT CHÚT</p>
         <h2 className="mt-5 text-4xl leading-tight font-semibold tracking-tight">
           Một ngôn ngữ mới.
@@ -38,7 +38,7 @@ export function AuthShell({
           Học theo nhịp của bạn. Tiến bộ theo cách của bạn.
         </div>
       </aside>
-      <div className="mx-auto w-full max-w-md">
+      <div className="reveal mx-auto w-full max-w-md">
         <span className="icon-tile mb-6">
           <Icon name="spark" size={23} />
         </span>

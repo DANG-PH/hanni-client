@@ -15,7 +15,7 @@ const VARIANTS: Record<Variant, string> = {
   danger: "border border-danger/20 bg-danger/8 text-danger hover:bg-danger/15",
 };
 const buttonClass =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50 disabled:pointer-events-none";
+  "motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50 disabled:pointer-events-none";
 export function Button({
   variant = "primary",
   className = "",
@@ -57,7 +57,9 @@ export function Card({
   children: ReactNode;
   className?: string;
 }) {
-  return <div className={`panel p-5 sm:p-6 ${className}`}>{children}</div>;
+  return (
+    <div className={`reveal panel p-5 sm:p-6 ${className}`}>{children}</div>
+  );
 }
 export function ProgressBar({
   value,
@@ -112,7 +114,7 @@ export function Stat({
   tone?: string;
 }) {
   return (
-    <div className="panel p-5">
+    <div className="reveal hover-card panel p-5">
       <div className="mb-4 flex items-center justify-between gap-2">
         <span className="text-sm text-muted">{label}</span>
         <span
@@ -148,7 +150,7 @@ export function PageHeading({
   children?: ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="reveal flex flex-wrap items-end justify-between gap-4">
       <div>
         {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">

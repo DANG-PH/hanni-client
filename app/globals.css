@@ -97,12 +97,115 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+/* Nhịp chuyển động tham khảo index.html; áp dụng cố định theo thiết kế. */
+:root {
+  --reveal-duration: 1200ms;
+  --reveal-distance: 26px;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --hover-duration: 420ms;
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--reveal-distance);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media screen {
+  .page-enter {
+    animation: page-in 600ms var(--motion-ease) backwards;
+  }
+  .nav-enter {
+    --reveal-distance: -12px;
+    animation: reveal-in 1000ms var(--motion-ease) backwards;
+  }
+  [data-reveal-state="pending"] {
+    opacity: 0;
+    translate: 0 var(--reveal-distance);
+    pointer-events: none;
+  }
+  [data-reveal-state="visible"] {
+    animation: reveal-in var(--reveal-duration) var(--motion-ease)
+      var(--reveal-delay, 0ms) backwards;
+  }
+  [data-reveal-state="focused"],
+  [data-reveal-state]:focus-within {
+    opacity: 1;
+    translate: none;
+    animation: none;
+    pointer-events: auto;
+  }
+
+  .panel,
+  .hover-card,
+  .motion-button,
+  .site-nav a,
+  .site-nav button {
+    transition:
+      transform var(--hover-duration) var(--motion-ease),
+      background-color var(--hover-duration) ease,
+      border-color var(--hover-duration) ease,
+      box-shadow var(--hover-duration) ease,
+      color var(--hover-duration) ease;
+  }
+  .motion-button svg,
+  .hover-card [data-icon="arrow"] {
+    transition: transform var(--hover-duration) var(--motion-ease);
+  }
+  .motion-button:active:not(:disabled) {
+    transform: translateY(1px) scale(0.98);
+    transition-duration: 160ms;
+  }
+  .field {
+    transition:
+      border-color 300ms ease,
+      box-shadow 300ms ease;
+  }
+  .field:focus {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 8%, transparent);
+  }
+}
+
+@media screen and (hover: hover) and (pointer: fine) {
+  .panel:hover,
+  .hover-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+    box-shadow: 0 14px 32px -15px
+      color-mix(in srgb, var(--primary) 25%, transparent);
+  }
+  .hover-card:hover {
+    transform: translateY(-5px);
+  }
+  .motion-button:hover:not(:active):not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px -10px
+      color-mix(in srgb, var(--primary) 45%, transparent);
+  }
+  .motion-button:hover [data-icon="arrow"],
+  .hover-card:hover [data-icon="arrow"] {
+    transform: translateX(3px);
+  }
+  .motion-button:hover [data-icon="refresh"] {
+    transform: rotate(-18deg);
+  }
+}
+
+@media screen and (max-width: 680px) {
+  :root {
+    --reveal-distance: 18px;
   }
 }
