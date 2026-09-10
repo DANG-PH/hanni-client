@@ -29,3 +29,17 @@ npm start
 ```
 
 Xem [tài liệu giao diện, phạm vi API, favicon và ảnh xem trước](docs/giao-dien.md).
+
+## Cài ứng dụng Hanni (PWA)
+
+Mở `/install` hoặc mục Cài đặt để cài Hanni trên thiết bị được hỗ trợ. PWA dùng logo Hanni, có màn hướng dẫn khi mất mạng và cho phép chủ động áp dụng bản cập nhật. Bài học, âm thanh và tiến độ vẫn cần mạng; thông báo đẩy và lịch nhắc học chờ backend.
+
+Service worker chỉ đăng ký ở bản production qua HTTPS hoặc localhost:
+
+```bash
+npm run test:pwa
+npm run build
+npm start
+```
+
+Xem [phạm vi, hướng dẫn triển khai và kiểm tra PWA](docs/pwa.md).
