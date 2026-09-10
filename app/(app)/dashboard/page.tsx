@@ -5,6 +5,7 @@ import { Avatar } from "@/components/avatar";
 import { HeroBanner } from "@/components/hero-banner";
 import { Icon, type IconName } from "@/components/icon";
 import { LessonPath } from "@/components/lesson-path";
+import { VideoShelf } from "@/components/video-shelf";
 import {
   Card,
   EmptyState,
@@ -300,6 +301,8 @@ export default function DashboardPage() {
           ))}
         </div>
       </section>
+
+      <VideoShelf />
 
       <section>
         <div className="mb-4 flex items-center justify-between">

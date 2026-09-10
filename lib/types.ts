@@ -259,6 +259,7 @@ export interface GrammarListItem {
   titleVi: string;
   titleZh: string;
   summaryVi: string;
+  flat?: boolean;
 }
 
 export interface GrammarExample {

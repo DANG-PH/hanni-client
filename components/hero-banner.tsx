@@ -18,21 +18,23 @@ export function HeroBanner({
   ctaHref: string;
 }) {
   return (
-    <section className="reveal relative isolate overflow-hidden rounded-3xl border border-border bg-surface p-6 sm:p-9 lg:p-10">
-      <div className="relative z-10 max-w-lg lg:max-w-[60%]">
+    <section className="reveal relative isolate overflow-hidden rounded-3xl border border-primary/15 bg-[linear-gradient(115deg,#fff2ef_0%,#fff8f2_45%,#ffffff_100%)] p-6 shadow-sm shadow-primary/5 sm:p-9 lg:p-11">
+      <div className="relative z-10 max-w-lg lg:max-w-[58%]">
         <p className="eyebrow mb-4 flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           Mỗi ngày một bước tiến
         </p>
-        <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+        <h1 className="text-[28px] font-extrabold leading-[1.15] tracking-tight sm:text-[40px]">
           {title}
           <br />
           <span className="text-primary">{highlight}</span>
         </h1>
-        <p className="mt-4 text-[15px] leading-7 text-muted">{subtitle}</p>
+        <p className="mt-4 max-w-md text-[15px] leading-7 text-muted">
+          {subtitle}
+        </p>
         <Link
           href={ctaHref}
-          className="motion-button mt-7 inline-flex items-center gap-2 rounded-2xl bg-primary px-6 py-3.5 text-sm font-semibold text-primary-fg shadow-sm"
+          className="motion-button mt-7 inline-flex items-center gap-2 rounded-2xl bg-primary px-7 py-4 text-[15px] font-bold text-primary-fg shadow-lg shadow-primary/25 transition-transform hover:-translate-y-0.5"
         >
           {ctaLabel}
           <Icon name="arrow" size={18} />
@@ -41,7 +43,7 @@ export function HeroBanner({
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 right-0 -z-10 hidden w-[38%] select-none overflow-hidden border-l border-border bg-primary/5 lg:flex lg:items-center lg:justify-center"
+        className="pointer-events-none absolute inset-y-0 right-0 -z-10 hidden w-[40%] select-none overflow-hidden border-l border-primary/10 bg-[radial-gradient(120%_120%_at_80%_20%,rgba(220,53,38,0.14),transparent_60%)] lg:flex lg:items-center lg:justify-center"
       >
         <div className="absolute -right-14 -top-20 h-64 w-64 rounded-full border border-primary/10" />
         <div className="absolute -bottom-24 -left-10 h-72 w-72 rounded-full border border-primary/10" />

@@ -87,7 +87,7 @@ export default function GrammarPage() {
             <ErrorNote>Chưa tải được ngữ pháp cấp này.</ErrorNote>
           ) : (
             <div className="space-y-3">
-              {grouped.map((point) => (
+              {grouped.filter((p) => !p.flat).map((point) => (
                 <GrammarRow
                   key={point.slug}
                   point={point}
@@ -99,6 +99,46 @@ export default function GrammarPage() {
                   }
                 />
               ))}
+
+              {grouped.some((p) => p.flat) && (
+                <details
+                  open={grouped.every((p) => p.flat)}
+                  className="rounded-2xl border border-border bg-surface"
+                >
+                  <summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold">
+                    <Icon
+                      name="arrow"
+                      size={14}
+                      className="mr-2 inline text-muted"
+                    />
+                    Toàn bộ mục ngữ pháp theo đại cương HSK{" "}
+                    {active === 7 ? "7–9" : active} (
+                    {grouped.filter((p) => p.flat).length})
+                  </summary>
+                  <ul className="divide-y divide-border border-t border-border">
+                    {grouped
+                      .filter((p) => p.flat)
+                      .map((p) => (
+                        <li
+                          key={p.slug}
+                          className="flex items-start gap-3 px-5 py-3"
+                        >
+                          <span className="hanzi shrink-0 text-sm text-primary">
+                            {p.titleZh}
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block text-sm font-medium">
+                              {p.titleVi}
+                            </span>
+                            <span className="block text-xs text-muted">
+                              {p.summaryVi}
+                            </span>
+                          </span>
+                        </li>
+                      ))}
+                  </ul>
+                </details>
+              )}
             </div>
           )}
         </>
