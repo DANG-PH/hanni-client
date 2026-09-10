@@ -756,6 +756,8 @@ body:has(.mobile-drawer[open]) {
   font-size: 11px;
 }
 .login-story {
+  --login-story-base: #c53b2b;
+  --login-story-glow: #df5946;
   position: relative;
   isolation: isolate;
   display: flex;
@@ -765,8 +767,12 @@ body:has(.mobile-drawer[open]) {
   min-width: 0;
   padding: 64px 32px;
   background:
-    radial-gradient(ellipse at 100% 100%, #e0513f 0, transparent 55%),
-    linear-gradient(145deg, #c83b29, #c52f20);
+    radial-gradient(
+      ellipse at 100% 100%,
+      var(--login-story-glow),
+      transparent 65%
+    ),
+    var(--login-story-base);
   color: #fff;
 }
 .login-story-pattern {
@@ -814,11 +820,8 @@ body:has(.mobile-drawer[open]) {
 }
 .login-video-frame {
   position: relative;
-  overflow: hidden;
-  border: 1px solid #ffffff29;
-  border-radius: 24px;
-  background: #c83b29;
-  box-shadow: 0 24px 60px -35px #6b160c80;
+  /* Khung trong suốt để cạnh video hòa trực tiếp vào gradient của panel. */
+  background: transparent;
 }
 .login-video {
   display: block;
@@ -826,6 +829,15 @@ body:has(.mobile-drawer[open]) {
   height: auto;
   aspect-ratio: 16/9;
   object-fit: contain;
+  /* Chỉ làm mờ cạnh, giữ nguyên màu và độ sáng của nhân vật ở giữa. */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 13%, #000 87%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 84%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 13%, #000 87%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 84%, transparent);
+  mask-composite: intersect;
 }
 .login-video-control {
   position: absolute;
@@ -841,7 +853,22 @@ body:has(.mobile-drawer[open]) {
   background: #641a1350;
   color: #fff;
   backdrop-filter: blur(8px);
-  transition: background-color 180ms ease;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 180ms ease,
+    background-color 180ms ease;
+}
+.login-video-frame:focus-within .login-video-control,
+.login-video-frame[data-controls-visible="true"] .login-video-control {
+  opacity: 1;
+  pointer-events: auto;
+}
+@media (hover: hover) and (pointer: fine) {
+  .login-video-frame:hover .login-video-control {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 .login-video-control:hover {
   background: #641a1390;
@@ -864,8 +891,8 @@ body:has(.mobile-drawer[open]) {
   box-shadow: 0 20px 55px -35px #0009;
 }
 :root[data-theme="dark"] .login-story {
-  background:
-    radial-gradient(ellipse at 100% 100%, #923527, transparent 55%), #71291f;
+  --login-story-base: #a43d30;
+  --login-story-glow: #b94938;
 }
 @media (min-width: 1600px) {
   .login-header,
