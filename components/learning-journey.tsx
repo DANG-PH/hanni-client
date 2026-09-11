@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type CSSProperties } from "react";
-import { Icon } from "./icon";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import styles from "./learning-journey.module.css";
 
 type Stage = {
@@ -81,8 +80,44 @@ const STAGES: Stage[] = [
 
 export function LearningJourney() {
   const [active, setActive] = useState(0);
-  const go = (direction: number) =>
-    setActive((current) => (current + direction + STAGES.length) % STAGES.length);
+  const mobileRef = useRef<HTMLDivElement>(null);
+  const touching = useRef(false);
+
+  useEffect(() => {
+    const mobileStack = mobileRef.current;
+    if (!mobileStack) return;
+
+    const mobile = window.matchMedia("(width < 40rem)");
+    let inView = false;
+    let timer: number | undefined;
+    const restart = () => {
+      window.clearInterval(timer);
+      // Chỉ tự chuyển khi người dùng đang xem chồng thẻ trên mobile.
+      if (!mobile.matches || !inView || document.hidden) return;
+      timer = window.setInterval(() => {
+        if (touching.current || mobileStack.contains(document.activeElement))
+          return;
+        setActive((current) => (current + 1) % STAGES.length);
+      }, 5000);
+    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting && entry.intersectionRatio >= 0.5;
+        restart();
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(mobileStack);
+    mobile.addEventListener("change", restart);
+    document.addEventListener("visibilitychange", restart);
+
+    return () => {
+      window.clearInterval(timer);
+      observer.disconnect();
+      mobile.removeEventListener("change", restart);
+      document.removeEventListener("visibilitychange", restart);
+    };
+  }, []);
 
   return (
     <section
@@ -127,7 +162,19 @@ export function LearningJourney() {
         </svg>
       </div>
 
-      <div className="sm:hidden">
+      <div
+        ref={mobileRef}
+        className="sm:hidden"
+        onPointerDown={() => {
+          touching.current = true;
+        }}
+        onPointerUp={() => {
+          touching.current = false;
+        }}
+        onPointerCancel={() => {
+          touching.current = false;
+        }}
+      >
         <ol className={styles.stack} aria-label="Sáu chặng học">
           {STAGES.map((stage, index) => {
             const depth = (index - active + STAGES.length) % STAGES.length;
@@ -145,31 +192,6 @@ export function LearningJourney() {
             );
           })}
         </ol>
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => go(-1)}
-            aria-label="Chặng trước"
-            className={styles.control}
-          >
-            <Icon name="back" size={18} className="rotate-90" />
-          </button>
-          <p className="text-xs font-semibold text-muted" aria-live="polite" aria-atomic="true">
-            Chặng <span className="text-primary">{active + 1}</span> / {STAGES.length}
-            <span className="sr-only">: {STAGES[active].title}</span>
-          </p>
-          <button
-            type="button"
-            onClick={() => go(1)}
-            aria-label="Chặng tiếp theo"
-            className={styles.control}
-          >
-            <Icon name="arrow" size={18} className="rotate-90" />
-          </button>
-        </div>
-        <p className="mt-2 text-center text-[11px] text-muted">
-          Chạm vào thẻ để bắt đầu học
-        </p>
       </div>
 
       <ol className="hidden gap-4 pb-2 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-3">
