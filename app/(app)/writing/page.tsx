@@ -21,6 +21,11 @@ export default function WritingPage() {
   const [level, setLevel] = useState<number | undefined>(1);
   const [q, setQ] = useState("");
   const [active, setActive] = useState<string | null>(null);
+  const [strokeCount, setStrokeCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    setStrokeCount(null);
+  }, [active]);
 
   useEffect(() => {
     fetch("/hanzi-strokes/index.json")
@@ -46,6 +51,40 @@ export default function WritingPage() {
   }, [index, level, q]);
 
   const activeEntry = index?.find((e) => e.c === active) ?? null;
+  const activeIdx = activeEntry
+    ? filtered.findIndex((e) => e.c === activeEntry.c)
+    : -1;
+
+  function step(delta: number) {
+    if (!filtered.length) return;
+    const base = activeIdx >= 0 ? activeIdx : 0;
+    const next = (base + delta + filtered.length) % filtered.length;
+    setActive(filtered[next].c);
+  }
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const target = e.target as HTMLElement;
+      if (
+        e.repeat ||
+        e.ctrlKey ||
+        e.metaKey ||
+        e.altKey ||
+        target.closest("input, textarea, select, [contenteditable]")
+      )
+        return;
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        step(1);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        step(-1);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtered, activeIdx]);
 
   if (loading || !user) return <Spinner />;
 
@@ -67,17 +106,46 @@ export default function WritingPage() {
             <Spinner />
           ) : (
             <>
-              <p lang="zh" className="hanzi text-5xl">
-                {activeEntry.c}
-              </p>
-              <p className="flex items-center gap-2 text-sm text-primary">
-                {activeEntry.pinyin}
-                <span className="rounded-lg bg-primary/8 px-2 py-0.5 text-[11px] font-medium">
-                  HSK {activeEntry.level}
-                </span>
-              </p>
+              <div className="flex w-full items-center justify-center gap-4">
+                <button
+                  onClick={() => step(-1)}
+                  disabled={filtered.length < 2}
+                  aria-label="Chữ trước"
+                  className="motion-button flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-surface text-muted hover:border-primary/40 hover:text-primary disabled:pointer-events-none disabled:opacity-40"
+                >
+                  <Icon name="back" size={16} />
+                </button>
+                <div className="flex flex-col items-center gap-1">
+                  <p lang="zh" className="hanzi text-5xl">
+                    {activeEntry.c}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-primary">
+                    {activeEntry.pinyin}
+                    <span className="rounded-lg bg-primary/8 px-2 py-0.5 text-[11px] font-medium">
+                      HSK {activeEntry.level}
+                    </span>
+                    {strokeCount != null && (
+                      <span className="rounded-lg bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-muted">
+                        {strokeCount} nét
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <button
+                  onClick={() => step(1)}
+                  disabled={filtered.length < 2}
+                  aria-label="Chữ tiếp theo"
+                  className="motion-button flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-surface text-muted hover:border-primary/40 hover:text-primary disabled:pointer-events-none disabled:opacity-40"
+                >
+                  <Icon name="arrow" size={16} />
+                </button>
+              </div>
               <div className="mt-4 w-full">
-                <HanziWriterCanvas key={activeEntry.c} char={activeEntry.c} />
+                <HanziWriterCanvas
+                  key={activeEntry.c}
+                  char={activeEntry.c}
+                  onLoaded={({ strokeCount: n }) => setStrokeCount(n)}
+                />
               </div>
             </>
           )}

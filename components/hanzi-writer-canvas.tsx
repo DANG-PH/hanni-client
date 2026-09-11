@@ -19,7 +19,13 @@ function cssVar(name: string): string {
 }
 
 /** Canvas luyện viết 1 Hán tự — 3 chế độ: xem hoạt hình, tô theo nét mờ, tự viết kiểm tra. */
-export function HanziWriterCanvas({ char }: { char: string }) {
+export function HanziWriterCanvas({
+  char,
+  onLoaded,
+}: {
+  char: string;
+  onLoaded?: (info: { strokeCount: number }) => void;
+}) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const writerRef = useRef<HanziWriter | null>(null);
   const [mode, setMode] = useState<Mode>("watch");
@@ -54,7 +60,10 @@ export function HanziWriterCanvas({ char }: { char: string }) {
           .then(onLoad)
           .catch(onError);
       },
-      onLoadCharDataSuccess: () => setStatus("ready"),
+      onLoadCharDataSuccess: (data) => {
+        setStatus("ready");
+        onLoaded?.({ strokeCount: data.strokes.length });
+      },
       onLoadCharDataError: () => setStatus("error"),
     });
     writerRef.current = writer;
@@ -63,6 +72,7 @@ export function HanziWriterCanvas({ char }: { char: string }) {
     return () => {
       writerRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [char]);
 
   function runMode(next: Mode) {
@@ -88,10 +98,11 @@ export function HanziWriterCanvas({ char }: { char: string }) {
       });
       return;
     }
-    // quiz "kiểm tra": không gợi ý nét mờ
+    // quiz "kiểm tra": không hiện nét mờ, không tự gợi ý sau khi sai — kiểm tra trí nhớ thật.
     writer.hideOutline({ duration: 0 });
     writer.hideCharacter({ duration: 0 });
     writer.quiz({
+      showHintAfterMisses: false,
       onMistake: () => setQuizFeedback({ state: "mistake" }),
       onCorrectStroke: () => setQuizFeedback({ state: "correct" }),
       onComplete: (res) =>
