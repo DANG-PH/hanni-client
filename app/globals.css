@@ -926,8 +926,8 @@ body:has(.mobile-drawer[open]) {
 @media (max-width: 767px) {
   .login-screen {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "header" "form";
-    grid-template-rows: auto 1fr;
+    grid-template-areas: "header" "mascot" "form";
+    grid-template-rows: auto auto 1fr;
     background:
       radial-gradient(
         ellipse at 0 28%,
@@ -957,7 +957,32 @@ body:has(.mobile-drawer[open]) {
     display: none;
   }
   .login-story {
+    grid-area: mascot;
+    display: flex;
+    min-height: 100px;
+    padding: 0 16px;
+    overflow: visible;
+    background: none;
+    color: inherit;
+  }
+  .login-story-content {
+    max-width: 180px;
+  }
+  .login-story-pattern,
+  .login-story::after,
+  .login-story-eyebrow,
+  .login-story-copy,
+  .login-story-note {
     display: none;
+  }
+  .login-video {
+    -webkit-mask-image: radial-gradient(circle closest-side, #000 78%, transparent);
+    mask-image: radial-gradient(circle closest-side, #000 78%, transparent);
+  }
+  .login-video-fallback img {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
   }
   .login-header img {
     width: 36px;
