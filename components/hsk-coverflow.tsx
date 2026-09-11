@@ -56,7 +56,8 @@ export function HskCoverflow() {
 
   return (
     <div
-      className="relative"
+      // Giới hạn thẻ 3D theo chiều ngang để không kéo rộng trang trên mobile.
+      className="relative overflow-x-clip"
       onPointerEnter={() => setPaused(true)}
       onPointerLeave={() => setPaused(false)}
     >
