@@ -27,6 +27,7 @@ export const NAV_GROUPS: {
       { href: "/grammar", label: "Ngữ pháp & mẫu câu", icon: "cards" },
       { href: "/listening", label: "Luyện nghe", icon: "headphones" },
       { href: "/pronunciation", label: "Luyện phát âm", icon: "mic" },
+      { href: "/writing", label: "Luyện viết Hán tự", icon: "pencil" },
       { href: "/exams", label: "Kiểm tra HSK", icon: "target" },
     ],
   },
