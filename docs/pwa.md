@@ -14,8 +14,9 @@ Triển khai phía client dựa trên các phần PWA đã đọc ở dự án `
 | iPhone/iPad | Hướng dẫn cài qua Safari; trình duyệt khác không cung cấp lời mời thì hướng dẫn dùng menu. |
 | Mất mạng | Thông báo ở trang đang mở; khi tải một trang mới mà mạng lỗi, trả màn hướng dẫn thử lại tại chính URL đó. |
 | Cập nhật | Worker mới chờ kích hoạt; thẻ cài hiển thị nút cập nhật. Chỉ tab bấm nút tải lại, các tab khác giữ nguyên trang. |
+| Thông báo đẩy | Thẻ `components/pwa/notification-card.tsx` trong `/settings` — chỉ hiện khi worker đã `ready` và trình duyệt hỗ trợ Push API. Bấm **Bật thông báo** xin quyền, đăng ký `PushManager` bằng khóa VAPID lấy từ `GET /push/public-key`, rồi lưu subscription qua `POST /push/subscribe`. Có nút **Gửi thử** (`POST /push/test`) và **Tắt thông báo** (huỷ ở trình duyệt + `DELETE /push/subscribe`). |
 
-Không thêm thư viện phụ thuộc hoặc dữ liệu học tập giả. Phần lưu đăng ký push, khóa VAPID, gửi thông báo và lịch nhắc học trong Lingora phụ thuộc backend riêng nên chưa chuyển sang Hanni, theo phạm vi đã thống nhất. Các API học tập và xác thực vẫn dùng backend Hanni hiện có.
+Không thêm thư viện phụ thuộc hoặc dữ liệu học tập giả. Phần lưu đăng ký push, khóa VAPID và gửi thông báo (tương ứng backend riêng trong Lingora) **đã chuyển sang Hanni** — xem bảng trên và `hanni-server` (`src/modules/push`). Lịch nhắc học tự động theo giờ ôn tập vẫn CHƯA làm — hiện chỉ có gửi thủ công (nút "Gửi thử") qua API, chưa có scheduler nhắc hằng ngày.
 
 ## Cache và kết nối
 
@@ -49,14 +50,14 @@ Runtime kiểm tra worker lúc đăng ký và khi quay lại tab có mạng. Wor
 
 ## Kiểm tra đã thực hiện
 
-- `npm run test:pwa`: đạt 8/8; kiểm tra phạm vi cache, API/POST/RSC, lỗi xác thực, offline fallback, kích hoạt và thông điệp cập nhật.
+- `npm run test:pwa`: đạt 12/12; kiểm tra phạm vi cache, API/POST/RSC, lỗi xác thực, offline fallback, kích hoạt, thông điệp cập nhật, và hiển thị/điều hướng thông báo đẩy (`push`, `notificationclick`).
 - `npm run build`: thành công, gồm kiểm tra TypeScript và tạo các route `/install`, `/manifest.webmanifest`.
 - `npm run lint`: 0 lỗi; còn 3 cảnh báo có sẵn ở trang xác minh email, avatar và auth context.
 - Chrome chạy bản production local với hồ sơ riêng: không có lỗi installability; manifest và icon trả 200, lời mời cài thật xuất hiện, header worker đúng.
 - Màn rộng và viewport 390 px: trang cài và màn offline không tràn ngang. Khi offline, API lỗi mạng, tải `/account` trả fallback với logo đầy đủ; bật mạng và bấm thử lại đi về đăng nhập theo luồng xác thực.
 - Kiểm tra bản worker mới với hai tab: không tự tải lại khi phát hiện cập nhật; tab bấm cập nhật tải lại; nội dung email đang nhập ở tab đăng nhập giữ nguyên.
 
-Chưa kiểm tra cài lên màn hình chính của iPhone/Android thật hoặc phiên học có backend. Kiểm tra Chrome ở trên xác nhận điều kiện cài và lời mời cài, chưa thực hiện cài ứng dụng vào hệ điều hành. Bài kiểm tra worker dùng mô phỏng API trình duyệt trong bộ kiểm thử, không đưa mock data vào ứng dụng.
+Chưa kiểm tra cài lên màn hình chính của iPhone/Android thật hoặc phiên học có backend. Kiểm tra Chrome ở trên xác nhận điều kiện cài và lời mời cài, chưa thực hiện cài ứng dụng vào hệ điều hành. Bài kiểm tra worker dùng mô phỏng API trình duyệt trong bộ kiểm thử, không đưa mock data vào ứng dụng. Tương tự, thẻ thông báo đẩy mới thêm đã kiểm tra qua API backend (đăng ký/gửi thử/huỷ qua `curl`) và test đơn vị cho `push`/`notificationclick` trong `sw.js`, nhưng CHƯA xin quyền thông báo thật và nhận push trên trình duyệt/thiết bị thật — cần người dùng bấm **Bật thông báo** ở `/settings` trên bản production rồi thử **Gửi thử** để xác nhận notification thật sự hiện ra.
 
 Để kiểm tra thủ công: mở `/install` ở bản production, xem Application → Manifest và Service Workers trong DevTools; chuyển Network sang Offline rồi tải lại một URL nội bộ. Bật mạng, bấm **Thử kết nối lại**. Với cập nhật, mở hai tab, thay phiên bản worker và bấm Update trong DevTools của môi trường thử nghiệm; nút cập nhật xuất hiện trong thẻ cài. Kiểm tra tab còn lại giữ nội dung đang nhập.
 

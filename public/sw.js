@@ -36,6 +36,40 @@ worker.addEventListener("message", (event) => {
     event.waitUntil(worker.skipWaiting());
 });
 
+worker.addEventListener("push", (event) => {
+  let payload = { title: "Hanni", body: "Bạn có thông báo mới." };
+  if (event.data) {
+    try {
+      payload = { ...payload, ...event.data.json() };
+    } catch {
+      payload.body = event.data.text();
+    }
+  }
+  const url = payload.url || "/dashboard";
+  event.waitUntil(
+    worker.registration.showNotification(payload.title, {
+      body: payload.body,
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      data: { url },
+    }),
+  );
+});
+
+worker.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || "/dashboard";
+  event.waitUntil(
+    worker.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clients) => {
+        const existing = clients.find((client) => client.url.includes(url));
+        if (existing) return existing.focus();
+        return worker.clients.openWindow(url);
+      }),
+  );
+});
+
 worker.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);

@@ -10,7 +10,8 @@ const source = fs.readFileSync(
 function harness(overrides = {}) {
   const handlers = new Map();
   const saved = [],
-    deleted = [];
+    deleted = [],
+    notified = [];
   let skipped = 0,
     claimed = 0;
   const fallback = new Response("offline");
@@ -26,10 +27,17 @@ function harness(overrides = {}) {
     skipWaiting: async () => {
       skipped++;
     },
+    registration: {
+      showNotification: async (title, options) => {
+        notified.push({ title, ...options });
+      },
+    },
     clients: {
       claim: async () => {
         claimed++;
       },
+      matchAll: async () => [],
+      openWindow: async () => undefined,
     },
     caches: {
       open: async () => cache,
@@ -75,6 +83,7 @@ function harness(overrides = {}) {
     request,
     saved,
     deleted,
+    notified,
     scope,
     fallback,
     skipped: () => skipped,
@@ -176,4 +185,68 @@ test("Giữ file hỗ trợ offline hoạt động nhưng không lưu video/audi
     ).intercepted,
     false,
   );
+});
+
+test("Push hiển thị thông báo từ payload JSON, dùng đường dẫn mặc định nếu thiếu url", async () => {
+  const h = harness();
+  await h.fire("push", {
+    data: { json: () => ({ title: "Bài ôn tới hạn", body: "12 từ đang chờ" }) },
+  });
+  assert.equal(h.notified.length, 1);
+  const [note] = h.notified;
+  assert.equal(note.title, "Bài ôn tới hạn");
+  assert.equal(note.body, "12 từ đang chờ");
+  assert.equal(note.icon, "/icons/icon-192.png");
+  assert.equal(note.badge, "/icons/icon-192.png");
+  assert.equal(note.data.url, "/dashboard");
+});
+
+test("Push không có payload vẫn hiển thị thông báo mặc định, không throw", async () => {
+  const h = harness();
+  await h.fire("push", {});
+  assert.equal(h.notified.length, 1);
+  assert.equal(h.notified[0].title, "Hanni");
+});
+
+test("Bấm vào thông báo mở tab hiện có nếu khớp url, không thì mở tab mới", async () => {
+  const existing = { url: "https://hanni.example/dashboard", focus: () => {} };
+  let focused = false;
+  existing.focus = () => {
+    focused = true;
+  };
+  const opened = [];
+  const h = harness({
+    clients: {
+      claim: async () => {},
+      matchAll: async () => [existing],
+      openWindow: async (url) => opened.push(url),
+    },
+  });
+  let closed = false;
+  await h.fire("notificationclick", {
+    notification: {
+      close: () => {
+        closed = true;
+      },
+      data: { url: "/dashboard" },
+    },
+  });
+  assert.equal(closed, true);
+  assert.equal(focused, true);
+  assert.equal(opened.length, 0);
+});
+
+test("Bấm vào thông báo mở tab mới khi chưa có tab nào khớp", async () => {
+  const opened = [];
+  const h = harness({
+    clients: {
+      claim: async () => {},
+      matchAll: async () => [],
+      openWindow: async (url) => opened.push(url),
+    },
+  });
+  await h.fire("notificationclick", {
+    notification: { close: () => {}, data: { url: "/study" } },
+  });
+  assert.deepEqual(opened, ["/study"]);
 });

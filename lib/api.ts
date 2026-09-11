@@ -125,6 +125,7 @@ export const api = {
     apiFetch<T>(path, { method: "POST", body }),
   patch: <T>(path: string, body?: unknown) =>
     apiFetch<T>(path, { method: "PATCH", body }),
-  del: <T>(path: string) => apiFetch<T>(path, { method: "DELETE" }),
+  del: <T>(path: string, body?: unknown) =>
+    apiFetch<T>(path, { method: "DELETE", body }),
   upload: <T>(path: string, form: FormData) => apiUpload<T>(path, form),
 };
