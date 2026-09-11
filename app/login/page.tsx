@@ -62,15 +62,6 @@ function LoginContent() {
       <p className="mt-2.5 text-sm leading-6 text-muted">
         Góc học tập quen thuộc, những điều mới đang chờ.
       </p>
-      <p className="login-mobile-switch mt-3 hidden text-xs text-muted">
-        Chưa có tài khoản?{" "}
-        <Link
-          href={`/register?next=${encodeURIComponent(next)}`}
-          className="font-semibold text-primary"
-        >
-          Đăng ký ngay
-        </Link>
-      </p>
       {hasGoogle && (
         <div className="mt-7">
           <GoogleButton onSuccess={onGoogleSuccess} />

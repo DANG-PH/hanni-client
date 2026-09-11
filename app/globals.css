@@ -1004,9 +1004,6 @@ body:has(.mobile-drawer[open]) {
     font-size: 13px;
     line-height: 20px;
   }
-  .login-mobile-switch {
-    display: block;
-  }
   .login-form-card > div.mt-7 {
     margin-top: 16px;
   }
@@ -1029,7 +1026,8 @@ body:has(.mobile-drawer[open]) {
     min-height: 48px !important;
   }
   .login-register-link {
-    display: none;
+    display: block;
+    margin-top: 14px;
   }
 }
 @media (max-width: 359px) {
@@ -1107,9 +1105,6 @@ body:has(.mobile-drawer[open]) {
     font-size: 13px;
     line-height: 20px;
   }
-  .register-mobile-switch {
-    display: block;
-  }
   .register-fields {
     margin-top: 16px;
     padding: 0;
@@ -1139,7 +1134,11 @@ body:has(.mobile-drawer[open]) {
     box-shadow: 0 5px 12px color-mix(in srgb, var(--primary) 18%, transparent);
   }
   .register-signin {
-    display: none;
+    display: block;
+    margin-top: 16px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 20px;
   }
   .register-signin a {
     color: var(--primary);

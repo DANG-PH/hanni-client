@@ -53,15 +53,6 @@ function RegisterContent() {
       title="Bắt đầu cùng Hanni"
       description="Tạo tài khoản để lưu tiến độ và học theo nhịp của riêng bạn."
     >
-      <p className="register-mobile-switch hidden text-xs text-muted">
-        Đã có tài khoản?{" "}
-        <Link
-          href={`/login?next=${encodeURIComponent(next)}`}
-          className="font-semibold text-primary"
-        >
-          Đăng nhập
-        </Link>
-      </p>
       <Card className="register-fields mt-6 space-y-4">
         <GoogleButton
           mode="signup"
