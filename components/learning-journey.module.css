@@ -1,0 +1,61 @@
+/* Các thẻ cùng một ô grid: chiều cao theo thẻ dài nhất, không nhảy khi đổi chặng. */
+.stack {
+  display: grid;
+  isolation: isolate;
+  perspective: 900px;
+  padding-bottom: 36px;
+}
+
+.stackCard {
+  grid-area: 1 / 1;
+  min-width: 0;
+  z-index: calc(6 - var(--depth));
+  transform-origin: center bottom;
+  transform: translate3d(0, calc(var(--depth) * 16px), calc(var(--depth) * -24px))
+    rotateX(calc(var(--depth) * -2deg)) scale(calc(1 - var(--depth) * 0.045));
+  transition:
+    transform 420ms var(--motion-ease),
+    opacity 220ms ease;
+}
+
+.stackCard > a {
+  box-shadow: 0 8px 16px -12px color-mix(in srgb, var(--foreground) 30%, transparent);
+}
+
+.stackCard:not([data-depth="0"]) {
+  pointer-events: none;
+  user-select: none;
+}
+
+.stackCard[data-depth="3"] {
+  opacity: 0;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--primary);
+}
+
+.control:focus-visible,
+.stackCard > a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.control:active {
+  background: var(--surface-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stackCard {
+    transition: none;
+  }
+}

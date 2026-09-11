@@ -1,4 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { useState, type CSSProperties } from "react";
+import { Icon } from "./icon";
+import styles from "./learning-journey.module.css";
 
 type Stage = {
   n: number;
@@ -75,6 +80,10 @@ const STAGES: Stage[] = [
 ];
 
 export function LearningJourney() {
+  const [active, setActive] = useState(0);
+  const go = (direction: number) =>
+    setActive((current) => (current + direction + STAGES.length) % STAGES.length);
+
   return (
     <section
       aria-label="Lộ trình học tiếng Trung"
@@ -118,44 +127,86 @@ export function LearningJourney() {
         </svg>
       </div>
 
-      <ol className="grid grid-cols-1 gap-4 pb-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-3">
-        {STAGES.map((s) => (
-          <li
-            key={s.n}
-            className="min-w-0"
-          >
-            <Link
-              href={s.href}
-              className="hover-card group flex h-full flex-col items-center rounded-2xl border border-border bg-surface p-4 text-center"
-            >
-              <span
-                className={`mb-3 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white ${
-                  s.accent === "red" ? "bg-primary" : "bg-[#b5761b]"
-                }`}
+      <div className="sm:hidden">
+        <ol className={styles.stack} aria-label="Sáu chặng học">
+          {STAGES.map((stage, index) => {
+            const depth = (index - active + STAGES.length) % STAGES.length;
+            return (
+              <li
+                key={stage.n}
+                className={styles.stackCard}
+                data-depth={Math.min(depth, 3)}
+                style={{ "--depth": Math.min(depth, 3) } as CSSProperties}
+                aria-hidden={depth !== 0}
+                inert={depth !== 0}
               >
-                {s.n}
-              </span>
-              <span className="relative mb-2">
-                <span className="hanzi flex h-16 w-16 items-center justify-center rounded-full bg-surface-2 text-3xl shadow-inner ring-1 ring-border transition-transform group-hover:scale-105">
-                  {s.hanzi}
-                </span>
-                <span className="hanzi absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-md bg-primary text-[10px] font-bold text-primary-fg">
-                  {s.index}
-                </span>
-              </span>
-              <span className="text-xs font-medium text-primary">
-                {s.pinyin}
-              </span>
-              <span className="mt-1 block text-sm font-bold leading-snug">
-                {s.title}
-              </span>
-              <span className="mt-2 block text-xs leading-5 text-muted">
-                {s.desc}
-              </span>
-            </Link>
+                <StageCard stage={stage} />
+              </li>
+            );
+          })}
+        </ol>
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => go(-1)}
+            aria-label="Chặng trước"
+            className={styles.control}
+          >
+            <Icon name="back" size={18} className="rotate-90" />
+          </button>
+          <p className="text-xs font-semibold text-muted" aria-live="polite" aria-atomic="true">
+            Chặng <span className="text-primary">{active + 1}</span> / {STAGES.length}
+            <span className="sr-only">: {STAGES[active].title}</span>
+          </p>
+          <button
+            type="button"
+            onClick={() => go(1)}
+            aria-label="Chặng tiếp theo"
+            className={styles.control}
+          >
+            <Icon name="arrow" size={18} className="rotate-90" />
+          </button>
+        </div>
+        <p className="mt-2 text-center text-[11px] text-muted">
+          Chạm vào thẻ để bắt đầu học
+        </p>
+      </div>
+
+      <ol className="hidden gap-4 pb-2 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-3">
+        {STAGES.map((s) => (
+          <li key={s.n} className="min-w-0">
+            <StageCard stage={s} />
           </li>
         ))}
       </ol>
     </section>
+  );
+}
+
+function StageCard({ stage: s }: { stage: Stage }) {
+  return (
+    <Link
+      href={s.href}
+      className="hover-card group flex h-full flex-col items-center rounded-2xl border border-border bg-surface p-4 text-center"
+    >
+      <span
+        className={`mb-3 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white ${
+          s.accent === "red" ? "bg-primary" : "bg-[#b5761b]"
+        }`}
+      >
+        {s.n}
+      </span>
+      <span className="relative mb-2">
+        <span className="hanzi flex h-16 w-16 items-center justify-center rounded-full bg-surface-2 text-3xl shadow-inner ring-1 ring-border transition-transform group-hover:scale-105">
+          {s.hanzi}
+        </span>
+        <span className="hanzi absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-md bg-primary text-[10px] font-bold text-primary-fg">
+          {s.index}
+        </span>
+      </span>
+      <span className="text-xs font-medium text-primary">{s.pinyin}</span>
+      <span className="mt-1 block text-sm font-bold leading-snug">{s.title}</span>
+      <span className="mt-2 block text-xs leading-5 text-muted">{s.desc}</span>
+    </Link>
   );
 }
