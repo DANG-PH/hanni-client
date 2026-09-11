@@ -53,8 +53,18 @@ function RegisterContent() {
       title="Bắt đầu cùng Hanni"
       description="Tạo tài khoản để lưu tiến độ và học theo nhịp của riêng bạn."
     >
+      <p className="register-mobile-switch hidden text-xs text-muted">
+        Đã có tài khoản?{" "}
+        <Link
+          href={`/login?next=${encodeURIComponent(next)}`}
+          className="font-semibold text-primary"
+        >
+          Đăng nhập
+        </Link>
+      </p>
       <Card className="register-fields mt-6 space-y-4">
         <GoogleButton
+          mode="signup"
           onSuccess={async (isNewUser) => {
             await refresh();
             router.replace(
@@ -73,49 +83,64 @@ function RegisterContent() {
           </div>
         )}
 
-        <form onSubmit={onSubmit} className="space-y-4">
-          <label htmlFor="register-name" className="register-field-label hidden">
-            Tên hiển thị
-          </label>
-          <input
-            id="register-name"
-            required
-            aria-label="Tên hiển thị"
-            autoComplete="nickname"
-            placeholder="Tên bạn muốn được gọi"
-            value={form.displayName}
-            onChange={set("displayName")}
-            className="field"
-          />
-          <label htmlFor="register-email" className="register-field-label hidden">
-            Email
-          </label>
-          <input
-            id="register-email"
-            type="email"
-            required
-            aria-label="Địa chỉ email"
-            autoComplete="email"
-            placeholder="Email của bạn"
-            value={form.email}
-            onChange={set("email")}
-            className="field"
-          />
-          <label htmlFor="register-password" className="register-field-label hidden">
-            Mật khẩu
-          </label>
-          <input
-            id="register-password"
-            type="password"
-            required
-            minLength={8}
-            aria-label="Mật khẩu (ít nhất 8 ký tự)"
-            autoComplete="new-password"
-            placeholder="Mật khẩu (ít nhất 8 ký tự)"
-            value={form.password}
-            onChange={set("password")}
-            className="field"
-          />
+        <form onSubmit={onSubmit} className="register-form space-y-4">
+          <div>
+            <label
+              htmlFor="register-name"
+              className="register-field-label hidden"
+            >
+              Tên hiển thị
+            </label>
+            <input
+              id="register-name"
+              required
+              aria-label="Tên hiển thị"
+              autoComplete="nickname"
+              placeholder="Tên bạn muốn được gọi"
+              value={form.displayName}
+              onChange={set("displayName")}
+              className="field"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="register-email"
+              className="register-field-label hidden"
+            >
+              Email
+            </label>
+            <input
+              id="register-email"
+              type="email"
+              required
+              aria-label="Địa chỉ email"
+              autoComplete="email"
+              placeholder="Email của bạn"
+              value={form.email}
+              onChange={set("email")}
+              className="field"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="register-password"
+              className="register-field-label hidden"
+            >
+              Mật khẩu
+            </label>
+            <input
+              id="register-password"
+              type="password"
+              required
+              minLength={8}
+              aria-label="Mật khẩu (ít nhất 8 ký tự)"
+              autoComplete="new-password"
+              placeholder="Mật khẩu (ít nhất 8 ký tự)"
+              value={form.password}
+              onChange={set("password")}
+              className="field"
+            />
+          </div>
           {error && <ErrorNote>{error}</ErrorNote>}
           <Button type="submit" disabled={busy} className="w-full">
             {busy ? "Đang xử lý…" : "Đăng ký"}

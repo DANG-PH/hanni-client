@@ -46,11 +46,18 @@ function loadGsi(): Promise<void> {
  */
 export function GoogleButton({
   onSuccess,
+  mode = "signin",
 }: {
   onSuccess: (isNewUser: boolean) => void;
+  mode?: "signin" | "signup";
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const onSuccessRef = useRef(onSuccess);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    onSuccessRef.current = onSuccess;
+  }, [onSuccess]);
 
   useEffect(() => {
     if (!CLIENT_ID) {
@@ -62,6 +69,7 @@ export function GoogleButton({
         if (cancelled || !ref.current) return;
         const gid = window.google?.accounts?.id;
         if (!gid) return;
+        ref.current.replaceChildren();
         gid.initialize({
           client_id: CLIENT_ID,
           callback: (res) => {
@@ -70,7 +78,7 @@ export function GoogleButton({
               .post<{ isNewUser: boolean }>("/auth/google", {
                 idToken: res.credential,
               })
-              .then((r) => onSuccess(r.isNewUser))
+              .then((r) => onSuccessRef.current(r.isNewUser))
               .catch((e) =>
                 setError(
                   e instanceof ApiError
@@ -83,24 +91,24 @@ export function GoogleButton({
         gid.renderButton(ref.current, {
           type: "standard",
           theme: "outline",
-          size: "large",
-          text: "continue_with",
-          shape: "rectangular",
+          size: "medium",
+          text: mode === "signup" ? "signup_with" : "signin_with",
+          shape: "pill",
           logo_alignment: "center",
-          width: Math.min(320, ref.current.clientWidth),
+          width: Math.min(400, ref.current.clientWidth),
         });
       })
       .catch(() => setError("Không tải được Google Identity Services"));
     return () => {
       cancelled = true;
     };
-  }, [onSuccess]);
+  }, [mode]);
 
   if (!CLIENT_ID) return null;
 
   return (
     <div className="space-y-2">
-      <div ref={ref} className="flex justify-center" />
+      <div ref={ref} className="google-button flex w-full justify-center" />
       {error && <p className="text-center text-xs text-danger">{error}</p>}
     </div>
   );
