@@ -120,9 +120,15 @@ export default function ExamsPage() {
         <PageHeading
           eyebrow={`KIỂM TRA TỪ VỰNG · HSK ${level === 7 ? "7–9" : level}`}
           title="Bình tĩnh, bạn làm được mà"
-          description="Đọc từ, chọn nghĩa phù hợp rồi chuyển sang câu tiếp theo. Bài kiểm tra không giới hạn thời gian."
+          description="Phần nghe trước, phần đọc sau — giống thứ tự đề thi HSK thật. Mỗi câu có thời gian giới hạn, hết giờ sẽ tự chuyển sang câu tiếp theo."
         />
-        <QuizRunner key={quiz.attemptId} quiz={quiz} onDone={complete} />
+        <QuizRunner
+          key={quiz.attemptId}
+          quiz={quiz}
+          level={level}
+          timed
+          onDone={complete}
+        />
       </div>
     );
 
@@ -157,8 +163,9 @@ export default function ExamsPage() {
             </span>
           </h2>
           <p className="mt-3 max-w-lg text-sm leading-6 text-white/65">
-            Luyện nhận diện Hán tự và chọn nghĩa đúng từ thư viện đang học. Đây
-            là bài kiểm tra từ vựng, không phải đề thi HSK đầy đủ.
+            Luyện nhận diện Hán tự, nghe từ và chọn nghĩa đúng từ thư viện
+            đang học — có phần nghe, tính giờ theo nhịp độ đề thi HSK 3.0.
+            Đây là bài kiểm tra từ vựng rút gọn, không phải đề thi HSK đầy đủ.
           </p>
         </div>
       </div>
@@ -317,8 +324,9 @@ export default function ExamsPage() {
               <ol className="mt-4 space-y-4">
                 {[
                   "Chọn cấp độ và số câu phù hợp.",
-                  "Đọc Hán tự, dùng pinyin để gợi nhớ.",
-                  "Chọn một đáp án cho mỗi câu.",
+                  "Phần nghe: nghe âm thanh rồi chọn nghĩa, chưa thấy chữ.",
+                  "Phần đọc: đọc Hán tự, dùng pinyin để gợi nhớ.",
+                  "Mỗi câu có thời gian giới hạn — hết giờ sẽ tự chuyển câu.",
                   "Nộp bài và xem lại những từ cần ôn.",
                 ].map((text, index) => (
                   <li

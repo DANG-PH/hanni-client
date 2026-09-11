@@ -187,8 +187,10 @@ export interface Achievement {
 
 export interface QuizQuestion {
   wordId: string;
+  mode: "reading" | "listening";
   prompt: string;
   pinyin: string;
+  audioUrl?: string | null;
   options: string[];
   answer: string;
 }
