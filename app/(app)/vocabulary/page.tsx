@@ -90,6 +90,15 @@ function VocabularyContent() {
             </button>
           ))}
         </div>
+        <div className="flex items-start gap-2 rounded-xl bg-primary/6 px-3.5 py-2.5 text-xs leading-5 text-muted">
+          <Icon name="info" size={15} className="mt-0.5 shrink-0 text-primary" />
+          <p>
+            Hanni theo <strong className="text-foreground">chuẩn HSK 3.0</strong> (9 cấp, ban
+            hành 2021) — khác chuẩn HSK cũ chỉ có 6 cấp. Độ khó được sắp xếp lại: cấp 4–6 mới
+            tương đương mức trung cấp của HSK cũ, còn từ vựng học thuật/khó dồn về cấp 7–9. Nếu
+            bạn quen chuẩn cũ, cấp 5–6 mới sẽ thấy dễ hơn hẳn là bình thường.
+          </p>
+        </div>
       </Card>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-base font-semibold">
