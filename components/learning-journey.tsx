@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import styles from "./learning-journey.module.css";
 
 type Stage = {
   n: number;
@@ -75,6 +79,46 @@ const STAGES: Stage[] = [
 ];
 
 export function LearningJourney() {
+  const [active, setActive] = useState(0);
+  const mobileRef = useRef<HTMLDivElement>(null);
+  const touching = useRef(false);
+
+  useEffect(() => {
+    const mobileStack = mobileRef.current;
+    if (!mobileStack) return;
+
+    const mobile = window.matchMedia("(width < 40rem)");
+    let inView = false;
+    let timer: number | undefined;
+    const restart = () => {
+      window.clearInterval(timer);
+      // Chỉ tự chuyển khi người dùng đang xem chồng thẻ trên mobile.
+      if (!mobile.matches || !inView || document.hidden) return;
+      timer = window.setInterval(() => {
+        if (touching.current || mobileStack.contains(document.activeElement))
+          return;
+        setActive((current) => (current + 1) % STAGES.length);
+      }, 2500);
+    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting && entry.intersectionRatio >= 0.5;
+        restart();
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(mobileStack);
+    mobile.addEventListener("change", restart);
+    document.addEventListener("visibilitychange", restart);
+
+    return () => {
+      window.clearInterval(timer);
+      observer.disconnect();
+      mobile.removeEventListener("change", restart);
+      document.removeEventListener("visibilitychange", restart);
+    };
+  }, []);
+
   return (
     <section
       aria-label="Lộ trình học tiếng Trung"
@@ -118,44 +162,73 @@ export function LearningJourney() {
         </svg>
       </div>
 
-      <ol className="flex snap-x gap-4 overflow-x-auto pb-2 lg:grid lg:grid-cols-6 lg:gap-3 lg:overflow-visible">
-        {STAGES.map((s) => (
-          <li
-            key={s.n}
-            className="w-[220px] shrink-0 snap-start lg:w-auto"
-          >
-            <Link
-              href={s.href}
-              className="hover-card group flex h-full flex-col items-center rounded-2xl border border-border bg-surface p-4 text-center"
-            >
-              <span
-                className={`mb-3 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white ${
-                  s.accent === "red" ? "bg-primary" : "bg-[#b5761b]"
-                }`}
+      <div
+        ref={mobileRef}
+        className="sm:hidden"
+        onPointerDown={() => {
+          touching.current = true;
+        }}
+        onPointerUp={() => {
+          touching.current = false;
+        }}
+        onPointerCancel={() => {
+          touching.current = false;
+        }}
+      >
+        <ol className={styles.stack} aria-label="Sáu chặng học">
+          {STAGES.map((stage, index) => {
+            const depth = (index - active + STAGES.length) % STAGES.length;
+            return (
+              <li
+                key={stage.n}
+                className={styles.stackCard}
+                data-depth={Math.min(depth, 3)}
+                style={{ "--depth": Math.min(depth, 3) } as CSSProperties}
+                aria-hidden={depth !== 0}
+                inert={depth !== 0}
               >
-                {s.n}
-              </span>
-              <span className="relative mb-2">
-                <span className="hanzi flex h-16 w-16 items-center justify-center rounded-full bg-surface-2 text-3xl shadow-inner ring-1 ring-border transition-transform group-hover:scale-105">
-                  {s.hanzi}
-                </span>
-                <span className="hanzi absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-md bg-primary text-[10px] font-bold text-primary-fg">
-                  {s.index}
-                </span>
-              </span>
-              <span className="text-xs font-medium text-primary">
-                {s.pinyin}
-              </span>
-              <span className="mt-1 block text-sm font-bold leading-snug">
-                {s.title}
-              </span>
-              <span className="mt-2 block text-xs leading-5 text-muted">
-                {s.desc}
-              </span>
-            </Link>
+                <StageCard stage={stage} />
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+
+      <ol className="hidden gap-4 pb-2 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-3">
+        {STAGES.map((s) => (
+          <li key={s.n} className="min-w-0">
+            <StageCard stage={s} />
           </li>
         ))}
       </ol>
     </section>
+  );
+}
+
+function StageCard({ stage: s }: { stage: Stage }) {
+  return (
+    <Link
+      href={s.href}
+      className="hover-card group flex h-full flex-col items-center rounded-2xl border border-border bg-surface p-4 text-center"
+    >
+      <span
+        className={`mb-3 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white ${
+          s.accent === "red" ? "bg-primary" : "bg-[#b5761b]"
+        }`}
+      >
+        {s.n}
+      </span>
+      <span className="relative mb-2">
+        <span className="hanzi flex h-16 w-16 items-center justify-center rounded-full bg-surface-2 text-3xl shadow-inner ring-1 ring-border transition-transform group-hover:scale-105">
+          {s.hanzi}
+        </span>
+        <span className="hanzi absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-md bg-primary text-[10px] font-bold text-primary-fg">
+          {s.index}
+        </span>
+      </span>
+      <span className="text-xs font-medium text-primary">{s.pinyin}</span>
+      <span className="mt-1 block text-sm font-bold leading-snug">{s.title}</span>
+      <span className="mt-2 block text-xs leading-5 text-muted">{s.desc}</span>
+    </Link>
   );
 }

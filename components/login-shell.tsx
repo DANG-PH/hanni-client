@@ -64,10 +64,6 @@ export function LoginShell({ children }: { children: ReactNode }) {
           学
         </div>
         <div className="login-story-content">
-          <p className="login-story-eyebrow">
-            <span className="h-1 w-1 rounded-full bg-current" /> MỘT NGÔN NGỮ
-            MỚI. MỘT HÀNH TRÌNH MỚI.
-          </p>
           <div className="login-video-frame">
             {videoFailed ? (
               <div className="login-video-fallback">
