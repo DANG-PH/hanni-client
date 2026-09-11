@@ -45,7 +45,14 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 ## Trạng thái hiện tại
 Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard + quiz, duyệt từ vựng,
 tiến độ, huy hiệu, cài đặt, học qua video, ngữ pháp (HSK 1–3 giải thích + HSK 4–9 đại cương),
-kiểm tra HSK (có lịch sử), bảng xếp hạng. Chưa làm (roadmap): RAG chatbot, minigame, social.
+luyện viết Hán tự (`/writing`, xem/tô/kiểm tra nét bằng `hanzi-writer`), kiểm tra HSK (có lịch
+sử), bảng xếp hạng. Chưa làm (roadmap): RAG chatbot, minigame, social.
+
+**Luyện viết Hán tự** (`/writing`): `components/hanzi-writer-canvas.tsx` bọc thư viện
+`hanzi-writer` (MIT) — 3 chế độ Xem/Tô lại/Kiểm tra. Dữ liệu nét (`public/hanzi-strokes/`) tự
+host, chỉ giữ 3.088 ký tự thật sự có trong từ vựng HSK 3.0 (không tải CDN ngoài lúc chạy),
+nguồn Make Me a Hanzi / hanzi-writer-data — Arphic Public License (xem `ARPHICPL.TXT` +
+`README.txt` trong thư mục đó). `index.json` (level + pinyin từng chữ) sinh bằng `pinyin-pro`.
 
 UI nổi bật: `components/hero-banner.tsx` (dùng `StudyArtwork`), `learning-journey.tsx`
 (dải 6 chặng 拼声字词语听), `video-shelf.tsx` (kệ video tự trượt + kéo, ở dashboard),
