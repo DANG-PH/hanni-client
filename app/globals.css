@@ -1192,3 +1192,35 @@ body:has(.mobile-drawer[open]) {
       var(--surface) 62%
     );
 }
+
+/* ===== Flashcard lật 3D ===== */
+/* .flip-card-inner dùng grid, 2 mặt cùng chiếm 1 ô — container tự cao theo
+   mặt cao hơn (mặt sau nhiều nội dung hơn mặt trước), tránh bị cắt/tràn. */
+.flip-card {
+  perspective: 1600px;
+}
+.flip-card-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 500ms var(--motion-ease, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.flip-card[data-flipped="true"] .flip-card-inner {
+  transform: rotateY(180deg);
+}
+.flip-card-face {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-card-face--back {
+  transform: rotateY(180deg);
+}
+.flip-card[data-flipped="false"] .flip-card-face--back,
+.flip-card[data-flipped="true"] .flip-card-face--front {
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-card-inner {
+    transition: none;
+  }
+}

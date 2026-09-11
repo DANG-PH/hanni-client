@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui";
 import { AudioButton } from "./audio-button";
 import { Icon } from "./icon";
 import { mediaUrl } from "@/lib/api";
@@ -50,6 +49,7 @@ export function Flashcard({
   const example = word.examples?.[0];
 
   function reveal() {
+    if (revealed) return;
     setRevealed(true);
     const u = mediaUrl(word.audioUrl);
     if (u) {
@@ -74,7 +74,7 @@ export function Flashcard({
         return;
       if (e.code === "Space" && !revealed) {
         e.preventDefault();
-        setRevealed(true);
+        reveal();
       }
       const rating = RATINGS[Number(e.key) - 1];
       if (revealed && !busy && rating) {
@@ -84,11 +84,12 @@ export function Flashcard({
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [revealed, busy, onRate, start]);
 
   return (
-    <div className="reveal panel overflow-hidden">
-      <div className="flex items-center justify-between border-b border-border px-5 py-4 text-xs text-muted">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between px-1 text-xs text-muted">
         <span className="flex items-center gap-2">
           <Icon name="cards" size={16} />
           HSK {word.hskLevel}
@@ -99,79 +100,94 @@ export function Flashcard({
           {isNew ? "Từ mới" : "Ôn lại"}
         </span>
       </div>
-      <div className="px-5 py-8 text-center sm:px-8">
-        <p className="text-xs text-muted">Nhìn Hán tự và thử nhớ nghĩa</p>
-        <div
-          lang="zh"
-          className="hanzi mt-7 break-all text-6xl leading-tight sm:text-7xl"
-        >
-          {word.simplified}
+
+      <div className="flip-card" data-flipped={revealed}>
+        <div className="flip-card-inner">
+          {/* Mặt trước — chạm để lật */}
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={reveal}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                reveal();
+              }
+            }}
+            aria-label="Chạm để xem nghĩa"
+            className={`flip-card-face flip-card-face--front panel motion-button flex min-h-[22rem] w-full flex-col items-center justify-center overflow-hidden px-5 py-8 text-center outline-none sm:px-8 ${revealed ? "cursor-default" : "cursor-pointer hover:border-primary/30"}`}
+          >
+            <p className="text-xs text-muted">Nhìn Hán tự và thử nhớ nghĩa</p>
+            <div
+              lang="zh"
+              className="hanzi mt-7 break-all text-6xl leading-tight sm:text-7xl"
+            >
+              {word.simplified}
+            </div>
+            <div
+              className="mt-4 flex items-center justify-center gap-1 text-xl text-primary"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {word.pinyin}
+              <AudioButton src={word.audioUrl} />
+            </div>
+            <div className="mt-10 flex items-center gap-2 text-xs font-medium text-primary">
+              <Icon name="refresh" size={15} />
+              Chạm vào thẻ hoặc nhấn phím cách để lật
+            </div>
+          </div>
+
+          {/* Mặt sau — nghĩa + đánh giá */}
+          <div className="flip-card-face flip-card-face--back panel flex min-h-[22rem] flex-col justify-center overflow-hidden px-5 py-8 text-center sm:px-8">
+            <div lang="zh" className="hanzi text-3xl text-muted sm:text-4xl">
+              {word.simplified}
+              <span className="ml-2 text-lg text-primary">{word.pinyin}</span>
+            </div>
+            <div className="mt-5 space-y-5">
+              <div aria-live="polite">
+                <p className="text-2xl font-semibold">
+                  {word.meaningVi ?? word.meaningEn ?? "Nghĩa đang được cập nhật"}
+                </p>
+                {word.pos.length > 0 && (
+                  <p className="mt-2 text-xs text-muted">{word.pos.join(" · ")}</p>
+                )}
+              </div>
+              {example && (
+                <div className="rounded-xl bg-surface-2/70 p-4 text-left text-sm leading-7">
+                  <p lang="zh" className="hanzi text-xl">
+                    {example.zh}
+                  </p>
+                  {example.pinyin && <p className="text-muted">{example.pinyin}</p>}
+                  {(example.vi || example.en) && <p>{example.vi ?? example.en}</p>}
+                </div>
+              )}
+              <div className="border-t border-border pt-5">
+                <p className="mb-3 text-xs text-muted">Bạn nhớ từ này đến đâu?</p>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  {RATINGS.map((r, i) => (
+                    <button
+                      key={r.key}
+                      disabled={busy || !revealed}
+                      onClick={() => onRate(r.key, Date.now() - start)}
+                      className={`motion-button rounded-xl border px-2 py-3 transition-opacity hover:opacity-75 disabled:pointer-events-none disabled:opacity-40 ${r.cls}`}
+                    >
+                      <span className="text-sm font-semibold">{r.label}</span>
+                      <span className="mt-1 block text-[10px]">{r.hint}</span>
+                      <kbd className="mt-2 hidden text-[10px] opacity-70 sm:block">
+                        {i + 1}
+                      </kbd>
+                    </button>
+                  ))}
+                </div>
+                {busy && (
+                  <p role="status" className="mt-3 text-xs text-muted">
+                    Đang lưu kết quả…
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-        <p className="mt-4 flex items-center justify-center gap-1 text-xl text-primary">
-          {word.pinyin}
-          <AudioButton src={word.audioUrl} />
-        </p>
-        {!revealed ? (
-          <div className="mt-10">
-            <Button className="w-full" variant="secondary" onClick={reveal}>
-              <Icon name="refresh" size={17} />
-              Lật thẻ xem nghĩa
-            </Button>
-            <p className="mt-4 text-xs text-muted">
-              Chạm vào nút hoặc nhấn phím cách
-            </p>
-          </div>
-        ) : (
-          <div className="mt-7 space-y-5">
-            <div aria-live="polite">
-              <p className="text-2xl font-semibold">
-                {word.meaningVi ?? word.meaningEn ?? "Nghĩa đang được cập nhật"}
-              </p>
-              {word.pos.length > 0 && (
-                <p className="mt-2 text-xs text-muted">
-                  {word.pos.join(" · ")}
-                </p>
-              )}
-            </div>
-            {example && (
-              <div className="rounded-xl bg-surface-2/70 p-4 text-sm leading-7">
-                <p lang="zh" className="hanzi text-xl">
-                  {example.zh}
-                </p>
-                {example.pinyin && (
-                  <p className="text-muted">{example.pinyin}</p>
-                )}
-                {(example.vi || example.en) && (
-                  <p>{example.vi ?? example.en}</p>
-                )}
-              </div>
-            )}
-            <div className="border-t border-border pt-5">
-              <p className="mb-3 text-xs text-muted">Bạn nhớ từ này đến đâu?</p>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {RATINGS.map((r, i) => (
-                  <button
-                    key={r.key}
-                    disabled={busy}
-                    onClick={() => onRate(r.key, Date.now() - start)}
-                    className={`motion-button rounded-xl border px-2 py-3 transition-opacity hover:opacity-75 disabled:pointer-events-none disabled:opacity-40 ${r.cls}`}
-                  >
-                    <span className="text-sm font-semibold">{r.label}</span>
-                    <span className="mt-1 block text-[10px]">{r.hint}</span>
-                    <kbd className="mt-2 hidden text-[10px] opacity-70 sm:block">
-                      {i + 1}
-                    </kbd>
-                  </button>
-                ))}
-              </div>
-              {busy && (
-                <p role="status" className="mt-3 text-xs text-muted">
-                  Đang lưu kết quả…
-                </p>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
