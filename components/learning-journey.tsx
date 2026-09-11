@@ -118,11 +118,11 @@ export function LearningJourney() {
         </svg>
       </div>
 
-      <ol className="flex snap-x gap-4 overflow-x-auto pb-2 lg:grid lg:grid-cols-6 lg:gap-3 lg:overflow-visible">
+      <ol className="grid grid-cols-1 gap-4 pb-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-3">
         {STAGES.map((s) => (
           <li
             key={s.n}
-            className="w-[220px] shrink-0 snap-start lg:w-auto"
+            className="min-w-0"
           >
             <Link
               href={s.href}
