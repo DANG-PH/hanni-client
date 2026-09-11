@@ -98,7 +98,7 @@ export function LearningJourney() {
         if (touching.current || mobileStack.contains(document.activeElement))
           return;
         setActive((current) => (current + 1) % STAGES.length);
-      }, 5000);
+      }, 2500);
     };
     const observer = new IntersectionObserver(
       ([entry]) => {
