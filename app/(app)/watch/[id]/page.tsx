@@ -234,23 +234,27 @@ export default function WatchDetailPage() {
 
       <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr]">
         <div className="space-y-3">
-          <div className="relative">
-            <YoutubePlayer
-              youtubeId={data.youtubeId}
-              seekRef={seekRef}
-              onTick={onTick}
-            />
-            {/* Overlay đặt cao hơn thanh điều khiển YouTube (~48px) để không che nút tua. */}
-            {showCaption && activeLine && (
-              <div className="pointer-events-none absolute inset-x-4 bottom-16 z-10 rounded-lg bg-black/65 px-3 py-2 text-center">
-                <p className="hanzi text-base leading-snug text-white sm:text-lg">
-                  {activeLine.zh}
-                </p>
-                {showTrans && activeLine.vi && (
-                  <p className="mt-0.5 text-xs text-white/80">{activeLine.vi}</p>
-                )}
-              </div>
-            )}
+          {/* Dán video xuống dưới topbar khi cuộn trên điện thoại, để xem video
+              và đọc bản chép cùng lúc được (trên lg trở lên đã có 2 cột riêng). */}
+          <div className="sticky top-[72px] z-20 -mx-4 bg-background px-4 pb-2 sm:mx-0 sm:px-0 sm:pb-0 lg:static lg:z-auto lg:mx-0 lg:bg-transparent lg:px-0 lg:pb-0">
+            <div className="relative">
+              <YoutubePlayer
+                youtubeId={data.youtubeId}
+                seekRef={seekRef}
+                onTick={onTick}
+              />
+              {/* Overlay đặt cao hơn thanh điều khiển YouTube (~48px) để không che nút tua. */}
+              {showCaption && activeLine && (
+                <div className="pointer-events-none absolute inset-x-4 bottom-16 z-10 rounded-lg bg-black/65 px-3 py-2 text-center">
+                  <p className="hanzi text-base leading-snug text-white sm:text-lg">
+                    {activeLine.zh}
+                  </p>
+                  {showTrans && activeLine.vi && (
+                    <p className="mt-0.5 text-xs text-white/80">{activeLine.vi}</p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           {data.description && (
             <p className="text-sm leading-6 text-muted">{data.description}</p>
