@@ -27,9 +27,15 @@ function remember() {
 }
 
 /**
- * Popup mời cài ứng dụng, nổi ở góc phải dưới. Chỉ hiện khi có sự kiện cài
- * thật của trình duyệt (hoặc hướng dẫn cho iOS). Người dùng tắt được — tạm ẩn
- * 7 ngày.
+ * Popup mời cài ứng dụng, nổi ở góc phải dưới. Người dùng tắt được — tạm ẩn
+ * 7 ngày. Ba trường hợp:
+ * - Có `beforeinstallprompt` thật (Chrome/Edge/Android đủ điều kiện) → nút cài 1 chạm.
+ * - iOS Safari (không có sự kiện này bao giờ) → hướng dẫn Chia sẻ → Thêm vào MHC.
+ * - Còn lại (Android/trình duyệt khác chưa bắn sự kiện, hoặc chưa đủ điều
+ *   kiện engagement của Chrome) → hướng dẫn mở menu trình duyệt. Đây là lý do
+ *   phổ biến nhất khiến Android "không thấy gợi ý cài": Chrome chỉ tự bắn
+ *   beforeinstallprompt khi đã ghé site một thời gian, và chỉ trên HTTPS thật
+ *   (không phải localhost/LAN IP từ máy khác).
  */
 export function InstallPrompt() {
   const { initialized, standalone, ios, online, installPrompt, workerStatus } =
@@ -65,10 +71,10 @@ export function InstallPrompt() {
 
   const iosHint = ios && !installPrompt;
   const devPreview =
-    process.env.NODE_ENV !== "production" &&
-    workerStatus === "development" &&
-    !installPrompt &&
-    !ios;
+    process.env.NODE_ENV !== "production" && workerStatus === "development";
+  // Không phải iOS, không có lời mời thật, nhưng worker đã sẵn sàng (HTTPS
+  // thật) hoặc đang xem thử ở dev → vẫn gợi ý cài qua menu trình duyệt.
+  const genericHint = !ios && !installPrompt && (workerStatus === "ready" || devPreview);
 
   const show =
     initialized &&
@@ -76,7 +82,7 @@ export function InstallPrompt() {
     !standalone &&
     !hidden &&
     pathname !== "/install" &&
-    (Boolean(installPrompt) || iosHint || devPreview);
+    (Boolean(installPrompt) || iosHint || genericHint);
 
   if (!show) return null;
 
@@ -126,25 +132,37 @@ export function InstallPrompt() {
               </Button>
             </div>
           </>
+        ) : Boolean(installPrompt) ? (
+          <div className="mt-3 flex gap-2">
+            <Button
+              className="flex-1"
+              disabled={busy}
+              onClick={() => void install()}
+            >
+              <Icon name="home" size={16} />
+              {busy ? "Đang mở…" : "Cài đặt"}
+            </Button>
+            <Button variant="ghost" onClick={dismiss}>
+              Để sau
+            </Button>
+          </div>
         ) : (
           <>
-            <div className="mt-3 flex gap-2">
-              <Button
-                className="flex-1"
-                disabled={busy || devPreview}
-                onClick={() => void install()}
-              >
-                <Icon name="home" size={16} />
-                {busy ? "Đang mở…" : "Cài đặt"}
-              </Button>
+            <p className="mt-3 text-xs leading-5 text-muted">
+              Mở menu <strong className="text-foreground">⋮</strong> của trình
+              duyệt (góc trên bên phải), chọn{" "}
+              <strong className="text-foreground">Cài đặt ứng dụng</strong>{" "}
+              hoặc <strong className="text-foreground">Thêm vào Màn hình chính</strong>.
+            </p>
+            <div className="mt-3 flex justify-end">
               <Button variant="ghost" onClick={dismiss}>
-                Để sau
+                Đã hiểu
               </Button>
             </div>
             {devPreview && (
               <p className="mt-2 text-[11px] leading-4 text-muted">
-                Bản xem thử — lời mời cài thật chỉ xuất hiện ở bản đã triển khai
-                (HTTPS).
+                Bản xem thử — lời mời cài 1 chạm chỉ xuất hiện ở bản đã triển
+                khai (HTTPS) khi trình duyệt tự thấy đủ điều kiện.
               </p>
             )}
           </>
