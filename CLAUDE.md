@@ -44,7 +44,8 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 
 ## Trạng thái hiện tại
 Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard + quiz, duyệt từ vựng,
-tiến độ, huy hiệu, cài đặt, học qua video, ngữ pháp (HSK 1–3 giải thích + HSK 4–9 đại cương),
+tiến độ, huy hiệu, cài đặt, học qua video, ngữ pháp (HSK 1–3 + HSK 4–9 đều có giải thích thật,
+195/349 mục HSK 4–9; phần còn lại là danh sách từ vựng theo từ loại nên giữ dạng rút gọn),
 luyện viết Hán tự (`/writing`, xem/tô/kiểm tra nét bằng `hanzi-writer`), kiểm tra HSK (có lịch
 sử), bảng xếp hạng. Chưa làm (roadmap): RAG chatbot, minigame, social.
 
