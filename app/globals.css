@@ -724,26 +724,36 @@ body:has(.mobile-drawer[open]) {
 
 /* Đăng nhập: thẻ biểu mẫu sáng bên cạnh không gian video thương hiệu. */
 .login-screen {
+  --auth-slide-duration: 1000ms;
+  --auth-slide-midpoint: 500ms;
+  --auth-slide-ease: cubic-bezier(0.65, 0, 0.35, 1);
+  isolation: isolate;
   display: grid;
   min-height: 100svh;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  background: var(--surface);
-  overflow-x: clip;
-}
-.login-entry {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 100svh;
   background:
     radial-gradient(
       ellipse at 0 28%,
       color-mix(in srgb, var(--primary) 5%, transparent),
       transparent 48%
     ),
+    radial-gradient(
+      ellipse at 100% 28%,
+      color-mix(in srgb, var(--primary) 5%, transparent),
+      transparent 48%
+    ),
     var(--surface);
-  transition: transform 1.05s cubic-bezier(0.77, 0, 0.18, 1);
-  will-change: transform;
+  overflow-x: clip;
+}
+.login-entry {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100svh;
+  background: transparent;
+  transition: transform var(--auth-slide-duration) var(--auth-slide-ease);
 }
 .login-header {
   display: flex;
@@ -773,40 +783,22 @@ body:has(.mobile-drawer[open]) {
 }
 .auth-mode-slider {
   display: grid;
-  overflow: hidden;
 }
 .auth-mode-pane {
   grid-area: 1 / 1;
   min-width: 0;
-  transition:
-    transform 850ms cubic-bezier(0.77, 0, 0.18, 1),
-    opacity 520ms ease,
-    visibility 0s linear 850ms;
-  will-change: transform, opacity;
-}
-.auth-mode-pane-login {
-  transform: translate3d(0, 0, 0);
+  /* Đổi form đúng lúc cả thẻ nằm dưới panel video, không cắt từng input. */
+  transition: visibility 0s linear var(--auth-slide-midpoint);
 }
 .auth-mode-pane-register {
   visibility: hidden;
-  opacity: 0;
-  transform: translate3d(112%, 0, 0);
 }
 .auth-mode-slider[data-mode="register"] .auth-mode-pane-login {
   visibility: hidden;
-  opacity: 0;
-  transform: translate3d(-112%, 0, 0);
 }
-.auth-mode-slider[data-mode="register"] .auth-mode-pane-register {
-  visibility: visible;
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-  transition-delay: 0s;
-}
+.auth-mode-slider[data-mode="register"] .auth-mode-pane-register,
 .auth-mode-slider[data-mode="login"] .auth-mode-pane-login {
   visibility: visible;
-  opacity: 1;
-  transition-delay: 0s;
 }
 .login-input {
   background: var(--surface);
@@ -815,10 +807,20 @@ body:has(.mobile-drawer[open]) {
 .login-submit {
   box-shadow: 0 5px 12px color-mix(in srgb, var(--primary) 18%, transparent);
 }
-.google-button > div,
+.google-button {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 2px;
+  overflow: visible;
+}
+.google-button > div {
+  flex-shrink: 0;
+}
 .google-button iframe {
-  max-width: 100% !important;
-  border-radius: 999px !important;
+  display: block;
+}
+.auth-google-slot {
+  min-height: 32px;
 }
 .register-fields .field,
 .register-fields button[type="submit"],
@@ -838,6 +840,7 @@ body:has(.mobile-drawer[open]) {
   --login-story-base: #c53b2b;
   --login-story-glow: #df5946;
   position: relative;
+  z-index: 1;
   isolation: isolate;
   display: flex;
   align-items: center;
@@ -853,13 +856,12 @@ body:has(.mobile-drawer[open]) {
     ),
     var(--login-story-base);
   color: #fff;
-  transition: transform 1.05s cubic-bezier(0.77, 0, 0.18, 1);
-  will-change: transform;
+  transition: transform var(--auth-slide-duration) var(--auth-slide-ease);
 }
-.login-screen:has(.login-form-card[data-mode="register"]) .login-entry {
+.login-screen[data-auth-mode="register"] .login-entry {
   transform: translate3d(100%, 0, 0);
 }
-.login-screen:has(.login-form-card[data-mode="register"]) .login-story {
+.login-screen[data-auth-mode="register"] .login-story {
   transform: translate3d(-100%, 0, 0);
 }
 .login-story-pattern {
@@ -945,26 +947,27 @@ body:has(.mobile-drawer[open]) {
 .login-story-copy {
   grid-area: 1 / 1;
   transition:
-    transform 720ms cubic-bezier(0.77, 0, 0.18, 1),
-    opacity 420ms ease,
-    visibility 0s linear 720ms;
+    transform 520ms var(--motion-ease),
+    opacity 160ms ease,
+    visibility 0s linear 520ms;
 }
 .login-story-copy-register {
   visibility: hidden;
   opacity: 0;
-  transform: translate3d(80px, 0, 0);
+  transform: translate3d(28px, 0, 0);
 }
-.login-screen:has(.login-form-card[data-mode="register"])
-  .login-story-copy-login {
+.login-screen[data-auth-mode="register"] .login-story-copy-login {
   visibility: hidden;
   opacity: 0;
-  transform: translate3d(-80px, 0, 0);
+  transform: translate3d(-28px, 0, 0);
 }
-.login-screen:has(.login-form-card[data-mode="register"])
-  .login-story-copy-register {
+.login-screen[data-auth-mode="register"] .login-story-copy-register {
   visibility: visible;
   opacity: 1;
   transform: translate3d(0, 0, 0);
+  transition-delay: 180ms;
+}
+.login-screen:not([data-auth-mode="register"]) .login-story-copy-login {
   transition-delay: 180ms;
 }
 .login-story-note {
@@ -1035,7 +1038,6 @@ body:has(.mobile-drawer[open]) {
   }
   .login-entry {
     display: contents;
-    transform: none !important;
   }
   .login-header {
     grid-area: header;
@@ -1051,6 +1053,24 @@ body:has(.mobile-drawer[open]) {
     padding: 20px;
     border-radius: 18px;
   }
+  .auth-mode-pane {
+    transition:
+      opacity 180ms ease,
+      visibility 0s linear 180ms;
+  }
+  .auth-mode-pane-register,
+  .auth-mode-slider[data-mode="register"] .auth-mode-pane-login {
+    opacity: 0;
+  }
+  .auth-mode-slider[data-mode="register"] .auth-mode-pane-register,
+  .auth-mode-slider[data-mode="login"] .auth-mode-pane-login {
+    opacity: 1;
+    transition-delay: 180ms;
+  }
+  .login-screen[data-auth-mode="register"] .login-entry,
+  .login-screen[data-auth-mode="register"] .login-story {
+    transform: none;
+  }
   .login-footer {
     display: none;
   }
@@ -1062,7 +1082,6 @@ body:has(.mobile-drawer[open]) {
     overflow: visible;
     background: none;
     color: inherit;
-    transform: none !important;
   }
   .login-story-content {
     max-width: 180px;
@@ -1127,6 +1146,12 @@ body:has(.mobile-drawer[open]) {
   .login-register-link {
     display: block;
     margin-top: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-mode-pane,
+  .login-story-copy {
+    transition-delay: 0s !important;
   }
 }
 @media (max-width: 359px) {

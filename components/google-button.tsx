@@ -46,61 +46,103 @@ function loadGsi(): Promise<void> {
  */
 export function GoogleButton({
   onSuccess,
+  onError,
   mode = "signin",
 }: {
   onSuccess: (isNewUser: boolean) => void;
+  onError?: (message: string) => void;
   mode?: "signin" | "signup";
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     onSuccessRef.current = onSuccess;
-  }, [onSuccess]);
+    onErrorRef.current = onError;
+  }, [onSuccess, onError]);
 
   useEffect(() => {
-    if (!CLIENT_ID) {
-      return;
-    }
+    const container = ref.current;
+    if (!CLIENT_ID || !container) return;
+
     let cancelled = false;
+    let resizeObserver: ResizeObserver | undefined;
+    let resizeFrame = 0;
+    let renderedWidth = 0;
+
     void loadGsi()
       .then(() => {
-        if (cancelled || !ref.current) return;
+        if (cancelled) return;
         const gid = window.google?.accounts?.id;
         if (!gid) return;
-        ref.current.replaceChildren();
+
         gid.initialize({
           client_id: CLIENT_ID,
           callback: (res) => {
-            if (!res.credential) return;
+            if (cancelled || !res.credential) return;
             void api
               .post<{ isNewUser: boolean }>("/auth/google", {
                 idToken: res.credential,
               })
-              .then((r) => onSuccessRef.current(r.isNewUser))
-              .catch((e) =>
-                setError(
+              .then((r) => {
+                if (!cancelled) onSuccessRef.current(r.isNewUser);
+              })
+              .catch((e) => {
+                if (cancelled) return;
+                const message =
                   e instanceof ApiError
                     ? e.message
-                    : "Đăng nhập Google thất bại",
-                ),
-              );
+                    : "Đăng nhập Google thất bại";
+                // Hai nút cùng tồn tại khi trượt; lỗi phải hiện ở form đang mở.
+                if (onErrorRef.current) onErrorRef.current(message);
+                else setError(message);
+              });
           },
         });
-        gid.renderButton(ref.current, {
-          type: "standard",
-          theme: "outline",
-          size: "medium",
-          text: mode === "signup" ? "signup_with" : "signin_with",
-          shape: "pill",
-          logo_alignment: "center",
-          width: Math.min(400, ref.current.clientWidth),
+
+        const render = (availableWidth: number) => {
+          const width = Math.min(400, Math.floor(availableWidth));
+          if (cancelled || width <= 0 || width === renderedWidth) return;
+
+          renderedWidth = width;
+          container.replaceChildren();
+          gid.renderButton(container, {
+            type: "standard",
+            theme: "outline",
+            size: "medium",
+            text: mode === "signup" ? "signup_with" : "signin_with",
+            shape: "pill",
+            logo_alignment: "center",
+            // GIS tự tính kích thước iframe; ép max-width bằng CSS sẽ cắt viền nút.
+            width,
+          });
+        };
+
+        const style = getComputedStyle(container);
+        render(
+          container.clientWidth -
+            parseFloat(style.paddingLeft) -
+            parseFloat(style.paddingRight),
+        );
+        resizeObserver = new ResizeObserver(([entry]) => {
+          cancelAnimationFrame(resizeFrame);
+          resizeFrame = requestAnimationFrame(() =>
+            render(entry.contentRect.width),
+          );
         });
+        resizeObserver.observe(container);
       })
-      .catch(() => setError("Không tải được Google Identity Services"));
+      .catch(() => {
+        if (!cancelled) setError("Không tải được Google Identity Services");
+      });
+
     return () => {
       cancelled = true;
+      resizeObserver?.disconnect();
+      cancelAnimationFrame(resizeFrame);
+      container.replaceChildren();
     };
   }, [mode]);
 

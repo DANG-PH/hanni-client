@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { Icon } from "./icon";
 import { ThemeToggle } from "./theme-toggle";
@@ -9,9 +10,15 @@ import { ThemeToggle } from "./theme-toggle";
 /** Bố cục đăng nhập riêng; video minh họa tự phát không tiếng và lặp liên tục. */
 export function LoginShell({ children }: { children: ReactNode }) {
   const [videoFailed, setVideoFailed] = useState(false);
+  const pathname = usePathname();
+  const authMode = pathname.startsWith("/register")
+    ? "register"
+    : pathname.startsWith("/login")
+      ? "login"
+      : undefined;
 
   return (
-    <div className="login-screen">
+    <div className="login-screen" data-auth-mode={authMode}>
       <section className="login-entry">
         <header className="login-header">
           <Link

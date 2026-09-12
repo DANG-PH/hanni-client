@@ -21,7 +21,11 @@ export function AuthFormCard({
   const { user, loading, refresh } = useAuth();
   const router = useRouter();
 
-  const mode = pathname.startsWith("/register") ? "register" : initialMode;
+  const mode = pathname.startsWith("/register")
+    ? "register"
+    : pathname.startsWith("/login")
+      ? "login"
+      : initialMode;
 
   // Form states
   const [loginEmail, setLoginEmail] = useState("");
@@ -119,7 +123,7 @@ export function AuthFormCard({
   const isLogin = mode === "login";
 
   return (
-    <section className="login-form-card reveal" data-mode={mode}>
+    <section className="login-form-card" data-mode={mode}>
       <div className="auth-mode-slider" data-mode={mode}>
         <div
           className="auth-mode-pane auth-mode-pane-login"
@@ -136,9 +140,15 @@ export function AuthFormCard({
             Góc học tập quen thuộc, những điều mới đang chờ.
           </p>
 
-          {hasGoogle && isLogin && (
+          {hasGoogle && (
             <div className="mt-7">
-              <GoogleButton mode="signin" onSuccess={onGoogleSuccess} />
+              <div className="auth-google-slot">
+                <GoogleButton
+                  mode="signin"
+                  onSuccess={onGoogleSuccess}
+                  onError={setError}
+                />
+              </div>
               <div className="my-6 flex items-center gap-3 text-[10px] font-semibold tracking-wider text-muted">
                 <span className="h-px flex-1 bg-border" />
                 HOẶC ĐĂNG NHẬP BẰNG EMAIL
@@ -256,9 +266,15 @@ export function AuthFormCard({
             Tạo tài khoản để lưu tiến độ và học theo nhịp của riêng bạn.
           </p>
 
-          {hasGoogle && !isLogin && (
+          {hasGoogle && (
             <div className="mt-7">
-              <GoogleButton mode="signup" onSuccess={onGoogleSuccess} />
+              <div className="auth-google-slot">
+                <GoogleButton
+                  mode="signup"
+                  onSuccess={onGoogleSuccess}
+                  onError={setError}
+                />
+              </div>
               <div className="my-6 flex items-center gap-3 text-[10px] font-semibold tracking-wider text-muted">
                 <span className="h-px flex-1 bg-border" />
                 HOẶC ĐĂNG KÝ BẰNG EMAIL
