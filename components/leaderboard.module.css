@@ -1,6 +1,10 @@
 .spotlight {
   background:
-    radial-gradient(ellipse at 50% 85%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 65%),
+    radial-gradient(
+      ellipse at 50% 85%,
+      color-mix(in srgb, var(--accent) 9%, transparent),
+      transparent 65%
+    ),
     var(--surface);
 }
 
@@ -10,7 +14,7 @@
   justify-content: center;
   gap: 8px;
   max-width: 560px;
-  margin: 38px auto 0;
+  margin: 30px auto 0;
   padding: 0 16px;
   list-style: none;
 }
@@ -25,9 +29,17 @@
   text-align: center;
 }
 
-.podiumEntry[data-rank="1"] { order: 2; }
-.podiumEntry[data-rank="2"] { --medal-color: var(--muted); order: 1; }
-.podiumEntry[data-rank="3"] { --medal-color: var(--warn); order: 3; }
+.podiumEntry[data-rank="1"] {
+  order: 2;
+}
+.podiumEntry[data-rank="2"] {
+  --medal-color: var(--muted);
+  order: 1;
+}
+.podiumEntry[data-rank="3"] {
+  --medal-color: var(--warn);
+  order: 3;
+}
 
 .podiumAvatar {
   position: relative;
@@ -37,7 +49,8 @@
   border: 1px solid color-mix(in srgb, var(--medal-color) 35%, transparent);
   border-radius: 50%;
   background: var(--surface);
-  box-shadow: 0 4px 16px -8px color-mix(in srgb, var(--medal-color) 45%, transparent);
+  box-shadow: 0 4px 16px -8px
+    color-mix(in srgb, var(--medal-color) 45%, transparent);
 }
 
 .podiumEntry[data-rank="1"] .avatar {
@@ -72,7 +85,6 @@
 .podiumName {
   display: -webkit-box;
   width: 100%;
-  min-height: 36px;
   overflow: hidden;
   overflow-wrap: anywhere;
   -webkit-box-orient: vertical;
@@ -84,18 +96,26 @@
 
 .podiumStep {
   width: 100%;
-  min-height: 82px;
+  min-height: 64px;
   margin-top: 12px;
-  padding: 14px 4px;
+  padding: 10px 4px;
   border: 1px solid color-mix(in srgb, var(--medal-color) 16%, transparent);
   border-bottom: 0;
   border-radius: 14px 14px 0 0;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--medal-color) 13%, var(--surface)), color-mix(in srgb, var(--medal-color) 3%, var(--surface)));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--medal-color) 13%, var(--surface)),
+    color-mix(in srgb, var(--medal-color) 3%, var(--surface))
+  );
   overflow-wrap: anywhere;
 }
 
-.podiumEntry[data-rank="1"] .podiumStep { min-height: 106px; }
-.podiumEntry[data-rank="3"] .podiumStep { min-height: 70px; }
+.podiumEntry[data-rank="1"] .podiumStep {
+  min-height: 84px;
+}
+.podiumEntry[data-rank="3"] .podiumStep {
+  min-height: 56px;
+}
 
 .table {
   width: 100%;
@@ -111,13 +131,34 @@
   font-size: 11px;
 }
 
-.table thead th { padding-block: 10px; font-weight: 500; }
-.table tbody tr + tr { border-top: 1px solid var(--border); }
-.table tbody td, .table tbody th { padding-block: 15px; }
-.table tbody tr[data-me] { background: color-mix(in srgb, var(--primary) 5%, var(--surface)); }
-.table tbody tr[data-me] td:first-child { box-shadow: inset 3px 0 var(--primary); }
-.table .rankColumn { width: 60px; padding-inline: 10px; text-align: center; }
-.table .scoreColumn { width: 110px; padding-inline: 8px 16px; text-align: right; overflow-wrap: anywhere; }
+.table thead th {
+  padding-block: 10px;
+  font-weight: 500;
+}
+.table tbody tr + tr {
+  border-top: 1px solid var(--border);
+}
+.table tbody td,
+.table tbody th {
+  padding-block: 15px;
+}
+.table tbody tr[data-me] {
+  background: color-mix(in srgb, var(--primary) 5%, var(--surface));
+}
+.table tbody tr[data-me] td:first-child {
+  box-shadow: inset 3px 0 var(--primary);
+}
+.table .rankColumn {
+  width: 60px;
+  padding-inline: 10px;
+  text-align: center;
+}
+.table .scoreColumn {
+  width: 110px;
+  padding-inline: 8px 16px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
 
 .tableRank {
   display: inline-flex;
@@ -132,18 +173,45 @@
   font-variant-numeric: tabular-nums;
 }
 
-.tableRank[data-rank="1"] { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
-.tableRank[data-rank="2"] { background: var(--surface-2); color: var(--muted); }
-.tableRank[data-rank="3"] { background: color-mix(in srgb, var(--warn) 10%, transparent); color: var(--warn); }
+.tableRank[data-rank="1"] {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+.tableRank[data-rank="2"] {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.tableRank[data-rank="3"] {
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+  color: var(--warn);
+}
 
 @media (min-width: 640px) {
-  .podium { gap: 16px; padding-inline: 24px; }
-  .podiumName { font-size: 14px; line-height: 20px; min-height: 40px; }
-  .table .rankColumn { width: 80px; padding-inline: 20px; }
-  .table .scoreColumn { width: 170px; padding-right: 24px; }
+  .podium {
+    gap: 16px;
+    padding-inline: 24px;
+  }
+  .podiumName {
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .table .rankColumn {
+    width: 80px;
+    padding-inline: 20px;
+  }
+  .table .scoreColumn {
+    width: 170px;
+    padding-right: 24px;
+  }
 }
 
 @media (max-width: 359px) {
-  .table .rankColumn { width: 44px; padding-inline: 6px; }
-  .table .scoreColumn { width: 84px; padding-right: 12px; }
+  .table .rankColumn {
+    width: 44px;
+    padding-inline: 6px;
+  }
+  .table .scoreColumn {
+    width: 84px;
+    padding-right: 12px;
+  }
 }

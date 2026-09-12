@@ -1,162 +1,168 @@
 "use client";
 
-import { useState } from "react";
-import { Avatar } from "@/components/avatar";
+import { useRef, useState, type KeyboardEvent } from "react";
 import { Icon } from "@/components/icon";
-import { Card, EmptyState, ErrorNote, PageHeading, Spinner } from "@/components/ui";
+import {
+  LEADERBOARD_METRICS,
+  LeaderboardOverview,
+  LeaderboardRankings,
+  LeaderboardSkeleton,
+  metricDetails,
+} from "@/components/leaderboard";
+import {
+  EmptyState,
+  ErrorNote,
+  LinkButton,
+  PageHeading,
+  Spinner,
+} from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { useLeaderboard, useLeaderboardMetrics } from "@/lib/hooks";
-import type { LeaderboardMetricKey, LeaderboardRow } from "@/lib/types";
-
-const FALLBACK_TABS: { key: LeaderboardMetricKey; label: string }[] = [
-  { key: "learned", label: "Từ đã thuộc" },
-  { key: "streak", label: "Chuỗi hiện tại" },
-  { key: "longest", label: "Chuỗi dài nhất" },
-  { key: "lessons", label: "Bài đã xong" },
-];
+import type { LeaderboardMetricKey } from "@/lib/types";
 
 export default function LeaderboardPage() {
   const { user, loading } = useRequireAuth();
   const metrics = useLeaderboardMetrics();
-  const [metric, setMetric] = useState<LeaderboardMetricKey>("learned");
+  const [selectedMetric, setMetric] = useState<LeaderboardMetricKey>("learned");
+  const [focusedMetric, setFocusedMetric] =
+    useState<LeaderboardMetricKey>("learned");
+  const tablist = useRef<HTMLDivElement>(null);
+  const availableTabs = metrics.data?.filter((tab) =>
+    LEADERBOARD_METRICS.some((supported) => supported.key === tab.key),
+  );
+  const tabs = availableTabs?.length ? availableTabs : LEADERBOARD_METRICS;
+  const metric = tabs.some((tab) => tab.key === selectedMetric)
+    ? selectedMetric
+    : tabs[0].key;
+  const focusableMetric = tabs.some((tab) => tab.key === focusedMetric)
+    ? focusedMetric
+    : metric;
   const board = useLeaderboard(metric);
+  const details = metricDetails(metric);
+
+  // Di chuyển focus không tải dữ liệu; Enter/Space hoặc bấm chuột mới đổi tiêu chí.
+  function moveTabFocus(
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) {
+    let next = index;
+    if (event.key === "ArrowRight") next = (index + 1) % tabs.length;
+    else if (event.key === "ArrowLeft")
+      next = (index - 1 + tabs.length) % tabs.length;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = tabs.length - 1;
+    else return;
+    event.preventDefault();
+    tablist.current
+      ?.querySelectorAll<HTMLButtonElement>("[role=tab]")
+      [next]?.focus();
+  }
 
   if (loading || !user) return <Spinner />;
-
-  const tabs = metrics.data ?? FALLBACK_TABS;
-  const unit = board.data?.unit ?? "";
 
   return (
     <div className="page-wrap space-y-6">
       <PageHeading
-        eyebrow="HÀNH TRÌNH CỦA BẠN"
+        eyebrow="CÙNG HỌC, CÙNG TIẾN BỘ"
         title="Bảng xếp hạng"
-        description="So kè nhẹ nhàng cho vui — cùng nhau tiến bộ mỗi ngày."
-      />
-
-      <div
-        role="tablist"
-        aria-label="Tiêu chí xếp hạng"
-        className="flex gap-1 overflow-x-auto border-b border-border"
+        description="Một chút nỗ lực mỗi ngày. Cùng nhau đi xa hơn trên hành trình học tiếng Trung."
       >
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            role="tab"
-            aria-selected={metric === t.key}
-            onClick={() => setMetric(t.key)}
-            className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
-              metric === t.key
-                ? "border-primary text-primary"
-                : "border-transparent text-muted hover:text-foreground"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+        <span className="hidden items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-2 text-xs font-medium text-muted sm:inline-flex">
+          <Icon name="spark" size={15} className="text-accent" />
+          Mỗi ngày một bước tiến
+        </span>
+      </PageHeading>
+
+      <div className="space-y-3">
+        <div
+          ref={tablist}
+          role="tablist"
+          aria-label="Tiêu chí xếp hạng"
+          className="grid grid-cols-2 gap-1.5 rounded-2xl border border-border bg-surface-2/70 p-1.5 sm:grid-cols-4"
+        >
+          {tabs.map((tab, index) => (
+            <button
+              key={tab.key}
+              id={`tab-${tab.key}`}
+              type="button"
+              role="tab"
+              aria-selected={metric === tab.key}
+              aria-controls={`panel-${tab.key}`}
+              tabIndex={focusableMetric === tab.key ? 0 : -1}
+              onFocus={() => setFocusedMetric(tab.key)}
+              onClick={() => setMetric(tab.key)}
+              onKeyDown={(event) => moveTabFocus(event, index)}
+              className={`flex min-h-12 items-center justify-center gap-2 rounded-xl border px-2 py-2.5 text-xs font-semibold transition-colors sm:text-sm ${
+                metric === tab.key
+                  ? "border-primary/15 bg-surface text-primary shadow-sm"
+                  : "border-transparent text-muted hover:bg-surface/70 hover:text-foreground"
+              }`}
+            >
+              <Icon
+                name={metricDetails(tab.key).icon}
+                size={17}
+                className="shrink-0"
+              />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <p className="flex items-start gap-2 px-1 text-xs leading-5 text-muted">
+          <Icon name="info" size={14} className="mt-0.5 shrink-0" />
+          {details.description}
+        </p>
       </div>
 
-      {board.error ? (
-        <ErrorNote>
-          Chưa tải được bảng xếp hạng.{" "}
-          <button
-            className="font-semibold underline"
-            onClick={() => void board.mutate()}
-          >
-            Thử lại
-          </button>
-        </ErrorNote>
-      ) : board.isLoading || !board.data ? (
-        <Spinner />
-      ) : board.data.rows.length === 0 ? (
-        <EmptyState
-          title="Chưa có ai trên bảng"
-          description="Hãy là người đầu tiên — học vài từ hoặc giữ chuỗi vài ngày."
-        />
-      ) : (
-        <>
-          <Card className="flex items-center gap-4 border-primary/15 bg-primary/5!">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-fg">
-              {board.data.me.rank ?? "–"}
-            </span>
-            <div>
-              <p className="text-sm text-muted">Hạng của bạn</p>
-              <p className="font-semibold">
-                {board.data.me.rank
-                  ? `#${board.data.me.rank} / ${board.data.me.totalRanked} người học`
-                  : "Chưa xếp hạng ở mục này"}
-              </p>
-              <p className="mt-0.5 text-sm text-muted">
-                {board.data.me.value.toLocaleString("vi-VN")} {unit}
-              </p>
-            </div>
-          </Card>
-
-          <Card className="overflow-hidden p-0!">
-            <ul className="divide-y divide-border">
-              {board.data.rows.map((row) => (
-                <Row key={row.userId} row={row} unit={unit} />
-              ))}
-            </ul>
-          </Card>
-        </>
-      )}
-    </div>
-  );
-}
-
-function Row({ row, unit }: { row: LeaderboardRow; unit: string }) {
-  const medal =
-    row.rank === 1
-      ? "text-[#d4a017]"
-      : row.rank === 2
-        ? "text-[#9aa3af]"
-        : row.rank === 3
-          ? "text-[#b5763a]"
-          : "text-muted";
-
-  return (
-    <li
-      className={`flex items-center gap-3 px-4 py-3 ${
-        row.isMe ? "bg-primary/[0.06]" : ""
-      }`}
-    >
-      <span
-        className={`w-7 shrink-0 text-center text-sm font-bold ${medal}`}
-        aria-label={`Hạng ${row.rank}`}
-      >
-        {row.rank}
-      </span>
-      <Avatar
-        user={{
-          displayName: row.displayName,
-          avatarUrl: row.avatarUrl,
-          id: row.userId,
-        }}
-        size={36}
-      />
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-medium">
-          {row.displayName}
-          {row.isMe && (
-            <span className="ml-2 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-              Bạn
-            </span>
+      {tabs.map((tab) => (
+        <div
+          key={tab.key}
+          id={`panel-${tab.key}`}
+          role="tabpanel"
+          aria-labelledby={`tab-${tab.key}`}
+          tabIndex={0}
+          hidden={metric !== tab.key}
+          aria-busy={metric === tab.key && board.isLoading}
+          className="space-y-5 rounded-2xl"
+        >
+          {metric === tab.key && (
+            <>
+              {board.error && (
+                <ErrorNote>
+                  {board.data
+                    ? "Chưa cập nhật được bảng xếp hạng. Đang hiển thị dữ liệu đã tải."
+                    : "Chưa tải được bảng xếp hạng."}{" "}
+                  <button
+                    type="button"
+                    className="inline-flex min-h-11 items-center font-semibold underline underline-offset-4"
+                    disabled={board.isValidating}
+                    onClick={() => void board.mutate()}
+                  >
+                    {board.isValidating ? "Đang thử lại…" : "Thử lại"}
+                  </button>
+                </ErrorNote>
+              )}
+              {!board.data ? (
+                !board.error && <LeaderboardSkeleton />
+              ) : board.data.rows.length === 0 ? (
+                <EmptyState
+                  title="Hành trình bắt đầu từ bước nhỏ"
+                  description="Chưa có người học được xếp hạng ở mục này. Bắt đầu học để ghi dấu bước tiến đầu tiên của bạn nhé."
+                >
+                  <LinkButton href={details.href}>
+                    {details.action}
+                    <Icon name="arrow" size={16} />
+                  </LinkButton>
+                </EmptyState>
+              ) : (
+                <>
+                  <LeaderboardOverview board={board.data} user={user} />
+                  <LeaderboardRankings board={board.data} />
+                </>
+              )}
+            </>
           )}
-        </span>
-        {row.currentStreak > 0 && (
-          <span className="mt-0.5 flex items-center gap-1 text-xs text-muted">
-            <Icon name="flame" size={12} className="text-primary" />
-            {row.currentStreak} ngày
-          </span>
-        )}
-      </span>
-      <span className="shrink-0 text-right">
-        <span className="block text-sm font-semibold">
-          {row.value.toLocaleString("vi-VN")}
-        </span>
-        <span className="text-[11px] text-muted">{unit}</span>
-      </span>
-    </li>
+        </div>
+      ))}
+    </div>
   );
 }
