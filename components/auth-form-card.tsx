@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button, ErrorNote } from "@/components/ui";
 import { Icon } from "@/components/icon";
@@ -10,13 +10,18 @@ import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { safeNextPath } from "@/lib/auth-redirect";
 
-export function AuthFormCard({ initialMode }: { initialMode: "login" | "register" }) {
+export function AuthFormCard({
+  initialMode,
+}: {
+  initialMode: "login" | "register";
+}) {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const next = safeNextPath(searchParams.get("next"));
   const { user, loading, refresh } = useAuth();
   const router = useRouter();
 
-  const [mode, setMode] = useState<"login" | "register">(initialMode);
+  const mode = pathname.startsWith("/register") ? "register" : initialMode;
 
   // Form states
   const [loginEmail, setLoginEmail] = useState("");
@@ -32,29 +37,15 @@ export function AuthFormCard({ initialMode }: { initialMode: "login" | "register
   const hasGoogle = Boolean(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
 
   useEffect(() => {
-    setMode(initialMode);
-  }, [initialMode]);
-
-  useEffect(() => {
-    const handlePopState = () => {
-      const isRegister = window.location.pathname.startsWith("/register");
-      setMode(isRegister ? "register" : "login");
-      setError(null);
-    };
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
-
-  useEffect(() => {
     if (!loading && user) router.replace(next);
   }, [loading, user, router, next]);
 
   const switchMode = (newMode: "login" | "register") => {
     setError(null);
-    setMode(newMode);
-    const targetUrl = newMode === "register"
-      ? `/register?next=${encodeURIComponent(next)}`
-      : `/login?next=${encodeURIComponent(next)}`;
+    const targetUrl =
+      newMode === "register"
+        ? `/register?next=${encodeURIComponent(next)}`
+        : `/login?next=${encodeURIComponent(next)}`;
     window.history.pushState(null, "", targetUrl);
   };
 
@@ -82,7 +73,10 @@ export function AuthFormCard({ initialMode }: { initialMode: "login" | "register
     setBusy(true);
     setError(null);
     try {
-      await api.post("/auth/login", { email: loginEmail, password: loginPassword });
+      await api.post("/auth/login", {
+        email: loginEmail,
+        password: loginPassword,
+      });
       await refresh();
       router.replace(next);
     } catch (err) {
@@ -125,43 +119,44 @@ export function AuthFormCard({ initialMode }: { initialMode: "login" | "register
   const isLogin = mode === "login";
 
   return (
-    <section className="login-form-card reveal">
-      <div className="transition-all duration-300 ease-out">
-        <span className="section-label">
-          <Icon name={isLogin ? "clock" : "spark"} size={12} /> MỖI NGÀY MỘT CHÚT TIẾNG TRUNG
-        </span>
-        <h1 className="mt-5 text-[27px] font-bold leading-tight tracking-tight sm:text-3xl">
-          {isLogin ? (
-            <>
-              Chào mừng bạn trở lại<span className="text-primary">.</span>
-            </>
-          ) : (
-            <>
-              Bắt đầu cùng Hanni<span className="text-primary">.</span>
-            </>
-          )}
-        </h1>
-        <p className="mt-2.5 text-sm leading-6 text-muted">
-          {isLogin
-            ? "Góc học tập quen thuộc, những điều mới đang chờ."
-            : "Tạo tài khoản để lưu tiến độ và học theo nhịp của riêng bạn."}
-        </p>
+    <section className="login-form-card reveal" data-mode={mode}>
+      <div className="auth-mode-slider" data-mode={mode}>
+        <div
+          className="auth-mode-pane auth-mode-pane-login"
+          aria-hidden={!isLogin}
+          inert={!isLogin}
+        >
+          <span className="section-label">
+            <Icon name="clock" size={12} /> MỖI NGÀY MỘT CHÚT TIẾNG TRUNG
+          </span>
+          <h1 className="mt-5 text-[27px] font-bold leading-tight tracking-tight sm:text-3xl">
+            Chào mừng bạn trở lại<span className="text-primary">.</span>
+          </h1>
+          <p className="mt-2.5 text-sm leading-6 text-muted">
+            Góc học tập quen thuộc, những điều mới đang chờ.
+          </p>
 
-        {hasGoogle && (
-          <div className="mt-7">
-            <GoogleButton mode={isLogin ? "signin" : "signup"} onSuccess={onGoogleSuccess} />
-            <div className="my-6 flex items-center gap-3 text-[10px] font-semibold tracking-wider text-muted">
-              <span className="h-px flex-1 bg-border" />
-              {isLogin ? "HOẶC ĐĂNG NHẬP BẰNG EMAIL" : "HOẶC ĐĂNG KÝ BẰNG EMAIL"}
-              <span className="h-px flex-1 bg-border" />
+          {hasGoogle && isLogin && (
+            <div className="mt-7">
+              <GoogleButton mode="signin" onSuccess={onGoogleSuccess} />
+              <div className="my-6 flex items-center gap-3 text-[10px] font-semibold tracking-wider text-muted">
+                <span className="h-px flex-1 bg-border" />
+                HOẶC ĐĂNG NHẬP BẰNG EMAIL
+                <span className="h-px flex-1 bg-border" />
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {isLogin ? (
-          <form onSubmit={onLoginSubmit} className="mt-7 space-y-5" aria-busy={busy}>
+          <form
+            onSubmit={onLoginSubmit}
+            className="mt-7 space-y-5"
+            aria-busy={busy}
+          >
             <div>
-              <label htmlFor="login-email" className="mb-2 block text-xs font-semibold">
+              <label
+                htmlFor="login-email"
+                className="mb-2 block text-xs font-semibold"
+              >
                 Email
               </label>
               <input
@@ -178,7 +173,10 @@ export function AuthFormCard({ initialMode }: { initialMode: "login" | "register
             </div>
             <div>
               <div className="mb-2 flex items-center justify-between gap-2">
-                <label htmlFor="login-password" className="text-xs font-semibold">
+                <label
+                  htmlFor="login-password"
+                  className="text-xs font-semibold"
+                >
                   Mật khẩu
                 </label>
                 <Link
@@ -212,7 +210,11 @@ export function AuthFormCard({ initialMode }: { initialMode: "login" | "register
               </div>
             </div>
             {error && <ErrorNote>{error}</ErrorNote>}
-            <Button type="submit" disabled={busy} className="login-submit w-full min-h-12!">
+            <Button
+              type="submit"
+              disabled={busy}
+              className="login-submit w-full min-h-12!"
+            >
               {busy ? (
                 <>
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
@@ -226,10 +228,55 @@ export function AuthFormCard({ initialMode }: { initialMode: "login" | "register
               )}
             </Button>
           </form>
-        ) : (
-          <form onSubmit={onRegisterSubmit} className="mt-7 space-y-5" aria-busy={busy}>
+
+          <p className="login-register-link mt-6 text-center text-xs leading-6 text-muted">
+            Chưa có tài khoản?{" "}
+            <button
+              type="button"
+              onClick={() => switchMode("register")}
+              className="font-semibold text-primary underline-offset-4 hover:underline cursor-pointer"
+            >
+              Đăng ký ngay
+            </button>
+          </p>
+        </div>
+
+        <div
+          className="auth-mode-pane auth-mode-pane-register"
+          aria-hidden={isLogin}
+          inert={isLogin}
+        >
+          <span className="section-label">
+            <Icon name="spark" size={12} /> MỖI NGÀY MỘT CHÚT TIẾNG TRUNG
+          </span>
+          <h1 className="mt-5 text-[27px] font-bold leading-tight tracking-tight sm:text-3xl">
+            Bắt đầu cùng Hanni<span className="text-primary">.</span>
+          </h1>
+          <p className="mt-2.5 text-sm leading-6 text-muted">
+            Tạo tài khoản để lưu tiến độ và học theo nhịp của riêng bạn.
+          </p>
+
+          {hasGoogle && !isLogin && (
+            <div className="mt-7">
+              <GoogleButton mode="signup" onSuccess={onGoogleSuccess} />
+              <div className="my-6 flex items-center gap-3 text-[10px] font-semibold tracking-wider text-muted">
+                <span className="h-px flex-1 bg-border" />
+                HOẶC ĐĂNG KÝ BẰNG EMAIL
+                <span className="h-px flex-1 bg-border" />
+              </div>
+            </div>
+          )}
+
+          <form
+            onSubmit={onRegisterSubmit}
+            className="mt-7 space-y-5"
+            aria-busy={busy}
+          >
             <div>
-              <label htmlFor="register-name" className="mb-2 block text-xs font-semibold">
+              <label
+                htmlFor="register-name"
+                className="mb-2 block text-xs font-semibold"
+              >
                 Tên hiển thị
               </label>
               <input
@@ -245,7 +292,10 @@ export function AuthFormCard({ initialMode }: { initialMode: "login" | "register
               />
             </div>
             <div>
-              <label htmlFor="register-email" className="mb-2 block text-xs font-semibold">
+              <label
+                htmlFor="register-email"
+                className="mb-2 block text-xs font-semibold"
+              >
                 Email
               </label>
               <input
@@ -261,7 +311,10 @@ export function AuthFormCard({ initialMode }: { initialMode: "login" | "register
               />
             </div>
             <div>
-              <label htmlFor="register-password" className="mb-2 block text-xs font-semibold">
+              <label
+                htmlFor="register-password"
+                className="mb-2 block text-xs font-semibold"
+              >
                 Mật khẩu
               </label>
               <div className="relative">
@@ -289,7 +342,11 @@ export function AuthFormCard({ initialMode }: { initialMode: "login" | "register
               </div>
             </div>
             {error && <ErrorNote>{error}</ErrorNote>}
-            <Button type="submit" disabled={busy} className="login-submit w-full min-h-12!">
+            <Button
+              type="submit"
+              disabled={busy}
+              className="login-submit w-full min-h-12!"
+            >
               {busy ? (
                 <>
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
@@ -303,33 +360,18 @@ export function AuthFormCard({ initialMode }: { initialMode: "login" | "register
               )}
             </Button>
           </form>
-        )}
 
-        <p className="login-register-link mt-6 text-center text-xs leading-6 text-muted">
-          {isLogin ? (
-            <>
-              Chưa có tài khoản?{" "}
-              <button
-                type="button"
-                onClick={() => switchMode("register")}
-                className="font-semibold text-primary underline-offset-4 hover:underline cursor-pointer"
-              >
-                Đăng ký ngay
-              </button>
-            </>
-          ) : (
-            <>
-              Đã có tài khoản?{" "}
-              <button
-                type="button"
-                onClick={() => switchMode("login")}
-                className="font-semibold text-primary underline-offset-4 hover:underline cursor-pointer"
-              >
-                Đăng nhập
-              </button>
-            </>
-          )}
-        </p>
+          <p className="login-register-link mt-6 text-center text-xs leading-6 text-muted">
+            Đã có tài khoản?{" "}
+            <button
+              type="button"
+              onClick={() => switchMode("login")}
+              className="font-semibold text-primary underline-offset-4 hover:underline cursor-pointer"
+            >
+              Đăng nhập
+            </button>
+          </p>
+        </div>
       </div>
     </section>
   );

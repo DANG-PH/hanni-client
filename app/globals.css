@@ -728,6 +728,7 @@ body:has(.mobile-drawer[open]) {
   min-height: 100svh;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   background: var(--surface);
+  overflow-x: clip;
 }
 .login-entry {
   display: flex;
@@ -741,6 +742,8 @@ body:has(.mobile-drawer[open]) {
       transparent 48%
     ),
     var(--surface);
+  transition: transform 1.05s cubic-bezier(0.77, 0, 0.18, 1);
+  will-change: transform;
 }
 .login-header {
   display: flex;
@@ -767,6 +770,43 @@ body:has(.mobile-drawer[open]) {
     0 25px 60px -15px rgba(0, 0, 0, 0.18),
     0 10px 25px -10px rgba(0, 0, 0, 0.12),
     0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+.auth-mode-slider {
+  display: grid;
+  overflow: hidden;
+}
+.auth-mode-pane {
+  grid-area: 1 / 1;
+  min-width: 0;
+  transition:
+    transform 850ms cubic-bezier(0.77, 0, 0.18, 1),
+    opacity 520ms ease,
+    visibility 0s linear 850ms;
+  will-change: transform, opacity;
+}
+.auth-mode-pane-login {
+  transform: translate3d(0, 0, 0);
+}
+.auth-mode-pane-register {
+  visibility: hidden;
+  opacity: 0;
+  transform: translate3d(112%, 0, 0);
+}
+.auth-mode-slider[data-mode="register"] .auth-mode-pane-login {
+  visibility: hidden;
+  opacity: 0;
+  transform: translate3d(-112%, 0, 0);
+}
+.auth-mode-slider[data-mode="register"] .auth-mode-pane-register {
+  visibility: visible;
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: 0s;
+}
+.auth-mode-slider[data-mode="login"] .auth-mode-pane-login {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
 }
 .login-input {
   background: var(--surface);
@@ -813,6 +853,14 @@ body:has(.mobile-drawer[open]) {
     ),
     var(--login-story-base);
   color: #fff;
+  transition: transform 1.05s cubic-bezier(0.77, 0, 0.18, 1);
+  will-change: transform;
+}
+.login-screen:has(.login-form-card[data-mode="register"]) .login-entry {
+  transform: translate3d(100%, 0, 0);
+}
+.login-screen:has(.login-form-card[data-mode="register"]) .login-story {
+  transform: translate3d(-100%, 0, 0);
 }
 .login-story-pattern {
   position: absolute;
@@ -890,8 +938,34 @@ body:has(.mobile-drawer[open]) {
 .login-video::-webkit-media-controls-start-playback-button {
   display: none;
 }
-.login-story-copy {
+.login-story-copy-stack {
+  display: grid;
   margin-top: 34px;
+}
+.login-story-copy {
+  grid-area: 1 / 1;
+  transition:
+    transform 720ms cubic-bezier(0.77, 0, 0.18, 1),
+    opacity 420ms ease,
+    visibility 0s linear 720ms;
+}
+.login-story-copy-register {
+  visibility: hidden;
+  opacity: 0;
+  transform: translate3d(80px, 0, 0);
+}
+.login-screen:has(.login-form-card[data-mode="register"])
+  .login-story-copy-login {
+  visibility: hidden;
+  opacity: 0;
+  transform: translate3d(-80px, 0, 0);
+}
+.login-screen:has(.login-form-card[data-mode="register"])
+  .login-story-copy-register {
+  visibility: visible;
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: 180ms;
 }
 .login-story-note {
   display: inline-flex;
@@ -961,6 +1035,7 @@ body:has(.mobile-drawer[open]) {
   }
   .login-entry {
     display: contents;
+    transform: none !important;
   }
   .login-header {
     grid-area: header;
@@ -987,6 +1062,7 @@ body:has(.mobile-drawer[open]) {
     overflow: visible;
     background: none;
     color: inherit;
+    transform: none !important;
   }
   .login-story-content {
     max-width: 180px;
@@ -994,7 +1070,7 @@ body:has(.mobile-drawer[open]) {
   .login-story-pattern,
   .login-story::after,
   .login-story-eyebrow,
-  .login-story-copy,
+  .login-story-copy-stack,
   .login-story-note {
     display: none;
   }

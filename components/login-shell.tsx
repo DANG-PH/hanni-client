@@ -98,23 +98,43 @@ export function LoginShell({ children }: { children: ReactNode }) {
               </video>
             )}
           </div>
-          <div className="login-story-copy">
-            <p
-              lang="zh"
-              className="hanzi text-lg tracking-[.18em] text-white/75"
-            >
-              每天进步一点点
-            </p>
-            <h2 className="mt-4 text-2xl font-bold leading-snug tracking-tight sm:text-3xl">
-              Mỗi lần quay lại,
-              <br />
-              một bước tiến xa hơn.
-            </h2>
-            <p className="mx-auto mt-4 max-w-xs text-sm leading-7 text-white/75">
-              Tiếp nối những từ đã học, khám phá điều mới.
-              <br />
-              Hanni luôn sẵn sàng đồng hành cùng bạn.
-            </p>
+          <div className="login-story-copy-stack">
+            <div className="login-story-copy login-story-copy-login">
+              <p
+                lang="zh"
+                className="hanzi text-lg tracking-[.18em] text-white/75"
+              >
+                每天进步一点点
+              </p>
+              <h2 className="mt-4 text-2xl font-bold leading-snug tracking-tight sm:text-3xl">
+                Mỗi lần quay lại,
+                <br />
+                một bước tiến xa hơn.
+              </h2>
+              <p className="mx-auto mt-4 max-w-xs text-sm leading-7 text-white/75">
+                Tiếp nối những từ đã học, khám phá điều mới.
+                <br />
+                Hanni luôn sẵn sàng đồng hành cùng bạn.
+              </p>
+            </div>
+            <div className="login-story-copy login-story-copy-register">
+              <p
+                lang="zh"
+                className="hanzi text-lg tracking-[.18em] text-white/75"
+              >
+                千里之行，始于足下
+              </p>
+              <h2 className="mt-4 text-2xl font-bold leading-snug tracking-tight sm:text-3xl">
+                Bắt đầu từ một chữ,
+                <br />
+                mở ra cả hành trình.
+              </h2>
+              <p className="mx-auto mt-4 max-w-xs text-sm leading-7 text-white/75">
+                Tạo tài khoản để lưu từng cột mốc nhỏ.
+                <br />
+                Hanni sẽ cùng bạn biến chúng thành tiến bộ lớn.
+              </p>
+            </div>
           </div>
           <span className="login-story-note">
             <Icon name="spark" size={15} /> Học một chút. Nhớ thêm nhiều.
