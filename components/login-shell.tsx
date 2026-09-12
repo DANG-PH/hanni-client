@@ -3,44 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Icon } from "./icon";
 import { ThemeToggle } from "./theme-toggle";
 
-/** Bố cục đăng nhập riêng; video minh họa tự phát không tiếng và lặp liên tục. */
+/** Bố cục đăng nhập riêng với hình minh họa tĩnh, ổn định khi chuyển màn. */
 export function LoginShell({ children }: { children: ReactNode }) {
-  const [videoFailed, setVideoFailed] = useState(false);
-  const [useStaticVisual, setUseStaticVisual] = useState(false);
   const pathname = usePathname();
-  const previousPathname = useRef(pathname);
   const authMode = pathname.startsWith("/register")
     ? "register"
     : pathname.startsWith("/login")
       ? "login"
       : undefined;
-
-  useEffect(() => {
-    const previousMode = previousPathname.current.startsWith("/register")
-      ? "register"
-      : previousPathname.current.startsWith("/login")
-        ? "login"
-        : undefined;
-    const isAuthSwitch =
-      (authMode === "login" || authMode === "register") &&
-      (previousMode === "login" || previousMode === "register") &&
-      previousMode !== authMode;
-
-    previousPathname.current = pathname;
-    if (!isAuthSwitch) return;
-
-    setUseStaticVisual(true);
-    const timer = window.setTimeout(() => setUseStaticVisual(false), 1000);
-    return () => window.clearTimeout(timer);
-  }, [authMode, pathname]);
-
-  // Màn đăng ký không mount video; khi quay lại đăng nhập chỉ bật lại sau
-  // khi panel đã trượt xong để không làm vỡ khung hình chuyển cảnh.
-  const showStaticVisual = authMode === "register" || useStaticVisual;
 
   return (
     <div className="login-screen" data-auth-mode={authMode}>
@@ -97,38 +71,16 @@ export function LoginShell({ children }: { children: ReactNode }) {
         </div>
         <div className="login-story-content">
           <div className="login-video-frame">
-            {videoFailed || showStaticVisual ? (
-              <div className="login-video-fallback login-static-visual">
-                <Image
-                  src="/favicon.ico"
-                  alt="Logo Hanni"
-                  width={120}
-                  height={120}
-                  unoptimized
-                  className="rounded-3xl"
-                />
-              </div>
-            ) : (
-              <video
-                src="/videologin.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                controls={false}
-                disablePictureInPicture
-                disableRemotePlayback
-                preload="auto"
-                width={1280}
-                height={720}
-                aria-hidden="true"
-                tabIndex={-1}
-                className="login-video"
-                onError={() => setVideoFailed(true)}
-              >
-                Trình duyệt của bạn chưa hỗ trợ video.
-              </video>
-            )}
+            <div className="login-video-fallback login-static-visual">
+              <Image
+                src="/favicon.ico"
+                alt="Logo Hanni"
+                width={120}
+                height={120}
+                unoptimized
+                className="rounded-3xl"
+              />
+            </div>
           </div>
           <div className="login-story-copy-stack">
             <div className="login-story-copy login-story-copy-login">
