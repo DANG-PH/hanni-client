@@ -753,7 +753,8 @@ body:has(.mobile-drawer[open]) {
   min-width: 0;
   min-height: 100svh;
   background: transparent;
-  transition: transform var(--auth-slide-duration) var(--auth-slide-ease);
+  left: 0;
+  transition: left var(--auth-slide-duration) var(--auth-slide-ease);
 }
 .login-header {
   display: flex;
@@ -856,13 +857,14 @@ body:has(.mobile-drawer[open]) {
     ),
     var(--login-story-base);
   color: #fff;
-  transition: transform var(--auth-slide-duration) var(--auth-slide-ease);
+  left: 0;
+  transition: left var(--auth-slide-duration) var(--auth-slide-ease);
 }
 .login-screen[data-auth-mode="register"] .login-entry {
-  transform: translate3d(100%, 0, 0);
+  left: 100%;
 }
 .login-screen[data-auth-mode="register"] .login-story {
-  transform: translate3d(-100%, 0, 0);
+  left: -100%;
 }
 .login-story-pattern {
   position: absolute;
@@ -1074,7 +1076,8 @@ body:has(.mobile-drawer[open]) {
   }
   .login-screen[data-auth-mode="register"] .login-entry,
   .login-screen[data-auth-mode="register"] .login-story {
-    transform: none;
+    left: 0;
+    transition: none;
   }
   .login-footer {
     display: none;
