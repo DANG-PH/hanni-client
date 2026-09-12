@@ -52,7 +52,7 @@ const STAGES: Stage[] = [
     index: "四",
     pinyin: "cí",
     title: "Từ vựng HSK 1",
-    desc: "Khoảng 150 từ đầu tiên: chào hỏi, số đếm, đại từ, động từ thông dụng — có audio và flashcard SRS.",
+    desc: "300 từ đầu tiên: chào hỏi, số đếm, đại từ, động từ thông dụng — có audio và flashcard SRS.",
     href: "/study",
     accent: "red",
   },
