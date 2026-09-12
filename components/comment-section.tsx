@@ -114,7 +114,15 @@ function CommentRow({
   );
 }
 
-export function CommentSection({ videoId }: { videoId: string }) {
+export function CommentSection({
+  videoId,
+  commentCount,
+  onCommentCountChange,
+}: {
+  videoId: string;
+  commentCount: number;
+  onCommentCountChange: (count: number) => void;
+}) {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
   const { data, isLoading, error, mutate } = useComments(videoId, page);
@@ -124,17 +132,20 @@ export function CommentSection({ videoId }: { videoId: string }) {
     await postComment(videoId, content);
     setPage(1);
     await mutate();
+    onCommentCountChange(commentCount + 1);
   }
 
   async function submitReply(rootId: string, content: string) {
     await postComment(videoId, content, rootId);
     await mutate();
+    onCommentCountChange(commentCount + 1);
   }
 
-  async function remove(commentId: string) {
+  async function remove(commentId: string, removedCount: number) {
     if (!confirm("Xoá bình luận này?")) return;
     await deleteComment(videoId, commentId);
     await mutate();
+    onCommentCountChange(commentCount - removedCount);
   }
 
   return (
@@ -142,7 +153,7 @@ export function CommentSection({ videoId }: { videoId: string }) {
       <div className="flex items-center gap-2">
         <Icon name="message" size={18} className="text-muted" />
         <h2 className="text-sm font-bold tracking-wide">
-          BÌNH LUẬN{data ? ` (${data.total})` : ""}
+          BÌNH LUẬN ({commentCount})
         </h2>
       </div>
 
@@ -169,7 +180,7 @@ export function CommentSection({ videoId }: { videoId: string }) {
               comment={c}
               canDelete={Boolean(user && (user.id === c.user.id || user.role === "admin"))}
               onReply={user ? () => setReplyTo(replyTo === c.id ? null : c.id) : undefined}
-              onDelete={() => void remove(c.id)}
+              onDelete={() => void remove(c.id, 1 + c.replies.length)}
             />
             {c.replies.length > 0 && (
               <div className="ml-11 border-l border-border pl-3">
@@ -181,7 +192,7 @@ export function CommentSection({ videoId }: { videoId: string }) {
                     canDelete={Boolean(
                       user && (user.id === r.user.id || user.role === "admin"),
                     )}
-                    onDelete={() => void remove(r.id)}
+                    onDelete={() => void remove(r.id, 1)}
                   />
                 ))}
               </div>

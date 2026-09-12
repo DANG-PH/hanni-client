@@ -409,7 +409,13 @@ export default function WatchDetailPage() {
         </details>
       )}
 
-      <CommentSection videoId={id} />
+      <CommentSection
+        videoId={id}
+        commentCount={data.commentCount}
+        onCommentCountChange={(commentCount) =>
+          void mutate({ ...data, commentCount }, { revalidate: false })
+        }
+      />
 
       <div className="flex justify-end">
         <Button variant="ghost" onClick={() => router.push("/watch")}>
