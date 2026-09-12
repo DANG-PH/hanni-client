@@ -121,9 +121,12 @@ export default function Home() {
             </p>
             <ul className="reveal mt-6 flex flex-wrap gap-2.5">
               {[
-                { n: "10.900+", t: "từ vựng có audio" },
+                {
+                  n: totalWords ? `${totalWords.toLocaleString("vi-VN")}+` : "10.900+",
+                  t: "từ vựng có audio",
+                },
                 { n: "9 cấp", t: "HSK 3.0 · 731 bài" },
-                { n: "8 video", t: "phụ đề chạy đồng bộ" },
+                { n: "42 video", t: "phụ đề chạy đồng bộ" },
               ].map((f) => (
                 <li
                   key={f.t}
