@@ -744,6 +744,20 @@ body:has(.mobile-drawer[open]) {
     ),
     var(--surface);
   overflow-x: clip;
+  position: relative;
+}
+.login-screen::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  inset: 0 auto 0 0;
+  width: 100%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 100% 100%, #df5946, transparent 65%),
+    #c53b2b;
+  transform: translateX(-100%);
+  transition: transform var(--auth-slide-duration) var(--auth-slide-ease);
 }
 .login-entry {
   position: relative;
@@ -753,8 +767,7 @@ body:has(.mobile-drawer[open]) {
   min-width: 0;
   min-height: 100svh;
   background: transparent;
-  left: 0;
-  transition: left var(--auth-slide-duration) var(--auth-slide-ease);
+  grid-column: 1;
 }
 .login-header {
   display: flex;
@@ -857,14 +870,16 @@ body:has(.mobile-drawer[open]) {
     ),
     var(--login-story-base);
   color: #fff;
-  left: 0;
-  transition: left var(--auth-slide-duration) var(--auth-slide-ease);
+  grid-column: 2;
 }
 .login-screen[data-auth-mode="register"] .login-entry {
-  left: 100%;
+  grid-column: 2;
 }
 .login-screen[data-auth-mode="register"] .login-story {
-  left: -100%;
+  grid-column: 1;
+}
+.login-screen[data-auth-mode="register"]::before {
+  transform: translateX(100%);
 }
 .login-story-pattern {
   position: absolute;
@@ -1043,6 +1058,9 @@ body:has(.mobile-drawer[open]) {
       ),
       var(--surface);
   }
+  .login-screen::before {
+    display: none;
+  }
   .login-entry {
     display: contents;
   }
@@ -1076,8 +1094,7 @@ body:has(.mobile-drawer[open]) {
   }
   .login-screen[data-auth-mode="register"] .login-entry,
   .login-screen[data-auth-mode="register"] .login-story {
-    left: 0;
-    transition: none;
+    grid-column: auto;
   }
   .login-footer {
     display: none;
