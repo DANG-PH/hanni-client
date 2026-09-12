@@ -725,7 +725,7 @@ body:has(.mobile-drawer[open]) {
 /* Đăng nhập: thẻ biểu mẫu sáng bên cạnh không gian video thương hiệu. */
 .login-screen {
   --auth-slide-duration: 1000ms;
-  --auth-slide-midpoint: 500ms;
+  --auth-slide-midpoint: 180ms;
   --auth-slide-ease: cubic-bezier(0.65, 0, 0.35, 1);
   isolation: isolate;
   display: grid;
@@ -753,7 +753,6 @@ body:has(.mobile-drawer[open]) {
   min-width: 0;
   min-height: 100svh;
   background: transparent;
-  transition: transform var(--auth-slide-duration) var(--auth-slide-ease);
 }
 .login-header {
   display: flex;
@@ -780,6 +779,32 @@ body:has(.mobile-drawer[open]) {
     0 25px 60px -15px rgba(0, 0, 0, 0.18),
     0 10px 25px -10px rgba(0, 0, 0, 0.12),
     0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+@keyframes auth-form-enter-login {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes auth-form-enter-register {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.login-form-card[data-mode="login"] {
+  animation: auth-form-enter-login 360ms var(--auth-slide-ease) both;
+}
+.login-form-card[data-mode="register"] {
+  animation: auth-form-enter-register 360ms var(--auth-slide-ease) both;
 }
 .auth-mode-slider {
   display: grid;
@@ -856,13 +881,12 @@ body:has(.mobile-drawer[open]) {
     ),
     var(--login-story-base);
   color: #fff;
-  transition: transform var(--auth-slide-duration) var(--auth-slide-ease);
 }
 .login-screen[data-auth-mode="register"] .login-entry {
-  transform: translate3d(100%, 0, 0);
+  transform: none;
 }
 .login-screen[data-auth-mode="register"] .login-story {
-  transform: translate3d(-100%, 0, 0);
+  transform: none;
 }
 .login-story-pattern {
   position: absolute;
