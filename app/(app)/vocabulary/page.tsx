@@ -4,17 +4,36 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Button,
-  Card,
   EmptyState,
   ErrorNote,
   LinkButton,
-  PageHeading,
   Spinner,
 } from "@/components/ui";
+import {
+  LearningHeader,
+  LearningTip,
+  LevelFilter,
+} from "@/components/learning-library";
+import styles from "@/components/learning-library.module.css";
 import { Icon } from "@/components/icon";
 import { AudioButton } from "@/components/audio-button";
 import { useRequireAuth } from "@/lib/auth";
 import { useWords } from "@/lib/hooks";
+
+const POS_LABELS: Record<string, string> = {
+  NOUN: "Danh từ",
+  VERB: "Động từ",
+  ADJECTIVE: "Tính từ",
+  ADVERB: "Phó từ",
+  PRONOUN: "Đại từ",
+  PARTICLE: "Trợ từ",
+  PREPOSITION: "Giới từ",
+  CONJUNCTION: "Liên từ",
+  NUMERAL: "Số từ",
+  MEASURE: "Lượng từ",
+  CLASSIFIER: "Lượng từ",
+  INTERJECTION: "Thán từ",
+};
 
 const LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -37,28 +56,32 @@ function VocabularyContent() {
   }
 
   return (
-    <div className="page-wrap space-y-7">
-      <PageHeading
-        eyebrow="KHÁM PHÁ NGÔN NGỮ"
+    <div className={`page-wrap ${styles.page}`}>
+      <LearningHeader
+        section="vocabulary"
+        eyebrow="TỪNG TỪ NHỎ · THẾ GIỚI LỚN"
         title="Thư viện từ vựng"
-        description="Từng từ một, mở rộng thế giới tiếng Trung của bạn."
+        description="Gặp một từ mới, mở thêm một cánh cửa. Khám phá Hán tự, nghe phát âm và xây vốn từ tiếng Trung theo từng cấp HSK."
       >
         <LinkButton href="/study">
           <Icon name="cards" size={17} />
-          Vào ôn tập
+          Ôn tập flashcard
         </LinkButton>
-      </PageHeading>
-      <Card className="space-y-5">
+        <span className={styles.heroNote}>
+          <Icon name="headphones" size={15} /> Nghe · hiểu · ghi nhớ
+        </span>
+      </LearningHeader>
+      <section className={styles.toolbar} aria-label="Tìm kiếm và lọc từ vựng">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             setTerm(q.trim());
             setPage(1);
           }}
-          className="flex gap-2 sm:gap-3"
+          className={styles.search}
           role="search"
         >
-          <div className="relative min-w-0 flex-1">
+          <div className={styles.searchInput}>
             <Icon
               name="search"
               className="absolute left-4 top-3.5 text-muted"
@@ -74,39 +97,43 @@ function VocabularyContent() {
           </div>
           <Button type="submit">Tìm kiếm</Button>
         </form>
-        <div
-          className="flex flex-wrap gap-2"
-          role="group"
-          aria-label="Lọc theo cấp HSK"
-        >
-          {[undefined, ...LEVELS].map((l) => (
-            <button
-              key={l ?? "all"}
-              onClick={() => selectLevel(l)}
-              aria-pressed={level === l}
-              className={`motion-button min-h-10 rounded-xl border px-3.5 py-2 text-xs font-medium transition-colors ${level === l ? "border-primary bg-primary text-primary-fg" : "border-border bg-surface text-muted hover:border-primary/40 hover:text-primary"}`}
-            >
-              {l ? `HSK ${l}` : "Tất cả"}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-start gap-2 rounded-xl bg-primary/6 px-3.5 py-2.5 text-xs leading-5 text-muted">
-          <Icon name="info" size={15} className="mt-0.5 shrink-0 text-primary" />
+        <p className={styles.filterHeading}>
+          <Icon name="route" size={14} /> Chọn cấp độ của bạn
+        </p>
+        <LevelFilter
+          options={[
+            { value: undefined, label: "Tất cả" },
+            ...LEVELS.map((value) => ({ value, label: `HSK ${value}` })),
+          ]}
+          value={level}
+          onChange={selectLevel}
+        />
+        <details className={styles.info}>
+          <summary>
+            <Icon name="info" size={16} />
+            <span>
+              Thư viện được sắp xếp theo <strong>HSK 3.0</strong> · Tìm hiểu về
+              cấp độ
+            </span>
+            <Icon name="chevron" size={14} />
+          </summary>
           <p>
-            Hanni theo <strong className="text-foreground">chuẩn HSK 3.0</strong> (9 cấp, ban
-            hành 2021) — khác chuẩn HSK cũ chỉ có 6 cấp. Độ khó được sắp xếp lại: cấp 4–6 mới
-            tương đương mức trung cấp của HSK cũ, còn từ vựng học thuật/khó dồn về cấp 7–9. Nếu
-            bạn quen chuẩn cũ, cấp 5–6 mới sẽ thấy dễ hơn hẳn là bình thường.
+            HSK 3.0 gồm 9 cấp. Cách phân bổ từ vựng khác với hệ HSK 6 cấp trước
+            đây, vì vậy số cấp không tương đương trực tiếp. Chọn cấp phù hợp với
+            vốn từ hiện tại và tăng dần khi bạn thấy tự tin hơn.
           </p>
-        </div>
-      </Card>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-base font-semibold">
+        </details>
+      </section>
+      <div className={styles.sectionHeading}>
+        <h2>
           {level ? `Từ vựng HSK ${level}` : "Tất cả từ vựng"}
-          <span className="ml-2 text-sm font-normal text-muted">
-            {words.data ? `(${words.data.total} từ)` : ""}
+          <span className={styles.count}>
+            {words.data ? `${words.data.total.toLocaleString("vi-VN")} từ` : ""}
           </span>
         </h2>
+        {!term && (
+          <span className={styles.muted}>Một từ mới, một bước tiến.</span>
+        )}
         {term && (
           <button
             onClick={() => {
@@ -134,48 +161,52 @@ function VocabularyContent() {
         <Spinner />
       ) : words.data?.items.length ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className={styles.wordGrid}>
             {words.data.items.map((w) => (
-              <Card key={w.id} className="hover-card">
-                <div className="flex items-start justify-between gap-3">
-                  <span
-                    lang="zh"
-                    className="hanzi break-all text-4xl leading-normal"
-                  >
-                    {w.simplified}
-                  </span>
-                  <span className="shrink-0 rounded-lg bg-primary/7 px-2 py-1 text-[11px] font-medium text-primary">
-                    HSK {w.hskLevel}
+              <article key={w.id} className={styles.wordCard}>
+                <div className={styles.wordTop}>
+                  <span className={styles.badge}>HSK {w.hskLevel}</span>
+                  <span className={styles.wordNumber}>
+                    {w.pos.length > 0
+                      ? w.pos
+                          .map((pos) => POS_LABELS[pos.toUpperCase()] ?? pos)
+                          .join(" · ")
+                      : "Từ vựng"}
                   </span>
                 </div>
-                <p className="mt-2 flex items-center gap-1 text-sm font-medium text-primary">
-                  {w.pinyin}
-                  <AudioButton src={w.audioUrl} size={16} />
-                </p>
-                <div className="mt-4 border-t border-border pt-4">
-                  <p className="text-sm leading-6">
+                <div className={styles.wordMain}>
+                  <h3 lang="zh" className={`hanzi ${styles.hanziTile}`}>
+                    {w.simplified}
+                  </h3>
+                  <div className={styles.wordPronunciation}>
+                    <p>{w.pinyin}</p>
+                    {w.audioUrl && (
+                      <span>
+                        <AudioButton
+                          src={w.audioUrl}
+                          size={16}
+                          className={styles.audioButton}
+                        />{" "}
+                        Nghe phát âm
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className={styles.wordMeaning}>
+                  <p>
                     {w.meaningVi ?? w.meaningEn ?? (
                       <span className="italic text-muted">
                         Nghĩa đang được cập nhật
                       </span>
                     )}
                   </p>
-                  {!w.meaningVi && w.meaningEn && (
-                    <span className="text-[11px] text-muted">
-                      Nghĩa tiếng Anh
-                    </span>
-                  )}
-                  {w.pos.length > 0 && (
-                    <p className="mt-2 text-xs text-muted">
-                      {w.pos.join(" · ")}
-                    </p>
-                  )}
+                  {!w.meaningVi && w.meaningEn && <span>Nghĩa tiếng Anh</span>}
                 </div>
-              </Card>
+              </article>
             ))}
           </div>
           {words.data.totalPages > 1 && (
-            <div className="flex items-center justify-center gap-4 border-t border-border pt-6">
+            <div className={styles.pagination}>
               <Button
                 variant="secondary"
                 disabled={page <= 1}
@@ -185,7 +216,7 @@ function VocabularyContent() {
                 Trước
               </Button>
               <span className="text-sm text-muted" aria-live="polite">
-                {page} / {words.data.totalPages}
+                Trang {page} / {words.data.totalPages}
               </span>
               <Button
                 variant="secondary"
@@ -221,6 +252,10 @@ function VocabularyContent() {
           </Button>
         </EmptyState>
       )}
+      <LearningTip title="Nhớ từ lâu hơn bằng một câu ngắn">
+        Nghe cách đọc, nói lại thành tiếng rồi đặt một câu của riêng bạn. Khi
+        sẵn sàng, hãy dùng flashcard để ôn lại những từ đã học.
+      </LearningTip>
     </div>
   );
 }

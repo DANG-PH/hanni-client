@@ -7,6 +7,8 @@ import {
   saveExamResult,
   type ExamResult,
 } from "@/components/exam-result";
+import { LearningHeader, LearningTip } from "@/components/learning-library";
+import styles from "@/components/learning-library.module.css";
 import { Icon } from "@/components/icon";
 import { QuizRunner, type QuizSubmission } from "@/components/quiz-runner";
 import {
@@ -133,41 +135,34 @@ export default function ExamsPage() {
     );
 
   return (
-    <div className="page-wrap space-y-7">
-      <PageHeading
-        eyebrow="GÓC KIỂM TRA"
-        title="Bạn đã nhớ được bao nhiêu?"
-        description="Thử sức với câu hỏi từ vựng theo cấp độ HSK. Mỗi bài kiểm tra là một cơ hội nhìn lại và học tốt hơn."
+    <div className={`page-wrap ${styles.page}`}>
+      <LearningHeader
+        section="exams"
+        eyebrow="THỬ SỨC HÔM NAY · TỰ TIN NGÀY MAI"
+        title="Một bài kiểm tra nhỏ. Một bước tiến mới."
+        description="Bạn đã nhớ được bao nhiêu? Cùng thử sức với phần nghe và đọc từ vựng theo cấp HSK, rồi khám phá những từ cần ôn thêm."
       >
         <LinkButton href="/exams/results" variant="secondary">
-          <Icon name="chart" size={17} /> Kết quả gần nhất
+          <Icon name="chart" size={16} /> Kết quả gần nhất
         </LinkButton>
-      </PageHeading>
-      <div className="reveal relative overflow-hidden rounded-3xl bg-[#19212e] p-6 text-white sm:p-8">
-        <span
-          lang="zh"
-          aria-hidden="true"
-          className="hanzi pointer-events-none absolute -right-3 -top-8 rotate-12 text-[180px] leading-none text-white/5"
-        >
-          试
+        <span className={styles.heroNote}>
+          <Icon name="heart" size={15} /> Mỗi lần thử, thêm một lần tiến bộ
         </span>
-        <div className="relative max-w-xl">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-medium text-white/75">
-            <Icon name="target" size={13} /> HIỂU VỐN TỪ CỦA BẠN
-          </span>
-          <h2 className="mt-4 text-xl font-semibold sm:text-2xl">
-            Một bài kiểm tra nhỏ.
-            <br />
-            <span className="text-[#ff9b89]">
-              Thêm tự tin trên hành trình HSK.
-            </span>
-          </h2>
-          <p className="mt-3 max-w-lg text-sm leading-6 text-white/65">
-            Luyện nhận diện Hán tự, nghe từ và chọn nghĩa đúng từ thư viện
-            đang học — có phần nghe, tính giờ theo nhịp độ đề thi HSK 3.0.
-            Đây là bài kiểm tra từ vựng rút gọn, không phải đề thi HSK đầy đủ.
-          </p>
-        </div>
+      </LearningHeader>
+      <div className={styles.examIntro}>
+        <span>
+          <Icon name="headphones" size={16} /> Nghe & nhận diện từ
+        </span>
+        <span>
+          <Icon name="book" size={16} /> Đọc & chọn nghĩa
+        </span>
+        <span>
+          <Icon name="clock" size={16} /> Giới hạn giờ mỗi câu
+        </span>
+        <span>
+          <Icon name="info" size={16} /> Bài ôn từ vựng, không phải đề HSK đầy
+          đủ
+        </span>
       </div>
       {levels.error ? (
         <Card className="space-y-4">
@@ -184,19 +179,25 @@ export default function ExamsPage() {
           description="Nội dung kiểm tra đang được chuẩn bị. Bạn có thể tiếp tục ôn từ vựng trong lúc chờ."
         />
       ) : (
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_290px]">
-          <Card className="space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold">
-                Chọn bài kiểm tra của bạn
-              </h2>
-              <p className="mt-1 text-sm text-muted">
-                Bắt đầu ở cấp độ bạn đang học.
-              </p>
+        <div className={styles.contentColumns}>
+          <section
+            className={styles.examForm}
+            aria-label="Thiết lập bài kiểm tra"
+          >
+            <div className={styles.formHeading}>
+              <span>
+                <Icon name="target" size={22} />
+              </span>
+              <div>
+                <h2>Thiết kế bài kiểm tra của bạn</h2>
+                <p>Chọn mức vừa sức và bắt đầu khi bạn sẵn sàng.</p>
+              </div>
             </div>
             <fieldset>
-              <legend className="mb-3 text-sm font-medium">Cấp độ HSK</legend>
-              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+              <legend className={styles.legend}>
+                <span>1</span> Chọn cấp độ HSK
+              </legend>
+              <div className={styles.examLevels}>
                 {levels.data.map((item) => (
                   <button
                     key={item.level}
@@ -207,23 +208,24 @@ export default function ExamsPage() {
                       setSelectedLevel(item.level);
                       setError(null);
                     }}
-                    className={`motion-button rounded-xl border p-4 text-left transition-colors disabled:opacity-50 ${level === item.level ? "border-primary bg-primary/5" : "border-border hover:border-primary/30 hover:bg-surface-2"}`}
+                    className={styles.examLevel}
                   >
-                    <span
-                      className={`block text-sm font-semibold ${level === item.level ? "text-primary" : ""}`}
-                    >
-                      HSK {item.level === 7 ? "7–9" : item.level}
+                    <span className={styles.selectionMark}>
+                      {level === item.level && <Icon name="check" size={10} />}
                     </span>
-                    <span className="mt-2 block text-[11px] text-muted">
-                      {item.wordsInDb.toLocaleString("vi-VN")} từ
-                    </span>
+                    <strong>HSK {item.level === 7 ? "7–9" : item.level}</strong>
+                    <small>
+                      {item.wordsInDb.toLocaleString("vi-VN")} từ vựng
+                    </small>
                   </button>
                 ))}
               </div>
             </fieldset>
             <fieldset>
-              <legend className="mb-3 text-sm font-medium">Số câu hỏi</legend>
-              <div className="flex flex-wrap gap-2">
+              <legend className={styles.legend}>
+                <span>2</span> Chọn số câu hỏi
+              </legend>
+              <div className={styles.questionOptions}>
                 {[5, 10].map((count) => (
                   <button
                     key={count}
@@ -231,9 +233,17 @@ export default function ExamsPage() {
                     type="button"
                     aria-pressed={size === count}
                     onClick={() => setSize(count)}
-                    className={`motion-button min-h-11 rounded-xl border px-5 py-2 text-sm font-medium ${size === count ? "border-primary bg-primary/5 text-primary" : "border-border text-muted hover:bg-surface-2"}`}
+                    className="disabled:opacity-50"
                   >
-                    {count} câu
+                    <Icon name={count === 5 ? "spark" : "target"} size={19} />
+                    <span>
+                      <strong>{count} câu hỏi</strong>
+                      <small>
+                        {count === 5
+                          ? "Khởi động nhẹ nhàng"
+                          : "Thử sức nhiều hơn"}
+                      </small>
+                    </span>
                   </button>
                 ))}
               </div>
@@ -255,10 +265,12 @@ export default function ExamsPage() {
               </p>
             ) : null}
             {error && <ErrorNote>{error}</ErrorNote>}
-            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
-              <span className="flex items-center gap-2 text-xs text-muted">
-                <Icon name="clock" size={16} /> Học theo nhịp độ của bạn
-              </span>
+            <div className={styles.examFooter}>
+              <p aria-live="polite">
+                {level ? `HSK ${level === 7 ? "7–9" : level}` : "Chọn cấp độ"} ·
+                Tối đa {size} câu
+                <small>Nghe trước, đọc sau. Cứ bình tĩnh nhé!</small>
+              </p>
               <Button
                 disabled={
                   busy ||
@@ -276,26 +288,22 @@ export default function ExamsPage() {
                 <Icon name="arrow" size={16} />
               </Button>
             </div>
-          </Card>
-          <aside className="space-y-5">
+          </section>
+          <aside className={styles.aside}>
             {history.data && history.data.summary.count > 0 && (
-              <Card>
+              <div className={styles.sideCard}>
                 <h2 className="mb-4 flex items-center gap-2 font-semibold">
                   <Icon name="chart" size={18} className="text-primary" />
                   Lịch sử kiểm tra
                 </h2>
-                <div className="mb-4 grid grid-cols-2 gap-3 text-center">
-                  <div className="rounded-xl bg-surface-2 p-3">
-                    <p className="text-xl font-semibold">
-                      {history.data.summary.count}
-                    </p>
-                    <p className="text-[11px] text-muted">lượt làm</p>
+                <div className={styles.historyStats}>
+                  <div>
+                    <strong>{history.data.summary.count}</strong>
+                    <span>lượt làm bài</span>
                   </div>
-                  <div className="rounded-xl bg-surface-2 p-3">
-                    <p className="text-xl font-semibold">
-                      {history.data.summary.avgAccuracy ?? "–"}%
-                    </p>
-                    <p className="text-[11px] text-muted">đúng trung bình</p>
+                  <div>
+                    <strong>{history.data.summary.avgAccuracy ?? "–"}%</strong>
+                    <span>đúng trung bình</span>
                   </div>
                 </div>
                 <ul className="divide-y divide-border text-sm">
@@ -314,14 +322,14 @@ export default function ExamsPage() {
                     </li>
                   ))}
                 </ul>
-              </Card>
+              </div>
             )}
-            <Card>
+            <div className={styles.sideCard}>
               <span className="icon-tile mb-4">
                 <Icon name="spark" size={21} />
               </span>
               <h2 className="font-semibold">Trước khi bắt đầu</h2>
-              <ol className="mt-4 space-y-4">
+              <ol className={styles.steps}>
                 {[
                   "Chọn cấp độ và số câu phù hợp.",
                   "Phần nghe: nghe âm thanh rồi chọn nghĩa, chưa thấy chữ.",
@@ -329,31 +337,23 @@ export default function ExamsPage() {
                   "Mỗi câu có thời gian giới hạn — hết giờ sẽ tự chuyển câu.",
                   "Nộp bài và xem lại những từ cần ôn.",
                 ].map((text, index) => (
-                  <li
-                    key={text}
-                    className="flex gap-3 text-sm leading-6 text-muted"
-                  >
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-[11px] font-semibold">
-                      {index + 1}
-                    </span>
+                  <li key={text} className="flex gap-3">
+                    <span className={styles.stepNumber}>{index + 1}</span>
                     {text}
                   </li>
                 ))}
               </ol>
-            </Card>
-            <div className="rounded-2xl border border-primary/15 bg-primary/4 p-5">
-              <p className="text-sm font-semibold">Muốn ôn lại trước?</p>
-              <p className="mt-2 text-sm leading-6 text-muted">
-                Dành vài phút với flashcard để làm nóng trí nhớ.
-              </p>
+            </div>
+            <LearningTip title="Làm nóng trí nhớ trước khi bắt đầu">
+              Dành vài phút ôn lại flashcard để tự tin hơn với những từ đã học.
               <LinkButton
                 href="/study"
                 variant="ghost"
-                className="mt-3 -ml-4 text-primary!"
+                className="mt-2 -ml-4 text-primary!"
               >
                 <Icon name="cards" size={16} /> Đến góc ôn tập
               </LinkButton>
-            </div>
+            </LearningTip>
           </aside>
         </div>
       )}
