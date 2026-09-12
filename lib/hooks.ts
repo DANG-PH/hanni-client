@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { apiFetch } from "./api";
+import { api, apiFetch } from "./api";
 import type {
   Achievement,
   ExamHistory,
@@ -19,6 +19,7 @@ import type {
   StreakInfo,
   StudyStats,
   VideoCard,
+  VideoComment,
   VideoDetail,
   Word,
 } from "./types";
@@ -82,6 +83,40 @@ export function useVideos(params: { level?: number; kind?: string; mine?: boolea
 
 export function useVideo(id: string | null) {
   return useSWR<VideoDetail>(id ? `/videos/${id}` : null, fetcher);
+}
+
+export function useComments(videoId: string | null, page = 1) {
+  return useSWR<Paginated<VideoComment>>(
+    videoId ? `/videos/${videoId}/comments?page=${page}&pageSize=20` : null,
+    fetcher,
+  );
+}
+
+export function postComment(
+  videoId: string,
+  content: string,
+  parentId?: string,
+) {
+  return api.post<VideoComment>(`/videos/${videoId}/comments`, {
+    content,
+    parentId,
+  });
+}
+
+export function deleteComment(videoId: string, commentId: string) {
+  return api.del(`/videos/${videoId}/comments/${commentId}`);
+}
+
+export function likeVideo(videoId: string) {
+  return api.post<{ liked: boolean; likeCount: number }>(
+    `/videos/${videoId}/like`,
+  );
+}
+
+export function unlikeVideo(videoId: string) {
+  return api.del<{ liked: boolean; likeCount: number }>(
+    `/videos/${videoId}/like`,
+  );
 }
 
 export function useGrammarLevels() {

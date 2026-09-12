@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CommentSection } from "@/components/comment-section";
 import { Icon } from "@/components/icon";
 import { TranscriptLine } from "@/components/transcript-line";
 import { Button, ErrorNote, Spinner } from "@/components/ui";
+import { VideoLikeButton } from "@/components/video-like-button";
 import { YoutubePlayer } from "@/components/youtube-player";
 import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
@@ -48,7 +50,7 @@ export default function WatchDetailPage() {
   const { user, loading } = useRequireAuth();
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { data, isLoading, error } = useVideo(id);
+  const { data, isLoading, error, mutate } = useVideo(id);
 
   const [showPinyin, setShowPinyin] = useState(true);
   const [showTrans, setShowTrans] = useState(true);
@@ -200,14 +202,24 @@ export default function WatchDetailPage() {
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold">
-          {data.title}
-          {data.titleZh && (
-            <span className="hanzi ml-3 text-lg font-normal text-muted">
-              {data.titleZh}
-            </span>
-          )}
-        </h1>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h1 className="text-2xl font-bold">
+            {data.title}
+            {data.titleZh && (
+              <span className="hanzi ml-3 text-lg font-normal text-muted">
+                {data.titleZh}
+              </span>
+            )}
+          </h1>
+          <VideoLikeButton
+            videoId={id}
+            liked={data.likedByMe}
+            count={data.likeCount}
+            onChange={(likedByMe, likeCount) =>
+              void mutate({ ...data, likedByMe, likeCount }, { revalidate: false })
+            }
+          />
+        </div>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted">
           {data.hskLevel && (
             <span
@@ -220,6 +232,10 @@ export default function WatchDetailPage() {
           )}
           <span>{data.sentenceCount} câu</span>
           {data.author && <span>· {data.author}</span>}
+          <span className="flex items-center gap-1">
+            <Icon name="message" size={13} />
+            {data.commentCount} bình luận
+          </span>
           <span
             className={`rounded-md px-2 py-0.5 text-xs ${
               realSync
@@ -332,6 +348,8 @@ export default function WatchDetailPage() {
           </div>
         </div>
       </div>
+
+      <CommentSection videoId={id} />
 
       <div className="flex justify-end">
         <Button variant="ghost" onClick={() => router.push("/watch")}>

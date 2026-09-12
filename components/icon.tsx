@@ -43,6 +43,13 @@ const paths = {
   headphones: "M3 14v-3a9 9 0 0 1 18 0v3M3 12h4v8H3v-8Zm14 0h4v8h-4v-8Z",
   pencil:
     "M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5Z",
+  heart:
+    "M12 21s-6.7-4.35-9.3-8.2C1 10.1 1.6 6.6 4.6 5.1 7 4 9.6 4.8 12 7.5c2.4-2.7 5-3.5 7.4-2.4 3 1.5 3.6 5 1.9 7.7C18.7 16.65 12 21 12 21Z",
+  message:
+    "M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z",
+  reply: "M9 14 4 9l5-5M4 9h9a7 7 0 0 1 7 7v2",
+  trash:
+    "M4 7h16M9 7V4h6v3m-9 0 1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13",
 } as const;
 
 export type IconName = keyof typeof paths;

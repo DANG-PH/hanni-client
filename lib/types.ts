@@ -223,6 +223,8 @@ export interface VideoCard {
   isOwner: boolean;
   progressPct: number;
   completed: boolean;
+  likeCount: number;
+  likedByMe: boolean;
 }
 
 export interface VideoLine {
@@ -248,6 +250,40 @@ export interface VideoDetail {
   isOwner: boolean;
   lines: VideoLine[];
   progress: { lastLineIndex: number; linesRead: number; completed: boolean };
+  likeCount: number;
+  likedByMe: boolean;
+  commentCount: number;
+}
+
+export interface CommentAuthor {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+}
+
+export interface VideoComment {
+  id: string;
+  content: string;
+  parentId: string | null;
+  createdAt: string;
+  user: CommentAuthor;
+  replies: VideoComment[];
+}
+
+export type NotificationType = "COMMENT_REPLY" | "VIDEO_COMMENT" | "VIDEO_LIKE";
+
+export interface AppNotification {
+  id: string;
+  type: NotificationType;
+  readAt: string | null;
+  createdAt: string;
+  actor: CommentAuthor | null;
+  video: { id: string; title: string } | null;
+  comment: { id: string; content: string } | null;
+}
+
+export interface NotificationsPage extends Paginated<AppNotification> {
+  unreadCount: number;
 }
 
 export interface GrammarLevel {

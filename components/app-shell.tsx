@@ -6,6 +6,7 @@ import { useRef, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
 import { useStreak } from "@/lib/hooks";
 import { Brand, NAV_GROUPS, Sidebar } from "./sidebar";
+import { NotificationBell } from "./notification-bell";
 import { ThemeToggle } from "./theme-toggle";
 import { Icon } from "./icon";
 import { Avatar } from "./avatar";
@@ -86,6 +87,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <span className="hidden md:inline">ngày</span>
               </Link>
             )}
+            <NotificationBell />
             <ThemeToggle />
             <Link
               href="/account"
