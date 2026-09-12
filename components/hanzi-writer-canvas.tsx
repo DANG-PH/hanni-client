@@ -7,10 +7,30 @@ import { Icon } from "@/components/icon";
 
 type Mode = "watch" | "trace" | "quiz";
 
-const MODES: { key: Mode; label: string; icon: "eye" | "pencil" | "check" }[] = [
-  { key: "watch", label: "Xem", icon: "eye" },
-  { key: "trace", label: "Tô lại", icon: "pencil" },
-  { key: "quiz", label: "Kiểm tra", icon: "check" },
+const MODES: {
+  key: Mode;
+  label: string;
+  icon: "eye" | "pencil" | "check";
+  hint: string;
+}[] = [
+  {
+    key: "watch",
+    label: "Xem",
+    icon: "eye",
+    hint: "Chữ tự động vẽ theo đúng thứ tự nét — chỉ cần quan sát.",
+  },
+  {
+    key: "trace",
+    label: "Tô lại",
+    icon: "pencil",
+    hint: "Nét mờ hiện sẵn — bạn dùng chuột/ngón tay tô lại theo đúng nét.",
+  },
+  {
+    key: "quiz",
+    label: "Kiểm tra",
+    icon: "check",
+    hint: "Không còn nét mờ — tự viết lại chữ từ trí nhớ để kiểm tra.",
+  },
 ];
 
 function cssVar(name: string): string {
@@ -134,6 +154,10 @@ export function HanziWriterCanvas({
           </button>
         ))}
       </div>
+      <p className="flex items-start gap-2 text-xs leading-5 text-muted">
+        <Icon name="info" size={14} className="mt-0.5 shrink-0 text-primary" />
+        {MODES.find((m) => m.key === mode)?.hint}
+      </p>
       <div className="relative mx-auto flex w-fit items-center justify-center rounded-2xl border border-border bg-surface-2/50 p-3">
         {status === "loading" && (
           <div className="absolute inset-0 flex items-center justify-center text-xs text-muted">

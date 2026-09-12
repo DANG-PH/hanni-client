@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/icon";
 import {
   Button,
+  Card,
   EmptyState,
   ErrorNote,
   PageHeading,
@@ -25,6 +26,8 @@ type LibraryProps = {
   skill: "listening" | "pronunciation" | "grammar";
   title: string;
   description: string;
+  /** Các bước làm, hiện trên màn hình dẫn dắt trước khi vào bài luyện thật. */
+  startSteps: string[];
   children: (words: Word[]) => ReactNode;
 };
 
@@ -35,9 +38,16 @@ export function PracticeLibrary(props: LibraryProps) {
   return <LibraryContent {...props} />;
 }
 
-function LibraryContent({ skill, title, description, children }: LibraryProps) {
+function LibraryContent({
+  skill,
+  title,
+  description,
+  startSteps,
+  children,
+}: LibraryProps) {
   const [level, setLevel] = useState(1);
   const [page, setPage] = useState(1);
+  const [started, setStarted] = useState(false);
   const words = useWords({ level, page });
 
   return (
@@ -113,7 +123,17 @@ function LibraryContent({ skill, title, description, children }: LibraryProps) {
       ) : words.isLoading ? (
         <Spinner />
       ) : words.data?.items.length ? (
-        <div key={`${level}-${page}`}>{children(words.data.items)}</div>
+        started ? (
+          <div key={`${level}-${page}`}>{children(words.data.items)}</div>
+        ) : (
+          <StartCard
+            icon={skills.find((item) => item.href === `/${skill}`)?.icon ?? "sound"}
+            title={title}
+            steps={startSteps}
+            count={words.data.items.length}
+            onStart={() => setStarted(true)}
+          />
+        )
       ) : (
         <EmptyState
           title="Nội dung đang được cập nhật"
@@ -145,6 +165,48 @@ function LibraryContent({ skill, title, description, children }: LibraryProps) {
         </div>
       )}
     </div>
+  );
+}
+
+/** Màn hình dẫn dắt trước khi vào bài luyện thật — giải thích cách chơi thay vì bắt tương tác luôn. */
+function StartCard({
+  icon,
+  title,
+  steps,
+  count,
+  onStart,
+}: {
+  icon: IconName;
+  title: string;
+  steps: string[];
+  count: number;
+  onStart: () => void;
+}) {
+  return (
+    <Card className="mx-auto max-w-xl space-y-6 text-center">
+      <span className="icon-tile mx-auto h-14! w-14!">
+        <Icon name={icon} size={26} />
+      </span>
+      <div>
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <p className="mt-1 text-sm text-muted">
+          Nhóm này có {count} từ. Làm theo các bước sau:
+        </p>
+      </div>
+      <ol className="space-y-3 text-left">
+        {steps.map((step, i) => (
+          <li key={step} className="flex gap-3 text-sm leading-6">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/8 text-[11px] font-semibold text-primary">
+              {i + 1}
+            </span>
+            {step}
+          </li>
+        ))}
+      </ol>
+      <Button className="w-full" onClick={onStart}>
+        Bắt đầu <Icon name="arrow" size={16} />
+      </Button>
+    </Card>
   );
 }
 

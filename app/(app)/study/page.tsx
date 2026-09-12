@@ -18,7 +18,7 @@ import { useRequireAuth } from "@/lib/auth";
 import { useLearnPath, useLesson } from "@/lib/hooks";
 import type { Quiz, Rating, StudyQueue } from "@/lib/types";
 
-type Phase = "loading" | "review" | "review-done" | "quiz" | "done";
+type Phase = "loading" | "intro" | "review" | "review-done" | "quiz" | "done";
 interface Item {
   word: StudyQueue["due"][number]["word"];
   isNew: boolean;
@@ -62,7 +62,7 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
         ...queue.newCards.map((n) => ({ word: n.word, isNew: true })),
       ];
       setItems(list);
-      setPhase(list.length ? "review" : "review-done");
+      setPhase(list.length ? "intro" : "review-done");
     })().catch(() => setError("Chưa tải được buổi học. Vui lòng thử lại."));
   }, [loading, user, lessonId]);
 
@@ -161,6 +161,37 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
         <div className="mb-5">
           <ErrorNote>{error}</ErrorNote>
         </div>
+      )}
+
+      {phase === "intro" && (
+        <Card className="space-y-6 text-center">
+          <span className="icon-tile mx-auto h-14! w-14!">
+            <Icon name="cards" size={26} />
+          </span>
+          <div>
+            <h1 className="text-xl font-semibold">{title}</h1>
+            <p className="mt-1 text-sm text-muted">
+              {items.length} thẻ đang chờ bạn ôn.
+            </p>
+          </div>
+          <ol className="space-y-3 text-left">
+            {[
+              "Nhìn Hán tự trên thẻ và thử nhớ nghĩa trước khi lật.",
+              "Chạm vào thẻ hoặc nhấn phím cách để xem đáp án.",
+              "Chọn mức độ nhớ (hoặc bấm số 1-4) — Hanni dùng lựa chọn này để xếp lịch ôn lại đúng lúc, giúp bạn nhớ lâu hơn.",
+            ].map((step, i) => (
+              <li key={step} className="flex gap-3 text-sm leading-6">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/8 text-[11px] font-semibold text-primary">
+                  {i + 1}
+                </span>
+                {step}
+              </li>
+            ))}
+          </ol>
+          <Button className="w-full" onClick={() => setPhase("review")}>
+            Bắt đầu ôn tập <Icon name="arrow" size={16} />
+          </Button>
+        </Card>
       )}
 
       {phase === "review" && items[pos] && (

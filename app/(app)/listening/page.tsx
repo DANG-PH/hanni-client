@@ -16,6 +16,12 @@ export default function ListeningPage() {
       skill="listening"
       title="Nghe mỗi ngày, hiểu thêm một chút"
       description="Lắng nghe, viết lại từ bạn nghe được và đối chiếu với đáp án. Bắt đầu từ cấp HSK phù hợp với bạn."
+      startSteps={[
+        "Chọn cấp HSK phù hợp ở trên rồi nhấn Bắt đầu.",
+        "Nhấn nút loa để nghe từ — có thể chỉnh tốc độ chậm/nhanh.",
+        "Gõ lại đúng Hán tự bạn nghe được vào ô bên dưới rồi kiểm tra.",
+        "Sai thì xem đáp án và nghĩa, rồi chuyển sang từ tiếp theo.",
+      ]}
     >
       {(words) => <ListeningSession words={words} />}
     </PracticeLibrary>

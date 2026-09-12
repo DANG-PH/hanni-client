@@ -16,6 +16,12 @@ export default function PronunciationPage() {
       skill="pronunciation"
       title="Tự tin cất tiếng, chuẩn từng âm"
       description="Nghe mẫu, ghi âm giọng của bạn và nghe lại để luyện âm đầu, âm cuối cùng bốn thanh điệu."
+      startSteps={[
+        "Chọn cấp HSK phù hợp ở trên rồi nhấn Bắt đầu.",
+        "Nhấn \"Nghe phát âm mẫu\" để nghe cách đọc chuẩn của từ.",
+        "Nhấn \"Bắt đầu ghi âm\", đọc theo rồi nhấn dừng khi xong.",
+        "Nghe lại giọng của bạn, so sánh với mẫu rồi chuyển từ tiếp theo.",
+      ]}
     >
       {(words) => <PronunciationSession words={words} />}
     </PracticeLibrary>
