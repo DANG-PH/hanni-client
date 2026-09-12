@@ -38,6 +38,10 @@ export function LoginShell({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(timer);
   }, [authMode, pathname]);
 
+  // Màn đăng ký không mount video; khi quay lại đăng nhập chỉ bật lại sau
+  // khi panel đã trượt xong để không làm vỡ khung hình chuyển cảnh.
+  const showStaticVisual = authMode === "register" || useStaticVisual;
+
   return (
     <div className="login-screen" data-auth-mode={authMode}>
       <section className="login-entry">
@@ -93,7 +97,7 @@ export function LoginShell({ children }: { children: ReactNode }) {
         </div>
         <div className="login-story-content">
           <div className="login-video-frame">
-            {videoFailed || useStaticVisual ? (
+            {videoFailed || showStaticVisual ? (
               <div className="login-video-fallback login-static-visual">
                 <Image
                   src="/favicon.ico"
