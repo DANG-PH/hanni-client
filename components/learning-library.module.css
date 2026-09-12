@@ -9,38 +9,6 @@
   padding-bottom: 48px;
 }
 
-.sectionNav {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.sectionNav a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 42px;
-  padding: 10px 16px;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
-  transition:
-    background 180ms,
-    color 180ms;
-}
-.sectionNav a:hover {
-  color: var(--primary);
-  background: var(--library-tint);
-}
-.sectionNav a[aria-current="page"] {
-  color: var(--primary);
-  background: var(--surface);
-  border-color: var(--library-border);
-  box-shadow: 0 2px 5px color-mix(in srgb, var(--foreground) 3%, transparent);
-}
 .hero {
   position: relative;
   display: grid;
@@ -878,20 +846,6 @@
   .page {
     gap: 20px;
     padding-top: 16px;
-  }
-  .sectionNav {
-    gap: 4px;
-  }
-  .sectionNav a {
-    flex: 1;
-    gap: 5px;
-    padding: 9px 6px;
-    font-size: 10px;
-    white-space: nowrap;
-  }
-  .sectionNav svg {
-    width: 14px;
-    height: 14px;
   }
   .hero {
     grid-template-columns: minmax(0, 1fr);

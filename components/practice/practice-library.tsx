@@ -15,12 +15,11 @@ import { useRequireAuth } from "@/lib/auth";
 import { useWords } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
 
-const skills = [
-  { href: "/vocabulary", label: "Từ vựng", icon: "cards" },
-  { href: "/grammar", label: "Ngữ pháp", icon: "book" },
-  { href: "/listening", label: "Luyện nghe", icon: "sound" },
-  { href: "/pronunciation", label: "Phát âm", icon: "spark" },
-] satisfies { href: string; label: string; icon: IconName }[];
+const skillIcons = {
+  listening: "sound",
+  pronunciation: "spark",
+  grammar: "book",
+} satisfies Record<string, IconName>;
 
 type LibraryProps = {
   skill: "listening" | "pronunciation" | "grammar";
@@ -64,23 +63,6 @@ function LibraryContent({
           Lộ trình của bạn <Icon name="arrow" size={16} />
         </Link>
       </PageHeading>
-
-      <nav
-        aria-label="Kỹ năng tiếng Trung"
-        className="flex gap-1 overflow-x-auto border-b border-border"
-      >
-        {skills.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            aria-current={item.href === `/${skill}` ? "page" : undefined}
-            className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3.5 text-sm font-medium transition-colors ${item.href === `/${skill}` ? "border-primary text-primary" : "border-transparent text-muted hover:border-primary/30 hover:text-foreground"}`}
-          >
-            <Icon name={item.icon} size={17} />
-            {item.label}
-          </Link>
-        ))}
-      </nav>
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div
@@ -127,7 +109,7 @@ function LibraryContent({
           <div key={`${level}-${page}`}>{children(words.data.items)}</div>
         ) : (
           <StartCard
-            icon={skills.find((item) => item.href === `/${skill}`)?.icon ?? "sound"}
+            icon={skillIcons[skill]}
             title={title}
             steps={startSteps}
             count={words.data.items.length}

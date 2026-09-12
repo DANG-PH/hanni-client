@@ -1,15 +1,8 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
-import { Icon, type IconName } from "./icon";
+import { Icon } from "./icon";
 import styles from "./learning-library.module.css";
 
 type LibrarySection = "vocabulary" | "grammar" | "exams";
-
-const sections: { id: LibrarySection; label: string; icon: IconName }[] = [
-  { id: "vocabulary", label: "Từ vựng", icon: "book" },
-  { id: "grammar", label: "Ngữ pháp & mẫu câu", icon: "cards" },
-  { id: "exams", label: "Kiểm tra HSK", icon: "target" },
-];
 
 export function LearningHeader({
   section,
@@ -46,51 +39,37 @@ export function LearningHeader({
   }[section];
 
   return (
-    <>
-      <nav className={styles.sectionNav} aria-label="Thư viện học tập">
-        {sections.map((item) => (
-          <Link
-            key={item.id}
-            href={`/${item.id}`}
-            aria-current={item.id === section ? "page" : undefined}
-          >
-            <Icon name={item.icon} size={17} />
-            {item.label}
-          </Link>
-        ))}
-      </nav>
-      <header className={styles.hero}>
-        <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>
-            <span />
-            {eyebrow}
-          </p>
-          <h1>{title}</h1>
-          <p className={styles.heroDescription}>{description}</p>
-          {children && <div className={styles.heroActions}>{children}</div>}
-        </div>
-        <div className={styles.artwork} aria-hidden="true">
-          <span className={styles.artworkRing} />
-          <div className={styles.paperBack} />
-          <div className={styles.paper}>
-            <div className={styles.paperLabel}>
-              HANNI <span>· 每天进步一点</span>
-            </div>
-            <span lang="zh" className={`hanzi ${styles.paperWord}`}>
-              {artwork.word}
-            </span>
-            <span className={styles.paperPinyin}>{artwork.pinyin}</span>
-            <span className={styles.paperMeaning}>{artwork.meaning}</span>
-            <span lang="zh" className={`hanzi ${styles.seal}`}>
-              {artwork.stamp}
-            </span>
+    <header className={styles.hero}>
+      <div className={styles.heroCopy}>
+        <p className={styles.eyebrow}>
+          <span />
+          {eyebrow}
+        </p>
+        <h1>{title}</h1>
+        <p className={styles.heroDescription}>{description}</p>
+        {children && <div className={styles.heroActions}>{children}</div>}
+      </div>
+      <div className={styles.artwork} aria-hidden="true">
+        <span className={styles.artworkRing} />
+        <div className={styles.paperBack} />
+        <div className={styles.paper}>
+          <div className={styles.paperLabel}>
+            HANNI <span>· 每天进步一点</span>
           </div>
-          <span className={styles.artworkSpark}>
-            <Icon name="spark" size={23} />
+          <span lang="zh" className={`hanzi ${styles.paperWord}`}>
+            {artwork.word}
+          </span>
+          <span className={styles.paperPinyin}>{artwork.pinyin}</span>
+          <span className={styles.paperMeaning}>{artwork.meaning}</span>
+          <span lang="zh" className={`hanzi ${styles.seal}`}>
+            {artwork.stamp}
           </span>
         </div>
-      </header>
-    </>
+        <span className={styles.artworkSpark}>
+          <Icon name="spark" size={23} />
+        </span>
+      </div>
+    </header>
   );
 }
 
