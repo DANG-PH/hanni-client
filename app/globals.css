@@ -918,6 +918,11 @@ body:has(.mobile-drawer[open]) {
   align-items: center;
   justify-content: center;
 }
+.login-static-visual img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
 .login-video {
   display: block;
   width: 100%;

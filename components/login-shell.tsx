@@ -3,19 +3,40 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "./icon";
 import { ThemeToggle } from "./theme-toggle";
 
 /** Bố cục đăng nhập riêng; video minh họa tự phát không tiếng và lặp liên tục. */
 export function LoginShell({ children }: { children: ReactNode }) {
   const [videoFailed, setVideoFailed] = useState(false);
+  const [useStaticVisual, setUseStaticVisual] = useState(false);
   const pathname = usePathname();
+  const previousPathname = useRef(pathname);
   const authMode = pathname.startsWith("/register")
     ? "register"
     : pathname.startsWith("/login")
       ? "login"
       : undefined;
+
+  useEffect(() => {
+    const previousMode = previousPathname.current.startsWith("/register")
+      ? "register"
+      : previousPathname.current.startsWith("/login")
+        ? "login"
+        : undefined;
+    const isAuthSwitch =
+      (authMode === "login" || authMode === "register") &&
+      (previousMode === "login" || previousMode === "register") &&
+      previousMode !== authMode;
+
+    previousPathname.current = pathname;
+    if (!isAuthSwitch) return;
+
+    setUseStaticVisual(true);
+    const timer = window.setTimeout(() => setUseStaticVisual(false), 1000);
+    return () => window.clearTimeout(timer);
+  }, [authMode, pathname]);
 
   return (
     <div className="login-screen" data-auth-mode={authMode}>
@@ -72,8 +93,8 @@ export function LoginShell({ children }: { children: ReactNode }) {
         </div>
         <div className="login-story-content">
           <div className="login-video-frame">
-            {videoFailed ? (
-              <div className="login-video-fallback">
+            {videoFailed || useStaticVisual ? (
+              <div className="login-video-fallback login-static-visual">
                 <Image
                   src="/favicon.ico"
                   alt="Logo Hanni"
