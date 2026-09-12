@@ -5,10 +5,12 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CommentSection } from "@/components/comment-section";
 import { Icon } from "@/components/icon";
+import { MobileVideoTranscript } from "@/components/mobile-video-transcript";
 import { TranscriptLine } from "@/components/transcript-line";
 import { Button, ErrorNote, Spinner } from "@/components/ui";
 import { VideoLikeButton } from "@/components/video-like-button";
 import { YoutubePlayer } from "@/components/youtube-player";
+import styles from "@/components/video-learning.module.css";
 import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { useVideo } from "@/lib/hooks";
@@ -58,6 +60,7 @@ export default function WatchDetailPage() {
   const [active, setActive] = useState<number | null>(null);
   const [readMax, setReadMax] = useState(0);
   const seekRef = useRef<((s: number) => void) | null>(null);
+  const workspaceRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const savedAt = useRef(0);
@@ -92,6 +95,34 @@ export default function WatchDetailPage() {
     const ro = new ResizeObserver(measure);
     ro.observe(vp);
     return () => ro.disconnect();
+  }, [data]);
+
+  // Keep the mobile controls within the available screen space, including
+  // before the title has scrolled away. Grow the transcript as the video pins.
+  useEffect(() => {
+    const workspace = workspaceRef.current;
+    if (!workspace) return;
+    let frameId = 0;
+    const measure = () => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
+        workspace.style.setProperty(
+          "--watch-top",
+          `${Math.max(72, workspace.getBoundingClientRect().top)}px`,
+        );
+      });
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(workspace);
+    window.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure);
+    measure();
+    return () => {
+      cancelAnimationFrame(frameId);
+      observer.disconnect();
+      window.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+    };
   }, [data]);
 
   // Căn câu đang phát vào khung tiêu điểm (giữa panel).
@@ -184,13 +215,14 @@ export default function WatchDetailPage() {
   }
 
   return (
-    <div className="page-wrap max-w-none! space-y-5">
+    <div className="page-wrap max-w-none! space-y-3 max-lg:px-3 max-lg:py-3 lg:space-y-5">
       <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
-        <Link href="/watch" className="hover:text-primary">
+        <Link href="/watch" className="inline-flex min-h-11 items-center gap-2 hover:text-primary lg:min-h-0">
+          <Icon name="back" size={16} className="lg:hidden" />
           Học qua video
         </Link>
-        <Icon name="chevron" size={14} />
-        <span className="font-medium text-foreground">{data.title}</span>
+        <Icon name="chevron" size={14} className="hidden lg:block" />
+        <span className="hidden font-medium text-foreground lg:inline">{data.title}</span>
         {data.isOwner && (
           <button
             onClick={() => void del()}
@@ -203,10 +235,10 @@ export default function WatchDetailPage() {
 
       <div>
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-2xl font-bold max-lg:min-w-0 max-lg:flex-1 max-lg:text-base max-lg:leading-snug">
             {data.title}
             {data.titleZh && (
-              <span className="hanzi ml-3 text-lg font-normal text-muted">
+              <span className="hanzi ml-3 hidden text-lg font-normal text-muted lg:inline">
                 {data.titleZh}
               </span>
             )}
@@ -231,8 +263,8 @@ export default function WatchDetailPage() {
             </span>
           )}
           <span>{data.sentenceCount} câu</span>
-          {data.author && <span>· {data.author}</span>}
-          <span className="flex items-center gap-1">
+          {data.author && <span className="hidden lg:inline">· {data.author}</span>}
+          <span className="hidden items-center gap-1 lg:flex">
             <Icon name="message" size={13} />
             {data.commentCount} bình luận
           </span>
@@ -248,12 +280,12 @@ export default function WatchDetailPage() {
         </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr]">
-        <div className="space-y-3">
-          {/* Dán video xuống dưới topbar khi cuộn trên điện thoại, để xem video
-              và đọc bản chép cùng lúc được (trên lg trở lên đã có 2 cột riêng). */}
-          <div className="sticky top-[72px] z-20 -mx-4 bg-background px-4 pb-2 sm:mx-0 sm:px-0 sm:pb-0 lg:static lg:z-auto lg:mx-0 lg:bg-transparent lg:px-0 lg:pb-0">
-            <div className="relative">
+      <div ref={workspaceRef} className={`${styles.workspace} grid lg:grid-cols-[1.3fr_1fr] lg:gap-5`}>
+        <div className="max-lg:contents lg:space-y-3">
+          {/* On mobile, display:contents lets the player stay sticky across the
+              whole learning area instead of stopping at the description. */}
+          <div className="sticky top-[72px] z-20 self-start bg-background lg:static lg:z-auto lg:bg-transparent">
+            <div className="relative max-lg:[&>div:first-child]:rounded-b-none">
               <YoutubePlayer
                 youtubeId={data.youtubeId}
                 seekRef={seekRef}
@@ -273,26 +305,44 @@ export default function WatchDetailPage() {
             </div>
           </div>
           {data.description && (
-            <p className="text-sm leading-6 text-muted">{data.description}</p>
+            <p className="hidden text-sm leading-6 text-muted lg:block">{data.description}</p>
           )}
         </div>
 
-        <div className="panel flex h-[62vh] flex-col overflow-hidden lg:h-[72vh]">
+        <MobileVideoTranscript
+          key={id}
+          lines={data.lines}
+          active={active}
+          progress={pct}
+          resumeAt={resumeAt}
+          showPinyin={showPinyin}
+          showTrans={showTrans}
+          showCaption={showCaption}
+          onTogglePinyin={() => setShowPinyin((v) => !v)}
+          onToggleTrans={() => setShowTrans((v) => !v)}
+          onToggleCaption={() => setShowCaption((v) => !v)}
+          onSelect={selectLine}
+        />
+
+        <div className="panel hidden h-[72vh] flex-col overflow-hidden lg:flex">
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
             <span className="text-xs font-bold tracking-wide">BẢN CHÉP</span>
             <button
+              aria-pressed={showPinyin}
               onClick={() => setShowPinyin((v) => !v)}
               className={chip(showPinyin)}
             >
               Pinyin
             </button>
             <button
+              aria-pressed={showTrans}
               onClick={() => setShowTrans((v) => !v)}
               className={chip(showTrans)}
             >
               Dịch
             </button>
             <button
+              aria-pressed={showCaption}
               onClick={() => setShowCaption((v) => !v)}
               className={chip(showCaption)}
               title="Hiện phụ đề đè lên video"
@@ -348,6 +398,16 @@ export default function WatchDetailPage() {
           </div>
         </div>
       </div>
+
+      {data.description && (
+        <details className="group rounded-xl border border-border bg-surface px-4 lg:hidden">
+          <summary className="flex min-h-12 items-center justify-between gap-3 text-sm font-semibold">
+            Giới thiệu video
+            <Icon name="chevron" size={16} className="rotate-90 transition-transform group-open:rotate-270" />
+          </summary>
+          <p className="whitespace-pre-line break-words pb-4 text-sm leading-6 text-muted">{data.description}</p>
+        </details>
+      )}
 
       <CommentSection videoId={id} />
 

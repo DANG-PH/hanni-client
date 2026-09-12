@@ -9,25 +9,40 @@ export function TranscriptLine({
   showPinyin,
   showTrans,
   onSelect,
+  compact = false,
 }: {
   line: VideoLine;
   active: boolean;
   showPinyin: boolean;
   showTrans: boolean;
   onSelect: () => void;
+  compact?: boolean;
 }) {
   return (
     <button
+      type="button"
       data-idx={line.index}
+      aria-current={active ? "true" : undefined}
       onClick={onSelect}
       // content-visibility: bỏ qua layout/paint cho dòng ngoài khung nhìn →
       // bản chép hàng nghìn dòng vẫn mượt. offsetTop vẫn tính được nhờ
       // contain-intrinsic-size (nhớ kích thước thật lần render gần nhất).
-      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 52px" }}
-      className={`block w-full px-4 py-3 text-left transition-all duration-300 ${
-        active
-          ? "opacity-100"
-          : "opacity-45 hover:opacity-80"
+      // Mobile uses natural row heights so touch scrolling and seeking do not
+      // jump when estimated offscreen heights are replaced by actual heights.
+      style={
+        compact
+          ? undefined
+          : {
+              contentVisibility: "auto",
+              containIntrinsicSize: "auto 52px",
+            }
+      }
+      className={`block w-full px-4 py-3 text-left transition-colors duration-300 ${
+        compact
+          ? `rounded-xl border ${active ? "border-primary/25 bg-primary/[0.06]" : "border-transparent hover:bg-surface-2"}`
+          : active
+            ? "opacity-100"
+            : "opacity-45 hover:opacity-80"
       }`}
     >
       <div className="flex gap-3">
@@ -44,12 +59,12 @@ export function TranscriptLine({
               zh={line.zh}
               pinyin={line.pinyin}
               pinyinNum={line.pinyinNum}
-              size={active ? "base" : "sm"}
+              size={compact || active ? "base" : "sm"}
             />
           ) : (
             <p
               className={`hanzi leading-relaxed ${
-                active ? "text-2xl" : "text-xl"
+                compact || active ? "text-2xl" : "text-xl"
               }`}
             >
               {line.zh}
@@ -57,8 +72,10 @@ export function TranscriptLine({
           )}
           {showTrans && line.vi && (
             <p
-              className={`mt-1.5 italic leading-6 ${
-                active ? "text-[15px] text-foreground" : "text-sm text-muted"
+              className={`mt-1.5 break-words leading-6 ${compact ? "" : "italic"} ${
+                active && !compact
+                  ? "text-[15px] text-foreground"
+                  : "text-sm text-muted"
               }`}
             >
               {line.vi}

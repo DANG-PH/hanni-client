@@ -1,0 +1,25 @@
+@media (width < 64rem) {
+  .workspace {
+    container-type: inline-size;
+  }
+
+  .transcript {
+    height: max(300px, calc(100svh - var(--watch-top, 72px) - 56.25cqw - 12px));
+  }
+}
+
+/* A full-width 16:9 player would cover a phone's entire landscape viewport. */
+@media (width < 64rem) and (orientation: landscape) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+  }
+
+  .transcript {
+    height: max(280px, calc(100svh - 84px));
+    min-height: 280px;
+    border-top: 1px solid var(--border);
+    border-radius: 16px;
+  }
+}

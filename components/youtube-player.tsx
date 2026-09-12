@@ -70,7 +70,7 @@ export function YoutubePlayer({
       if (cancelled || !hostRef.current || !window.YT) return;
       playerRef.current = new window.YT.Player(hostRef.current, {
         videoId: youtubeId,
-        playerVars: { rel: 0, modestbranding: 1 },
+        playerVars: { rel: 0, modestbranding: 1, playsinline: 1 },
         events: {
           onReady: () => {
             try {
