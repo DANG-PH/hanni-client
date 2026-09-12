@@ -3,22 +3,31 @@
 import { useSyncExternalStore } from "react";
 import { Icon } from "./icon";
 
+function isDarkNow(): boolean {
+  const explicit = document.documentElement.dataset.theme;
+  if (explicit === "dark") return true;
+  if (explicit === "light") return false;
+  // Chưa từng bấm toggle thì theo prefers-color-scheme của hệ điều hành.
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
 function subscribe(onChange: () => void) {
   const observer = new MutationObserver(onChange);
   observer.observe(document.documentElement, {
     attributes: true,
     attributeFilter: ["data-theme"],
   });
-  return () => observer.disconnect();
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  media.addEventListener("change", onChange);
+  return () => {
+    observer.disconnect();
+    media.removeEventListener("change", onChange);
+  };
 }
 
 /** Đồng bộ mọi nút sáng/tối, kể cả khi menu desktop và mobile cùng tồn tại. */
 export function ThemeToggle() {
-  const dark = useSyncExternalStore(
-    subscribe,
-    () => document.documentElement.dataset.theme === "dark",
-    () => false,
-  );
+  const dark = useSyncExternalStore(subscribe, isDarkNow, () => false);
   function toggle() {
     const next = dark ? "light" : "dark";
     document.documentElement.dataset.theme = next;

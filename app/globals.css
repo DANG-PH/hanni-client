@@ -20,6 +20,28 @@
   --hero-to: #f9e8df;
 }
 
+@media (prefers-color-scheme: dark) {
+  /* Chưa từng bấm toggle thì theo đúng chế độ tối của hệ điều hành/trình duyệt. */
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --background: #121720;
+    --surface: #1a2230;
+    --surface-2: #252e3d;
+    --foreground: #f1f3f8;
+    --muted: #a2acbc;
+    --border: #303a4a;
+    --primary: #ff796b;
+    --primary-fg: #26110d;
+    --accent: #d8a24e;
+    --good: #55c489;
+    --warn: #e0a04a;
+    --danger: #e56b60;
+    --lavender: #c489b8;
+    --hero-from: #2c1c16;
+    --hero-to: #37231a;
+  }
+}
+
 :root[data-theme="dark"] {
   color-scheme: dark;
   --background: #121720;
