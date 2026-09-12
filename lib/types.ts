@@ -286,6 +286,16 @@ export interface NotificationsPage extends Paginated<AppNotification> {
   unreadCount: number;
 }
 
+export type PracticeSkill = "LISTENING" | "PRONUNCIATION";
+
+export interface PracticeStats {
+  totalAttempts: number;
+  distinctWordsCount: number;
+  /** null với PRONUNCIATION — chưa có chấm điểm tự động. */
+  correctCount: number | null;
+  accuracyPct: number | null;
+}
+
 export interface GrammarLevel {
   level: number;
   count: number;

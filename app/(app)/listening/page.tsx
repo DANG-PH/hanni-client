@@ -8,6 +8,7 @@ import {
   PracticeTips,
 } from "@/components/practice/practice-library";
 import { useWordAudio } from "@/components/practice/use-word-audio";
+import { recordPracticeAttempt, usePracticeStats } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
 
 export default function ListeningPage() {
@@ -32,6 +33,7 @@ function ListeningSession({ words }: { words: Word[] }) {
   const [answers, setAnswers] = useState<
     Record<string, { value: string; correct: boolean }>
   >({});
+  const stats = usePracticeStats("LISTENING");
   const completed = Object.keys(answers).length;
   const correct = Object.values(answers).filter(
     (answer) => answer.correct,
@@ -55,12 +57,15 @@ function ListeningSession({ words }: { words: Word[] }) {
             key={word.id}
             word={word}
             saved={answers[word.id]}
-            onCheck={(value, isCorrect) =>
+            onCheck={(value, isCorrect) => {
               setAnswers((current) => ({
                 ...current,
                 [word.id]: { value, correct: isCorrect },
-              }))
-            }
+              }));
+              void recordPracticeAttempt(word.id, "LISTENING", isCorrect).then(
+                () => stats.mutate(),
+              );
+            }}
           />
         </Card>
         <div className="flex items-center justify-between gap-3">
@@ -106,10 +111,30 @@ function ListeningSession({ words }: { words: Word[] }) {
             <span className="text-muted">Trả lời đúng</span>
             <span className="font-semibold text-good">{correct}</span>
           </div>
-          <p className="mt-4 text-xs leading-5 text-muted">
-            Kết quả luyện nghe được giữ trong nhóm từ đang mở.
-          </p>
         </Card>
+        {stats.data && stats.data.totalAttempts > 0 && (
+          <Card>
+            <h2 className="text-sm font-semibold">Luyện nghe từ trước đến nay</h2>
+            <div className="mt-4 grid grid-cols-2 gap-3 text-center">
+              <div>
+                <p className="text-2xl font-semibold">
+                  {stats.data.totalAttempts.toLocaleString("vi-VN")}
+                </p>
+                <p className="text-xs text-muted">lượt nghe</p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-primary">
+                  {stats.data.accuracyPct ?? 0}%
+                </p>
+                <p className="text-xs text-muted">độ chính xác</p>
+              </div>
+            </div>
+            <p className="mt-4 text-xs leading-5 text-muted">
+              {stats.data.distinctWordsCount.toLocaleString("vi-VN")} từ khác
+              nhau đã được luyện nghe.
+            </p>
+          </Card>
+        )}
       </PracticeTips>
     </div>
   );

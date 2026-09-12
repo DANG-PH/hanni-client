@@ -15,6 +15,8 @@ import type {
   LearnPath,
   LessonDetail,
   Paginated,
+  PracticeSkill,
+  PracticeStats,
   ProgressOverview,
   StreakInfo,
   StudyStats,
@@ -147,4 +149,19 @@ export function useLeaderboardMetrics() {
 
 export function useLeaderboard(metric: LeaderboardMetricKey) {
   return useSWR<Leaderboard>(`/leaderboard?metric=${metric}`, fetcher);
+}
+
+export function usePracticeStats(skill: PracticeSkill) {
+  return useSWR<PracticeStats>(`/practice/stats?skill=${skill}`, fetcher);
+}
+
+/** Ghi 1 lượt luyện nghe/phát âm lên server — không chặn UI nếu lỗi mạng. */
+export function recordPracticeAttempt(
+  wordId: string,
+  skill: PracticeSkill,
+  isCorrect?: boolean,
+) {
+  return api
+    .post("/practice/attempts", { wordId, skill, isCorrect })
+    .catch(() => undefined);
 }

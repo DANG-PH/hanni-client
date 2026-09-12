@@ -54,8 +54,10 @@ topbar (`components/notification-bell.tsx`, đẩy qua WebSocket khi có ngườ
 bình luận hoặc thích video mình thêm), ngữ pháp (HSK 1–3 + HSK 4–9 đều có giải thích thật, 195/349 mục HSK 4–9; phần
 còn lại là danh sách từ vựng theo từ loại nên giữ dạng rút gọn), luyện viết Hán tự (`/writing`,
 xem/tô/kiểm tra nét bằng `hanzi-writer`, chuyển chữ trước/sau + hiện số nét), kiểm tra HSK
-(`/exams` — câu hỏi nghe + đọc, tính giờ từng câu, có lịch sử), bảng xếp hạng. Chưa làm
-(roadmap): RAG chatbot, minigame, social.
+(`/exams` — câu hỏi nghe + đọc, tính giờ từng câu, có lịch sử), bảng xếp hạng, `/listening` +
+`/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
+DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu). Chưa làm (roadmap): RAG chatbot, minigame,
+social.
 
 **Quiz** (`components/quiz-runner.tsx`): mỗi câu có `mode: "reading" | "listening"` từ server.
 Câu nghe ẩn Hán tự/pinyin, tự phát `audioUrl` khi vào câu, chỉ hiện lại sau khi chọn đáp án.

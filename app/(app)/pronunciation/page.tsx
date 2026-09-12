@@ -8,6 +8,7 @@ import {
   PracticeTips,
 } from "@/components/practice/practice-library";
 import { useWordAudio } from "@/components/practice/use-word-audio";
+import { recordPracticeAttempt, usePracticeStats } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
 
 export default function PronunciationPage() {
@@ -29,6 +30,7 @@ export default function PronunciationPage() {
 
 function PronunciationSession({ words }: { words: Word[] }) {
   const [index, setIndex] = useState(0);
+  const stats = usePracticeStats("PRONUNCIATION");
   const word = words[index];
 
   return (
@@ -44,7 +46,15 @@ function PronunciationSession({ words }: { words: Word[] }) {
               {index + 1} / {words.length}
             </span>
           </div>
-          <PronunciationWord key={word.id} word={word} />
+          <PronunciationWord
+            key={word.id}
+            word={word}
+            onRecorded={() =>
+              void recordPracticeAttempt(word.id, "PRONUNCIATION").then(() =>
+                stats.mutate(),
+              )
+            }
+          />
         </Card>
         <div className="flex items-center justify-between gap-3">
           <Button
@@ -86,12 +96,39 @@ function PronunciationSession({ words }: { words: Word[] }) {
             Mỗi lần luyện là một cơ hội nói tự nhiên hơn.
           </div>
         </Card>
+        {stats.data && stats.data.totalAttempts > 0 && (
+          <Card>
+            <h2 className="text-sm font-semibold">
+              Luyện phát âm từ trước đến nay
+            </h2>
+            <div className="mt-4 grid grid-cols-2 gap-3 text-center">
+              <div>
+                <p className="text-2xl font-semibold">
+                  {stats.data.totalAttempts.toLocaleString("vi-VN")}
+                </p>
+                <p className="text-xs text-muted">lượt ghi âm</p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-primary">
+                  {stats.data.distinctWordsCount.toLocaleString("vi-VN")}
+                </p>
+                <p className="text-xs text-muted">từ khác nhau</p>
+              </div>
+            </div>
+          </Card>
+        )}
       </PracticeTips>
     </div>
   );
 }
 
-function PronunciationWord({ word }: { word: Word }) {
+function PronunciationWord({
+  word,
+  onRecorded,
+}: {
+  word: Word;
+  onRecorded: () => void;
+}) {
   const model = useWordAudio(word.simplified, word.audioUrl);
   const [phase, setPhase] = useState<"idle" | "requesting" | "recording">(
     "idle",
@@ -191,6 +228,7 @@ function PronunciationWord({ word }: { word: Word }) {
               ? "ogg"
               : "webm",
         });
+        onRecorded();
       };
       nextRecorder.onerror = () => {
         if (limitTimer.current) clearTimeout(limitTimer.current);
