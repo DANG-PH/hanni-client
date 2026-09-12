@@ -947,6 +947,12 @@ body:has(.mobile-drawer[open]) {
   height: 120px;
   object-fit: contain;
 }
+.login-static-visual .login-theme-image {
+  width: 100%;
+  height: auto;
+  max-width: 620px;
+  object-fit: contain;
+}
 .login-video {
   display: block;
   width: 100%;

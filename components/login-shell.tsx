@@ -73,12 +73,12 @@ export function LoginShell({ children }: { children: ReactNode }) {
           <div className="login-video-frame">
             <div className="login-video-fallback login-static-visual">
               <Image
-                src="/favicon.ico"
-                alt="Logo Hanni"
-                width={120}
-                height={120}
+                src="/themes.png"
+                alt="Minh họa Hanni"
+                width={1280}
+                height={720}
                 unoptimized
-                className="rounded-3xl"
+                className="login-theme-image rounded-2xl"
               />
             </div>
           </div>
