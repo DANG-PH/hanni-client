@@ -61,7 +61,20 @@ export function VideoCard({ video }: { video: V }) {
             </span>
           )}
           <span className="text-muted">{KIND_VI[video.kind] ?? video.kind}</span>
-          <span className="ml-auto text-muted">{video.sentenceCount} câu</span>
+          <span className="ml-auto flex items-center gap-2 text-muted">
+            {video.likeCount > 0 && (
+              <span className="flex items-center gap-0.5">
+                <Icon
+                  name="heart"
+                  size={12}
+                  fill={video.likedByMe ? "currentColor" : "none"}
+                  className={video.likedByMe ? "text-danger" : undefined}
+                />
+                {video.likeCount}
+              </span>
+            )}
+            {video.sentenceCount} câu
+          </span>
         </div>
         <h3 className="mt-2 font-semibold leading-snug">{video.title}</h3>
         {video.titleZh && (
