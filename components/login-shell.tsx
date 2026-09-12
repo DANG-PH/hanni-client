@@ -3,12 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Icon } from "./icon";
 import { ThemeToggle } from "./theme-toggle";
 
-/** Bố cục đăng nhập riêng với hình minh họa tĩnh, ổn định khi chuyển màn. */
+/** Bố cục đăng nhập riêng; video minh họa tự phát không tiếng và lặp liên tục. */
 export function LoginShell({ children }: { children: ReactNode }) {
+  const [videoFailed, setVideoFailed] = useState(false);
   const pathname = usePathname();
   const authMode = pathname.startsWith("/register")
     ? "register"
@@ -71,16 +72,38 @@ export function LoginShell({ children }: { children: ReactNode }) {
         </div>
         <div className="login-story-content">
           <div className="login-video-frame">
-            <div className="login-video-fallback login-static-visual">
-              <Image
-                src="/themes.png"
-                alt="Minh họa Hanni"
+            {videoFailed ? (
+              <div className="login-video-fallback">
+                <Image
+                  src="/favicon.ico"
+                  alt="Logo Hanni"
+                  width={120}
+                  height={120}
+                  unoptimized
+                  className="rounded-3xl"
+                />
+              </div>
+            ) : (
+              <video
+                src="/videologin.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls={false}
+                disablePictureInPicture
+                disableRemotePlayback
+                preload="auto"
                 width={1280}
                 height={720}
-                unoptimized
-                className="login-theme-image rounded-2xl"
-              />
-            </div>
+                aria-hidden="true"
+                tabIndex={-1}
+                className="login-video"
+                onError={() => setVideoFailed(true)}
+              >
+                Trình duyệt của bạn chưa hỗ trợ video.
+              </video>
+            )}
           </div>
           <div className="login-story-copy-stack">
             <div className="login-story-copy login-story-copy-login">

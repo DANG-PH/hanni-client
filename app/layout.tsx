@@ -11,7 +11,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const title = "Hanni — Học tiếng Trung theo HSK 3.0";
+const description =
+  "Học từ vựng tiếng Trung theo chuẩn HSK 3.0 (9 cấp) với lộ trình theo bài, flashcard lặp lại ngắt quãng, theo dõi tiến độ và streak.";
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   applicationName: "Hanni",
   appleWebApp: { capable: true, title: "Hanni", statusBarStyle: "default" },
   icons: {
@@ -24,9 +34,28 @@ export const metadata: Metadata = {
     ],
   },
   formatDetection: { telephone: false },
-  title: "Hanni — Học tiếng Trung theo HSK 3.0",
-  description:
-    "Học từ vựng tiếng Trung theo chuẩn HSK 3.0 (9 cấp) với lộ trình theo bài, flashcard lặp lại ngắt quãng, theo dõi tiến độ và streak.",
+  title,
+  description,
+  openGraph: {
+    type: "website",
+    siteName: "Hanni",
+    title,
+    description,
+    images: [
+      {
+        url: "/themes.png",
+        width: 1672,
+        height: 941,
+        alt: "Hanni — Nền tảng học tiếng Trung",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/themes.png"],
+  },
 };
 
 export const viewport: Viewport = { themeColor: "#dc3526" };
