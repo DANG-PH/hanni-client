@@ -6,7 +6,6 @@ import { Flashcard } from "@/components/flashcard";
 import { QuizRunner } from "@/components/quiz-runner";
 import {
   Button,
-  Card,
   ErrorNote,
   LinkButton,
   ProgressBar,
@@ -17,6 +16,7 @@ import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { useLearnPath, useLesson } from "@/lib/hooks";
 import type { Quiz, Rating, StudyQueue } from "@/lib/types";
+import styles from "./study.module.css";
 
 type Phase = "loading" | "intro" | "review" | "review-done" | "quiz" | "done";
 interface Item {
@@ -135,8 +135,14 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
     );
 
   const title = lesson.data?.lesson.title ?? "Ôn tập flashcard";
+  const newCount = items.filter((item) => item.isNew).length;
+  const previewWord = items[0]?.word;
   const nextLesson =
-    lessonId && lesson.data && path.data
+    lessonId &&
+    lesson.data &&
+    path.data &&
+    !path.error &&
+    path.data.level === lesson.data.lesson.hskLevel
       ? path.data.lessons.find(
           (l) =>
             l.orderIndex === lesson.data!.lesson.orderIndex + 1 &&
@@ -145,13 +151,13 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
       : undefined;
 
   return (
-    <div className="mx-auto max-w-2xl px-5 py-8 sm:py-10">
-      <div className="mb-7 flex items-center justify-between">
+    <div className={styles.page}>
+      <div className={styles.navigation}>
         <LinkButton href={lessonId ? "/learn" : "/dashboard"} variant="ghost">
           <Icon name="back" size={17} />
           {lessonId ? "Lộ trình" : "Tổng quan"}
         </LinkButton>
-        <span className="flex items-center gap-2 text-sm font-medium">
+        <span className={styles.location}>
           <Icon name={lessonId ? "route" : "cards"} size={18} />
           {lessonId ? title : "Góc ôn tập"}
         </span>
@@ -164,138 +170,291 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
       )}
 
       {phase === "intro" && (
-        <Card className="space-y-6 text-center">
-          <span className="icon-tile mx-auto h-14! w-14!">
-            <Icon name="cards" size={26} />
-          </span>
-          <div>
-            <h1 className="text-xl font-semibold">{title}</h1>
-            <p className="mt-1 text-sm text-muted">
-              {items.length} thẻ đang chờ bạn ôn.
-            </p>
-          </div>
-          <ol className="space-y-3 text-left">
-            {[
-              "Nhìn Hán tự trên thẻ và thử nhớ nghĩa trước khi lật.",
-              "Chạm vào thẻ hoặc nhấn phím cách để xem đáp án.",
-              "Chọn mức độ nhớ (hoặc bấm số 1-4) — Hanni dùng lựa chọn này để xếp lịch ôn lại đúng lúc, giúp bạn nhớ lâu hơn.",
-            ].map((step, i) => (
-              <li key={step} className="flex gap-3 text-sm leading-6">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/8 text-[11px] font-semibold text-primary">
-                  {i + 1}
+        <div className={styles.phase}>
+          <section className={styles.intro} aria-labelledby="study-title">
+            <div className={styles.introCopy}>
+              <p className={styles.eyebrow}>
+                <span className={styles.statusDot} /> Một chút mỗi ngày
+              </p>
+              <h1 id="study-title">{title}</h1>
+              <p className={styles.description}>
+                Lật một tấm thẻ, nhớ thêm một từ. Cùng dành vài phút cho những
+                điều bạn đã học nhé.
+              </p>
+              <div className={styles.sessionStats}>
+                <div>
+                  <span className={styles.statIcon}>
+                    <Icon name="refresh" size={18} />
+                  </span>
+                  <span>
+                    <strong>{items.length - newCount}</strong> thẻ ôn lại
+                  </span>
+                </div>
+                <div>
+                  <span className={styles.statIcon}>
+                    <Icon name="spark" size={18} />
+                  </span>
+                  <span>
+                    <strong>{newCount}</strong> từ mới
+                  </span>
+                </div>
+              </div>
+              <Button
+                className={styles.startButton}
+                onClick={() => setPhase("review")}
+              >
+                Bắt đầu ôn tập <Icon name="arrow" size={18} />
+              </Button>
+              <p className={styles.sessionNote}>
+                {items.length} thẻ sẵn sàng · Học theo nhịp của bạn
+              </p>
+            </div>
+            <div className={styles.deckScene} aria-hidden="true">
+              <div className={styles.deckOrbit} />
+              <div className={styles.deckBack} />
+              <div className={styles.deckMiddle} />
+              <div className={styles.deckFront}>
+                <span className={styles.deckLabel}>
+                  THẺ GHI NHỚ <Icon name="cards" size={17} />
                 </span>
-                {step}
+                <div className={styles.deckCharacter} lang="zh">
+                  {previewWord?.simplified ?? "学"}
+                </div>
+                <p className={styles.deckPinyin}>
+                  {previewWord?.pinyin ?? "xué"}
+                </p>
+                <span className={styles.deckDivider} />
+                <span className={styles.deckHint}>
+                  <Icon name="refresh" size={13} /> Lật thẻ để khám phá
+                </span>
+              </div>
+              <span className={styles.deckBadge}>
+                <Icon name="spark" size={16} /> Từng từ, từng bước
+              </span>
+              <span className={styles.deckSpark}>
+                <Icon name="spark" size={25} />
+              </span>
+            </div>
+          </section>
+
+          <div className={styles.guideHeading}>
+            <h2>Một vòng ôn, ba bước nhỏ</h2>
+            <span>Không cần vội. Cứ thử nhớ trước.</span>
+          </div>
+          <ol className={styles.steps}>
+            {[
+              {
+                title: "Nhìn và nhớ",
+                text: "Nhìn Hán tự, thử nghĩ đến nghĩa trước khi mở đáp án.",
+                icon: "eye" as const,
+              },
+              {
+                title: "Lật và khám phá",
+                text: "Chạm vào thẻ hoặc nhấn phím cách để xem nghĩa và ví dụ.",
+                icon: "cards" as const,
+              },
+              {
+                title: "Chọn mức độ nhớ",
+                text: "Chọn mức 1–4. Hanni sẽ hẹn bạn ôn lại vào lúc phù hợp.",
+                icon: "target" as const,
+              },
+            ].map((step, i) => (
+              <li key={step.title} className={styles.step}>
+                <span className={styles.stepIcon}>
+                  <Icon name={step.icon} size={21} />
+                </span>
+                <span className={styles.stepNumber}>0{i + 1}</span>
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
               </li>
             ))}
           </ol>
-          <Button className="w-full" onClick={() => setPhase("review")}>
-            Bắt đầu ôn tập <Icon name="arrow" size={16} />
-          </Button>
-        </Card>
+        </div>
       )}
 
       {phase === "review" && items[pos] && (
-        <>
-          <div className="mb-6">
-            <div className="mb-3 flex justify-between text-sm">
-              <h1 className="font-semibold">{title}</h1>
-              <span className="text-muted">
-                Thẻ {pos + 1} / {items.length}
+        <div className={`${styles.reviewLayout} ${styles.phase}`}>
+          <div className={styles.reviewMain}>
+            <div className={styles.reviewHeading}>
+              <div>
+                <p className={styles.eyebrow}>Góc tập trung</p>
+                <h1>{title}</h1>
+              </div>
+              <span className={styles.counter} aria-live="polite">
+                <strong>{pos + 1}</strong> / {items.length}
               </span>
             </div>
-            <ProgressBar
-              value={(pos / items.length) * 100}
-              label="Tiến độ buổi học"
+            <Flashcard
+              key={items[pos].word.id}
+              word={items[pos].word}
+              isNew={items[pos].isNew}
+              busy={busy}
+              onRate={(r, d) => void onRate(r, d)}
             />
           </div>
-          <Flashcard
-            key={items[pos].word.id}
-            word={items[pos].word}
-            isNew={items[pos].isNew}
-            busy={busy}
-            onRate={(r, d) => void onRate(r, d)}
-          />
-        </>
+          <aside
+            className={styles.reviewAside}
+            aria-label="Tiến độ và gợi ý ôn tập"
+          >
+            <div className={styles.progressCard}>
+              <span className={styles.asideIcon}>
+                <Icon name="route" size={21} />
+              </span>
+              <h2>Nhịp học hôm nay</h2>
+              <p>
+                <strong>{pos}</strong> / {items.length} thẻ đã ôn
+              </p>
+              <ProgressBar
+                value={(pos / items.length) * 100}
+                label="Tiến độ buổi học"
+              />
+              <div className={styles.progressDetail}>
+                <span>
+                  <span className={styles.statusDot} /> Đã nhớ
+                </span>
+                <strong>{correct} thẻ</strong>
+              </div>
+            </div>
+            <div className={styles.studyTip}>
+              <Icon name="spark" size={19} />
+              <h2>Cứ thử nhớ trước</h2>
+              <p>
+                Một chút nỗ lực tự nhớ giúp từ vựng ở lại lâu hơn. Chưa nhớ cũng
+                không sao, mình sẽ gặp lại từ này.
+              </p>
+            </div>
+            <div className={styles.shortcuts}>
+              <span>
+                <kbd>Space</kbd> Lật thẻ
+              </span>
+              <span>
+                <kbd>1</kbd> – <kbd>4</kbd> Chọn mức nhớ
+              </span>
+            </div>
+          </aside>
+        </div>
       )}
 
       {phase === "review-done" && (
-        <Card className="space-y-4 text-center">
-          <span className="icon-tile mx-auto h-16! w-16! rounded-full! bg-good/10! text-good!">
-            <Icon name="check" size={30} />
+        <section
+          className={`${styles.finish} ${styles.phase}`}
+          aria-labelledby="review-result-title"
+        >
+          <span className={styles.finishIcon}>
+            <Icon name={items.length ? "check" : "cards"} size={32} />
           </span>
-          <h1 className="text-2xl font-semibold">
+          <p className={styles.eyebrow}>
+            {items.length ? "Thêm một bước tiến" : "Sẵn sàng cho điều mới"}
+          </p>
+          <h1 id="review-result-title">
             {items.length
               ? lessonId
                 ? "Xong bài!"
                 : "Bạn đã hoàn thành buổi ôn!"
               : "Chưa có thẻ để học"}
           </h1>
-          <p className="text-muted">
+          <p className={styles.finishDescription}>
             {items.length > 0
               ? `Bạn nhớ được ${correct}/${items.length} thẻ. Mỗi lần ôn là một lần nhớ lâu hơn.`
               : "Hiện chưa có thẻ. Bạn có thể mở bài khác trong lộ trình hoặc quay lại sau."}
           </p>
-          {items.length >= 4 && (
-            <Button
-              className="w-full"
-              disabled={busy}
-              onClick={() => void startQuiz()}
-            >
-              {busy ? "Đang tạo…" : "Kiểm tra nhanh những từ vừa học"}
-            </Button>
+          {items.length > 0 && (
+            <div className={styles.results}>
+              <div>
+                <strong>{items.length}</strong>
+                <span>thẻ đã ôn</span>
+              </div>
+              <div>
+                <strong>{correct}</strong>
+                <span>thẻ đã nhớ</span>
+              </div>
+              <div>
+                <strong>{Math.round((correct / items.length) * 100)}%</strong>
+                <span>tỉ lệ ghi nhớ</span>
+              </div>
+            </div>
           )}
-          {nextLesson && (
-            <LinkButton
-              href={`/study?lesson=${nextLesson.id}`}
-              variant="secondary"
-              className="w-full"
-            >
-              {nextLesson.title} <Icon name="arrow" size={16} />
-            </LinkButton>
-          )}
-          <LinkButton
-            href={lessonId ? "/learn" : "/dashboard"}
-            variant="ghost"
-            className="w-full"
-          >
-            {lessonId ? "Về lộ trình" : "Về tổng quan"}
-          </LinkButton>
-        </Card>
-      )}
-
-      {phase === "quiz" && quiz && (
-        <QuizRunner
-          quiz={quiz}
-          onDone={(s) => {
-            setQuizScore(s);
-            setPhase("done");
-          }}
-        />
-      )}
-
-      {phase === "done" && (
-        <Card className="space-y-4 text-center">
-          <h1 className="text-xl font-bold">Hoàn thành</h1>
-          {quizScore != null && (
-            <p className="text-3xl font-semibold text-primary">{quizScore}%</p>
-          )}
-          <p className="text-muted">Điểm ghi nhớ của buổi này. Hẹn gặp lại!</p>
-          {nextLesson ? (
-            <LinkButton
-              href={`/study?lesson=${nextLesson.id}`}
-              className="w-full"
-            >
-              {nextLesson.title} <Icon name="arrow" size={16} />
-            </LinkButton>
-          ) : (
+          <div className={styles.finishActions}>
+            {items.length >= 4 && (
+              <Button
+                className="w-full"
+                disabled={busy}
+                onClick={() => void startQuiz()}
+              >
+                {busy ? "Đang tạo…" : "Kiểm tra nhanh những từ vừa học"}
+              </Button>
+            )}
+            {nextLesson && (
+              <LinkButton
+                href={`/study?lesson=${nextLesson.id}`}
+                variant="secondary"
+                className="w-full"
+              >
+                {nextLesson.title} <Icon name="arrow" size={16} />
+              </LinkButton>
+            )}
             <LinkButton
               href={lessonId ? "/learn" : "/dashboard"}
+              variant="ghost"
               className="w-full"
             >
               {lessonId ? "Về lộ trình" : "Về tổng quan"}
             </LinkButton>
+            {items.length === 0 && !lessonId && (
+              <LinkButton href="/learn">
+                Khám phá lộ trình <Icon name="arrow" size={16} />
+              </LinkButton>
+            )}
+          </div>
+        </section>
+      )}
+
+      {phase === "quiz" && quiz && (
+        <div className={`${styles.quiz} ${styles.phase}`}>
+          <QuizRunner
+            quiz={quiz}
+            onDone={(s) => {
+              setQuizScore(s);
+              setPhase("done");
+            }}
+          />
+        </div>
+      )}
+
+      {phase === "done" && (
+        <section
+          className={`${styles.finish} ${styles.phase}`}
+          aria-labelledby="quiz-result-title"
+        >
+          <span className={styles.finishIcon}>
+            <Icon name="trophy" size={32} />
+          </span>
+          <p className={styles.eyebrow}>Buổi học đã hoàn thành</p>
+          <h1 id="quiz-result-title">Một ngày học thật tốt!</h1>
+          {quizScore != null && (
+            <p className={styles.quizScore}>{quizScore}%</p>
           )}
-        </Card>
+          <p className={styles.finishDescription}>
+            Điểm ghi nhớ của buổi này. Hẹn gặp lại bạn trong lần ôn tiếp theo!
+          </p>
+          <div className={styles.finishActions}>
+            {nextLesson ? (
+              <LinkButton
+                href={`/study?lesson=${nextLesson.id}`}
+                className="w-full"
+              >
+                {nextLesson.title} <Icon name="arrow" size={16} />
+              </LinkButton>
+            ) : (
+              <LinkButton
+                href={lessonId ? "/learn" : "/dashboard"}
+                className="w-full"
+              >
+                {lessonId ? "Về lộ trình" : "Về tổng quan"}
+              </LinkButton>
+            )}
+          </div>
+        </section>
       )}
     </div>
   );

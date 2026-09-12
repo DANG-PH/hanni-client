@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     )?.label ?? "Góc học tập";
   const close = () => drawer.current?.close();
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="app-workspace flex min-h-screen bg-background">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:p-3"
@@ -30,7 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         Đến nội dung chính
       </a>
       <aside className="hidden w-60 shrink-0 border-r border-border bg-surface lg:block">
-        <div className="sticky top-0 h-dvh overflow-y-auto">
+        <div className="app-sidebar-scroll sticky top-0 h-dvh overflow-y-auto">
           <Sidebar />
         </div>
       </aside>
@@ -55,7 +55,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </dialog>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-[72px] items-center gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur-lg sm:px-7">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur-lg sm:px-7">
           <button
             type="button"
             onClick={() => drawer.current?.showModal()}

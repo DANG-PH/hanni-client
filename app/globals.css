@@ -125,7 +125,76 @@
 
 @layer components {
   .page-wrap {
-    @apply mx-auto w-full max-w-7xl px-5 py-8 sm:px-8 sm:py-10;
+    @apply mx-auto w-full max-w-7xl px-5 py-7 sm:px-8 sm:py-8;
+  }
+  /* Chung một nhịp tiêu đề, nội dung và thao tác trên mọi trang. */
+  .page-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .page-heading-copy {
+    flex: 1 1 420px;
+    min-width: 0;
+  }
+  .page-heading-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 550;
+    letter-spacing: 0.025em;
+  }
+  .page-heading-label svg {
+    color: var(--primary);
+  }
+  .page-heading h1 {
+    font-size: clamp(26px, 2.5vw, 32px);
+    line-height: 1.25;
+    font-weight: 650;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  .page-heading-description {
+    max-width: 620px;
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+  .page-heading-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .learning-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .app-sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    scrollbar-gutter: stable;
+  }
+  .app-workspace .page-wrap {
+    max-width: 1440px;
+  }
+  .app-workspace {
+    background-image: radial-gradient(ellipse at 95% 0%, color-mix(in srgb, var(--primary) 4%, transparent), transparent 55%);
+  }
+  /* Trong không gian học, các phần hiện cùng lúc để giữ mạch đọc. */
+  .app-workspace [data-reveal-state] {
+    opacity: 1;
+    translate: none;
+    animation: none;
+    pointer-events: auto;
   }
   .panel {
     @apply rounded-2xl border border-border bg-surface;
@@ -154,18 +223,28 @@
   /* item điều hướng trong sidebar */
   .nav-item {
     @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-foreground;
+    position: relative;
+    transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+  }
+  .nav-item > svg {
+    flex-shrink: 0;
+    transition: transform 220ms var(--motion-ease);
   }
   .nav-item[aria-current="page"] {
     @apply bg-primary/10 text-primary;
+    box-shadow: inset 3px 0 0 var(--primary);
+  }
+  .nav-item[aria-current="page"] > svg {
+    transform: scale(1.08);
   }
 }
 
 /* ===== Nhịp chuyển động (giữ từ thiết kế trước) ===== */
 :root {
-  --reveal-duration: 620ms;
-  --reveal-distance: 16px;
+  --reveal-duration: 360ms;
+  --reveal-distance: 8px;
   --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --hover-duration: 260ms;
+  --hover-duration: 180ms;
 }
 
 @keyframes reveal-in {
@@ -186,10 +265,26 @@
     opacity: 1;
   }
 }
+@keyframes workspace-in {
+  from {
+    opacity: 0.65;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 @media screen {
+  .workspace-enter {
+    animation: workspace-in 240ms var(--motion-ease);
+  }
   .page-enter {
     animation: page-in 500ms var(--motion-ease) backwards;
+  }
+  .page-enter:has(.app-workspace) {
+    animation: none;
   }
   [data-reveal-state="pending"] {
     opacity: 0;
@@ -1082,7 +1177,11 @@ body:has(.mobile-drawer[open]) {
     display: none;
   }
   .login-video {
-    -webkit-mask-image: radial-gradient(circle closest-side, #000 78%, transparent);
+    -webkit-mask-image: radial-gradient(
+      circle closest-side,
+      #000 78%,
+      transparent
+    );
     mask-image: radial-gradient(circle closest-side, #000 78%, transparent);
   }
   .login-video-fallback img {

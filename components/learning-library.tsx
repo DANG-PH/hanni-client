@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
-import { Icon } from "./icon";
+import { Icon, type IconName } from "./icon";
+import { PageHeading } from "./ui";
+import { SelectionGroup } from "./selection-group";
 import styles from "./learning-library.module.css";
 
 type LibrarySection = "vocabulary" | "grammar" | "exams";
@@ -17,59 +19,21 @@ export function LearningHeader({
   description: string;
   children?: ReactNode;
 }) {
-  const artwork = {
-    vocabulary: {
-      word: "你好",
-      pinyin: "nǐ hǎo",
-      meaning: "Một lời chào, một khởi đầu.",
-      stamp: "词",
-    },
-    grammar: {
-      word: "我爱中文",
-      pinyin: "wǒ ài Zhōngwén",
-      meaning: "Tôi yêu tiếng Trung.",
-      stamp: "句",
-    },
-    exams: {
-      word: "加油",
-      pinyin: "jiā yóu",
-      meaning: "Cố lên, bạn làm được!",
-      stamp: "试",
-    },
-  }[section];
+  const icons = {
+    vocabulary: "book",
+    grammar: "cards",
+    exams: "target",
+  } satisfies Record<LibrarySection, IconName>;
 
   return (
-    <header className={styles.hero}>
-      <div className={styles.heroCopy}>
-        <p className={styles.eyebrow}>
-          <span />
-          {eyebrow}
-        </p>
-        <h1>{title}</h1>
-        <p className={styles.heroDescription}>{description}</p>
-        {children && <div className={styles.heroActions}>{children}</div>}
-      </div>
-      <div className={styles.artwork} aria-hidden="true">
-        <span className={styles.artworkRing} />
-        <div className={styles.paperBack} />
-        <div className={styles.paper}>
-          <div className={styles.paperLabel}>
-            HANNI <span>· 每天进步一点</span>
-          </div>
-          <span lang="zh" className={`hanzi ${styles.paperWord}`}>
-            {artwork.word}
-          </span>
-          <span className={styles.paperPinyin}>{artwork.pinyin}</span>
-          <span className={styles.paperMeaning}>{artwork.meaning}</span>
-          <span lang="zh" className={`hanzi ${styles.seal}`}>
-            {artwork.stamp}
-          </span>
-        </div>
-        <span className={styles.artworkSpark}>
-          <Icon name="spark" size={23} />
-        </span>
-      </div>
-    </header>
+    <PageHeading
+      icon={icons[section]}
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
+    >
+      {children}
+    </PageHeading>
   );
 }
 
@@ -83,7 +47,11 @@ export function LevelFilter({
   onChange: (value: number | undefined) => void;
 }) {
   return (
-    <div className={styles.levels} role="group" aria-label="Lọc theo cấp HSK">
+    <SelectionGroup
+      className={styles.levels}
+      label="Lọc theo cấp HSK"
+      value={value}
+    >
       {options.map((option) => (
         <button
           key={option.value ?? "all"}
@@ -95,7 +63,7 @@ export function LevelFilter({
           {option.count !== undefined && <span>{option.count}</span>}
         </button>
       ))}
-    </div>
+    </SelectionGroup>
   );
 }
 

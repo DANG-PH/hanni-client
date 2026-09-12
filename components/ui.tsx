@@ -139,29 +139,32 @@ export function ErrorNote({ children }: { children: ReactNode }) {
   );
 }
 export function PageHeading({
+  icon,
   eyebrow,
   title,
   description,
   children,
 }: {
+  icon?: IconName;
   eyebrow?: string;
   title: string;
   description: string;
   children?: ReactNode;
 }) {
   return (
-    <div className="reveal flex flex-wrap items-end justify-between gap-4">
-      <div>
-        {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          {title}
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-          {description}
-        </p>
+    <header className="page-heading">
+      <div className="page-heading-copy">
+        {eyebrow && (
+          <p className="page-heading-label">
+            {icon && <Icon name={icon} size={15} />}
+            {eyebrow}
+          </p>
+        )}
+        <h1>{title}</h1>
+        <p className="page-heading-description">{description}</p>
       </div>
-      {children}
-    </div>
+      {children && <div className="page-heading-actions">{children}</div>}
+    </header>
   );
 }
 export function EmptyState({

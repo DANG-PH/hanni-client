@@ -1,0 +1,33 @@
+.card {
+  transition:
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 520ms ease;
+}
+
+.dotButton {
+  display: grid;
+  width: 28px;
+  min-height: 44px;
+  place-items: center;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.dot {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  transition:
+    width 220ms ease,
+    background 220ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    --coverflow-tilt: 0deg;
+    transition: none;
+  }
+  .dot {
+    transition: none;
+  }
+}

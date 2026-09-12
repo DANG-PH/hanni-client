@@ -52,16 +52,13 @@ export default function GrammarPage() {
     <div className={`page-wrap ${styles.page}`}>
       <LearningHeader
         section="grammar"
-        eyebrow="HIỂU CẤU TRÚC · NÓI TỰ NHIÊN"
-        title="Từ những từ rời, thành câu hay."
-        description="Khám phá ngữ pháp theo cấp HSK qua cấu trúc dễ hiểu và ví dụ gần gũi. Mỗi mẫu câu là một cách mới để nói điều bạn muốn."
+        eyebrow="Khám phá tiếng Trung"
+        title="Ngữ pháp & mẫu câu"
+        description="Hiểu cấu trúc, nghe ví dụ và tập diễn đạt điều bạn muốn nói."
       >
         <LinkButton href="/vocabulary" variant="secondary">
           <Icon name="book" size={16} /> Khám phá từ vựng
         </LinkButton>
-        <span className={styles.heroNote}>
-          <Icon name="sound" size={15} /> Ví dụ có pinyin & phát âm
-        </span>
       </LearningHeader>
 
       {levels.error ? (

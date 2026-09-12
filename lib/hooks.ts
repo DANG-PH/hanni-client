@@ -52,6 +52,7 @@ export function useLearnPath(level?: number) {
   return useSWR<LearnPath>(
     level ? `/learn/path?level=${level}` : "/learn/path",
     fetcher,
+    { keepPreviousData: true },
   );
 }
 
@@ -78,7 +79,9 @@ export function useVideos(params: { level?: number; kind?: string; mine?: boolea
   if (params.kind) qs.set("kind", params.kind);
   if (params.mine) qs.set("mine", "true");
   const q = qs.toString();
-  return useSWR<VideoCard[]>(`/videos${q ? `?${q}` : ""}`, fetcher);
+  return useSWR<VideoCard[]>(`/videos${q ? `?${q}` : ""}`, fetcher, {
+    keepPreviousData: true,
+  });
 }
 
 export function useVideo(id: string | null) {

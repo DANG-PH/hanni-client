@@ -1,0 +1,36 @@
+.group {
+  position: relative;
+  isolation: isolate;
+}
+
+.indicator {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: -1;
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  background: var(--primary);
+  box-shadow: 0 3px 8px -4px color-mix(in srgb, var(--primary) 45%, transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    transform 260ms var(--motion-ease),
+    width 260ms var(--motion-ease),
+    height 260ms var(--motion-ease);
+}
+
+.group[data-selection-ready] > .indicator {
+  opacity: 1;
+}
+
+.group[data-selection-ready] > button[aria-pressed="true"] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indicator {
+    transition: none;
+  }
+}

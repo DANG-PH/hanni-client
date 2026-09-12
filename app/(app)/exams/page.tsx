@@ -138,32 +138,14 @@ export default function ExamsPage() {
     <div className={`page-wrap ${styles.page}`}>
       <LearningHeader
         section="exams"
-        eyebrow="THỬ SỨC HÔM NAY · TỰ TIN NGÀY MAI"
-        title="Một bài kiểm tra nhỏ. Một bước tiến mới."
-        description="Bạn đã nhớ được bao nhiêu? Cùng thử sức với phần nghe và đọc từ vựng theo cấp HSK, rồi khám phá những từ cần ôn thêm."
+        eyebrow="Nhìn lại điều đã học"
+        title="Kiểm tra HSK"
+        description="Một bài kiểm tra nghe và đọc ngắn để biết bạn đã nhớ gì, cần ôn thêm gì."
       >
         <LinkButton href="/exams/results" variant="secondary">
           <Icon name="chart" size={16} /> Kết quả gần nhất
         </LinkButton>
-        <span className={styles.heroNote}>
-          <Icon name="heart" size={15} /> Mỗi lần thử, thêm một lần tiến bộ
-        </span>
       </LearningHeader>
-      <div className={styles.examIntro}>
-        <span>
-          <Icon name="headphones" size={16} /> Nghe & nhận diện từ
-        </span>
-        <span>
-          <Icon name="book" size={16} /> Đọc & chọn nghĩa
-        </span>
-        <span>
-          <Icon name="clock" size={16} /> Giới hạn giờ mỗi câu
-        </span>
-        <span>
-          <Icon name="info" size={16} /> Bài ôn từ vựng, không phải đề HSK đầy
-          đủ
-        </span>
-      </div>
       {levels.error ? (
         <Card className="space-y-4">
           <ErrorNote>Chưa tải được các cấp độ kiểm tra.</ErrorNote>
@@ -189,9 +171,24 @@ export default function ExamsPage() {
                 <Icon name="target" size={22} />
               </span>
               <div>
-                <h2>Thiết kế bài kiểm tra của bạn</h2>
-                <p>Chọn mức vừa sức và bắt đầu khi bạn sẵn sàng.</p>
+                <h2>Bài kiểm tra của bạn</h2>
+                <p>Chọn cấp độ, số câu hỏi rồi bắt đầu.</p>
               </div>
+            </div>
+            <div className={styles.examIntro}>
+              <span>
+                <Icon name="headphones" size={16} /> Nghe & nhận diện từ
+              </span>
+              <span>
+                <Icon name="book" size={16} /> Đọc & chọn nghĩa
+              </span>
+              <span>
+                <Icon name="clock" size={16} /> Giới hạn giờ mỗi câu
+              </span>
+              <span>
+                <Icon name="info" size={16} /> Bài ôn từ vựng, không phải đề HSK
+                đầy đủ
+              </span>
             </div>
             <fieldset>
               <legend className={styles.legend}>

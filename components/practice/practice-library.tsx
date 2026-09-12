@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/icon";
 import {
   Button,
-  Card,
   EmptyState,
   ErrorNote,
   PageHeading,
@@ -14,6 +13,8 @@ import {
 import { useRequireAuth } from "@/lib/auth";
 import { useWords } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
+import { LevelFilter } from "@/components/learning-library";
+import styles from "./practice-library.module.css";
 
 const skillIcons = {
   listening: "sound",
@@ -48,147 +49,202 @@ function LibraryContent({
   const [page, setPage] = useState(1);
   const [started, setStarted] = useState(false);
   const words = useWords({ level, page });
+  const sessionRef = useRef<HTMLDivElement>(null);
+
+  const pagination = words.data &&
+    words.data.totalPages > 1 &&
+    !words.error && (
+      <div className={styles.pagination}>
+        <Button
+          variant="ghost"
+          disabled={page === 1 || words.isLoading}
+          onClick={() => setPage(page - 1)}
+        >
+          <Icon name="back" size={15} /> Nhóm trước
+        </Button>
+        <span aria-live="polite">
+          Nhóm {page} / {words.data.totalPages}
+        </span>
+        <Button
+          variant="ghost"
+          disabled={page >= words.data.totalPages || words.isLoading}
+          onClick={() => setPage(page + 1)}
+        >
+          Nhóm tiếp <Icon name="arrow" size={15} />
+        </Button>
+      </div>
+    );
 
   return (
-    <div className="page-wrap space-y-7">
+    <div className="page-wrap learning-workspace">
       <PageHeading
-        eyebrow="MỖI NGÀY MỘT CHÚT TIẾN BỘ"
+        icon={skillIcons[skill]}
+        eyebrow="Luyện tập mỗi ngày"
         title={title}
         description={description}
       >
         <Link
           href="/learn"
-          className="inline-flex min-h-10 items-center gap-2 text-sm font-medium text-primary hover:underline"
+          className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-muted hover:text-primary"
         >
           Lộ trình của bạn <Icon name="arrow" size={16} />
         </Link>
       </PageHeading>
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div
-          role="group"
-          aria-label="Chọn cấp độ HSK"
-          className="flex flex-wrap gap-2"
-        >
-          {Array.from({ length: 9 }, (_, i) => i + 1).map((item) => (
-            <button
-              key={item}
-              type="button"
-              aria-pressed={item === level}
-              onClick={() => {
-                setLevel(item);
-                setPage(1);
-              }}
-              className={`motion-button min-h-10 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-colors ${item === level ? "border-primary bg-primary text-primary-fg" : "border-border bg-surface text-muted hover:border-primary/40 hover:text-primary"}`}
-            >
-              HSK {item}
-            </button>
-          ))}
-        </div>
-        {words.data && (
-          <p className="text-xs text-muted">
-            {words.data.total.toLocaleString("vi-VN")} từ trong thư viện
-          </p>
-        )}
-      </div>
-
-      {words.error ? (
-        <ErrorNote>
-          Chưa tải được nội dung luyện tập.{" "}
-          <button
-            onClick={() => void words.mutate()}
-            className="font-semibold underline"
+      {started ? (
+        <>
+          <div className={styles.sessionBar}>
+            <p>
+              <span className={styles.levelBadge}>HSK {level}</span> Nhóm {page}{" "}
+              · {words.data?.items.length ?? 0} từ
+            </p>
+            <Button variant="ghost" onClick={() => setStarted(false)}>
+              <Icon name="settings" size={16} /> Đổi bài luyện
+            </Button>
+          </div>
+          <div
+            ref={sessionRef}
+            tabIndex={-1}
+            className="outline-none"
+            aria-label="Bài luyện"
           >
-            Thử lại
-          </button>
-        </ErrorNote>
-      ) : words.isLoading ? (
-        <Spinner />
-      ) : words.data?.items.length ? (
-        started ? (
-          <div key={`${level}-${page}`}>{children(words.data.items)}</div>
-        ) : (
-          <StartCard
-            icon={skillIcons[skill]}
-            title={title}
-            steps={startSteps}
-            count={words.data.items.length}
-            onStart={() => setStarted(true)}
-          />
-        )
+            {words.error ? (
+              <ErrorNote>
+                Chưa tải được bài luyện.{" "}
+                <button
+                  className="underline"
+                  onClick={() => void words.mutate()}
+                >
+                  Thử lại
+                </button>
+              </ErrorNote>
+            ) : words.isLoading ? (
+              <Spinner />
+            ) : words.data?.items.length ? (
+              <div key={`${level}-${page}`}>{children(words.data.items)}</div>
+            ) : (
+              <EmptyState
+                title="Chưa có từ trong nhóm này"
+                description="Chọn nhóm khác để tiếp tục luyện tập."
+              />
+            )}
+          </div>
+          {pagination}
+        </>
       ) : (
-        <EmptyState
-          title="Nội dung đang được cập nhật"
-          description="Cấp HSK này chưa có từ vựng. Chọn một cấp khác để tiếp tục luyện tập."
-        />
-      )}
-
-      {words.data && words.data.totalPages > 1 && !words.error && (
-        <div className="flex flex-wrap items-center justify-center gap-4 border-t border-border pt-6">
-          <Button
-            variant="secondary"
-            disabled={page === 1 || words.isLoading}
-            onClick={() => setPage(page - 1)}
-          >
-            <Icon name="back" size={16} />
-            Nhóm trước
-          </Button>
-          <span aria-live="polite" className="text-sm text-muted">
-            Nhóm {page} / {words.data.totalPages}
-          </span>
-          <Button
-            variant="secondary"
-            disabled={page >= words.data.totalPages || words.isLoading}
-            onClick={() => setPage(page + 1)}
-          >
-            Nhóm tiếp
-            <Icon name="arrow" size={16} />
-          </Button>
-        </div>
+        <section className={styles.setup} aria-label="Chuẩn bị bài luyện">
+          <div className={styles.setupMain}>
+            <div className={styles.setupHeading}>
+              <span className="icon-tile">
+                <Icon name={skillIcons[skill]} size={22} />
+              </span>
+              <div>
+                <h2>Bài luyện của bạn</h2>
+                <p>Chọn mức vừa sức, tiến bộ từng chút một.</p>
+              </div>
+            </div>
+            <div className={styles.levelPicker}>
+              <h3>Chọn cấp độ HSK</h3>
+              <LevelFilter
+                options={Array.from({ length: 9 }, (_, i) => ({
+                  value: i + 1,
+                  label: `HSK ${i + 1}`,
+                }))}
+                value={level}
+                onChange={(value) => {
+                  setLevel(value ?? 1);
+                  setPage(1);
+                }}
+              />
+            </div>
+            <div className={styles.sessionSummary} aria-live="polite">
+              <span className={styles.levelBadge}>HSK {level}</span>
+              <div>
+                <strong>
+                  {words.isLoading
+                    ? "Đang chuẩn bị từ vựng…"
+                    : words.error
+                      ? "Chưa tải được từ vựng"
+                      : `${words.data?.items.length ?? 0} từ trong bài luyện`}
+                </strong>
+                <p>
+                  {words.data && !words.error
+                    ? `${words.data.total.toLocaleString("vi-VN")} từ trong thư viện · Nhóm ${page}`
+                    : "Nghe kỹ, luyện từng từ theo nhịp của bạn."}
+                </p>
+              </div>
+            </div>
+            {words.error && (
+              <ErrorNote>
+                Chưa tải được nội dung.{" "}
+                <button
+                  onClick={() => void words.mutate()}
+                  className="font-semibold underline"
+                >
+                  Thử lại
+                </button>
+              </ErrorNote>
+            )}
+            {!words.error && !words.isLoading && !words.data?.items.length && (
+              <p className="text-sm text-muted">
+                Cấp độ này đang được cập nhật. Chọn một cấp khác để bắt đầu nhé.
+              </p>
+            )}
+            <Button
+              className={styles.startButton}
+              disabled={
+                words.isLoading || !!words.error || !words.data?.items.length
+              }
+              onClick={() => {
+                setStarted(true);
+                requestAnimationFrame(() => {
+                  sessionRef.current?.focus({ preventScroll: true });
+                  sessionRef.current?.scrollIntoView({
+                    block: "start",
+                    behavior: "instant",
+                  });
+                });
+              }}
+            >
+              {skill === "listening"
+                ? "Bắt đầu luyện nghe"
+                : skill === "pronunciation"
+                  ? "Bắt đầu luyện phát âm"
+                  : "Bắt đầu luyện tập"}
+              <Icon name="arrow" size={17} />
+            </Button>
+            {pagination}
+          </div>
+          <aside className={styles.guide}>
+            <p className={styles.guideLabel}>
+              <Icon name="spark" size={16} /> Một chút chuẩn bị
+            </p>
+            <h2>
+              {skill === "listening"
+                ? "Lắng nghe. Ghi nhớ. Hiểu hơn."
+                : "Nghe mẫu. Cất tiếng. Tự tin hơn."}
+            </h2>
+            <ol>
+              {startSteps.map((step, i) => (
+                <li key={step}>
+                  <span>{i + 1}</span>
+                  <p>{step}</p>
+                </li>
+              ))}
+            </ol>
+            <p className={styles.guideNote}>
+              <Icon
+                name={skill === "pronunciation" ? "mic" : "headphones"}
+                size={18}
+              />
+              {skill === "pronunciation"
+                ? "Chuẩn bị micro và một góc yên tĩnh để nghe rõ giọng mình."
+                : "Dùng tai nghe nếu có để nghe rõ từng thanh điệu."}
+            </p>
+          </aside>
+        </section>
       )}
     </div>
-  );
-}
-
-/** Màn hình dẫn dắt trước khi vào bài luyện thật — giải thích cách chơi thay vì bắt tương tác luôn. */
-function StartCard({
-  icon,
-  title,
-  steps,
-  count,
-  onStart,
-}: {
-  icon: IconName;
-  title: string;
-  steps: string[];
-  count: number;
-  onStart: () => void;
-}) {
-  return (
-    <Card className="mx-auto max-w-xl space-y-6 text-center">
-      <span className="icon-tile mx-auto h-14! w-14!">
-        <Icon name={icon} size={26} />
-      </span>
-      <div>
-        <h2 className="text-lg font-semibold">{title}</h2>
-        <p className="mt-1 text-sm text-muted">
-          Nhóm này có {count} từ. Làm theo các bước sau:
-        </p>
-      </div>
-      <ol className="space-y-3 text-left">
-        {steps.map((step, i) => (
-          <li key={step} className="flex gap-3 text-sm leading-6">
-            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/8 text-[11px] font-semibold text-primary">
-              {i + 1}
-            </span>
-            {step}
-          </li>
-        ))}
-      </ol>
-      <Button className="w-full" onClick={onStart}>
-        Bắt đầu <Icon name="arrow" size={16} />
-      </Button>
-    </Card>
   );
 }
 

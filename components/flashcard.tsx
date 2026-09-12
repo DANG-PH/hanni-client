@@ -1,35 +1,36 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AudioButton } from "./audio-button";
 import { Icon } from "./icon";
 import { mediaUrl } from "@/lib/api";
 import type { Rating, Word } from "@/lib/types";
+import styles from "./flashcard.module.css";
 
 const RATINGS: { key: Rating; label: string; hint: string; cls: string }[] = [
   {
     key: "AGAIN",
     label: "Chưa nhớ",
     hint: "Cần học lại",
-    cls: "border-danger/20 bg-danger/5 text-danger",
+    cls: styles.again,
   },
   {
     key: "HARD",
     label: "Hơi khó",
     hint: "Cần gợi ý",
-    cls: "border-warn/20 bg-warn/5 text-warn",
+    cls: styles.hard,
   },
   {
     key: "GOOD",
     label: "Đã nhớ",
     hint: "Nhớ được từ",
-    cls: "border-primary/20 bg-primary/5 text-primary",
+    cls: styles.good,
   },
   {
     key: "EASY",
     label: "Rất dễ",
     hint: "Nhớ chắc chắn",
-    cls: "border-good/20 bg-good/5 text-good",
+    cls: styles.easy,
   },
 ];
 
@@ -46,20 +47,33 @@ export function Flashcard({
 }) {
   const [revealed, setRevealed] = useState(false);
   const [start] = useState(() => Date.now());
+  const revealButton = useRef<HTMLButtonElement>(null);
+  const answer = useRef<HTMLDivElement>(null);
+  const player = useRef<HTMLAudioElement | null>(null);
   const example = word.examples?.[0];
 
-  function reveal() {
+  const reveal = useCallback(() => {
     if (revealed) return;
     setRevealed(true);
     const u = mediaUrl(word.audioUrl);
     if (u) {
       try {
-        void new Audio(u).play().catch(() => undefined);
+        player.current = new Audio(u);
+        void player.current.play().catch(() => undefined);
       } catch {
-        /* ignore */
+        /* Vẫn cho phép học tiếp khi trình duyệt chưa phát được âm thanh. */
       }
     }
-  }
+  }, [revealed, word.audioUrl]);
+
+  useEffect(() => {
+    revealButton.current?.focus({ preventScroll: true });
+    return () => player.current?.pause();
+  }, []);
+
+  useEffect(() => {
+    if (revealed) answer.current?.focus({ preventScroll: true });
+  }, [revealed]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -69,7 +83,9 @@ export function Flashcard({
         e.ctrlKey ||
         e.metaKey ||
         e.altKey ||
-        target.closest("input, textarea, select, button, a, [contenteditable]")
+        target.closest(
+          "input, textarea, select, button, a, [contenteditable], [role='textbox']",
+        )
       )
         return;
       if (e.code === "Space" && !revealed) {
@@ -84,111 +100,129 @@ export function Flashcard({
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [revealed, busy, onRate, start]);
+  }, [revealed, busy, onRate, start, reveal]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between px-1 text-xs text-muted">
-        <span className="flex items-center gap-2">
+    <div className={styles.session} aria-busy={busy}>
+      <div className={styles.metadata}>
+        <span className={styles.level}>
           <Icon name="cards" size={16} />
           HSK {word.hskLevel}
         </span>
-        <span
-          className={`rounded-lg px-2.5 py-1 ${isNew ? "bg-accent/8 text-accent" : "bg-primary/8 text-primary"}`}
-        >
+        <span className={`${styles.state} ${isNew ? styles.newWord : ""}`}>
           {isNew ? "Từ mới" : "Ôn lại"}
         </span>
       </div>
 
-      <div className="flip-card" data-flipped={revealed}>
-        <div className="flip-card-inner">
-          {/* Mặt trước — chạm để lật */}
+      <div className={styles.deck} data-flipped={revealed}>
+        <div className={styles.underCard} aria-hidden="true" />
+        <div className={styles.inner}>
+          {/* Hai mặt dùng chung một ô lưới để ví dụ dài không bị cắt. */}
           <div
-            role="button"
-            tabIndex={0}
-            onClick={reveal}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                reveal();
-              }
-            }}
-            aria-label="Chạm để xem nghĩa"
-            className={`flip-card-face flip-card-face--front panel motion-button flex min-h-[22rem] w-full flex-col items-center justify-center overflow-hidden px-5 py-8 text-center outline-none sm:px-8 ${revealed ? "cursor-default" : "cursor-pointer hover:border-primary/30"}`}
+            className={`${styles.face} ${styles.front}`}
+            inert={revealed}
+            aria-hidden={revealed}
           >
-            <p className="text-xs text-muted">Nhìn Hán tự và thử nhớ nghĩa</p>
-            <div
-              lang="zh"
-              className="hanzi mt-7 break-all text-6xl leading-tight sm:text-7xl"
-            >
+            <button
+              ref={revealButton}
+              type="button"
+              onClick={reveal}
+              aria-label={`Xem nghĩa của ${word.simplified}`}
+              className={styles.revealButton}
+              tabIndex={revealed ? -1 : 0}
+            />
+            <span className={styles.cardCorner} aria-hidden="true">
+              <Icon name="spark" size={19} />
+            </span>
+            <p className={styles.prompt}>Bạn còn nhớ từ này chứ?</p>
+            <div lang="zh" className={`hanzi ${styles.character}`}>
               {word.simplified}
             </div>
-            <div
-              className="mt-4 flex items-center justify-center gap-1 text-xl text-primary"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <div className={styles.pronunciation}>
               {word.pinyin}
-              <AudioButton src={word.audioUrl} />
+              <span className={styles.audio}>
+                <AudioButton src={word.audioUrl} />
+              </span>
             </div>
-            <div className="mt-10 flex items-center gap-2 text-xs font-medium text-primary">
+            <div className={styles.revealHint}>
               <Icon name="refresh" size={15} />
-              Chạm vào thẻ hoặc nhấn phím cách để lật
+              Chạm để lật{" "}
+              <span>
+                hoặc <kbd>Space</kbd>
+              </span>
             </div>
           </div>
 
-          {/* Mặt sau — nghĩa + đánh giá */}
-          <div className="flip-card-face flip-card-face--back panel flex min-h-[22rem] flex-col justify-center overflow-hidden px-5 py-8 text-center sm:px-8">
-            <div lang="zh" className="hanzi text-3xl text-muted sm:text-4xl">
-              {word.simplified}
-              <span className="ml-2 text-lg text-primary">{word.pinyin}</span>
+          <div
+            ref={answer}
+            tabIndex={-1}
+            className={`${styles.face} ${styles.back}`}
+            inert={!revealed}
+            aria-hidden={!revealed}
+            aria-label={`Đáp án: ${word.meaningVi ?? word.meaningEn ?? "Nghĩa đang được cập nhật"}`}
+          >
+            <p className={styles.answerLabel}>
+              <Icon name="check" size={14} /> Cùng xem đáp án
+            </p>
+            <div className={styles.answerWord}>
+              <span lang="zh" className="hanzi">
+                {word.simplified}
+              </span>
+              <span className={styles.answerPinyin}>{word.pinyin}</span>
+              <AudioButton src={word.audioUrl} />
             </div>
-            <div className="mt-5 space-y-5">
-              <div aria-live="polite">
-                <p className="text-2xl font-semibold">
-                  {word.meaningVi ?? word.meaningEn ?? "Nghĩa đang được cập nhật"}
-                </p>
-                {word.pos.length > 0 && (
-                  <p className="mt-2 text-xs text-muted">{word.pos.join(" · ")}</p>
-                )}
-              </div>
-              {example && (
-                <div className="rounded-xl bg-surface-2/70 p-4 text-left text-sm leading-7">
-                  <p lang="zh" className="hanzi text-xl">
-                    {example.zh}
-                  </p>
-                  {example.pinyin && <p className="text-muted">{example.pinyin}</p>}
-                  {(example.vi || example.en) && <p>{example.vi ?? example.en}</p>}
-                </div>
+            <div className={styles.meaning}>
+              <p>
+                {word.meaningVi ?? word.meaningEn ?? "Nghĩa đang được cập nhật"}
+              </p>
+              {word.pos.length > 0 && (
+                <span className={styles.partOfSpeech}>
+                  {word.pos.join(" · ")}
+                </span>
               )}
-              <div className="border-t border-border pt-5">
-                <p className="mb-3 text-xs text-muted">Bạn nhớ từ này đến đâu?</p>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {RATINGS.map((r, i) => (
-                    <button
-                      key={r.key}
-                      disabled={busy || !revealed}
-                      onClick={() => onRate(r.key, Date.now() - start)}
-                      className={`motion-button rounded-xl border px-2 py-3 transition-opacity hover:opacity-75 disabled:pointer-events-none disabled:opacity-40 ${r.cls}`}
-                    >
-                      <span className="text-sm font-semibold">{r.label}</span>
-                      <span className="mt-1 block text-[10px]">{r.hint}</span>
-                      <kbd className="mt-2 hidden text-[10px] opacity-70 sm:block">
-                        {i + 1}
-                      </kbd>
-                    </button>
-                  ))}
-                </div>
-                {busy && (
-                  <p role="status" className="mt-3 text-xs text-muted">
-                    Đang lưu kết quả…
-                  </p>
+            </div>
+            {example && (
+              <div className={styles.example}>
+                <span className={styles.exampleLabel}>Trong một câu</span>
+                <p lang="zh" className={`hanzi ${styles.exampleHanzi}`}>
+                  {example.zh}
+                </p>
+                {example.pinyin && (
+                  <p className={styles.examplePinyin}>{example.pinyin}</p>
+                )}
+                {(example.vi || example.en) && (
+                  <p>{example.vi ?? example.en}</p>
                 )}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
+      <div className={styles.ratingPanel}>
+        <p className={styles.ratingPrompt} aria-live="polite">
+          {revealed
+            ? "Bạn nhớ từ này đến đâu?"
+            : "Thử nhớ nghĩa, rồi lật thẻ để tự đánh giá"}
+        </p>
+        <div className={styles.ratings}>
+          {RATINGS.map((r, i) => (
+            <button
+              key={r.key}
+              disabled={busy || !revealed}
+              onClick={() => onRate(r.key, Date.now() - start)}
+              type="button"
+              className={`${styles.rating} ${r.cls}`}
+            >
+              <span className={styles.ratingLabel}>{r.label}</span>
+              <span className={styles.ratingHint}>{r.hint}</span>
+              <kbd className={styles.ratingKey}>{i + 1}</kbd>
+            </button>
+          ))}
+        </div>
+      </div>
+      <p role="status" className={styles.saveStatus}>
+        {busy ? "Đang lưu kết quả…" : ""}
+      </p>
     </div>
   );
 }

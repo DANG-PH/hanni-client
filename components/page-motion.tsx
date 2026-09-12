@@ -42,6 +42,8 @@ export function PageMotion({ children }: { children: ReactNode }) {
       const groups = new Map<Element | null, number>();
       for (const element of candidates) {
         if (registered.has(element)) continue;
+        // Trang học có chuyển cảnh riêng; không ẩn các thẻ đang chờ dữ liệu.
+        if (element.closest(".app-workspace")) continue;
         // Một khối đã reveal thì không chạy thêm hiệu ứng lồng ở bên trong.
         if (element.parentElement?.closest(TARGETS)) continue;
         registered.add(element);

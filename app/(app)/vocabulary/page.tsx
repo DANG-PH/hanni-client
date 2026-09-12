@@ -59,17 +59,14 @@ function VocabularyContent() {
     <div className={`page-wrap ${styles.page}`}>
       <LearningHeader
         section="vocabulary"
-        eyebrow="TỪNG TỪ NHỎ · THẾ GIỚI LỚN"
+        eyebrow="Khám phá tiếng Trung"
         title="Thư viện từ vựng"
-        description="Gặp một từ mới, mở thêm một cánh cửa. Khám phá Hán tự, nghe phát âm và xây vốn từ tiếng Trung theo từng cấp HSK."
+        description="Tra nghĩa, nghe phát âm và ghi nhớ từ mới theo cấp HSK của bạn."
       >
-        <LinkButton href="/study">
+        <LinkButton href="/study" variant="secondary">
           <Icon name="cards" size={17} />
           Ôn tập flashcard
         </LinkButton>
-        <span className={styles.heroNote}>
-          <Icon name="headphones" size={15} /> Nghe · hiểu · ghi nhớ
-        </span>
       </LearningHeader>
       <section className={styles.toolbar} aria-label="Tìm kiếm và lọc từ vựng">
         <form
