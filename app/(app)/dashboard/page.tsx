@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Avatar } from "@/components/avatar";
+import { FeatureTour, type TourStep } from "@/components/feature-tour";
 import { HeroBanner } from "@/components/hero-banner";
 import { Icon, type IconName } from "@/components/icon";
 import { LessonPath } from "@/components/lesson-path";
@@ -106,6 +107,36 @@ const PRACTICE_AREAS: {
   },
 ];
 
+/** Giới thiệu nhanh 4 tính năng chính khi vào dashboard lần đầu — chỉ hiện
+ * 1 lần (xem feature-tour.tsx), giúp người dùng mới hiểu tác dụng của từng
+ * khu vực thay vì phải tự mò. */
+const DASHBOARD_TOUR_STEPS: TourStep[] = [
+  {
+    icon: "flame",
+    title: "Giữ chuỗi ngày học",
+    description:
+      "Học đều mỗi ngày để tăng chuỗi streak — thẻ \"Mục tiêu hôm nay\" theo dõi tiến độ và nhắc bạn hoàn thành.",
+  },
+  {
+    icon: "route",
+    title: "Lộ trình dành riêng cho bạn",
+    description:
+      "Dựa trên khảo sát ban đầu, Hanni gợi ý cấp HSK và thứ tự luyện tập phù hợp mục tiêu của bạn — bấm \"Tiếp tục học\" để vào đúng bài đang dở.",
+  },
+  {
+    icon: "play",
+    title: "Học qua video",
+    description:
+      "Xem video tiếng Trung có bản chép song ngữ chạy đồng bộ, vừa nghe vừa đọc để phản xạ nhanh hơn.",
+  },
+  {
+    icon: "message",
+    title: "Trợ lý AI Hanni",
+    description:
+      "Bấm vào bong bóng chat ở góc phải màn hình bất cứ lúc nào để hỏi về từ vựng, ngữ pháp, hay nhờ mở lộ trình/video phù hợp.",
+  },
+];
+
 export default function DashboardPage() {
   const { user, loading } = useRequireAuth();
   const streak = useStreak();
@@ -148,6 +179,7 @@ export default function DashboardPage() {
 
   return (
     <div className="page-wrap space-y-8">
+      <FeatureTour tourKey="dashboard" steps={DASHBOARD_TOUR_STEPS} />
       <div className="reveal flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted">
           Góc học tập <span className="mx-2 text-border">/</span>{" "}
