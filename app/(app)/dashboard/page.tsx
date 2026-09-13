@@ -397,7 +397,15 @@ export default function DashboardPage() {
         <Stat
           label="Chuỗi ngày học"
           value={streak.data ? `${streak.data.currentStreak}` : "—"}
-          hint={streak.data ? `Kỷ lục ${streak.data.longestStreak} ngày` : ""}
+          hint={
+            streak.data
+              ? `Kỷ lục ${streak.data.longestStreak} ngày${
+                  streak.data.streakFreezeCount > 0
+                    ? ` · 🧊 ${streak.data.streakFreezeCount} lá chắn`
+                    : ""
+                }`
+              : ""
+          }
           icon="flame"
           tone="text-warn bg-warn/10"
         />
