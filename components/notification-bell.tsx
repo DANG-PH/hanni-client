@@ -22,6 +22,8 @@ const MESSAGE: Record<AppNotification["type"], (n: AppNotification) => string> =
     `${n.actor?.displayName ?? "Ai đó"} đã thích video "${n.video?.title ?? ""}"`,
   NEW_FOLLOWER: (n) =>
     `${n.actor?.displayName ?? "Ai đó"} đã bắt đầu theo dõi bạn`,
+  ACHIEVEMENT_UNLOCKED: (n) =>
+    `Bạn vừa mở khoá huy hiệu "${n.achievement?.nameVi ?? ""}"! 🎉`,
 };
 
 export function NotificationBell() {
@@ -88,13 +90,25 @@ export function NotificationBell() {
               data.items.map((n) => (
                 <Link
                   key={n.id}
-                  href={n.video ? `/watch/${n.video.id}` : "#"}
+                  href={
+                    n.video
+                      ? `/watch/${n.video.id}`
+                      : n.type === "ACHIEVEMENT_UNLOCKED"
+                        ? "/achievements"
+                        : "#"
+                  }
                   onClick={() => onItemClick(n)}
                   className={`flex gap-3 border-b border-border px-4 py-3 text-sm last:border-0 hover:bg-surface-2 ${
                     n.readAt ? "" : "bg-primary/5"
                   }`}
                 >
-                  <Avatar user={n.actor ?? { displayName: "H" }} size={32} />
+                  {n.type === "ACHIEVEMENT_UNLOCKED" ? (
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <Icon name="trophy" size={16} />
+                    </span>
+                  ) : (
+                    <Avatar user={n.actor ?? { displayName: "H" }} size={32} />
+                  )}
                   <div className="min-w-0 flex-1">
                     <p className="leading-5">{MESSAGE[n.type](n)}</p>
                     <p className="mt-0.5 text-xs text-muted">

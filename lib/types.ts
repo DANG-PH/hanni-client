@@ -274,7 +274,8 @@ export type NotificationType =
   | "COMMENT_REPLY"
   | "VIDEO_COMMENT"
   | "VIDEO_LIKE"
-  | "NEW_FOLLOWER";
+  | "NEW_FOLLOWER"
+  | "ACHIEVEMENT_UNLOCKED";
 
 export interface AppNotification {
   id: string;
@@ -284,6 +285,7 @@ export interface AppNotification {
   actor: CommentAuthor | null;
   video: { id: string; title: string } | null;
   comment: { id: string; content: string } | null;
+  achievement: { code: string; nameVi: string; descriptionVi: string } | null;
 }
 
 export interface NotificationsPage extends Paginated<AppNotification> {
