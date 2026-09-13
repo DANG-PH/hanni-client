@@ -87,7 +87,11 @@ chưa có chữ nào; nhiều cuộc trò chuyện song song như ChatGPT/Claude
 `components/markdown-lite.tsx` (chỉ **in đậm**/`code`/gạch đầu dòng — đúng với những gì prompt
 hệ thống yêu cầu model dùng, xem `hanni-server/CLAUDE.md`); chỉ gọi API khi mở widget, không
 tải sẵn cho mọi trang; báo "chưa được
-bật" tự nhiên như 1 tin nhắn bình thường nếu server chưa cấu hình GEMINI_API_KEY). Chưa làm
+bật" tự nhiên như 1 tin nhắn bình thường nếu server chưa cấu hình GEMINI_API_KEY; server có thể
+gọi tool điều hướng (`navigate_to_page`/`open_video`) — khi có, event `done` của SSE mang thêm
+field `action: {type:'navigate', path, label}`, widget hiện nút "Mở: <tên>" ngay dưới tin nhắn
+model để người dùng TỰ bấm mở trang/video, trợ lý không tự chuyển trang thay và không được nói
+là đã mở giúp). Chưa làm
 (roadmap): minigame,
 trang hồ sơ công khai/danh sách người theo dõi (mới có nút theo dõi rời rạc ở bảng xếp hạng).
 
