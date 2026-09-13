@@ -24,8 +24,9 @@ app/
 │                        tập đổi theo `OnboardingProfile.goal` (GOAL_PERSONA), xem "Trạng thái"
 ├── study               buổi ôn flashcard (SM-2) + quiz cuối buổi
 ├── vocabulary          duyệt/tìm từ theo cấp HSK
-├── progress            bucket đã thuộc / đang học / sắp quên theo cấp
-├── achievements
+├── progress            bucket đã thuộc / đang học / sắp quên theo cấp; có lịch hoạt động 30
+│                        ngày (`components/activity-calendar.tsx`, dùng GET /streak/history)
+├── achievements         huy hiệu chưa mở khoá hiện thêm thanh tiến độ (progressCurrent/Target)
 ├── settings            mục tiêu ngày, thuật toán SRS, múi giờ
 └── nguon-du-lieu       trang ghi công nguồn dữ liệu (bắt buộc theo license)
 components/  ui.tsx · nav.tsx · flashcard.tsx · quiz-runner.tsx · comment-section.tsx
