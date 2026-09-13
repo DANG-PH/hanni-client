@@ -21,7 +21,8 @@ export const LEADERBOARD_METRICS: (LeaderboardMetric & {
     label: "Từ đã thuộc",
     unit: "từ",
     icon: "book",
-    description: "Xếp hạng theo số từ vựng đã thuộc.",
+    description:
+      "Xếp hạng theo số từ vựng đã thuộc — một từ chỉ tính khi ôn đều đạt chu kỳ ≥ 21 ngày, nên cần vài tuần ôn đặn mới thấy số tăng.",
     encouragement:
       "Mỗi từ ghi nhớ là một bước tiến. Cùng ôn thêm một chút nhé!",
     href: "/study",

@@ -82,6 +82,11 @@ export default function ProgressPage() {
                     Trong {data.totals.totalWords.toLocaleString("vi-VN")} từ
                     vựng thuộc các cấp học. Mỗi lần ôn là một lần nhớ vững hơn.
                   </p>
+                  <p className="mt-2 text-xs leading-5 text-muted">
+                    Một từ chỉ tính “đã thuộc” khi ôn đều và đạt chu kỳ ôn ≥ 21
+                    ngày — cần vài tuần ôn đặn mới thấy % này tăng. Số từ
+                    “Đang học” bên dưới tăng nhanh hơn nhiều.
+                  </p>
                 </div>
               </Card>
               <Card className="border-primary/15 bg-primary/5!">
