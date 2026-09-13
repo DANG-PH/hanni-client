@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { FollowButton } from "@/components/follow-button";
 import { Icon } from "@/components/icon";
-import { Card, ErrorNote, Spinner, Stat } from "@/components/ui";
+import { Button, Card, ErrorNote, Spinner, Stat } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { usePublicProfile } from "@/lib/hooks";
+import { getOrCreateConversation } from "@/lib/messages";
 import type { PublicProfileUser } from "@/lib/types";
 
 function joinedLabel(iso: string): string {
@@ -35,8 +36,21 @@ function UserRow({ user }: { user: PublicProfileUser }) {
 export default function PublicProfilePage() {
   const { user: me, loading } = useRequireAuth();
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const profile = usePublicProfile(params.id);
   const [tab, setTab] = useState<"followers" | "following" | null>(null);
+  const [opening, setOpening] = useState(false);
+
+  async function openConversation() {
+    if (opening) return;
+    setOpening(true);
+    try {
+      const conversation = await getOrCreateConversation(params.id);
+      router.push(`/messages?c=${conversation.id}`);
+    } finally {
+      setOpening(false);
+    }
+  }
 
   if (loading || !me) return <Spinner />;
 
@@ -69,11 +83,17 @@ export default function PublicProfilePage() {
           </div>
         </div>
         {!p.isMe && (
-          <FollowButton
-            userId={p.id}
-            following={p.isFollowing}
-            onChange={() => void profile.mutate()}
-          />
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" onClick={() => void openConversation()} disabled={opening}>
+              <Icon name="message" size={16} />
+              Nhắn tin
+            </Button>
+            <FollowButton
+              userId={p.id}
+              following={p.isFollowing}
+              onChange={() => void profile.mutate()}
+            />
+          </div>
         )}
       </Card>
 

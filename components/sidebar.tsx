@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
+import { useUnreadMessageCount } from "@/lib/messages";
 import { Icon, type IconName } from "./icon";
 
 export const NAV_GROUPS: {
@@ -37,6 +38,7 @@ export const NAV_GROUPS: {
       { href: "/progress", label: "Tiến độ học tập", icon: "chart" },
       { href: "/achievements", label: "Huy hiệu", icon: "trophy" },
       { href: "/leaderboard", label: "Bảng xếp hạng", icon: "flame" },
+      { href: "/messages", label: "Tin nhắn", icon: "message" },
       { href: "/account", label: "Tài khoản", icon: "user" },
       { href: "/settings", label: "Cài đặt", icon: "settings" },
     ],
@@ -72,6 +74,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { logout } = useAuth();
   const [busy, setBusy] = useState(false);
+  const { data: unread } = useUnreadMessageCount();
   return (
     <div className="flex min-h-full flex-col p-4">
       <Link
@@ -104,6 +107,13 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 >
                   <Icon name={link.icon} size={18} />
                   {link.label}
+                  {link.href === "/messages" &&
+                    !!unread?.count &&
+                    unread.count > 0 && (
+                      <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-bold text-primary-fg">
+                        {unread.count > 9 ? "9+" : unread.count}
+                      </span>
+                    )}
                 </Link>
               ))}
             </div>

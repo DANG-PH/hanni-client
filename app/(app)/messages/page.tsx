@@ -1,0 +1,226 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { Avatar } from "@/components/avatar";
+import { Icon } from "@/components/icon";
+import { PageHeading, Spinner } from "@/components/ui";
+import { useRequireAuth } from "@/lib/auth";
+import {
+  markConversationRead,
+  sendDirectMessage,
+  useConversationMessages,
+  useConversations,
+  useMessagesSocket,
+} from "@/lib/messages";
+import { timeAgo } from "@/lib/time";
+import type { DirectMessage } from "@/lib/types";
+
+function ConversationList({
+  activeId,
+  onSelect,
+}: {
+  activeId: string | null;
+  onSelect: (id: string) => void;
+}) {
+  const { data, isLoading } = useConversations();
+  if (isLoading) return <Spinner />;
+  if (!data || data.length === 0) {
+    return (
+      <p className="px-4 py-8 text-center text-sm text-muted">
+        Chưa có cuộc trò chuyện nào. Vào hồ sơ ai đó và bấm &quot;Nhắn
+        tin&quot; để bắt đầu.
+      </p>
+    );
+  }
+  return (
+    <div className="space-y-0.5">
+      {data.map((c) => (
+        <button
+          key={c.id}
+          type="button"
+          onClick={() => onSelect(c.id)}
+          className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors ${
+            activeId === c.id ? "bg-primary/8" : "hover:bg-surface-2"
+          }`}
+        >
+          <Avatar user={c.otherUser} size={40} />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <span className="truncate text-sm font-semibold">
+                {c.otherUser.displayName}
+              </span>
+              {c.lastMessage && (
+                <span className="shrink-0 text-[11px] text-muted">
+                  {timeAgo(c.lastMessage.createdAt)}
+                </span>
+              )}
+            </div>
+            <p className="truncate text-xs text-muted">
+              {c.lastMessage
+                ? `${c.lastMessage.mine ? "Bạn: " : ""}${c.lastMessage.content}`
+                : "Chưa có tin nhắn"}
+            </p>
+          </div>
+          {c.unreadCount > 0 && (
+            <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-bold text-primary-fg">
+              {c.unreadCount > 9 ? "9+" : c.unreadCount}
+            </span>
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function ChatThread({ conversationId }: { conversationId: string }) {
+  const { data: conversations } = useConversations();
+  const { data, mutate } = useConversationMessages(conversationId);
+  const conversation = conversations?.find((c) => c.id === conversationId);
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    void markConversationRead(conversationId);
+  }, [conversationId]);
+
+  useEffect(() => {
+    listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
+  }, [data?.items.length]);
+
+  async function send() {
+    const content = input.trim();
+    if (!content || sending) return;
+    setInput("");
+    setSending(true);
+    try {
+      const message = await sendDirectMessage(conversationId, content);
+      void mutate(
+        (current) =>
+          current && {
+            ...current,
+            items: [...current.items, message],
+          },
+        { revalidate: false },
+      );
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="flex h-full flex-col">
+      {conversation && (
+        <div className="flex items-center gap-2.5 border-b border-border px-4 py-3">
+          <Avatar user={conversation.otherUser} size={32} />
+          <span className="font-semibold">
+            {conversation.otherUser.displayName}
+          </span>
+        </div>
+      )}
+      <div ref={listRef} className="flex-1 space-y-2.5 overflow-y-auto p-4">
+        {data?.items.map((m: DirectMessage) => (
+          <div
+            key={m.id}
+            className={`flex ${m.senderId === conversation?.otherUser.id ? "justify-start" : "justify-end"}`}
+          >
+            <span
+              className={`max-w-[75%] break-words rounded-xl px-3 py-2 text-sm ${
+                m.senderId === conversation?.otherUser.id
+                  ? "bg-surface-2"
+                  : "bg-primary text-primary-fg"
+              }`}
+            >
+              {m.content}
+            </span>
+          </div>
+        ))}
+      </div>
+      <form
+        className="flex items-center gap-2 border-t border-border p-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void send();
+        }}
+      >
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Nhắn gì đó…"
+          disabled={sending}
+          className="field flex-1"
+        />
+        <button
+          type="submit"
+          disabled={!input.trim() || sending}
+          aria-label="Gửi"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-fg disabled:opacity-50"
+        >
+          <Icon name="arrow" size={18} />
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function MessagesInner() {
+  const { user, loading } = useRequireAuth();
+  const router = useRouter();
+  const params = useSearchParams();
+  const activeId = params.get("c");
+  useMessagesSocket(activeId);
+
+  if (loading || !user) return <Spinner />;
+
+  function select(id: string) {
+    router.push(`/messages?c=${id}`);
+  }
+
+  return (
+    <div className="page-wrap space-y-6">
+      <PageHeading
+        icon="message"
+        tone="primary"
+        eyebrow="Kết nối với bạn bè"
+        title="Tin nhắn"
+        description="Trò chuyện trực tiếp với những người bạn theo dõi hoặc gặp trên Hanni."
+      />
+      <div className="grid gap-0 overflow-hidden rounded-2xl border border-border md:grid-cols-[320px_1fr]">
+        <div
+          className={`border-border p-2 md:block md:border-r ${activeId ? "hidden" : "block"}`}
+        >
+          <ConversationList activeId={activeId} onSelect={select} />
+        </div>
+        <div
+          className={`h-[60vh] md:block ${activeId ? "block" : "hidden"}`}
+        >
+          {activeId ? (
+            <>
+              <Link
+                href="/messages"
+                className="flex items-center gap-1.5 border-b border-border px-4 py-2 text-xs font-medium text-primary md:hidden"
+              >
+                <Icon name="back" size={14} /> Danh sách hội thoại
+              </Link>
+              <ChatThread key={activeId} conversationId={activeId} />
+            </>
+          ) : (
+            <div className="hidden h-full items-center justify-center text-sm text-muted md:flex">
+              Chọn 1 cuộc trò chuyện để bắt đầu
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <MessagesInner />
+    </Suspense>
+  );
+}

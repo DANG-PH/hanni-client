@@ -467,3 +467,20 @@ export interface AssistantSession {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface DirectMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  content: string;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export interface ConversationSummary {
+  id: string;
+  updatedAt: string;
+  otherUser: PublicProfileUser;
+  lastMessage: { content: string; createdAt: string; mine: boolean } | null;
+  unreadCount: number;
+}
