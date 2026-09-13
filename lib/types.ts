@@ -156,6 +156,13 @@ export interface StreakInfo {
   };
 }
 
+export interface DayActivity {
+  date: string | null;
+  wordsReviewed: number;
+  minutesStudied: number;
+  goalMet: boolean;
+}
+
 export interface LevelBucket {
   level: number;
   band: string;

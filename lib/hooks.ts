@@ -7,6 +7,7 @@ import type {
   AssistantAction,
   AssistantMessage,
   AssistantSession,
+  DayActivity,
   ExamHistory,
   Leaderboard,
   LeaderboardMetric,
@@ -44,6 +45,10 @@ export function useProgress() {
 
 export function useStreak() {
   return useSWR<StreakInfo>("/streak", fetcher);
+}
+
+export function useStreakHistory(days = 30) {
+  return useSWR<DayActivity[]>(`/streak/history?days=${days}`, fetcher);
 }
 
 export function useStudyStats() {

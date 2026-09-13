@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ActivityCalendar } from "@/components/activity-calendar";
 import {
   Card,
   EmptyState,
@@ -152,6 +153,18 @@ export default function ProgressPage() {
                 hint="Ưu tiên củng cố thêm"
               />
             </div>
+            <section>
+              <SectionHeading
+                icon="clock"
+                tone="accent"
+                title="Lịch hoạt động 30 ngày"
+                description="Mỗi ô là 1 ngày — đậm dần theo mức độ ôn tập, xanh lá khi đạt mục tiêu ngày."
+                className="mb-5"
+              />
+              <Card>
+                <ActivityCalendar days={30} />
+              </Card>
+            </section>
             <section>
               <SectionHeading
                 icon="chart"
