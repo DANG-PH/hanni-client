@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Avatar } from "@/components/avatar";
 import { FollowButton } from "@/components/follow-button";
 import { Icon, type IconName } from "@/components/icon";
@@ -261,9 +262,14 @@ export function LeaderboardRankings({
               </td>
               <th scope="row" className="font-normal">
                 <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-                  <Avatar user={{ ...row, id: row.userId }} size={36} />
+                  <Link href={`/u/${row.userId}`} className="shrink-0">
+                    <Avatar user={{ ...row, id: row.userId }} size={36} />
+                  </Link>
                   <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                    <Link
+                      href={`/u/${row.userId}`}
+                      className="flex flex-wrap items-center gap-x-2 gap-y-0.5 hover:underline"
+                    >
                       <span className="break-words text-sm font-semibold [overflow-wrap:anywhere]">
                         {row.displayName}
                       </span>
@@ -272,7 +278,7 @@ export function LeaderboardRankings({
                           Bạn
                         </span>
                       )}
-                    </div>
+                    </Link>
                     {board.metric !== "streak" && row.currentStreak > 0 && (
                       <span className="mt-1 flex items-center gap-1 text-[11px] text-muted">
                         <Icon name="flame" size={12} className="text-primary" />

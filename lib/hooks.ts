@@ -22,6 +22,7 @@ import type {
   PracticeSkill,
   PracticeStats,
   ProgressOverview,
+  PublicProfile,
   StreakInfo,
   StudyStats,
   SubmitOnboardingInput,
@@ -138,6 +139,13 @@ export function followUser(userId: string) {
 export function unfollowUser(userId: string) {
   return api.del<{ following: boolean; followerCount: number }>(
     `/users/${userId}/follow`,
+  );
+}
+
+export function usePublicProfile(userId: string | null) {
+  return useSWR<PublicProfile>(
+    userId ? `/users/${userId}/profile` : null,
+    fetcher,
   );
 }
 

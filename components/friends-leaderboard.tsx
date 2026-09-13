@@ -59,10 +59,15 @@ export function FriendsLeaderboard() {
               <span className="w-4 shrink-0 text-center text-xs font-semibold text-muted">
                 {row.rank}
               </span>
-              <Avatar user={{ id: row.userId, displayName: row.displayName, avatarUrl: row.avatarUrl }} size={28} />
-              <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                {row.isMe ? "Bạn" : row.displayName}
-              </span>
+              <Link
+                href={`/u/${row.userId}`}
+                className="flex min-w-0 flex-1 items-center gap-3 hover:underline"
+              >
+                <Avatar user={{ id: row.userId, displayName: row.displayName, avatarUrl: row.avatarUrl }} size={28} />
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                  {row.isMe ? "Bạn" : row.displayName}
+                </span>
+              </Link>
               <span className="shrink-0 text-sm font-semibold text-primary">
                 {row.value} ngày
               </span>

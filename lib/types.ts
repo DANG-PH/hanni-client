@@ -372,6 +372,37 @@ export interface Leaderboard {
   me: { rank: number | null; value: number; totalRanked: number };
 }
 
+export interface PublicProfileAchievement {
+  code: string;
+  nameVi: string;
+  descriptionVi: string;
+  unlockedAt: string;
+}
+
+export interface PublicProfileUser {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+}
+
+export interface PublicProfile {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  joinedAt: string;
+  currentStreak: number;
+  longestStreak: number;
+  learnedWordsCount: number;
+  completedLessonsCount: number;
+  achievements: PublicProfileAchievement[];
+  followerCount: number;
+  followingCount: number;
+  isFollowing: boolean;
+  isMe: boolean;
+  followers: PublicProfileUser[];
+  following: PublicProfileUser[];
+}
+
 export type OnboardingGoal =
   | "TRAVEL"
   | "WORK"
