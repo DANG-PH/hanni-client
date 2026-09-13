@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { useUnreadMessageCount } from "@/lib/messages";
+import { useMessagesSocket, useUnreadMessageCount } from "@/lib/messages";
 import { Icon, type IconName } from "./icon";
 
 export const NAV_GROUPS: {
@@ -75,6 +75,12 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { logout } = useAuth();
   const [busy, setBusy] = useState(false);
   const { data: unread } = useUnreadMessageCount();
+  // Sidebar nằm trong app-shell nên luôn mount ở mọi trang — nghe socket ở
+  // đây để badge chưa đọc cập nhật realtime dù đang không mở /messages
+  // (trang /messages tự nghe thêm 1 lần nữa cho đúng hội thoại đang xem,
+  // 2 listener cùng lúc trên 1 event vô hại, socket.io-client tự dedupe kết
+  // nối theo URL).
+  useMessagesSocket(null);
   return (
     <div className="flex min-h-full flex-col p-4">
       <Link
