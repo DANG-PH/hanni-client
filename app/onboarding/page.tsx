@@ -441,7 +441,9 @@ function ResultScreen({
         description="Dựa trên câu trả lời của bạn — có thể làm lại khảo sát bất cứ lúc nào."
       />
       <Card className="space-y-5">
-        <p className="text-sm leading-6">{profile.recommendationVi}</p>
+        <p className="whitespace-pre-line text-sm leading-6">
+          {profile.recommendationVi}
+        </p>
         <div className="flex flex-wrap gap-3">
           <Button
             onClick={() =>
