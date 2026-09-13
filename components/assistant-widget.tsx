@@ -123,32 +123,65 @@ export function AssistantWidget() {
       { id: modelMsgId, role: "MODEL", text: "", createdAt: new Date().toISOString() },
     ]);
 
+    // Chữ đã HIỂN THỊ trên bubble, nhả dần qua revealTimer bên dưới.
     let accumulated = "";
-    closeStreamRef.current = streamAssistant(
+    // Chữ đã nhận qua SSE nhưng chưa kịp hiển thị — Gemini sinh chữ theo
+    // từng cụm token không đều (delta có lúc dài có lúc ngắn), đẩy thẳng
+    // vào state mỗi lần nhận làm chữ nhảy khựng cục. Dồn vào buffer rồi
+    // "nhả" đều theo nhịp cố định (revealTimer) mượt hơn nhiều, giống cách
+    // game bù khung hình khi dữ liệu mạng đến không đều.
+    let backlog = "";
+    let onNetworkDone: (() => void) | null = null;
+    const revealTimer = setInterval(() => {
+      if (backlog) {
+        // Backlog càng dồn nhiều thì nhả càng nhanh để không bị tụt lại
+        // quá xa phía sau so với chữ thực đã sinh xong.
+        const step = Math.max(1, Math.round(backlog.length / 10));
+        accumulated += backlog.slice(0, step);
+        backlog = backlog.slice(step);
+        setPending((p) =>
+          p.map((m) => (m.id === modelMsgId ? { ...m, text: accumulated } : m)),
+        );
+      } else if (onNetworkDone) {
+        clearInterval(revealTimer);
+        const finalize = onNetworkDone;
+        onNetworkDone = null;
+        finalize();
+      }
+    }, 20);
+
+    const closeStream = streamAssistant(
       text,
       effectiveSessionId ?? undefined,
       {
         onDelta: (delta) => {
-          accumulated += delta;
-          setPending((p) =>
-            p.map((m) => (m.id === modelMsgId ? { ...m, text: accumulated } : m)),
-          );
+          backlog += delta;
         },
         onDone: (newSessionId, action) => {
-          if (action) setLastAction({ text: accumulated, action });
-          if (newSessionId && effectiveSessionId !== newSessionId) {
-            setSessionId(newSessionId);
-          } else {
-            void mutate();
+          onNetworkDone = () => {
+            if (action) setLastAction({ text: accumulated, action });
+            if (newSessionId && effectiveSessionId !== newSessionId) {
+              setSessionId(newSessionId);
+            } else {
+              void mutate();
+            }
+            void sessions.mutate();
+            setStreamingId(null);
+            setSending(false);
+          };
+          // Chữ đã nhả hết từ trước khi mạng báo xong (câu ngắn) -> hoàn
+          // tất luôn, không cần đợi tick kế tiếp.
+          if (!backlog) {
+            clearInterval(revealTimer);
+            onNetworkDone();
+            onNetworkDone = null;
           }
-          void sessions.mutate();
-          setStreamingId(null);
-          setSending(false);
         },
         onError: () => {
+          clearInterval(revealTimer);
           setPending((p) =>
             p.map((m) =>
-              m.id === modelMsgId && !accumulated
+              m.id === modelMsgId && !accumulated && !backlog
                 ? { ...m, text: "Có lỗi mạng, thử lại nhé." }
                 : m,
             ),
@@ -158,6 +191,10 @@ export function AssistantWidget() {
         },
       },
     );
+    closeStreamRef.current = () => {
+      clearInterval(revealTimer);
+      closeStream();
+    };
   }
 
   async function startNewChat() {
