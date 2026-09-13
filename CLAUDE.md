@@ -82,7 +82,10 @@ tự cập nhật), KHÔNG tự đoán lại logic show/hidden/snooze của popu
 gần như lúc nào cũng "có thể hiện" trên desktop khiến nút lơ lửng giữa màn hình hầu hết thời
 gian); trả lời **stream từng chữ qua SSE** (`lib/hooks.ts` hàm `streamAssistant()`,
 `EventSource` gọi `GET /assistant/ask/stream`) thay vì đợi cả câu xong, có chấm nhấp nháy lúc
-chưa có chữ nào; nhiều cuộc trò chuyện song song như ChatGPT/Claude — nút "+" tạo mới, icon
+chưa có chữ nào — delta từ Gemini dồn cục không đều (token sinh theo cụm) nên KHÔNG đẩy thẳng
+vào state mỗi lần nhận (chữ nhảy khựng), mà dồn vào buffer rồi nhả đều qua 1 timer 20ms trong
+`assistant-widget.tsx` (`send()`, tốc độ nhả tự tăng theo lượng buffer tồn để không tụt lại xa);
+nhiều cuộc trò chuyện song song như ChatGPT/Claude — nút "+" tạo mới, icon
 đồng hồ mở danh sách lịch sử tự đặt tên theo tin nhắn đầu; trả lời render qua
 `components/markdown-lite.tsx` (chỉ **in đậm**/`code`/gạch đầu dòng — đúng với những gì prompt
 hệ thống yêu cầu model dùng, xem `hanni-server/CLAUDE.md`); chỉ gọi API khi mở widget, không
@@ -112,6 +115,13 @@ UI nổi bật: `components/hero-banner.tsx` (dùng `StudyArtwork`), `learning-j
 "Xem tiếp: <tên video>" khi có video đang xem dở, `progressPct > 0 && !completed`),
 `hsk-coverflow.tsx` (băng chuyền 3D 7 cấp HSK, ở trang chủ `/`). Nền tô nhẹ theo token:
 class `.tint-primary/.tint-good/.tint-hero` trong globals.css (tự đổi sáng/tối).
+
+**Hướng dẫn từng bước lần đầu** (`components/feature-tour.tsx`): popup giới thiệu tác dụng các
+tính năng chính (icon + tiêu đề + mô tả, nút Tiếp theo/Bỏ qua + chấm tiến trình) — chỉ hiện 1
+LẦN mỗi `tourKey` (đánh dấu qua `localStorage`, cùng cách `install-prompt.tsx` nhớ đã tắt). Đang
+áp dụng ở dashboard (`tourKey="dashboard"`, 4 bước: streak, lộ trình cá nhân hoá, học qua video,
+trợ lý AI) — component viết chung, thêm cho trang khác chỉ cần khai mảng `TourStep[]` mới rồi
+render `<FeatureTour tourKey="..." steps={...} />`.
 
 **PWA** (`docs/pwa.md`): manifest + service worker (chỉ cache màn mất mạng), trang `/install`,
 thẻ cài trong `/settings`, popup mời cài nổi góc phải dưới (`components/pwa/`). Test: `npm run test:pwa`.
