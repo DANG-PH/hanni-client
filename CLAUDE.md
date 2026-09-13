@@ -65,7 +65,9 @@ mỗi dòng trong bảng đầy đủ, `components/follow-button.tsx`; podium to
 nguyên bố cục; thẻ "So với bạn bè" ở dashboard —
 `components/friends-leaderboard.tsx`, `useLeaderboard("streak", "friends")` — xếp hạng chuỗi
 ngày học chỉ trong nhóm chính mình + người đang theo dõi, cho lý do cụ thể để theo dõi ai đó
-thay vì theo dõi xong không thấy tác dụng gì), `/listening` +
+thay vì theo dõi xong không thấy tác dụng gì; tên/avatar ở bảng xếp hạng đầy đủ và thẻ này đều
+link sang trang hồ sơ công khai `/u/[id]` — avatar, ngày tham gia, streak, huy hiệu đã mở khoá,
+tab người theo dõi/đang theo dõi, nút Theo dõi), `/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
 DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước — đã học
 chưa/cấp tự đánh giá, mục tiêu, có định thi không — làm được TRƯỚC KHI có tài khoản, kiểu
@@ -98,8 +100,7 @@ gọi tool điều hướng (`navigate_to_page`/`open_video`) — khi có, event
 field `action: {type:'navigate', path, label}`, widget hiện nút "Mở: <tên>" ngay dưới tin nhắn
 model để người dùng TỰ bấm mở trang/video, trợ lý không tự chuyển trang thay và không được nói
 là đã mở giúp). Chưa làm
-(roadmap): minigame,
-trang hồ sơ công khai/danh sách người theo dõi (mới có nút theo dõi rời rạc ở bảng xếp hạng).
+(roadmap): minigame.
 
 **Quiz** (`components/quiz-runner.tsx`): mỗi câu có `mode: "reading" | "listening"` từ server.
 Câu nghe ẩn Hán tự/pinyin, tự phát `audioUrl` khi vào câu, chỉ hiện lại sau khi chọn đáp án.
