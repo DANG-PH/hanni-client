@@ -27,14 +27,18 @@ app/
 ├── progress            bucket đã thuộc / đang học / sắp quên theo cấp; có lịch hoạt động 30
 │                        ngày (`components/activity-calendar.tsx`, dùng GET /streak/history)
 ├── achievements         huy hiệu chưa mở khoá hiện thêm thanh tiến độ (progressCurrent/Target)
+├── (app)/u/[id]         hồ sơ công khai — streak, huy hiệu, follow, "Nhắn tin"
+├── (app)/messages       hộp thư nhắn tin 1-1 realtime (2 cột, mobile chỉ hiện 1 bên)
 ├── settings            mục tiêu ngày, thuật toán SRS, múi giờ
 └── nguon-du-lieu       trang ghi công nguồn dữ liệu (bắt buộc theo license)
 components/  ui.tsx · nav.tsx · flashcard.tsx · quiz-runner.tsx · comment-section.tsx
              · video-like-button.tsx · notification-bell.tsx · follow-button.tsx
+             · activity-calendar.tsx (lịch hoạt động 30 ngày)
              · assistant-widget.tsx (bong bóng chat nổi, mount trong app-shell.tsx)
              · markdown-lite.tsx (render **in đậm**/`code`/gạch đầu dòng cho trả lời AI)
 lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notifications.ts
-      (SWR + socket.io-client) · time.ts (timeAgo) · types.ts
+      (SWR + socket.io-client) · messages.ts (SWR + dùng CHUNG kết nối socket.io với
+      notifications.ts qua namespace /notifications — khác event name) · time.ts (timeAgo) · types.ts
 ```
 
 ## Convention
@@ -69,7 +73,9 @@ nguyên bố cục; thẻ "So với bạn bè" ở dashboard —
 ngày học chỉ trong nhóm chính mình + người đang theo dõi, cho lý do cụ thể để theo dõi ai đó
 thay vì theo dõi xong không thấy tác dụng gì; tên/avatar ở bảng xếp hạng đầy đủ và thẻ này đều
 link sang trang hồ sơ công khai `/u/[id]` — avatar, ngày tham gia, streak, huy hiệu đã mở khoá,
-tab người theo dõi/đang theo dõi, nút Theo dõi), `/listening` +
+tab người theo dõi/đang theo dõi, nút Theo dõi + nút "Nhắn tin" mở/tạo hội thoại rồi điều hướng
+sang `/messages`), `/messages` (hộp thư nhắn tin 1-1 realtime, sidebar có badge số chưa đọc),
+`/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
 DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước — đã học
 chưa/cấp tự đánh giá, mục tiêu, có định thi không — làm được TRƯỚC KHI có tài khoản, kiểu
