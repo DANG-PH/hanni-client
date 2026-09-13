@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./icon";
 import {
@@ -7,12 +8,28 @@ import {
   clearAssistantSession,
   useAssistantMessages,
 } from "@/lib/hooks";
+import { usePwaState } from "@/lib/pwa/store";
 import type { AssistantMessage } from "@/lib/types";
 
 export function AssistantWidget() {
   const [open, setOpen] = useState(false);
   const { data, mutate, isLoading } = useAssistantMessages(open);
   const [input, setInput] = useState("");
+  // Popup mời cài PWA cũng nổi ở đúng góc này (z-[60], xem install-prompt.tsx)
+  // — đẩy widget lên cao hơn hẳn khi popup đó CÓ THỂ đang hiện, để 2 khối nổi
+  // không đè lên nhau (chưa tính trạng thái đã tự tắt/snooze của popup kia,
+  // nên có thể đẩy lên hơi thừa vài lần — chấp nhận được, còn hơn bị che nút).
+  const pwa = usePwaState();
+  const pathname = usePathname();
+  const iosHint = pwa.ios && !pwa.installPrompt;
+  const genericHint =
+    !pwa.ios && !pwa.installPrompt && pwa.workerStatus === "ready";
+  const installPromptMightShow =
+    pwa.initialized &&
+    pwa.online &&
+    !pwa.standalone &&
+    pathname !== "/install" &&
+    (Boolean(pwa.installPrompt) || iosHint || genericHint);
   const [sending, setSending] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -76,7 +93,7 @@ export function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Đóng trợ lý Hanni" : "Mở trợ lý Hanni"}
         aria-expanded={open}
-        className="motion-button fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90"
+        className={`motion-button fixed right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90 ${installPromptMightShow ? "bottom-56" : "bottom-5"}`}
       >
         <Icon name={open ? "close" : "spark"} size={24} />
       </button>
@@ -85,7 +102,7 @@ export function AssistantWidget() {
         <div
           role="dialog"
           aria-label="Trợ lý Hanni"
-          className="fixed bottom-24 right-5 z-40 flex h-[min(32rem,70vh)] w-[min(23rem,90vw)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl"
+          className={`fixed right-5 z-40 flex h-[min(32rem,70vh)] w-[min(23rem,90vw)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl ${installPromptMightShow ? "bottom-72" : "bottom-24"}`}
         >
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
             <div className="flex items-center gap-2">
