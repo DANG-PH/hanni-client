@@ -28,6 +28,11 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
 
   const videos = (data ?? []).slice(0, limit);
   const canLoop = videos.length >= 4;
+  // Video đang xem dở gần đây nhất (server trả theo sortOrder/createdAt nên
+  // phần tử đầu tiên khớp điều kiện là hợp lý mà không cần API riêng).
+  const continuing = (data ?? []).find(
+    (v) => !v.completed && v.progressPct > 0,
+  );
   const list = canLoop ? [...videos, ...videos] : videos;
 
   useEffect(() => {
@@ -159,6 +164,26 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
           Tất cả video <Icon name="arrow" size={15} />
         </Link>
       </div>
+
+      {continuing && (
+        <Link
+          href={`/watch/${continuing.id}`}
+          className="mb-4 flex items-center gap-3 rounded-2xl border border-good/20 bg-good/8 px-4 py-3 text-sm transition-colors hover:bg-good/12"
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-good/15 text-good">
+            <Icon name="play" size={16} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate font-semibold">
+              Xem tiếp: {continuing.title}
+            </span>
+            <span className="text-xs text-muted">
+              Đã xem {continuing.progressPct}%
+            </span>
+          </span>
+          <Icon name="arrow" size={16} className="shrink-0 text-good" />
+        </Link>
+      )}
 
       <div
         ref={scrollerRef}

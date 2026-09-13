@@ -20,7 +20,8 @@ app/
 │                        (site) lẫn (app) vì cần khung tối giản dùng chung 2 trạng thái
 ├── auth/callback        nhận redirect sau Google OAuth
 ├── auth/verify-email
-├── dashboard            streak, mục tiêu ngày, tiến độ theo cấp
+├── dashboard            streak, mục tiêu ngày, tiến độ theo cấp — hero + thứ tự mảng luyện
+│                        tập đổi theo `OnboardingProfile.goal` (GOAL_PERSONA), xem "Trạng thái"
 ├── study               buổi ôn flashcard (SM-2) + quiz cuối buổi
 ├── vocabulary          duyệt/tìm từ theo cấp HSK
 ├── progress            bucket đã thuộc / đang học / sắp quên theo cấp
@@ -70,8 +71,10 @@ Duolingo "gradual engagement": trang chủ + nav nút chính giờ trỏ vào đ
 (`hanni:pending-onboarding`) rồi chuyển sang `/register`, đăng ký xong quay lại `/onboarding`
 tự nộp luôn — không bắt làm lại. Nút "Đã có tài khoản? Đăng nhập" cho ai lỡ bấm nhầm. Trả về
 cấp HSK đề xuất + đoạn giải thích lộ trình (có số liệu thật: số từ mới còn thiếu, ước tính số
-ngày); dashboard hiện thẻ "Lộ trình của bạn: HSK N" sau khi làm xong, hoặc banner nhắc làm nếu
-chưa), trợ lý AI
+ngày); dashboard hiện thẻ "Lộ trình của bạn: HSK N" sau khi làm xong (hoặc banner nhắc làm nếu
+chưa), VÀ đổi lời chào hero + thứ tự 4 mảng luyện tập (từ vựng/ngữ pháp/nghe/phát âm) theo đúng
+`goal` đã chọn — `GOAL_PERSONA` trong `dashboard/page.tsx`, có đếm ngược ngày tới hạn thi nếu
+mục tiêu là EXAM và có đặt `targetDate`), trợ lý AI
 Hanni (`components/assistant-widget.tsx` — logo Hanni làm avatar thay vì icon chung, bong bóng
 chat nổi góc dưới phải mọi trang trong app-shell khi đã đăng nhập, tự tránh đè popup mời cài PWA
 cùng góc; nhiều cuộc trò chuyện song song như ChatGPT/Claude — nút "+" tạo mới, icon đồng hồ mở
@@ -95,7 +98,8 @@ nguồn Make Me a Hanzi / hanzi-writer-data — Arphic Public License (xem `ARPH
 `README.txt` trong thư mục đó). `index.json` (level + pinyin từng chữ) sinh bằng `pinyin-pro`.
 
 UI nổi bật: `components/hero-banner.tsx` (dùng `StudyArtwork`), `learning-journey.tsx`
-(dải 6 chặng 拼声字词语听), `video-shelf.tsx` (kệ video tự trượt + kéo, ở dashboard),
+(dải 6 chặng 拼声字词语听), `video-shelf.tsx` (kệ video tự trượt + kéo, ở dashboard — có banner
+"Xem tiếp: <tên video>" khi có video đang xem dở, `progressPct > 0 && !completed`),
 `hsk-coverflow.tsx` (băng chuyền 3D 7 cấp HSK, ở trang chủ `/`). Nền tô nhẹ theo token:
 class `.tint-primary/.tint-good/.tint-hero` trong globals.css (tự đổi sáng/tối).
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { HeroBanner } from "@/components/hero-banner";
 import { Icon, type IconName } from "@/components/icon";
@@ -16,6 +17,47 @@ import {
 } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { useLearnPath, useOnboarding, useStreak, useStudyStats } from "@/lib/hooks";
+import type { OnboardingGoal } from "@/lib/types";
+
+/** Dựa theo mục tiêu đã khảo sát (`OnboardingProfile.goal`) để đổi lời chào +
+ * ưu tiên thứ tự các mảng luyện tập cho phù hợp từng đối tượng — không dựng
+ * dashboard riêng cho từng mục tiêu (quá nặng), chỉ retext + sắp lại thứ tự
+ * card sẵn có. */
+const GOAL_PERSONA: Record<
+  OnboardingGoal,
+  { subtitle: (name: string) => string; order: string[] }
+> = {
+  EXAM: {
+    subtitle: (name) =>
+      `Chào ${name}! Giữ nhịp ôn luyện đều đặn để tự tin bước vào kỳ thi HSK.`,
+    order: ["/vocabulary", "/grammar", "/listening", "/pronunciation"],
+  },
+  TRAVEL: {
+    subtitle: (name) =>
+      `Chào ${name}! Luyện nghe và phản xạ giao tiếp để tự tin hơn khi đi du lịch.`,
+    order: ["/listening", "/pronunciation", "/vocabulary", "/grammar"],
+  },
+  WORK: {
+    subtitle: (name) =>
+      `Chào ${name}! Mở rộng vốn từ và ngữ pháp để dùng tiếng Trung tự tin hơn trong công việc.`,
+    order: ["/vocabulary", "/listening", "/grammar", "/pronunciation"],
+  },
+  ACADEMIC: {
+    subtitle: (name) =>
+      `Chào ${name}! Nắm chắc ngữ pháp và luyện viết để chuẩn bị tốt cho hành trình du học.`,
+    order: ["/grammar", "/vocabulary", "/pronunciation", "/listening"],
+  },
+  INTEREST: {
+    subtitle: (name) =>
+      `Chào ${name}! Khám phá tiếng Trung mỗi ngày qua từ vựng, video và câu chuyện thú vị.`,
+    order: ["/vocabulary", "/listening", "/grammar", "/pronunciation"],
+  },
+  OTHER: {
+    subtitle: (name) =>
+      `Chào ${name}! Tiếp tục hành trình tiếng Trung của bạn, từ những từ vựng đầu tiên đến từng cột mốc HSK.`,
+    order: ["/vocabulary", "/grammar", "/listening", "/pronunciation"],
+  },
+};
 
 const PRACTICE_AREAS: {
   href: string;
@@ -70,6 +112,8 @@ export default function DashboardPage() {
   const stats = useStudyStats();
   const path = useLearnPath();
   const onboarding = useOnboarding();
+  // Lấy 1 lần lúc mount thay vì gọi Date.now() thẳng trong render (không thuần).
+  const [now] = useState(() => Date.now());
 
   if (loading || !user) return <Spinner />;
 
@@ -79,6 +123,28 @@ export default function DashboardPage() {
   const current = path.data?.lessons.find(
     (l) => l.id === path.data?.currentLessonId,
   );
+
+  const persona = onboarding.data
+    ? GOAL_PERSONA[onboarding.data.goal]
+    : null;
+  const examDaysLeft =
+    onboarding.data?.plansToTakeExam && onboarding.data.targetDate
+      ? Math.ceil(
+          (new Date(onboarding.data.targetDate).getTime() - now) /
+            86_400_000,
+        )
+      : null;
+  const heroSubtitle = persona
+    ? persona.subtitle(user.displayName) +
+      (examDaysLeft !== null && examDaysLeft > 0
+        ? ` Còn ${examDaysLeft} ngày tới hạn thi HSK ${onboarding.data!.targetLevel} bạn đặt mục tiêu.`
+        : "")
+    : `Chào ${user.displayName}! Tiếp tục hành trình tiếng Trung của bạn, từ những từ vựng đầu tiên đến từng cột mốc HSK.`;
+  const orderedPracticeAreas = persona
+    ? [...PRACTICE_AREAS].sort(
+        (a, b) => persona.order.indexOf(a.href) - persona.order.indexOf(b.href),
+      )
+    : PRACTICE_AREAS;
 
   return (
     <div className="page-wrap space-y-8">
@@ -99,7 +165,7 @@ export default function DashboardPage() {
       <HeroBanner
         title="Học mỗi ngày,"
         highlight="tiến bộ không ngừng!"
-        subtitle={`Chào ${user.displayName}! Tiếp tục hành trình tiếng Trung của bạn, từ những từ vựng đầu tiên đến từng cột mốc HSK.`}
+        subtitle={heroSubtitle}
         ctaLabel={
           current?.startedWords ? "Tiếp tục bài học" : "Bắt đầu học ngay"
         }
@@ -336,7 +402,7 @@ export default function DashboardPage() {
           </Link>
         </div>
         <div className="reveal-group grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {PRACTICE_AREAS.map((area) => (
+          {orderedPracticeAreas.map((area) => (
             <Link
               key={area.href}
               href={area.href}
