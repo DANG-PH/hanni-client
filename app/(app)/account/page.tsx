@@ -184,6 +184,11 @@ export default function AccountPage() {
                 label: "Bộ sưu tập huy hiệu",
               },
               { href: "/learn", icon: "route" as const, label: "Lộ trình HSK" },
+              {
+                href: `/u/${user.id}`,
+                icon: "user" as const,
+                label: "Hồ sơ công khai",
+              },
             ].map((item) => (
               <Link
                 key={item.href}
