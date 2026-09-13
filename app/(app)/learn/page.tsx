@@ -2,6 +2,7 @@
 
 import { Suspense, useState, type CSSProperties } from "react";
 import { useSearchParams } from "next/navigation";
+import { FeatureTour, type TourStep } from "@/components/feature-tour";
 import { Icon } from "@/components/icon";
 import { LearningJourney } from "@/components/learning-journey";
 import { LessonPath } from "@/components/lesson-path";
@@ -19,6 +20,27 @@ import {
 import { useRequireAuth } from "@/lib/auth";
 import { useLearnPath } from "@/lib/hooks";
 import styles from "./learn.module.css";
+
+const LEARN_TOUR_STEPS: TourStep[] = [
+  {
+    icon: "route",
+    title: "Chọn cấp độ HSK",
+    description:
+      "Chuyển giữa các cấp HSK để xem lộ trình bài học riêng của từng cấp — cấp đề xuất dựa trên khảo sát ban đầu của bạn đã được chọn sẵn.",
+  },
+  {
+    icon: "spark",
+    title: "Sáu chặng học tiếng Trung",
+    description:
+      "拼声字词语听 — Pinyin, thanh điệu, chữ Hán, từ vựng, ngữ pháp, rồi nghe & nói. Bấm vào từng chặng để xem tổng quan cách Hanni dẫn dắt bạn.",
+  },
+  {
+    icon: "cards",
+    title: "Bài học theo chủ đề",
+    description:
+      "Mỗi cấp chia thành nhiều bài theo chủ đề thực tế (chào hỏi, gia đình...). Hoàn thành bài này để mở bài tiếp theo, hoặc bấm \"Ôn tập hôm nay\" để ôn flashcard.",
+  },
+];
 
 function LearnContent({ initialLevel }: { initialLevel?: number }) {
   const { user, loading } = useRequireAuth();
@@ -50,6 +72,7 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
 
   return (
     <div className={`page-wrap ${styles.page}`}>
+      <FeatureTour tourKey="learn" steps={LEARN_TOUR_STEPS} />
       <PageHeading
         icon="route"
         eyebrow="LỘ TRÌNH HSK"

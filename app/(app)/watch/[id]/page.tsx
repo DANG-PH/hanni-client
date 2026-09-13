@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CommentSection } from "@/components/comment-section";
+import { FeatureTour, type TourStep } from "@/components/feature-tour";
 import { Icon } from "@/components/icon";
 import { MobileVideoTranscript } from "@/components/mobile-video-transcript";
 import { TranscriptLine } from "@/components/transcript-line";
@@ -47,6 +48,27 @@ function computeTimes(lines: VideoLine[]): number[] {
     return start;
   });
 }
+
+const WATCH_TOUR_STEPS: TourStep[] = [
+  {
+    icon: "play",
+    title: "Bản chép chạy đồng bộ",
+    description:
+      "Phụ đề chạy khớp theo video như máy nhắc chữ — bấm vào 1 dòng bất kỳ để video tự tua tới đúng câu đó.",
+  },
+  {
+    icon: "eye",
+    title: "Xem trên điện thoại",
+    description:
+      "Khi cuộn xuống đọc bản chép trên điện thoại, video sẽ dán lại ngay dưới thanh menu để bạn vừa nghe vừa đọc cùng lúc.",
+  },
+  {
+    icon: "message",
+    title: "Bình luận & thích video",
+    description:
+      "Thích video hoặc để lại bình luận, trả lời bình luận của người khác ngay bên dưới — có thông báo khi ai đó phản hồi bạn.",
+  },
+];
 
 export default function WatchDetailPage() {
   const { user, loading } = useRequireAuth();
@@ -216,6 +238,7 @@ export default function WatchDetailPage() {
 
   return (
     <div className="page-wrap max-w-none! space-y-3 max-lg:px-3 max-lg:py-3 lg:space-y-5">
+      <FeatureTour tourKey="watch-detail" steps={WATCH_TOUR_STEPS} />
       <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
         <Link href="/watch" className="inline-flex min-h-11 items-center gap-2 hover:text-primary lg:min-h-0">
           <Icon name="back" size={16} className="lg:hidden" />
