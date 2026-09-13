@@ -57,7 +57,8 @@ duyệt từ vựng (có ghi chú giải thích chuẩn HSK 3.0 9 cấp khác ch
 hiệu, cài đặt, học qua video (`/watch/[id]` dán video dưới topbar khi cuộn trên mobile để xem
 cùng bản chép, có bình luận 1 cấp trả lời + nút thích video), chuông thông báo realtime trong
 topbar (`components/notification-bell.tsx`, đẩy qua WebSocket khi có người trả lời bình luận/
-bình luận hoặc thích video mình thêm/theo dõi mình), ngữ pháp (HSK 1–3 + HSK 4–9 đều có giải thích thật, 195/349 mục HSK 4–9; phần
+bình luận hoặc thích video mình thêm/theo dõi mình/mở khoá huy hiệu mới — riêng loại huy hiệu
+hiện icon cúp thay vì avatar vì không có ai tác động, link sang `/achievements`), ngữ pháp (HSK 1–3 + HSK 4–9 đều có giải thích thật, 195/349 mục HSK 4–9; phần
 còn lại là danh sách từ vựng theo từ loại nên giữ dạng rút gọn), luyện viết Hán tự (`/writing`,
 xem/tô/kiểm tra nét bằng `hanzi-writer`, chuyển chữ trước/sau + hiện số nét), kiểm tra HSK
 (`/exams` — câu hỏi nghe + đọc, tính giờ từng câu, có lịch sử), bảng xếp hạng (có nút "Theo dõi"
