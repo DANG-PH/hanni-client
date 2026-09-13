@@ -28,6 +28,7 @@ export function LearningHeader({
   return (
     <PageHeading
       icon={icons[section]}
+      tone={section === "grammar" ? "lavender" : "primary"}
       eyebrow={eyebrow}
       title={title}
       description={description}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Icon } from "./icon";
+import { SectionHeading } from "@/components/ui";
 import { useVideos } from "@/lib/hooks";
 import type { VideoCard } from "@/lib/types";
 
@@ -139,31 +140,38 @@ export function VideoShelf({ limit = 8 }: { limit?: number }) {
 
   return (
     <section className="reveal overflow-hidden tint-good rounded-3xl border border-border p-5 sm:p-6">
-      <div className="mb-4 flex flex-wrap items-center gap-2.5">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-good/15 text-good">
-          <Icon name="play" size={20} />
-        </span>
-        <h2 className="text-lg font-bold">Học qua video</h2>
-        <span className="rounded-full bg-good/15 px-2 py-0.5 text-[11px] font-bold text-good">
-          MIỄN PHÍ
-        </span>
-        <span className="hidden gap-1.5 sm:flex">
-          {["Phụ đề đồng bộ", "Máy nhắc chữ", "Dịch tiếng Việt"].map((t) => (
-            <span
-              key={t}
-              className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted"
-            >
-              {t}
+      <SectionHeading
+        icon="play"
+        tone="good"
+        className="mb-4"
+        title={
+          <span className="flex flex-wrap items-center gap-2.5">
+            Học qua video
+            <span className="rounded-full bg-good/15 px-2 py-0.5 text-[11px] font-bold text-good">
+              MIỄN PHÍ
             </span>
-          ))}
-        </span>
+          </span>
+        }
+        description={
+          <span className="hidden flex-wrap gap-1.5 sm:flex">
+            {["Phụ đề đồng bộ", "Máy nhắc chữ", "Dịch tiếng Việt"].map((t) => (
+              <span
+                key={t}
+                className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted"
+              >
+                {t}
+              </span>
+            ))}
+          </span>
+        }
+      >
         <Link
           href="/watch"
-          className="ml-auto flex items-center gap-1 text-sm font-semibold text-primary"
+          className="flex items-center gap-1 text-sm font-semibold text-primary"
         >
           Tất cả video <Icon name="arrow" size={15} />
         </Link>
-      </div>
+      </SectionHeading>
 
       {continuing && (
         <Link

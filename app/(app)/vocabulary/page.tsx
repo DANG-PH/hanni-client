@@ -7,6 +7,7 @@ import {
   EmptyState,
   ErrorNote,
   LinkButton,
+  SectionHeading,
   Spinner,
 } from "@/components/ui";
 import {
@@ -121,15 +122,15 @@ function VocabularyContent() {
           </p>
         </details>
       </section>
-      <div className={styles.sectionHeading}>
-        <h2>
-          {level ? `Từ vựng HSK ${level}` : "Tất cả từ vựng"}
+      <SectionHeading
+        icon="book"
+        title={level ? `Từ vựng HSK ${level}` : "Tất cả từ vựng"}
+        description={!term ? "Một từ mới, một bước tiến." : undefined}
+      >
+        {words.data && (
           <span className={styles.count}>
-            {words.data ? `${words.data.total.toLocaleString("vi-VN")} từ` : ""}
+            {words.data.total.toLocaleString("vi-VN")} từ
           </span>
-        </h2>
-        {!term && (
-          <span className={styles.muted}>Một từ mới, một bước tiến.</span>
         )}
         {term && (
           <button
@@ -143,7 +144,7 @@ function VocabularyContent() {
             Xóa tìm kiếm “{term}”<Icon name="close" size={14} />
           </button>
         )}
-      </div>
+      </SectionHeading>
       {words.error ? (
         <ErrorNote>
           Chưa tải được từ vựng.{" "}

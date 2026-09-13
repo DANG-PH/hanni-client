@@ -121,22 +121,6 @@
   max-width: 850px;
   padding: 12px 0 0 24px;
 }
-.sectionHeading {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.sectionHeading h2 {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  font-size: 17px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-}
 .count {
   padding: 3px 9px;
   border: 1px solid var(--border);
@@ -145,10 +129,6 @@
   color: var(--muted);
   font-size: 11px;
   font-weight: 500;
-}
-.muted {
-  color: var(--muted);
-  font-size: 12px;
 }
 .wordGrid {
   display: grid;

@@ -85,28 +85,16 @@
     var(--surface);
   box-shadow: 0 4px 20px color-mix(in srgb, var(--foreground) 2%, transparent);
 }
-.toolbarTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+.libraryHeading {
   margin-bottom: 4px;
-}
-.toolbarTop h2 {
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: -0.025em;
-}
-.toolbarTop p {
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--muted);
 }
 .search {
   display: flex;
   align-items: center;
   gap: 10px;
   flex: 0 1 320px;
+  width: 320px;
+  max-width: 100%;
   border: 1px solid var(--border);
   border-radius: 10px;
   padding-inline: 14px;
@@ -503,11 +491,6 @@
   .toolbar {
     padding: 16px;
     border-radius: 16px;
-  }
-  .toolbarTop {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 16px;
   }
   .search {
     flex: auto;

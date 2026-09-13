@@ -142,23 +142,6 @@
   flex-direction: column;
   gap: 19px;
 }
-.courseHeading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-.courseHeading h2 {
-  font-size: 17px;
-  font-weight: 650;
-  letter-spacing: -0.025em;
-}
-.courseHeading p {
-  margin-top: 5px;
-  color: var(--muted);
-  font-size: 12px;
-}
 .levels {
   display: flex;
   flex-wrap: wrap;

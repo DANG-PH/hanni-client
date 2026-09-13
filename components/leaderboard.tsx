@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Avatar } from "@/components/avatar";
 import { FollowButton } from "@/components/follow-button";
 import { Icon, type IconName } from "@/components/icon";
-import { LinkButton } from "@/components/ui";
+import { LinkButton, SectionHeading } from "@/components/ui";
 import type {
   Leaderboard,
   LeaderboardMetric,
@@ -218,14 +218,17 @@ export function LeaderboardRankings({
 
   return (
     <section className="panel overflow-hidden" aria-labelledby="rankings-title">
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-4 sm:px-6">
-        <h2 id="rankings-title" className="text-base font-semibold">
-          {limited ? "Người học dẫn đầu" : "Cộng đồng cùng tiến bộ"}
-        </h2>
+      <SectionHeading
+        id="rankings-title"
+        icon="trophy"
+        tone="accent"
+        title={limited ? "Người học dẫn đầu" : "Cộng đồng cùng tiến bộ"}
+        className="px-4 py-4 sm:px-6"
+      >
         <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-medium text-muted">
           {number(board.me.totalRanked)} người học
         </span>
-      </div>
+      </SectionHeading>
       <table className={styles.table}>
         <caption className="sr-only">
           Bảng xếp hạng theo {board.label.toLocaleLowerCase("vi-VN")}

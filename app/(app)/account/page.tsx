@@ -11,6 +11,7 @@ import {
   ErrorNote,
   LinkButton,
   PageHeading,
+  SectionHeading,
   Spinner,
 } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
@@ -34,7 +35,9 @@ export default function AccountPage() {
   return (
     <div className="page-wrap space-y-7">
       <PageHeading
-        eyebrow="KHÔNG GIAN CỦA BẠN"
+        icon="user"
+        tone="lavender"
+        eyebrow="Không gian của bạn"
         title="Tài khoản của tôi"
         description="Thông tin cá nhân và những lựa chọn cho hành trình học tập."
       >
@@ -171,7 +174,12 @@ export default function AccountPage() {
             </Link>
           </Card>
           <Card>
-            <h2 className="mb-2 font-semibold">Hành trình của tôi</h2>
+            <SectionHeading
+              icon="route"
+              tone="lavender"
+              title="Hành trình của tôi"
+              className="mb-2"
+            />
             {[
               {
                 href: "/progress",

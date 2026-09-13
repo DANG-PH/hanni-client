@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { Card, Spinner } from "@/components/ui";
+import { Card, PageHeading, Spinner } from "@/components/ui";
 import { api } from "@/lib/api";
 
 function VerifyInner() {
@@ -44,7 +44,13 @@ function VerifyInner() {
 export default function VerifyEmailPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-16">
-      <h1 className="text-2xl font-bold">Xác minh email</h1>
+      <PageHeading
+        icon="check"
+        tone="good"
+        eyebrow="Tài khoản Hanni"
+        title="Xác minh email"
+        description="Xác nhận địa chỉ email để tiếp tục hành trình học của bạn."
+      />
       <Suspense fallback={<Spinner />}>
         <VerifyInner />
       </Suspense>

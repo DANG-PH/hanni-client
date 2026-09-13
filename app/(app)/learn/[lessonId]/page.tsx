@@ -59,7 +59,8 @@ export default function LessonDetailPage() {
         {lesson.hskLevel === 7 ? "7–9" : lesson.hskLevel}
       </LinkButton>
       <PageHeading
-        eyebrow={`BÀI ${String(lesson.orderIndex).padStart(2, "0")} · HSK ${lesson.hskLevel === 7 ? "7–9" : lesson.hskLevel}`}
+        icon="book"
+        eyebrow={`Bài ${String(lesson.orderIndex).padStart(2, "0")} · HSK ${lesson.hskLevel === 7 ? "7–9" : lesson.hskLevel}`}
         title={lesson.title}
         description="Làm quen với từ mới, lắng nghe cách đọc và khám phá cách dùng trong từng ví dụ."
       >

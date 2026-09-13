@@ -63,11 +63,13 @@ export default function LeaderboardPage() {
   return (
     <div className="page-wrap space-y-6">
       <PageHeading
-        eyebrow="CÙNG HỌC, CÙNG TIẾN BỘ"
+        icon="trophy"
+        tone="accent"
+        eyebrow="Cùng học, cùng tiến bộ"
         title="Bảng xếp hạng"
         description="Một chút nỗ lực mỗi ngày. Cùng nhau đi xa hơn trên hành trình học tiếng Trung."
       >
-        <span className="hidden items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-2 text-xs font-medium text-muted sm:inline-flex">
+        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-2 text-xs font-medium text-muted">
           <Icon name="spark" size={15} className="text-accent" />
           Mỗi ngày một bước tiến
         </span>

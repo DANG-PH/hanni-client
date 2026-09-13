@@ -120,7 +120,8 @@ export default function ExamsPage() {
     return (
       <div className="page-wrap max-w-3xl! space-y-6">
         <PageHeading
-          eyebrow={`KIỂM TRA TỪ VỰNG · HSK ${level === 7 ? "7–9" : level}`}
+          icon="target"
+          eyebrow={`Kiểm tra từ vựng · HSK ${level === 7 ? "7–9" : level}`}
           title="Bình tĩnh, bạn làm được mà"
           description="Phần nghe trước, phần đọc sau — giống thứ tự đề thi HSK thật. Mỗi câu có thời gian giới hạn, hết giờ sẽ tự chuyển sang câu tiếp theo."
         />
