@@ -122,9 +122,11 @@ class `.tint-primary/.tint-good/.tint-hero` trong globals.css (tự đổi sáng
 **Hướng dẫn từng bước lần đầu** (`components/feature-tour.tsx`): popup giới thiệu tác dụng các
 tính năng chính (icon + tiêu đề + mô tả, nút Tiếp theo/Bỏ qua + chấm tiến trình) — chỉ hiện 1
 LẦN mỗi `tourKey` (đánh dấu qua `localStorage`, cùng cách `install-prompt.tsx` nhớ đã tắt). Đang
-áp dụng ở dashboard (`tourKey="dashboard"`, 5 bước: streak, lộ trình cá nhân hoá, học qua video,
-so với bạn bè, trợ lý AI) — component viết chung, thêm cho trang khác chỉ cần khai mảng `TourStep[]` mới rồi
-render `<FeatureTour tourKey="..." steps={...} />`.
+áp dụng ở 3 trang: dashboard (`tourKey="dashboard"`, 5 bước: streak, lộ trình cá nhân hoá, học
+qua video, so với bạn bè, trợ lý AI), `/learn` (`tourKey="learn"`, chọn cấp/6 chặng/bài theo chủ
+đề) và `/watch/[id]` (`tourKey="watch-detail"`, bản chép chạy đồng bộ/dán video mobile/bình
+luận) — component viết chung, thêm trang khác chỉ cần khai mảng `TourStep[]` mới rồi render
+`<FeatureTour tourKey="..." steps={...} />`.
 
 **PWA** (`docs/pwa.md`): manifest + service worker (chỉ cache màn mất mạng), trang `/install`,
 thẻ cài trong `/settings`, popup mời cài nổi góc phải dưới (`components/pwa/`). Test: `npm run test:pwa`.
