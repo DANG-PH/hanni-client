@@ -182,9 +182,9 @@ export function recordPracticeAttempt(
     .catch(() => undefined);
 }
 
-/** null = chưa làm khảo sát bao giờ. */
-export function useOnboarding() {
-  return useSWR<OnboardingProfile | null>("/onboarding", fetcher);
+/** null = chưa làm khảo sát bao giờ. `enabled=false` khi chưa đăng nhập (tránh gọi API cần auth). */
+export function useOnboarding(enabled = true) {
+  return useSWR<OnboardingProfile | null>(enabled ? "/onboarding" : null, fetcher);
 }
 
 export function submitOnboarding(input: SubmitOnboardingInput) {

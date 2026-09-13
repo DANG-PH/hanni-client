@@ -105,7 +105,7 @@ export default function Home() {
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <LinkButton
-                href={user ? "/learn" : "/register"}
+                href={user ? "/learn" : "/onboarding"}
                 className="px-6!"
               >
                 {user ? "Tiếp tục hành trình" : "Bắt đầu học ngay"}
@@ -350,7 +350,7 @@ export default function Home() {
               nhất.
             </p>
             <LinkButton
-              href={user ? "/settings" : "/register"}
+              href={user ? "/settings" : "/onboarding"}
               className="mt-5"
             >
               {user ? "Đặt mục tiêu mỗi ngày" : "Tạo góc học của bạn"}

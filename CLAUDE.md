@@ -15,10 +15,12 @@ app/
 ├── layout.tsx           AuthProvider + Nav + footer
 ├── page.tsx             landing (redirect /dashboard nếu đã đăng nhập)
 ├── login, register, forgot-password, reset-password
+├── onboarding           khảo sát 3 bước → đề xuất cấp HSK + lộ trình — làm được TRƯỚC khi có
+│                        tài khoản (kiểu Duolingo, xem "Điểm quan trọng" dưới), nằm ngoài cả
+│                        (site) lẫn (app) vì cần khung tối giản dùng chung 2 trạng thái
 ├── auth/callback        nhận redirect sau Google OAuth
 ├── auth/verify-email
 ├── dashboard            streak, mục tiêu ngày, tiến độ theo cấp
-├── onboarding           khảo sát đầu vào 3 bước → đề xuất cấp HSK + lộ trình
 ├── study               buổi ôn flashcard (SM-2) + quiz cuối buổi
 ├── vocabulary          duyệt/tìm từ theo cấp HSK
 ├── progress            bucket đã thuộc / đang học / sắp quên theo cấp
@@ -61,9 +63,15 @@ xem/tô/kiểm tra nét bằng `hanzi-writer`, chuyển chữ trước/sau + hi�
 mỗi dòng trong bảng đầy đủ, `components/follow-button.tsx`; podium top-3 không có nút để giữ
 nguyên bố cục), `/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
-DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước sau khi đăng
-ký tài khoản mới — đã học chưa/cấp tự đánh giá, mục tiêu, có định thi không — trả về cấp HSK đề
-xuất + đoạn giải thích lộ trình; dashboard có banner nhắc làm khảo sát nếu chưa làm), trợ lý AI
+DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước — đã học
+chưa/cấp tự đánh giá, mục tiêu, có định thi không — làm được TRƯỚC KHI có tài khoản, kiểu
+Duolingo "gradual engagement": trang chủ + nav nút chính giờ trỏ vào đây thay vì thẳng
+`/register`; ẩn danh làm xong thì lưu tạm câu trả lời vào `sessionStorage`
+(`hanni:pending-onboarding`) rồi chuyển sang `/register`, đăng ký xong quay lại `/onboarding`
+tự nộp luôn — không bắt làm lại. Nút "Đã có tài khoản? Đăng nhập" cho ai lỡ bấm nhầm. Trả về
+cấp HSK đề xuất + đoạn giải thích lộ trình (có số liệu thật: số từ mới còn thiếu, ước tính số
+ngày); dashboard hiện thẻ "Lộ trình của bạn: HSK N" sau khi làm xong, hoặc banner nhắc làm nếu
+chưa), trợ lý AI
 Hanni (`components/assistant-widget.tsx` — logo Hanni làm avatar thay vì icon chung, bong bóng
 chat nổi góc dưới phải mọi trang trong app-shell khi đã đăng nhập, tự tránh đè popup mời cài PWA
 cùng góc; nhiều cuộc trò chuyện song song như ChatGPT/Claude — nút "+" tạo mới, icon đồng hồ mở

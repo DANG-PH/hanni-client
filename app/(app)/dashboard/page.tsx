@@ -106,7 +106,7 @@ export default function DashboardPage() {
         ctaHref={current ? `/study?lesson=${current.id}` : "/learn"}
       />
 
-      {onboarding.data === null && (
+      {onboarding.data === null ? (
         <Card className="flex flex-wrap items-center justify-between gap-4 border-primary/15 bg-primary/5!">
           <div className="flex items-center gap-3">
             <span className="icon-tile text-primary">
@@ -128,6 +128,30 @@ export default function DashboardPage() {
             Làm khảo sát <Icon name="arrow" size={16} />
           </Link>
         </Card>
+      ) : (
+        onboarding.data && (
+          <Card className="flex flex-wrap items-center justify-between gap-4 border-primary/15 bg-primary/5!">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="icon-tile text-primary">
+                <Icon name="route" size={18} />
+              </span>
+              <div className="min-w-0">
+                <h2 className="text-sm font-semibold">
+                  Lộ trình của bạn: HSK {onboarding.data.recommendedLevel}
+                </h2>
+                <p className="mt-0.5 truncate text-xs text-muted">
+                  {onboarding.data.recommendationVi}
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/onboarding"
+              className="inline-flex min-h-11 shrink-0 items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+            >
+              Xem lại <Icon name="arrow" size={16} />
+            </Link>
+          </Card>
+        )
       )}
 
       {(stats.error || streak.error || path.error) && (

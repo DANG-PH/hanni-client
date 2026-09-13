@@ -72,10 +72,10 @@ export function Nav() {
                 Đăng nhập
               </Link>
               <Link
-                href="/register"
+                href="/onboarding"
                 className="motion-button rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-primary-fg sm:px-4"
               >
-                Đăng ký
+                Bắt đầu ngay
               </Link>
             </>
           )}
