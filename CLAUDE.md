@@ -62,7 +62,10 @@ còn lại là danh sách từ vựng theo từ loại nên giữ dạng rút g�
 xem/tô/kiểm tra nét bằng `hanzi-writer`, chuyển chữ trước/sau + hiện số nét), kiểm tra HSK
 (`/exams` — câu hỏi nghe + đọc, tính giờ từng câu, có lịch sử), bảng xếp hạng (có nút "Theo dõi"
 mỗi dòng trong bảng đầy đủ, `components/follow-button.tsx`; podium top-3 không có nút để giữ
-nguyên bố cục), `/listening` +
+nguyên bố cục; thẻ "So với bạn bè" ở dashboard —
+`components/friends-leaderboard.tsx`, `useLeaderboard("streak", "friends")` — xếp hạng chuỗi
+ngày học chỉ trong nhóm chính mình + người đang theo dõi, cho lý do cụ thể để theo dõi ai đó
+thay vì theo dõi xong không thấy tác dụng gì), `/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
 DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước — đã học
 chưa/cấp tự đánh giá, mục tiêu, có định thi không — làm được TRƯỚC KHI có tài khoản, kiểu
@@ -119,8 +122,8 @@ class `.tint-primary/.tint-good/.tint-hero` trong globals.css (tự đổi sáng
 **Hướng dẫn từng bước lần đầu** (`components/feature-tour.tsx`): popup giới thiệu tác dụng các
 tính năng chính (icon + tiêu đề + mô tả, nút Tiếp theo/Bỏ qua + chấm tiến trình) — chỉ hiện 1
 LẦN mỗi `tourKey` (đánh dấu qua `localStorage`, cùng cách `install-prompt.tsx` nhớ đã tắt). Đang
-áp dụng ở dashboard (`tourKey="dashboard"`, 4 bước: streak, lộ trình cá nhân hoá, học qua video,
-trợ lý AI) — component viết chung, thêm cho trang khác chỉ cần khai mảng `TourStep[]` mới rồi
+áp dụng ở dashboard (`tourKey="dashboard"`, 5 bước: streak, lộ trình cá nhân hoá, học qua video,
+so với bạn bè, trợ lý AI) — component viết chung, thêm cho trang khác chỉ cần khai mảng `TourStep[]` mới rồi
 render `<FeatureTour tourKey="..." steps={...} />`.
 
 **PWA** (`docs/pwa.md`): manifest + service worker (chỉ cache màn mất mạng), trang `/install`,
