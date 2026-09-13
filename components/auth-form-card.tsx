@@ -61,7 +61,7 @@ export function AuthFormCard({
           next !== "/dashboard"
             ? next
             : isNewUser
-              ? "/settings?welcome=1"
+              ? "/onboarding"
               : "/dashboard",
         );
       } else {
@@ -108,7 +108,7 @@ export function AuthFormCard({
         timezone: tz,
       });
       await refresh();
-      router.replace(next);
+      router.replace(next !== "/dashboard" ? next : "/onboarding");
     } catch (err) {
       setError(
         err instanceof ApiError

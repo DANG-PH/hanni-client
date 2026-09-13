@@ -15,7 +15,7 @@ import {
   Stat,
 } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
-import { useLearnPath, useStreak, useStudyStats } from "@/lib/hooks";
+import { useLearnPath, useOnboarding, useStreak, useStudyStats } from "@/lib/hooks";
 
 const PRACTICE_AREAS: {
   href: string;
@@ -69,6 +69,7 @@ export default function DashboardPage() {
   const streak = useStreak();
   const stats = useStudyStats();
   const path = useLearnPath();
+  const onboarding = useOnboarding();
 
   if (loading || !user) return <Spinner />;
 
@@ -104,6 +105,30 @@ export default function DashboardPage() {
         }
         ctaHref={current ? `/study?lesson=${current.id}` : "/learn"}
       />
+
+      {onboarding.data === null && (
+        <Card className="flex flex-wrap items-center justify-between gap-4 border-primary/15 bg-primary/5!">
+          <div className="flex items-center gap-3">
+            <span className="icon-tile text-primary">
+              <Icon name="route" size={18} />
+            </span>
+            <div>
+              <h2 className="text-sm font-semibold">
+                Chưa có lộ trình cá nhân
+              </h2>
+              <p className="mt-0.5 text-xs text-muted">
+                Làm khảo sát 1 phút để Hanni gợi ý cấp HSK và nhịp học phù hợp mục tiêu của bạn.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/onboarding"
+            className="motion-button inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-fg hover:bg-primary/90"
+          >
+            Làm khảo sát <Icon name="arrow" size={16} />
+          </Link>
+        </Card>
+      )}
 
       {(stats.error || streak.error || path.error) && (
         <ErrorNote>

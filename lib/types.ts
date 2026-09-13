@@ -371,3 +371,33 @@ export interface Leaderboard {
   rows: LeaderboardRow[];
   me: { rank: number | null; value: number; totalRanked: number };
 }
+
+export type OnboardingGoal =
+  | "TRAVEL"
+  | "WORK"
+  | "EXAM"
+  | "ACADEMIC"
+  | "INTEREST"
+  | "OTHER";
+
+export interface OnboardingProfile {
+  userId: string;
+  hasStudiedBefore: boolean;
+  selfAssessedLevel: number | null;
+  goal: OnboardingGoal;
+  plansToTakeExam: boolean;
+  targetLevel: number | null;
+  targetDate: string | null;
+  recommendedLevel: number;
+  recommendationVi: string;
+  completedAt: string;
+}
+
+export interface SubmitOnboardingInput {
+  hasStudiedBefore: boolean;
+  selfAssessedLevel?: number;
+  goal: OnboardingGoal;
+  plansToTakeExam: boolean;
+  targetLevel?: number;
+  targetDate?: string;
+}

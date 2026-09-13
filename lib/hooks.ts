@@ -14,12 +14,14 @@ import type {
   HskLevel,
   LearnPath,
   LessonDetail,
+  OnboardingProfile,
   Paginated,
   PracticeSkill,
   PracticeStats,
   ProgressOverview,
   StreakInfo,
   StudyStats,
+  SubmitOnboardingInput,
   VideoCard,
   VideoComment,
   VideoDetail,
@@ -176,4 +178,13 @@ export function recordPracticeAttempt(
   return api
     .post("/practice/attempts", { wordId, skill, isCorrect })
     .catch(() => undefined);
+}
+
+/** null = chưa làm khảo sát bao giờ. */
+export function useOnboarding() {
+  return useSWR<OnboardingProfile | null>("/onboarding", fetcher);
+}
+
+export function submitOnboarding(input: SubmitOnboardingInput) {
+  return api.post<OnboardingProfile>("/onboarding", input);
 }

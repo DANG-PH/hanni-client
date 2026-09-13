@@ -18,6 +18,7 @@ app/
 ├── auth/callback        nhận redirect sau Google OAuth
 ├── auth/verify-email
 ├── dashboard            streak, mục tiêu ngày, tiến độ theo cấp
+├── onboarding           khảo sát đầu vào 3 bước → đề xuất cấp HSK + lộ trình
 ├── study               buổi ôn flashcard (SM-2) + quiz cuối buổi
 ├── vocabulary          duyệt/tìm từ theo cấp HSK
 ├── progress            bucket đã thuộc / đang học / sắp quên theo cấp
@@ -58,7 +59,10 @@ xem/tô/kiểm tra nét bằng `hanzi-writer`, chuyển chữ trước/sau + hi�
 mỗi dòng trong bảng đầy đủ, `components/follow-button.tsx`; podium top-3 không có nút để giữ
 nguyên bố cục), `/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
-DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu). Chưa làm (roadmap): RAG chatbot, minigame,
+DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước sau khi đăng
+ký tài khoản mới — đã học chưa/cấp tự đánh giá, mục tiêu, có định thi không — trả về cấp HSK đề
+xuất + đoạn giải thích lộ trình; dashboard có banner nhắc làm khảo sát nếu chưa làm). Chưa làm
+(roadmap): RAG chatbot, minigame,
 trang hồ sơ công khai/danh sách người theo dõi (mới có nút theo dõi rời rạc ở bảng xếp hạng).
 
 **Quiz** (`components/quiz-runner.tsx`): mỗi câu có `mode: "reading" | "listening"` từ server.
