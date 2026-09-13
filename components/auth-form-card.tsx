@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ErrorNote } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { GoogleButton } from "@/components/google-button";
@@ -40,8 +40,14 @@ export function AuthFormCard({
   const [busy, setBusy] = useState(false);
   const hasGoogle = Boolean(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
 
+  // Đăng nhập/đăng ký thành công tự điều hướng riêng (có thể khác `next`, vd
+  // user mới đăng ký đi qua /onboarding) — cờ này để hiệu ứng bên dưới (dành
+  // cho trường hợp đã đăng nhập sẵn rồi lỡ vào /login, /register) không ghi
+  // đè lại thành `next` ngay sau đó.
+  const manualRedirect = useRef(false);
+
   useEffect(() => {
-    if (!loading && user) router.replace(next);
+    if (!loading && user && !manualRedirect.current) router.replace(next);
   }, [loading, user, router, next]);
 
   const switchMode = (newMode: "login" | "register") => {
@@ -55,6 +61,7 @@ export function AuthFormCard({
 
   const onGoogleSuccess = useCallback(
     async (isNewUser: boolean) => {
+      manualRedirect.current = true;
       await refresh();
       if (mode === "register") {
         router.replace(
@@ -81,6 +88,7 @@ export function AuthFormCard({
         email: loginEmail,
         password: loginPassword,
       });
+      manualRedirect.current = true;
       await refresh();
       router.replace(next);
     } catch (err) {
@@ -107,6 +115,7 @@ export function AuthFormCard({
         password: regPassword,
         timezone: tz,
       });
+      manualRedirect.current = true;
       await refresh();
       router.replace(next !== "/dashboard" ? next : "/onboarding");
     } catch (err) {
