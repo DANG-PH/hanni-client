@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { FeatureTour, type TourStep } from "@/components/feature-tour";
+import { FriendsLeaderboard } from "@/components/friends-leaderboard";
 import { HeroBanner } from "@/components/hero-banner";
 import { Icon, type IconName } from "@/components/icon";
 import { LessonPath } from "@/components/lesson-path";
@@ -107,7 +108,7 @@ const PRACTICE_AREAS: {
   },
 ];
 
-/** Giới thiệu nhanh 4 tính năng chính khi vào dashboard lần đầu — chỉ hiện
+/** Giới thiệu nhanh 5 tính năng chính khi vào dashboard lần đầu — chỉ hiện
  * 1 lần (xem feature-tour.tsx), giúp người dùng mới hiểu tác dụng của từng
  * khu vực thay vì phải tự mò. */
 const DASHBOARD_TOUR_STEPS: TourStep[] = [
@@ -128,6 +129,12 @@ const DASHBOARD_TOUR_STEPS: TourStep[] = [
     title: "Học qua video",
     description:
       "Xem video tiếng Trung có bản chép song ngữ chạy đồng bộ, vừa nghe vừa đọc để phản xạ nhanh hơn.",
+  },
+  {
+    icon: "flame",
+    title: "So với bạn bè",
+    description:
+      "Theo dõi người khác ở bảng xếp hạng để so chuỗi ngày học ngay tại đây, cùng nhắc nhau giữ nhịp mỗi ngày.",
   },
   {
     icon: "message",
@@ -419,6 +426,8 @@ export default function DashboardPage() {
           tone="text-good bg-good/10"
         />
       </div>
+
+      <FriendsLeaderboard />
 
       <section>
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">

@@ -164,8 +164,14 @@ export function useLeaderboardMetrics() {
   return useSWR<LeaderboardMetric[]>("/leaderboard/metrics", fetcher);
 }
 
-export function useLeaderboard(metric: LeaderboardMetricKey) {
-  return useSWR<Leaderboard>(`/leaderboard?metric=${metric}`, fetcher);
+export function useLeaderboard(
+  metric: LeaderboardMetricKey,
+  scope: "global" | "friends" = "global",
+) {
+  return useSWR<Leaderboard>(
+    `/leaderboard?metric=${metric}&scope=${scope}`,
+    fetcher,
+  );
 }
 
 export function usePracticeStats(skill: PracticeSkill) {
