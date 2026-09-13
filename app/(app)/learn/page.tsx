@@ -15,6 +15,7 @@ import {
   LinkButton,
   PageHeading,
   ProgressBar,
+  SectionHeading,
   Spinner,
 } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
@@ -75,7 +76,7 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
       <FeatureTour tourKey="learn" steps={LEARN_TOUR_STEPS} />
       <PageHeading
         icon="route"
-        eyebrow="LỘ TRÌNH HSK"
+        eyebrow="Lộ trình HSK"
         title="Từng bước nhỏ, tiến bộ mỗi ngày"
         description="Chọn cấp độ của bạn. Học một bài mới, ôn một chút và tiến thêm một bước."
       >
@@ -152,11 +153,12 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
       <LearningJourney />
 
       <section aria-labelledby="hsk-lessons-heading" className={styles.course}>
-        <div className={styles.courseHeading}>
-          <div>
-            <h2 id="hsk-lessons-heading">Lộ trình theo cấp độ</h2>
-            <p>Hoàn thành từng bài để mở bước tiếp theo.</p>
-          </div>
+        <SectionHeading
+          id="hsk-lessons-heading"
+          icon="route"
+          title="Lộ trình theo cấp độ"
+          description="Hoàn thành từng bài để mở bước tiếp theo."
+        >
           {!!data?.levels.length && (
             <SelectionGroup
               label="Chọn cấp độ HSK"
@@ -176,7 +178,7 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
               ))}
             </SelectionGroup>
           )}
-        </div>
+        </SectionHeading>
 
         {error ? (
           <Card className="space-y-4">

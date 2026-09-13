@@ -14,6 +14,7 @@ import {
   EmptyState,
   ErrorNote,
   ProgressBar,
+  SectionHeading,
   Spinner,
   Stat,
 } from "@/components/ui";
@@ -430,18 +431,19 @@ export default function DashboardPage() {
       <FriendsLeaderboard />
 
       <section>
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="eyebrow mb-2">HỌC THEO CÁCH CỦA BẠN</p>
-            <h2 className="text-lg font-semibold">Rèn từng kỹ năng</h2>
-          </div>
+        <SectionHeading
+          icon="spark"
+          eyebrow="Học theo cách của bạn"
+          title="Rèn từng kỹ năng"
+          className="mb-4"
+        >
           <Link
             href="/exams"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-primary"
           >
             Kiểm tra kiến thức <Icon name="arrow" size={16} />
           </Link>
-        </div>
+        </SectionHeading>
         <div className="reveal-group grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {orderedPracticeAreas.map((area) => (
             <Link
@@ -475,17 +477,19 @@ export default function DashboardPage() {
       </section>
 
       <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">
-            Lộ trình {path.data?.levelName ?? ""}
-          </h2>
+        <SectionHeading
+          icon="route"
+          title={`Lộ trình ${path.data?.levelName ?? ""}`}
+          tone="lavender"
+          className="mb-4"
+        >
           <Link
             href="/learn"
             className="flex items-center gap-1.5 text-sm font-medium text-primary"
           >
             Xem đầy đủ <Icon name="arrow" size={16} />
           </Link>
-        </div>
+        </SectionHeading>
         {path.isLoading ? (
           <Spinner />
         ) : path.data?.lessons.length ? (

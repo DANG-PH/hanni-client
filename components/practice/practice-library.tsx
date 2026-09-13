@@ -17,8 +17,8 @@ import { LevelFilter } from "@/components/learning-library";
 import styles from "./practice-library.module.css";
 
 const skillIcons = {
-  listening: "sound",
-  pronunciation: "spark",
+  listening: "headphones",
+  pronunciation: "mic",
   grammar: "book",
 } satisfies Record<string, IconName>;
 
@@ -79,6 +79,7 @@ function LibraryContent({
     <div className="page-wrap learning-workspace">
       <PageHeading
         icon={skillIcons[skill]}
+        tone={skill === "listening" ? "accent" : "primary"}
         eyebrow="Luyện tập mỗi ngày"
         title={title}
         description={description}

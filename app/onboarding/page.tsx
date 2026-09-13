@@ -219,7 +219,7 @@ function OnboardingWizard({
     <div className="page-wrap max-w-2xl space-y-6">
       <PageHeading
         icon="route"
-        eyebrow="1 PHÚT ĐỂ HANNI HIỂU BẠN HƠN"
+        eyebrow="1 phút để Hanni hiểu bạn hơn"
         title="Cùng lên lộ trình học phù hợp"
         description="Vài câu hỏi ngắn để gợi ý cấp HSK nên bắt đầu và nhịp học phù hợp mục tiêu của bạn."
       />
@@ -436,7 +436,7 @@ function ResultScreen({
     <div className="page-wrap max-w-2xl space-y-6">
       <PageHeading
         icon="route"
-        eyebrow="LỘ TRÌNH ĐỀ XUẤT CHO BẠN"
+        eyebrow="Lộ trình đề xuất cho bạn"
         title={`Bắt đầu từ HSK ${profile.recommendedLevel}`}
         description="Dựa trên câu trả lời của bạn — có thể làm lại khảo sát bất cứ lúc nào."
       />

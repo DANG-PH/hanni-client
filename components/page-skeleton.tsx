@@ -6,10 +6,16 @@ export function PageSkeleton() {
       aria-label="Đang tải trang"
     >
       <span className="sr-only">Đang mở góc học tập…</span>
-      <div className="space-y-3" aria-hidden="true">
-        <div className="skeleton h-3 w-24" />
-        <div className="skeleton h-8 w-2/3 max-w-sm" />
-        <div className="skeleton h-4 w-4/5 max-w-lg" />
+      <div
+        className="flex flex-wrap items-start gap-5 rounded-3xl border border-border bg-surface p-5 sm:p-8"
+        aria-hidden="true"
+      >
+        <div className="skeleton h-11 w-11 shrink-0 rounded-2xl sm:h-15 sm:w-15" />
+        <div className="min-w-0 flex-1 space-y-3 py-1">
+          <div className="skeleton h-3 w-24" />
+          <div className="skeleton h-8 w-4/5 max-w-sm" />
+          <div className="skeleton h-4 w-full max-w-lg" />
+        </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-3" aria-hidden="true">
         {[0, 1, 2].map((item) => (

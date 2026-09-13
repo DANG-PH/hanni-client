@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/icon";
-import { Button, Card, ErrorNote } from "@/components/ui";
+import { Button, Card, ErrorNote, SectionHeading } from "@/components/ui";
 import {
   PracticeLibrary,
   PracticeTips,
@@ -37,15 +37,16 @@ function PronunciationSession({ words }: { words: Word[] }) {
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="space-y-5">
         <Card>
-          <div className="mb-6 flex items-center justify-between gap-3">
-            <div>
-              <p className="eyebrow">NGHE · ĐỌC · SO SÁNH</p>
-              <h2 className="mt-1 font-semibold">Phòng luyện phát âm</h2>
-            </div>
+          <SectionHeading
+            icon="mic"
+            eyebrow="Nghe · Đọc · So sánh"
+            title="Phòng luyện phát âm"
+            className="mb-5"
+          >
             <span className="rounded-lg bg-primary/8 px-3 py-1.5 text-xs font-semibold text-primary">
               {index + 1} / {words.length}
             </span>
-          </div>
+          </SectionHeading>
           <PronunciationWord
             key={word.id}
             word={word}
@@ -84,10 +85,11 @@ function PronunciationSession({ words }: { words: Word[] }) {
         ]}
       >
         <Card>
-          <span className="icon-tile mb-4">
-            <Icon name="sound" size={22} />
-          </span>
-          <h2 className="font-semibold">Lắng nghe chính mình</h2>
+          <SectionHeading
+            icon="sound"
+            title="Lắng nghe chính mình"
+            tone="good"
+          />
           <p className="mt-3 text-sm leading-6 text-muted">
             So sánh bản thu với âm mẫu để tự điều chỉnh. Bài luyện này chưa có
             chức năng chấm điểm phát âm tự động.
@@ -98,9 +100,12 @@ function PronunciationSession({ words }: { words: Word[] }) {
         </Card>
         {stats.data && stats.data.totalAttempts > 0 && (
           <Card>
-            <h2 className="text-sm font-semibold">
-              Luyện phát âm từ trước đến nay
-            </h2>
+            <SectionHeading
+              icon="chart"
+              eyebrow="Từ trước đến nay"
+              title="Luyện phát âm"
+              tone="lavender"
+            />
             <div className="mt-4 grid grid-cols-2 gap-3 text-center">
               <div>
                 <p className="text-2xl font-semibold">

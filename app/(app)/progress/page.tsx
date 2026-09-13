@@ -8,6 +8,7 @@ import {
   LinkButton,
   PageHeading,
   ProgressBar,
+  SectionHeading,
   Spinner,
   Stat,
 } from "@/components/ui";
@@ -31,7 +32,9 @@ export default function ProgressPage() {
   return (
     <div className="page-wrap space-y-8">
       <PageHeading
-        eyebrow="HÀNH TRÌNH CỦA BẠN"
+        icon="chart"
+        tone="good"
+        eyebrow="Hành trình của bạn"
         title="Tiến độ học tập"
         description="Nhìn lại những gì đã học và biết mình cần tập trung vào đâu."
       >
@@ -150,12 +153,13 @@ export default function ProgressPage() {
               />
             </div>
             <section>
-              <div className="mb-5">
-                <h2 className="text-lg font-semibold">Tiến độ theo cấp HSK</h2>
-                <p className="mt-1 text-sm text-muted">
-                  Mỗi từ bạn nhớ đều góp vào hành trình này.
-                </p>
-              </div>
+              <SectionHeading
+                icon="chart"
+                tone="good"
+                title="Tiến độ theo cấp HSK"
+                description="Mỗi từ bạn nhớ đều góp vào hành trình này."
+                className="mb-5"
+              />
               {data.levels.length ? (
                 <div className="space-y-4">
                   {data.levels.map((l) => (

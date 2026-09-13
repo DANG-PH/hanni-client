@@ -6,7 +6,13 @@ import { VideoCard } from "@/components/video-card";
 import { Icon } from "@/components/icon";
 import { LevelFilter } from "@/components/learning-library";
 import { SelectionGroup } from "@/components/selection-group";
-import { Button, EmptyState, ErrorNote, PageHeading } from "@/components/ui";
+import {
+  Button,
+  EmptyState,
+  ErrorNote,
+  PageHeading,
+  SectionHeading,
+} from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { useVideos } from "@/lib/hooks";
 import styles from "@/components/video-library.module.css";
@@ -51,6 +57,7 @@ export default function WatchPage() {
     <div className="page-wrap learning-workspace">
       <PageHeading
         icon="play"
+        tone="good"
         eyebrow="Tiếng Trung trong cuộc sống"
         title="Học qua video"
         description="Chọn một câu chuyện bạn thích. Nghe, đọc phụ đề và làm quen với tiếng Trung tự nhiên."
@@ -79,9 +86,12 @@ export default function WatchPage() {
 
       <section className={styles.library} aria-label="Thư viện video">
         <div className={styles.toolbar}>
-          <div className={styles.toolbarTop}>
-            <div>
-              <h2>Khám phá video</h2>
+          <SectionHeading
+            className={styles.libraryHeading}
+            icon="play"
+            title="Khám phá video"
+            tone="good"
+            description={
               <p aria-live="polite">
                 {dangCapNhat
                   ? "Đang cập nhật danh sách…"
@@ -93,7 +103,8 @@ export default function WatchPage() {
                         : "Thư viện tạm thời chưa tải được"
                       : `${danhSach.length} video${level ? ` · HSK ${level}` : " cho mọi cấp độ"}`}
               </p>
-            </div>
+            }
+          >
             <label className={styles.search}>
               <Icon name="search" size={17} />
               <input
@@ -104,7 +115,7 @@ export default function WatchPage() {
                 aria-label="Tìm video theo tên"
               />
             </label>
-          </div>
+          </SectionHeading>
           <div className={styles.filterRow}>
             <span className={styles.filterLabel}>Cấp độ</span>
             <LevelFilter

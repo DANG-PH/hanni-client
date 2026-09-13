@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
-import { Button, Card, ErrorNote, Spinner } from "@/components/ui";
+import { Button, Card, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
 
 function ResetInner() {
@@ -70,7 +70,13 @@ function ResetInner() {
 export default function ResetPasswordPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-16">
-      <h1 className="text-2xl font-bold">Đặt lại mật khẩu</h1>
+      <PageHeading
+        icon="lock"
+        tone="lavender"
+        eyebrow="Bảo mật tài khoản"
+        title="Đặt lại mật khẩu"
+        description="Tạo mật khẩu mới để trở lại góc học tập của bạn."
+      />
       <Suspense fallback={<Spinner />}>
         <ResetInner />
       </Suspense>

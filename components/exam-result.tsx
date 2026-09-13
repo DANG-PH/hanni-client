@@ -1,7 +1,13 @@
 "use client";
 
 import { Icon } from "@/components/icon";
-import { Button, Card, LinkButton, ProgressBar } from "@/components/ui";
+import {
+  Button,
+  Card,
+  LinkButton,
+  ProgressBar,
+  SectionHeading,
+} from "@/components/ui";
 import type { QuizSubmission } from "@/components/quiz-runner";
 
 export interface ExamResult extends QuizSubmission {
@@ -138,12 +144,11 @@ export function ExamResultView({
         </p>
       </Card>
       <section className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">Xem lại bài làm</h2>
-          <span className="text-xs text-muted">
+        <SectionHeading icon="book" title="Xem lại bài làm" tone="lavender">
+          <span className="rounded-full bg-surface-2 px-3 py-1 text-xs font-medium text-muted">
             {result.answers.length} câu đã trả lời
           </span>
-        </div>
+        </SectionHeading>
         {result.answers.map((answer, index) => {
           const word = result.words.find((item) => item.id === answer.wordId);
           return (

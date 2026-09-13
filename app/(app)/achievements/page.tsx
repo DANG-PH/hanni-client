@@ -36,7 +36,9 @@ export default function AchievementsPage() {
   return (
     <div className="page-wrap space-y-7">
       <PageHeading
-        eyebrow="NHỮNG CỘT MỐC CỦA BẠN"
+        icon="trophy"
+        tone="accent"
+        eyebrow="Những cột mốc của bạn"
         title="Bộ sưu tập huy hiệu"
         description="Ghi dấu sự kiên trì và những tiến bộ trên hành trình học tiếng Trung."
       >

@@ -24,7 +24,9 @@ export default function SettingsPage() {
   return (
     <div className="page-wrap space-y-7">
       <PageHeading
-        eyebrow="NHỊP HỌC CỦA BẠN"
+        icon="settings"
+        tone="lavender"
+        eyebrow="Nhịp học của bạn"
         title="Cài đặt học tập"
         description="Một mục tiêu vừa sức, một thói quen bền lâu."
       >

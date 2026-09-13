@@ -15,6 +15,7 @@ import {
   EmptyState,
   ErrorNote,
   LinkButton,
+  SectionHeading,
   Spinner,
 } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
@@ -116,17 +117,16 @@ export default function GrammarPage() {
               className={styles.contentMain}
               aria-label="Danh sách ngữ pháp"
             >
-              <div className={styles.sectionHeading}>
-                <h2>
-                  Ngữ pháp HSK {active === 7 ? "7–9" : active}
-                  <span className={styles.count} aria-live="polite">
-                    {grouped.length} cấu trúc
-                  </span>
-                </h2>
-                <span className={styles.muted}>
-                  Chọn một cấu trúc để khám phá
+              <SectionHeading
+                icon="cards"
+                title={`Ngữ pháp HSK ${active === 7 ? "7–9" : active}`}
+                description="Chọn một cấu trúc để khám phá"
+                tone="lavender"
+              >
+                <span className={styles.count} aria-live="polite">
+                  {grouped.length} cấu trúc
                 </span>
-              </div>
+              </SectionHeading>
               {list.isLoading ? (
                 <Spinner />
               ) : list.error ? (

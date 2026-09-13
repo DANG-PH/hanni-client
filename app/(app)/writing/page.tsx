@@ -91,7 +91,8 @@ export default function WritingPage() {
   return (
     <div className="page-wrap space-y-7">
       <PageHeading
-        eyebrow="LUYỆN TAY"
+        icon="pencil"
+        eyebrow="Luyện tay"
         title="Luyện viết Hán tự"
         description="Xem thứ tự nét, tô theo nét mờ, rồi tự viết lại để kiểm tra trí nhớ."
       />

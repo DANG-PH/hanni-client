@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { Icon } from "@/components/icon";
-import { Button, Card, ErrorNote, ProgressBar } from "@/components/ui";
+import {
+  Button,
+  Card,
+  ErrorNote,
+  ProgressBar,
+  SectionHeading,
+} from "@/components/ui";
 import {
   PracticeLibrary,
   PracticeTips,
@@ -44,15 +50,17 @@ function ListeningSession({ words }: { words: Word[] }) {
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="space-y-5">
         <Card>
-          <div className="mb-6 flex items-center justify-between gap-3">
-            <div>
-              <p className="eyebrow">NGHE & VIẾT</p>
-              <h2 className="mt-1 font-semibold">Bạn vừa nghe từ gì?</h2>
-            </div>
+          <SectionHeading
+            icon="headphones"
+            eyebrow="Nghe & viết"
+            title="Bạn vừa nghe từ gì?"
+            tone="accent"
+            className="mb-5"
+          >
             <span className="rounded-lg bg-primary/8 px-3 py-1.5 text-xs font-semibold text-primary">
               {index + 1} / {words.length}
             </span>
-          </div>
+          </SectionHeading>
           <ListeningWord
             key={word.id}
             word={word}
@@ -96,7 +104,11 @@ function ListeningSession({ words }: { words: Word[] }) {
         ]}
       >
         <Card>
-          <h2 className="text-sm font-semibold">Tiến độ nhóm từ này</h2>
+          <SectionHeading
+            icon="target"
+            title="Tiến độ nhóm từ này"
+            tone="good"
+          />
           <p className="mb-3 mt-5 text-3xl font-semibold">
             {completed}
             <span className="ml-1 text-sm font-normal text-muted">
@@ -114,7 +126,12 @@ function ListeningSession({ words }: { words: Word[] }) {
         </Card>
         {stats.data && stats.data.totalAttempts > 0 && (
           <Card>
-            <h2 className="text-sm font-semibold">Luyện nghe từ trước đến nay</h2>
+            <SectionHeading
+              icon="chart"
+              eyebrow="Từ trước đến nay"
+              title="Luyện nghe"
+              tone="lavender"
+            />
             <div className="mt-4 grid grid-cols-2 gap-3 text-center">
               <div>
                 <p className="text-2xl font-semibold">

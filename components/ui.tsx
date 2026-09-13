@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { Icon, type IconName } from "./icon";
+import headingStyles from "./headings.module.css";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 const VARIANTS: Record<Variant, string> = {
@@ -139,32 +140,77 @@ export function ErrorNote({ children }: { children: ReactNode }) {
   );
 }
 export function PageHeading({
-  icon,
+  icon = "spark",
   eyebrow,
   title,
   description,
   children,
+  tone = "primary",
 }: {
   icon?: IconName;
   eyebrow?: string;
   title: string;
   description: string;
   children?: ReactNode;
+  tone?: "primary" | "good" | "accent" | "lavender";
 }) {
   return (
-    <header className="page-heading">
-      <div className="page-heading-copy">
+    <header className={headingStyles.page} data-tone={tone}>
+      <div className={headingStyles.identity}>
+        <span className={headingStyles.pageIcon}>
+          <Icon name={icon} size={28} />
+        </span>
         {eyebrow && (
-          <p className="page-heading-label">
-            {icon && <Icon name={icon} size={15} />}
-            {eyebrow}
-          </p>
+          <p className={headingStyles.eyebrow}>{eyebrow}</p>
         )}
-        <h1>{title}</h1>
-        <p className="page-heading-description">{description}</p>
+        <h1 className={headingStyles.pageTitle}>{title}</h1>
+        <p className={headingStyles.pageDescription}>{description}</p>
       </div>
-      {children && <div className="page-heading-actions">{children}</div>}
+      {children && <div className={headingStyles.pageActions}>{children}</div>}
     </header>
+  );
+}
+
+/** Đầu mục gọn bên trong trang, dùng h2 để giữ đúng cấp nội dung. */
+export function SectionHeading({
+  icon,
+  eyebrow,
+  title,
+  description,
+  children,
+  className = "",
+  id,
+  tone = "primary",
+}: {
+  icon?: IconName;
+  eyebrow?: string;
+  title: ReactNode;
+  description?: ReactNode;
+  children?: ReactNode;
+  className?: string;
+  id?: string;
+  tone?: "primary" | "good" | "accent" | "lavender";
+}) {
+  return (
+    <div className={`${headingStyles.section} ${className}`} data-tone={tone}>
+      <div className={headingStyles.sectionIdentity}>
+        {icon && (
+          <span className={headingStyles.sectionIcon}>
+            <Icon name={icon} size={19} />
+          </span>
+        )}
+        <div className={headingStyles.sectionCopy}>
+          {eyebrow && <p className={headingStyles.sectionEyebrow}>{eyebrow}</p>}
+          <h2 id={id} className={headingStyles.sectionTitle}>
+            {title}
+          </h2>
+          {description && (
+            <div className={headingStyles.sectionDescription}>{description}</div>
+          )}
+        </div>
+      </div>
+      {children && <div className={headingStyles.sectionActions}>{children}</div>}
+    </div>
   );
 }
 export function EmptyState({
