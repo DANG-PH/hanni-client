@@ -410,3 +410,10 @@ export interface AssistantMessage {
   text: string;
   createdAt: string;
 }
+
+export interface AssistantSession {
+  id: string;
+  title: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

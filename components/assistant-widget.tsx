@@ -1,19 +1,45 @@
 "use client";
 
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./icon";
+import { MarkdownLite } from "./markdown-lite";
 import {
   askAssistant,
-  clearAssistantSession,
+  createAssistantSession,
+  deleteAssistantSession,
   useAssistantMessages,
+  useAssistantSessions,
 } from "@/lib/hooks";
 import { usePwaState } from "@/lib/pwa/store";
+import { timeAgo } from "@/lib/time";
 import type { AssistantMessage } from "@/lib/types";
+
+function HanniLogo({ size }: { size: number }) {
+  return (
+    <Image
+      src="/brand/hanni.png"
+      alt=""
+      width={size}
+      height={size}
+      className="shrink-0 rounded-full object-cover"
+      style={{ width: size, height: size }}
+      sizes={`${size}px`}
+    />
+  );
+}
 
 export function AssistantWidget() {
   const [open, setOpen] = useState(false);
-  const { data, mutate, isLoading } = useAssistantMessages(open);
+  const [view, setView] = useState<"chat" | "history">("chat");
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const sessions = useAssistantSessions(open);
+  // Chưa chọn phiên nào -> tự tiếp tục cuộc trò chuyện gần nhất (nếu có),
+  // giống ChatGPT/Claude khi mở lại app — tính trực tiếp lúc render thay vì
+  // đồng bộ qua effect + setState.
+  const effectiveSessionId = sessionId ?? sessions.data?.[0]?.id ?? null;
+  const { data, mutate, isLoading } = useAssistantMessages(effectiveSessionId);
   const [input, setInput] = useState("");
   // Popup mời cài PWA cũng nổi ở đúng góc này (z-[60], xem install-prompt.tsx)
   // — đẩy widget lên cao hơn hẳn khi popup đó CÓ THỂ đang hiện, để 2 khối nổi
@@ -52,7 +78,8 @@ export function AssistantWidget() {
       revalidate: false,
     });
     try {
-      const res = await askAssistant(text);
+      const res = await askAssistant(text, effectiveSessionId ?? undefined);
+      if (effectiveSessionId !== res.sessionId) setSessionId(res.sessionId);
       const modelMsg: AssistantMessage = {
         id: `tmp-m-${Date.now()}`,
         role: "MODEL",
@@ -62,6 +89,7 @@ export function AssistantWidget() {
       void mutate((current) => [...(current ?? []), modelMsg], {
         revalidate: false,
       });
+      void sessions.mutate();
     } catch {
       void mutate(
         (current) => [
@@ -80,10 +108,23 @@ export function AssistantWidget() {
     }
   }
 
-  async function clear() {
+  async function startNewChat() {
+    const created = await createAssistantSession();
+    setSessionId(created.id);
+    setView("chat");
+    void sessions.mutate((current) => [created, ...(current ?? [])], {
+      revalidate: false,
+    });
+  }
+
+  async function removeSession(id: string) {
     if (!confirm("Xoá cuộc trò chuyện này?")) return;
-    await clearAssistantSession();
-    void mutate([], { revalidate: false });
+    await deleteAssistantSession(id);
+    void sessions.mutate(
+      (current) => (current ?? []).filter((s) => s.id !== id),
+      { revalidate: false },
+    );
+    if (id === sessionId) setSessionId(null);
   }
 
   return (
@@ -93,9 +134,9 @@ export function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Đóng trợ lý Hanni" : "Mở trợ lý Hanni"}
         aria-expanded={open}
-        className={`motion-button fixed right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90 ${installPromptMightShow ? "bottom-56" : "bottom-5"}`}
+        className={`motion-button fixed right-5 z-40 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90 ${installPromptMightShow ? "bottom-56" : "bottom-5"}`}
       >
-        <Icon name={open ? "close" : "spark"} size={24} />
+        {open ? <Icon name="close" size={24} /> : <HanniLogo size={56} />}
       </button>
 
       {open && (
@@ -106,9 +147,7 @@ export function AssistantWidget() {
         >
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
             <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <Icon name="spark" size={16} />
-              </span>
+              <HanniLogo size={32} />
               <div>
                 <p className="text-sm font-bold">Trợ lý Hanni</p>
                 <p className="text-[11px] text-muted">
@@ -116,71 +155,138 @@ export function AssistantWidget() {
                 </p>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => void clear()}
-              title="Xoá cuộc trò chuyện"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-danger"
-            >
-              <Icon name="trash" size={15} />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => void startNewChat()}
+                title="Cuộc trò chuyện mới"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-primary"
+              >
+                <Icon name="plus" size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setView(view === "history" ? "chat" : "history")}
+                title="Lịch sử trò chuyện"
+                aria-pressed={view === "history"}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg hover:bg-surface-2 ${view === "history" ? "text-primary" : "text-muted hover:text-foreground"}`}
+              >
+                <Icon name="clock" size={16} />
+              </button>
+            </div>
           </div>
 
-          <div
-            ref={listRef}
-            className="flex-1 space-y-3 overflow-y-auto px-4 py-4"
-          >
-            {isLoading ? (
-              <p className="text-center text-xs text-muted">Đang tải…</p>
-            ) : !data || data.length === 0 ? (
-              <p className="rounded-xl bg-surface-2 px-3 py-2.5 text-sm leading-6">
-                Xin chào! Mình là Hanni 👋 Hỏi mình bất cứ điều gì về tiếng
-                Trung, ngữ pháp, hoặc lộ trình học của bạn nhé.
-              </p>
-            ) : (
-              data.map((m) => (
-                <div
-                  key={m.id}
-                  className={`max-w-[85%] whitespace-pre-wrap break-words rounded-xl px-3 py-2.5 text-sm leading-6 ${
-                    m.role === "USER"
-                      ? "ml-auto bg-primary text-primary-fg"
-                      : "bg-surface-2"
-                  }`}
-                >
-                  {m.text}
-                </div>
-              ))
-            )}
-            {sending && (
-              <div className="max-w-[85%] rounded-xl bg-surface-2 px-3 py-2.5 text-sm text-muted">
-                Đang trả lời…
+          {view === "history" ? (
+            <div className="flex-1 overflow-y-auto px-2 py-2">
+              {!sessions.data || sessions.data.length === 0 ? (
+                <p className="px-2 py-6 text-center text-xs text-muted">
+                  Chưa có cuộc trò chuyện nào.
+                </p>
+              ) : (
+                sessions.data.map((s) => (
+                  <div
+                    key={s.id}
+                    className={`group flex items-center gap-2 rounded-lg px-2 py-2.5 text-left text-sm hover:bg-surface-2 ${s.id === effectiveSessionId ? "bg-surface-2" : ""}`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSessionId(s.id);
+                        setView("chat");
+                      }}
+                      className="min-w-0 flex-1 truncate text-left"
+                    >
+                      {s.title ?? "Cuộc trò chuyện mới"}
+                      <span className="ml-2 text-[11px] text-muted">
+                        {timeAgo(s.updatedAt)}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void removeSession(s.id)}
+                      aria-label="Xoá cuộc trò chuyện"
+                      className="shrink-0 rounded-md p-1.5 text-muted opacity-0 hover:text-danger group-hover:opacity-100"
+                    >
+                      <Icon name="trash" size={14} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          ) : (
+            <>
+              <div
+                ref={listRef}
+                className="flex-1 space-y-3 overflow-y-auto px-4 py-4"
+              >
+                {isLoading ? (
+                  <p className="text-center text-xs text-muted">Đang tải…</p>
+                ) : !data || data.length === 0 ? (
+                  <div className="flex items-start gap-2.5">
+                    <HanniLogo size={28} />
+                    <p className="rounded-xl bg-surface-2 px-3 py-2.5 text-sm leading-6">
+                      Xin chào! Mình là Hanni 👋 Hỏi mình bất cứ điều gì về
+                      tiếng Trung, ngữ pháp, hoặc lộ trình học của bạn nhé.
+                    </p>
+                  </div>
+                ) : (
+                  data.map((m) => (
+                    <div
+                      key={m.id}
+                      className={`flex items-start gap-2.5 ${m.role === "USER" ? "flex-row-reverse" : ""}`}
+                    >
+                      {m.role === "MODEL" && <HanniLogo size={28} />}
+                      <div
+                        className={`max-w-[78%] break-words rounded-xl px-3 py-2.5 text-sm leading-6 ${
+                          m.role === "USER"
+                            ? "bg-primary text-primary-fg"
+                            : "bg-surface-2"
+                        }`}
+                      >
+                        {m.role === "MODEL" ? (
+                          <MarkdownLite text={m.text} />
+                        ) : (
+                          <span className="whitespace-pre-wrap">{m.text}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+                {sending && (
+                  <div className="flex items-start gap-2.5">
+                    <HanniLogo size={28} />
+                    <div className="max-w-[78%] rounded-xl bg-surface-2 px-3 py-2.5 text-sm text-muted">
+                      Đang trả lời…
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          <form
-            className="flex items-center gap-2 border-t border-border p-3"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void send();
-            }}
-          >
-            <input
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              placeholder="Nhập câu hỏi…"
-              disabled={sending}
-              className="field flex-1"
-            />
-            <button
-              type="submit"
-              disabled={!input.trim() || sending}
-              aria-label="Gửi"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-fg disabled:opacity-50"
-            >
-              <Icon name="arrow" size={18} />
-            </button>
-          </form>
+              <form
+                className="flex items-center gap-2 border-t border-border p-3"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void send();
+                }}
+              >
+                <input
+                  value={input}
+                  onChange={(event) => setInput(event.target.value)}
+                  placeholder="Nhập câu hỏi…"
+                  disabled={sending}
+                  className="field flex-1"
+                />
+                <button
+                  type="submit"
+                  disabled={!input.trim() || sending}
+                  aria-label="Gửi"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-fg disabled:opacity-50"
+                >
+                  <Icon name="arrow" size={18} />
+                </button>
+              </form>
+            </>
+          )}
         </div>
       )}
     </>
