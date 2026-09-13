@@ -404,11 +404,20 @@ export interface SubmitOnboardingInput {
 
 export type ChatRole = "USER" | "MODEL";
 
+/** Trợ lý AI chỉ ĐƯA RA đường dẫn (qua tool-calling phía server), không tự
+ * chuyển trang — client hiện nút bấm, người dùng tự bấm mới điều hướng. */
+export interface AssistantAction {
+  type: "navigate";
+  path: string;
+  label: string;
+}
+
 export interface AssistantMessage {
   id: string;
   role: ChatRole;
   text: string;
   createdAt: string;
+  action?: AssistantAction;
 }
 
 export interface AssistantSession {

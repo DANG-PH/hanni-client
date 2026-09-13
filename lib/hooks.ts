@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { api, apiFetch, API_BASE } from "./api";
 import type {
   Achievement,
+  AssistantAction,
   AssistantMessage,
   AssistantSession,
   ExamHistory,
@@ -222,7 +223,7 @@ export function streamAssistant(
   sessionId: string | undefined,
   handlers: {
     onDelta: (delta: string) => void;
-    onDone: (sessionId: string) => void;
+    onDone: (sessionId: string, action?: AssistantAction) => void;
     onError: () => void;
   },
 ): () => void {
@@ -232,7 +233,12 @@ export function streamAssistant(
     withCredentials: true,
   });
   es.onmessage = (event) => {
-    let payload: { delta?: string; done?: boolean; sessionId?: string };
+    let payload: {
+      delta?: string;
+      done?: boolean;
+      sessionId?: string;
+      action?: AssistantAction;
+    };
     try {
       payload = JSON.parse(event.data);
     } catch {
@@ -240,7 +246,7 @@ export function streamAssistant(
     }
     if (payload.delta) handlers.onDelta(payload.delta);
     if (payload.done) {
-      handlers.onDone(payload.sessionId ?? sessionId ?? "");
+      handlers.onDone(payload.sessionId ?? sessionId ?? "", payload.action);
       es.close();
     }
   };

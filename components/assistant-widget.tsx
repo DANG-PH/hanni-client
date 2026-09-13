@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./icon";
 import { MarkdownLite } from "./markdown-lite";
@@ -14,7 +15,7 @@ import {
 } from "@/lib/hooks";
 import { usePwaState } from "@/lib/pwa/store";
 import { timeAgo } from "@/lib/time";
-import type { AssistantMessage } from "@/lib/types";
+import type { AssistantAction, AssistantMessage } from "@/lib/types";
 
 function HanniLogo({ size }: { size: number }) {
   return (
@@ -27,6 +28,20 @@ function HanniLogo({ size }: { size: number }) {
       style={{ width: size, height: size }}
       sizes={`${size}px`}
     />
+  );
+}
+
+/** Nút bấm cho hành động trợ lý gợi ý (mở trang/video) — người dùng tự bấm
+ * mới điều hướng, trợ lý không tự chuyển trang thay. */
+function AssistantActionButton({ action }: { action: AssistantAction }) {
+  return (
+    <Link
+      href={action.path}
+      className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20"
+    >
+      <Icon name="arrow" size={14} />
+      Mở: {action.label}
+    </Link>
   );
 }
 
@@ -109,7 +124,12 @@ export function AssistantWidget() {
             p.map((m) => (m.id === modelMsgId ? { ...m, text: accumulated } : m)),
           );
         },
-        onDone: (newSessionId) => {
+        onDone: (newSessionId, action) => {
+          if (action) {
+            setPending((p) =>
+              p.map((m) => (m.id === modelMsgId ? { ...m, action } : m)),
+            );
+          }
           if (newSessionId && effectiveSessionId !== newSessionId) {
             setSessionId(newSessionId);
           } else {
@@ -271,7 +291,7 @@ export function AssistantWidget() {
                     >
                       {m.role === "MODEL" && <HanniLogo size={28} />}
                       <div
-                        className={`max-w-[78%] break-words rounded-xl px-3 py-2.5 text-sm leading-6 ${
+                        className={`max-w-[78%] space-y-2 break-words rounded-xl px-3 py-2.5 text-sm leading-6 ${
                           m.role === "USER"
                             ? "bg-primary text-primary-fg"
                             : "bg-surface-2"
@@ -297,6 +317,7 @@ export function AssistantWidget() {
                         ) : (
                           <span className="whitespace-pre-wrap">{m.text}</span>
                         )}
+                        {m.action && <AssistantActionButton action={m.action} />}
                       </div>
                     </div>
                   ))
