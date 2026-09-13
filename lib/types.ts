@@ -401,3 +401,12 @@ export interface SubmitOnboardingInput {
   targetLevel?: number;
   targetDate?: string;
 }
+
+export type ChatRole = "USER" | "MODEL";
+
+export interface AssistantMessage {
+  id: string;
+  role: ChatRole;
+  text: string;
+  createdAt: string;
+}

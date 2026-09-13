@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { api, apiFetch } from "./api";
 import type {
   Achievement,
+  AssistantMessage,
   ExamHistory,
   Leaderboard,
   LeaderboardMetric,
@@ -187,4 +188,20 @@ export function useOnboarding() {
 
 export function submitOnboarding(input: SubmitOnboardingInput) {
   return api.post<OnboardingProfile>("/onboarding", input);
+}
+
+/** Chỉ tải khi widget đang mở — tránh gọi API này trên mọi trang cho mọi user. */
+export function useAssistantMessages(enabled: boolean) {
+  return useSWR<AssistantMessage[]>(
+    enabled ? "/assistant/messages" : null,
+    fetcher,
+  );
+}
+
+export function askAssistant(message: string) {
+  return api.post<{ message: string }>("/assistant/ask", { message });
+}
+
+export function clearAssistantSession() {
+  return api.del<{ ok: true }>("/assistant/session");
 }

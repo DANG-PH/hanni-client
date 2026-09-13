@@ -27,6 +27,7 @@ app/
 └── nguon-du-lieu       trang ghi công nguồn dữ liệu (bắt buộc theo license)
 components/  ui.tsx · nav.tsx · flashcard.tsx · quiz-runner.tsx · comment-section.tsx
              · video-like-button.tsx · notification-bell.tsx · follow-button.tsx
+             · assistant-widget.tsx (bong bóng chat nổi, mount trong app-shell.tsx)
 lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notifications.ts
       (SWR + socket.io-client) · time.ts (timeAgo) · types.ts
 ```
@@ -61,8 +62,12 @@ nguyên bố cục), `/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
 DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước sau khi đăng
 ký tài khoản mới — đã học chưa/cấp tự đánh giá, mục tiêu, có định thi không — trả về cấp HSK đề
-xuất + đoạn giải thích lộ trình; dashboard có banner nhắc làm khảo sát nếu chưa làm). Chưa làm
-(roadmap): RAG chatbot, minigame,
+xuất + đoạn giải thích lộ trình; dashboard có banner nhắc làm khảo sát nếu chưa làm), trợ lý AI
+Hanni (`components/assistant-widget.tsx` — bong bóng chat nổi góc dưới phải, mọi trang trong
+app-shell khi đã đăng nhập; chỉ gọi `GET /assistant/messages` khi mở widget, không tải sẵn cho
+mọi trang; báo "chưa được bật" tự nhiên như 1 tin nhắn bình thường nếu server chưa cấu hình
+GEMINI_API_KEY — không cần xử lý riêng ở FE). Chưa làm
+(roadmap): minigame,
 trang hồ sơ công khai/danh sách người theo dõi (mới có nút theo dõi rời rạc ở bảng xếp hạng).
 
 **Quiz** (`components/quiz-runner.tsx`): mỗi câu có `mode: "reading" | "listening"` từ server.
