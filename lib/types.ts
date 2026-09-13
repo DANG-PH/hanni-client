@@ -417,7 +417,6 @@ export interface AssistantMessage {
   role: ChatRole;
   text: string;
   createdAt: string;
-  action?: AssistantAction;
 }
 
 export interface AssistantSession {

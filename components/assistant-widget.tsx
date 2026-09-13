@@ -65,6 +65,16 @@ export function AssistantWidget() {
   // khoá đổi. Dọn sạch khi dữ liệu thật từ server đã có tin nhắn vừa gửi.
   const [pending, setPending] = useState<AssistantMessage[]>([]);
   const messages = [...(data ?? []), ...pending];
+  // Hành động (nút mở trang/video) trợ lý vừa gợi ý — KHÔNG gắn trực tiếp
+  // vào message trong `pending` vì message đó sẽ bị dọn (xem effect dưới)
+  // ngay khi `data` từ server đồng bộ xong nội dung, làm mất luôn nút bấm
+  // dù mới xuất hiện được vài trăm ms. Khớp theo TEXT với tin nhắn model
+  // tương ứng (dù đang ở pending hay đã có trong data) để nút không biến
+  // mất khi cache SWR đổi.
+  const [lastAction, setLastAction] = useState<{
+    text: string;
+    action: AssistantAction;
+  } | null>(null);
   // Popup mời cài PWA cũng nổi ở đúng góc này (z-[60], xem install-prompt.tsx)
   // — đẩy widget lên cao hơn khi popup đó ĐANG THẬT SỰ hiện (đọc cờ do chính
   // component đó cập nhật, xem lib/pwa/store.ts — trước đây tự đoán "có thể
@@ -125,11 +135,7 @@ export function AssistantWidget() {
           );
         },
         onDone: (newSessionId, action) => {
-          if (action) {
-            setPending((p) =>
-              p.map((m) => (m.id === modelMsgId ? { ...m, action } : m)),
-            );
-          }
+          if (action) setLastAction({ text: accumulated, action });
           if (newSessionId && effectiveSessionId !== newSessionId) {
             setSessionId(newSessionId);
           } else {
@@ -159,6 +165,7 @@ export function AssistantWidget() {
     const created = await createAssistantSession();
     setSessionId(created.id);
     setPending([]);
+    setLastAction(null);
     setStreamingId(null);
     setView("chat");
     void sessions.mutate((current) => [created, ...(current ?? [])], {
@@ -176,6 +183,7 @@ export function AssistantWidget() {
     if (id === effectiveSessionId) {
       setSessionId(null);
       setPending([]);
+      setLastAction(null);
     }
   }
 
@@ -245,6 +253,7 @@ export function AssistantWidget() {
                       onClick={() => {
                         setSessionId(s.id);
                         setPending([]);
+                        setLastAction(null);
                         setView("chat");
                       }}
                       className="min-w-0 flex-1 truncate text-left"
@@ -317,7 +326,11 @@ export function AssistantWidget() {
                         ) : (
                           <span className="whitespace-pre-wrap">{m.text}</span>
                         )}
-                        {m.action && <AssistantActionButton action={m.action} />}
+                        {m.role === "MODEL" &&
+                          lastAction &&
+                          m.text === lastAction.text && (
+                            <AssistantActionButton action={lastAction.action} />
+                          )}
                       </div>
                     </div>
                   ))
