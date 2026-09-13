@@ -1,15 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./icon";
 import { MarkdownLite } from "./markdown-lite";
 import { useAuth } from "@/lib/auth";
 import {
-  askAssistant,
   createAssistantSession,
   deleteAssistantSession,
+  streamAssistant,
   useAssistantMessages,
   useAssistantSessions,
 } from "@/lib/hooks";
@@ -52,22 +51,19 @@ export function AssistantWidget() {
   const [pending, setPending] = useState<AssistantMessage[]>([]);
   const messages = [...(data ?? []), ...pending];
   // Popup mời cài PWA cũng nổi ở đúng góc này (z-[60], xem install-prompt.tsx)
-  // — đẩy widget lên cao hơn hẳn khi popup đó CÓ THỂ đang hiện, để 2 khối nổi
-  // không đè lên nhau (chưa tính trạng thái đã tự tắt/snooze của popup kia,
-  // nên có thể đẩy lên hơi thừa vài lần — chấp nhận được, còn hơn bị che nút).
-  const pwa = usePwaState();
-  const pathname = usePathname();
-  const iosHint = pwa.ios && !pwa.installPrompt;
-  const genericHint =
-    !pwa.ios && !pwa.installPrompt && pwa.workerStatus === "ready";
-  const installPromptMightShow =
-    pwa.initialized &&
-    pwa.online &&
-    !pwa.standalone &&
-    pathname !== "/install" &&
-    (Boolean(pwa.installPrompt) || iosHint || genericHint);
+  // — đẩy widget lên cao hơn khi popup đó ĐANG THẬT SỰ hiện (đọc cờ do chính
+  // component đó cập nhật, xem lib/pwa/store.ts — trước đây tự đoán "có thể
+  // hiện" bằng cách chép lại 1 phần logic của nó nên sai, coi gần như lúc nào
+  // cũng "có thể hiện" trên desktop, khiến nút bị đẩy lên lơ lửng giữa màn
+  // hình hầu hết thời gian dù popup thật sự không hiện).
+  const { promptDialogVisible } = usePwaState();
   const [sending, setSending] = useState(false);
+  // id tin nhắn model đang được đẩy từng đoạn qua stream — dùng để hiện
+  // chấm nhấp nháy trong lúc chưa có chữ nào, và biết bubble nào cần cập
+  // nhật liên tục khi nhận thêm delta.
+  const [streamingId, setStreamingId] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const closeStreamRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
@@ -81,11 +77,16 @@ export function AssistantWidget() {
     if (data.some((m) => m.text === lastPendingText)) setPending([]);
   }, [data, pending]);
 
-  async function send() {
+  // Đóng kết nối SSE dở dang nếu component gỡ bỏ giữa chừng (vd đăng xuất).
+  useEffect(() => () => closeStreamRef.current?.(), []);
+
+  function send() {
     const text = input.trim();
     if (!text || sending) return;
     setInput("");
     setSending(true);
+    const modelMsgId = `tmp-m-${Date.now()}`;
+    setStreamingId(modelMsgId);
     setPending((p) => [
       ...p,
       {
@@ -94,40 +95,51 @@ export function AssistantWidget() {
         text,
         createdAt: new Date().toISOString(),
       },
+      { id: modelMsgId, role: "MODEL", text: "", createdAt: new Date().toISOString() },
     ]);
-    try {
-      const res = await askAssistant(text, effectiveSessionId ?? undefined);
-      setPending((p) => [
-        ...p,
-        {
-          id: `tmp-m-${Date.now()}`,
-          role: "MODEL",
-          text: res.message,
-          createdAt: new Date().toISOString(),
+
+    let accumulated = "";
+    closeStreamRef.current = streamAssistant(
+      text,
+      effectiveSessionId ?? undefined,
+      {
+        onDelta: (delta) => {
+          accumulated += delta;
+          setPending((p) =>
+            p.map((m) => (m.id === modelMsgId ? { ...m, text: accumulated } : m)),
+          );
         },
-      ]);
-      if (effectiveSessionId !== res.sessionId) setSessionId(res.sessionId);
-      else void mutate();
-      void sessions.mutate();
-    } catch {
-      setPending((p) => [
-        ...p,
-        {
-          id: `tmp-err-${Date.now()}`,
-          role: "MODEL",
-          text: "Có lỗi mạng, thử lại nhé.",
-          createdAt: new Date().toISOString(),
+        onDone: (newSessionId) => {
+          if (newSessionId && effectiveSessionId !== newSessionId) {
+            setSessionId(newSessionId);
+          } else {
+            void mutate();
+          }
+          void sessions.mutate();
+          setStreamingId(null);
+          setSending(false);
         },
-      ]);
-    } finally {
-      setSending(false);
-    }
+        onError: () => {
+          setPending((p) =>
+            p.map((m) =>
+              m.id === modelMsgId && !accumulated
+                ? { ...m, text: "Có lỗi mạng, thử lại nhé." }
+                : m,
+            ),
+          );
+          setStreamingId(null);
+          setSending(false);
+        },
+      },
+    );
   }
 
   async function startNewChat() {
+    closeStreamRef.current?.();
     const created = await createAssistantSession();
     setSessionId(created.id);
     setPending([]);
+    setStreamingId(null);
     setView("chat");
     void sessions.mutate((current) => [created, ...(current ?? [])], {
       revalidate: false,
@@ -154,7 +166,7 @@ export function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Đóng trợ lý Hanni" : "Mở trợ lý Hanni"}
         aria-expanded={open}
-        className={`motion-button fixed right-5 z-40 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90 ${installPromptMightShow ? "bottom-56" : "bottom-5"}`}
+        className={`motion-button fixed right-5 z-40 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90 ${promptDialogVisible ? "bottom-56" : "bottom-5"}`}
       >
         {open ? <Icon name="close" size={24} /> : <HanniLogo size={56} />}
       </button>
@@ -163,7 +175,7 @@ export function AssistantWidget() {
         <div
           role="dialog"
           aria-label="Trợ lý Hanni"
-          className={`fixed right-5 z-40 flex h-[min(32rem,70vh)] w-[min(23rem,90vw)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl ${installPromptMightShow ? "bottom-72" : "bottom-24"}`}
+          className={`fixed right-5 z-40 flex h-[min(32rem,70vh)] w-[min(23rem,90vw)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl ${promptDialogVisible ? "bottom-72" : "bottom-24"}`}
         >
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
             <div className="flex items-center gap-2">
@@ -266,7 +278,22 @@ export function AssistantWidget() {
                         }`}
                       >
                         {m.role === "MODEL" ? (
-                          <MarkdownLite text={m.text} />
+                          m.id === streamingId && !m.text ? (
+                            <span
+                              aria-label="Đang trả lời…"
+                              className="flex gap-1 py-1"
+                            >
+                              {[0, 1, 2].map((i) => (
+                                <span
+                                  key={i}
+                                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted"
+                                  style={{ animationDelay: `${i * 120}ms` }}
+                                />
+                              ))}
+                            </span>
+                          ) : (
+                            <MarkdownLite text={m.text} />
+                          )
                         ) : (
                           <span className="whitespace-pre-wrap">{m.text}</span>
                         )}
@@ -274,21 +301,13 @@ export function AssistantWidget() {
                     </div>
                   ))
                 )}
-                {sending && (
-                  <div className="flex items-start gap-2.5">
-                    <HanniLogo size={28} />
-                    <div className="max-w-[78%] rounded-xl bg-surface-2 px-3 py-2.5 text-sm text-muted">
-                      Đang trả lời…
-                    </div>
-                  </div>
-                )}
               </div>
 
               <form
                 className="flex items-center gap-2 border-t border-border p-3"
                 onSubmit={(event) => {
                   event.preventDefault();
-                  void send();
+                  send();
                 }}
               >
                 <input

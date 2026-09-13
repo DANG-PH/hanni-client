@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { api, apiFetch } from "./api";
+import { api, apiFetch, API_BASE } from "./api";
 import type {
   Achievement,
   AssistantMessage,
@@ -210,11 +210,45 @@ export function createAssistantSession() {
   return api.post<AssistantSession>("/assistant/sessions");
 }
 
-export function askAssistant(message: string, sessionId?: string) {
-  return api.post<{ message: string; sessionId: string }>("/assistant/ask", {
-    message,
-    sessionId,
+/**
+ * Streaming qua SSE (`EventSource`) — trả từng đoạn chữ ngay khi có thay vì
+ * đợi cả câu trả lời xong. Trả về hàm để đóng kết nối sớm (vd widget đóng
+ * giữa chừng). `EventSource` không tự refresh token 401 như `apiFetch` —
+ * chấp nhận được vì access token sống đủ lâu (mặc định 15 phút) so với 1
+ * lượt hỏi, không đáng để xử lý riêng.
+ */
+export function streamAssistant(
+  message: string,
+  sessionId: string | undefined,
+  handlers: {
+    onDelta: (delta: string) => void;
+    onDone: (sessionId: string) => void;
+    onError: () => void;
+  },
+): () => void {
+  const params = new URLSearchParams({ message });
+  if (sessionId) params.set("sessionId", sessionId);
+  const es = new EventSource(`${API_BASE}/assistant/ask/stream?${params}`, {
+    withCredentials: true,
   });
+  es.onmessage = (event) => {
+    let payload: { delta?: string; done?: boolean; sessionId?: string };
+    try {
+      payload = JSON.parse(event.data);
+    } catch {
+      return;
+    }
+    if (payload.delta) handlers.onDelta(payload.delta);
+    if (payload.done) {
+      handlers.onDone(payload.sessionId ?? sessionId ?? "");
+      es.close();
+    }
+  };
+  es.onerror = () => {
+    handlers.onError();
+    es.close();
+  };
+  return () => es.close();
 }
 
 export function deleteAssistantSession(sessionId: string) {

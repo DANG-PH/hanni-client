@@ -15,6 +15,10 @@ type PwaState = {
   installPrompt: InstallPromptEvent | null;
   workerStatus: "checking" | "ready" | "unsupported" | "development" | "error";
   updateAvailable: boolean;
+  /** true khi popup mời cài PWA (install-prompt.tsx) ĐANG THẬT SỰ hiện trên
+   * màn hình — component đó tự cập nhật giá trị này, nơi khác chỉ đọc, để
+   * tránh phải chép lại logic show/hidden/snooze của nó ở chỗ khác. */
+  promptDialogVisible: boolean;
 };
 
 const initialState: PwaState = {
@@ -25,6 +29,7 @@ const initialState: PwaState = {
   installPrompt: null,
   workerStatus: "checking",
   updateAvailable: false,
+  promptDialogVisible: false,
 };
 let state = initialState;
 const listeners = new Set<() => void>();

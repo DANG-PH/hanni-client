@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { getPwaState, updatePwaState, usePwaState } from "@/lib/pwa/store";
@@ -83,6 +83,13 @@ export function InstallPrompt() {
     !hidden &&
     pathname !== "/install" &&
     (Boolean(installPrompt) || iosHint || genericHint);
+
+  // Báo trạng thái hiện/ẩn THẬT ra store dùng chung — assistant-widget.tsx
+  // đọc giá trị này để tự tránh đè lên popup, thay vì chép lại logic show ở
+  // trên (đã từng làm vậy và bị sai — coi "có thể hiện" là "đang hiện").
+  useEffect(() => {
+    updatePwaState({ promptDialogVisible: show });
+  }, [show]);
 
   if (!show) return null;
 

@@ -76,11 +76,17 @@ chưa), VÀ đổi lời chào hero + thứ tự 4 mảng luyện tập (từ v�
 `goal` đã chọn — `GOAL_PERSONA` trong `dashboard/page.tsx`, có đếm ngược ngày tới hạn thi nếu
 mục tiêu là EXAM và có đặt `targetDate`), trợ lý AI
 Hanni (`components/assistant-widget.tsx` — logo Hanni làm avatar thay vì icon chung, bong bóng
-chat nổi góc dưới phải mọi trang trong app-shell khi đã đăng nhập, tự tránh đè popup mời cài PWA
-cùng góc; nhiều cuộc trò chuyện song song như ChatGPT/Claude — nút "+" tạo mới, icon đồng hồ mở
-danh sách lịch sử tự đặt tên theo tin nhắn đầu; trả lời render qua `components/markdown-lite.tsx`
-(chỉ **in đậm**/`code`/gạch đầu dòng — đúng với những gì prompt hệ thống yêu cầu model dùng, xem
-`hanni-server/CLAUDE.md`); chỉ gọi API khi mở widget, không tải sẵn cho mọi trang; báo "chưa được
+chat nổi góc dưới phải mọi trang trong app-shell khi đã đăng nhập; vị trí nút tự tránh đè popup
+mời cài PWA — đọc cờ `promptDialogVisible` thật từ `lib/pwa/store.ts` (do `install-prompt.tsx`
+tự cập nhật), KHÔNG tự đoán lại logic show/hidden/snooze của popup đó (từng làm vậy và sai, coi
+gần như lúc nào cũng "có thể hiện" trên desktop khiến nút lơ lửng giữa màn hình hầu hết thời
+gian); trả lời **stream từng chữ qua SSE** (`lib/hooks.ts` hàm `streamAssistant()`,
+`EventSource` gọi `GET /assistant/ask/stream`) thay vì đợi cả câu xong, có chấm nhấp nháy lúc
+chưa có chữ nào; nhiều cuộc trò chuyện song song như ChatGPT/Claude — nút "+" tạo mới, icon
+đồng hồ mở danh sách lịch sử tự đặt tên theo tin nhắn đầu; trả lời render qua
+`components/markdown-lite.tsx` (chỉ **in đậm**/`code`/gạch đầu dòng — đúng với những gì prompt
+hệ thống yêu cầu model dùng, xem `hanni-server/CLAUDE.md`); chỉ gọi API khi mở widget, không
+tải sẵn cho mọi trang; báo "chưa được
 bật" tự nhiên như 1 tin nhắn bình thường nếu server chưa cấu hình GEMINI_API_KEY). Chưa làm
 (roadmap): minigame,
 trang hồ sơ công khai/danh sách người theo dõi (mới có nút theo dõi rời rạc ở bảng xếp hạng).
