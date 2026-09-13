@@ -135,6 +135,22 @@ export default function AchievementsPage() {
                       <p className="mt-2 text-sm leading-6 text-muted">
                         {a.descriptionVi}
                       </p>
+                      {!a.unlocked && a.progressTarget > 0 && (
+                        <div className="mt-4">
+                          <ProgressBar
+                            value={
+                              (Math.min(a.progressCurrent, a.progressTarget) /
+                                a.progressTarget) *
+                              100
+                            }
+                            label={a.nameVi}
+                          />
+                          <p className="mt-1.5 text-xs text-muted">
+                            {Math.min(a.progressCurrent, a.progressTarget)}/
+                            {a.progressTarget}
+                          </p>
+                        </div>
+                      )}
                       <div
                         className={`mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-xs ${a.unlocked ? "text-good" : "text-muted"}`}
                       >

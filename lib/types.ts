@@ -183,6 +183,8 @@ export interface Achievement {
   threshold: number;
   unlocked: boolean;
   unlockedAt: string | null;
+  progressCurrent: number;
+  progressTarget: number;
 }
 
 export interface QuizQuestion {
