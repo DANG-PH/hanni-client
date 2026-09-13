@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./icon";
 import { MarkdownLite } from "./markdown-lite";
+import { useAuth } from "@/lib/auth";
 import {
   askAssistant,
   createAssistantSession,
@@ -31,6 +32,7 @@ function HanniLogo({ size }: { size: number }) {
 }
 
 export function AssistantWidget() {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<"chat" | "history">("chat");
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -41,6 +43,14 @@ export function AssistantWidget() {
   const effectiveSessionId = sessionId ?? sessions.data?.[0]?.id ?? null;
   const { data, mutate, isLoading } = useAssistantMessages(effectiveSessionId);
   const [input, setInput] = useState("");
+  // Tin nhắn vừa gửi/nhận, hiện ngay lập tức bất kể đang ở khoá SWR nào —
+  // cần tách riêng khỏi cache SWR vì lúc gửi tin đầu tiên của 1 cuộc trò
+  // chuyện MỚI, session id chỉ biết được SAU khi server trả lời, nghĩa là
+  // khoá cache (`/assistant/sessions/<id>/messages`) đổi ngay sau đó — nếu
+  // cập nhật lạc quan thẳng vào cache theo khoá cũ thì sẽ "biến mất" khi
+  // khoá đổi. Dọn sạch khi dữ liệu thật từ server đã có tin nhắn vừa gửi.
+  const [pending, setPending] = useState<AssistantMessage[]>([]);
+  const messages = [...(data ?? []), ...pending];
   // Popup mời cài PWA cũng nổi ở đúng góc này (z-[60], xem install-prompt.tsx)
   // — đẩy widget lên cao hơn hẳn khi popup đó CÓ THỂ đang hiện, để 2 khối nổi
   // không đè lên nhau (chưa tính trạng thái đã tự tắt/snooze của popup kia,
@@ -61,48 +71,54 @@ export function AssistantWidget() {
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
-  }, [data, sending]);
+  }, [messages.length, sending]);
+
+  // Dữ liệu thật từ server đã phản ánh tin nhắn vừa gửi -> bỏ bản tạm để
+  // tránh hiện trùng lặp.
+  useEffect(() => {
+    if (pending.length === 0 || !data) return;
+    const lastPendingText = pending[pending.length - 1].text;
+    if (data.some((m) => m.text === lastPendingText)) setPending([]);
+  }, [data, pending]);
 
   async function send() {
     const text = input.trim();
     if (!text || sending) return;
     setInput("");
     setSending(true);
-    const optimisticUser: AssistantMessage = {
-      id: `tmp-u-${Date.now()}`,
-      role: "USER",
-      text,
-      createdAt: new Date().toISOString(),
-    };
-    void mutate((current) => [...(current ?? []), optimisticUser], {
-      revalidate: false,
-    });
+    setPending((p) => [
+      ...p,
+      {
+        id: `tmp-u-${Date.now()}`,
+        role: "USER",
+        text,
+        createdAt: new Date().toISOString(),
+      },
+    ]);
     try {
       const res = await askAssistant(text, effectiveSessionId ?? undefined);
+      setPending((p) => [
+        ...p,
+        {
+          id: `tmp-m-${Date.now()}`,
+          role: "MODEL",
+          text: res.message,
+          createdAt: new Date().toISOString(),
+        },
+      ]);
       if (effectiveSessionId !== res.sessionId) setSessionId(res.sessionId);
-      const modelMsg: AssistantMessage = {
-        id: `tmp-m-${Date.now()}`,
-        role: "MODEL",
-        text: res.message,
-        createdAt: new Date().toISOString(),
-      };
-      void mutate((current) => [...(current ?? []), modelMsg], {
-        revalidate: false,
-      });
+      else void mutate();
       void sessions.mutate();
     } catch {
-      void mutate(
-        (current) => [
-          ...(current ?? []),
-          {
-            id: `tmp-err-${Date.now()}`,
-            role: "MODEL" as const,
-            text: "Có lỗi mạng, thử lại nhé.",
-            createdAt: new Date().toISOString(),
-          },
-        ],
-        { revalidate: false },
-      );
+      setPending((p) => [
+        ...p,
+        {
+          id: `tmp-err-${Date.now()}`,
+          role: "MODEL",
+          text: "Có lỗi mạng, thử lại nhé.",
+          createdAt: new Date().toISOString(),
+        },
+      ]);
     } finally {
       setSending(false);
     }
@@ -111,6 +127,7 @@ export function AssistantWidget() {
   async function startNewChat() {
     const created = await createAssistantSession();
     setSessionId(created.id);
+    setPending([]);
     setView("chat");
     void sessions.mutate((current) => [created, ...(current ?? [])], {
       revalidate: false,
@@ -124,7 +141,10 @@ export function AssistantWidget() {
       (current) => (current ?? []).filter((s) => s.id !== id),
       { revalidate: false },
     );
-    if (id === sessionId) setSessionId(null);
+    if (id === effectiveSessionId) {
+      setSessionId(null);
+      setPending([]);
+    }
   }
 
   return (
@@ -192,6 +212,7 @@ export function AssistantWidget() {
                       type="button"
                       onClick={() => {
                         setSessionId(s.id);
+                        setPending([]);
                         setView("chat");
                       }}
                       className="min-w-0 flex-1 truncate text-left"
@@ -219,18 +240,19 @@ export function AssistantWidget() {
                 ref={listRef}
                 className="flex-1 space-y-3 overflow-y-auto px-4 py-4"
               >
-                {isLoading ? (
+                {isLoading && messages.length === 0 ? (
                   <p className="text-center text-xs text-muted">Đang tải…</p>
-                ) : !data || data.length === 0 ? (
+                ) : messages.length === 0 ? (
                   <div className="flex items-start gap-2.5">
                     <HanniLogo size={28} />
                     <p className="rounded-xl bg-surface-2 px-3 py-2.5 text-sm leading-6">
-                      Xin chào! Mình là Hanni 👋 Hỏi mình bất cứ điều gì về
-                      tiếng Trung, ngữ pháp, hoặc lộ trình học của bạn nhé.
+                      Chào {user?.displayName ?? "bạn"}! Mình là Hanni 👋 Mình
+                      có thể giúp gì cho bạn hôm nay — hỏi về từ vựng, ngữ
+                      pháp, phát âm, hay lộ trình học đều được nhé.
                     </p>
                   </div>
                 ) : (
-                  data.map((m) => (
+                  messages.map((m) => (
                     <div
                       key={m.id}
                       className={`flex items-start gap-2.5 ${m.role === "USER" ? "flex-row-reverse" : ""}`}
