@@ -20,6 +20,8 @@ const MESSAGE: Record<AppNotification["type"], (n: AppNotification) => string> =
     `${n.actor?.displayName ?? "Ai đó"} đã bình luận video "${n.video?.title ?? ""}"`,
   VIDEO_LIKE: (n) =>
     `${n.actor?.displayName ?? "Ai đó"} đã thích video "${n.video?.title ?? ""}"`,
+  NEW_FOLLOWER: (n) =>
+    `${n.actor?.displayName ?? "Ai đó"} đã bắt đầu theo dõi bạn`,
 };
 
 export function NotificationBell() {

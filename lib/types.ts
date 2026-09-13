@@ -270,7 +270,11 @@ export interface VideoComment {
   replies: VideoComment[];
 }
 
-export type NotificationType = "COMMENT_REPLY" | "VIDEO_COMMENT" | "VIDEO_LIKE";
+export type NotificationType =
+  | "COMMENT_REPLY"
+  | "VIDEO_COMMENT"
+  | "VIDEO_LIKE"
+  | "NEW_FOLLOWER";
 
 export interface AppNotification {
   id: string;
@@ -357,6 +361,7 @@ export interface LeaderboardRow {
   value: number;
   currentStreak: number;
   isMe: boolean;
+  isFollowing: boolean;
 }
 
 export interface Leaderboard {

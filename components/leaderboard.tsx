@@ -1,4 +1,5 @@
 import { Avatar } from "@/components/avatar";
+import { FollowButton } from "@/components/follow-button";
 import { Icon, type IconName } from "@/components/icon";
 import { LinkButton } from "@/components/ui";
 import type {
@@ -205,7 +206,13 @@ export function LeaderboardOverview({
   );
 }
 
-export function LeaderboardRankings({ board }: { board: Leaderboard }) {
+export function LeaderboardRankings({
+  board,
+  onFollowChange,
+}: {
+  board: Leaderboard;
+  onFollowChange: (userId: string, following: boolean) => void;
+}) {
   const limited = board.rows.length < board.me.totalRanked;
 
   return (
@@ -271,6 +278,18 @@ export function LeaderboardRankings({ board }: { board: Leaderboard }) {
                         <Icon name="flame" size={12} className="text-primary" />
                         Chuỗi {number(row.currentStreak)} ngày
                       </span>
+                    )}
+                    {!row.isMe && (
+                      <div className="mt-1.5">
+                        <FollowButton
+                          userId={row.userId}
+                          following={row.isFollowing}
+                          onChange={(following) =>
+                            onFollowChange(row.userId, following)
+                          }
+                          compact
+                        />
+                      </div>
                     )}
                   </div>
                 </div>

@@ -156,7 +156,22 @@ export default function LeaderboardPage() {
               ) : (
                 <>
                   <LeaderboardOverview board={board.data} user={user} />
-                  <LeaderboardRankings board={board.data} />
+                  <LeaderboardRankings
+                    board={board.data}
+                    onFollowChange={(userId, following) =>
+                      void board.mutate(
+                        {
+                          ...board.data!,
+                          rows: board.data!.rows.map((row) =>
+                            row.userId === userId
+                              ? { ...row, isFollowing: following }
+                              : row,
+                          ),
+                        },
+                        { revalidate: false },
+                      )
+                    }
+                  />
                 </>
               )}
             </>

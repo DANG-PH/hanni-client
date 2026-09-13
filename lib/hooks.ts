@@ -124,6 +124,18 @@ export function unlikeVideo(videoId: string) {
   );
 }
 
+export function followUser(userId: string) {
+  return api.post<{ following: boolean; followerCount: number }>(
+    `/users/${userId}/follow`,
+  );
+}
+
+export function unfollowUser(userId: string) {
+  return api.del<{ following: boolean; followerCount: number }>(
+    `/users/${userId}/follow`,
+  );
+}
+
 export function useGrammarLevels() {
   return useSWR<GrammarLevel[]>("/grammar/levels", fetcher);
 }
