@@ -198,6 +198,62 @@
   max-width: 100%;
 }
 
+/* These treatments belong to the learning workspace, never the public site. */
+:global(.app-workspace) .page {
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--heading-accent) 15%, var(--border));
+  background: linear-gradient(115deg, var(--surface) 40%, color-mix(in srgb, var(--heading-accent) 4%, var(--surface)));
+  box-shadow: var(--workspace-shadow), inset 0 1px 0 var(--surface);
+}
+
+:global(.app-workspace) .page::before {
+  background: radial-gradient(ellipse at 0% 0%, color-mix(in srgb, var(--heading-accent) 10%, transparent), transparent 58%);
+}
+
+:global(.app-workspace) .page::after {
+  position: absolute;
+  z-index: -1;
+  top: -95px;
+  right: -35px;
+  width: 270px;
+  height: 270px;
+  border: 1px solid color-mix(in srgb, var(--heading-accent) 9%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 30px color-mix(in srgb, var(--heading-accent) 3%, transparent),
+    0 0 0 60px color-mix(in srgb, var(--heading-accent) 2%, transparent);
+  content: "";
+  pointer-events: none;
+}
+
+:global(.app-workspace) .pageIcon {
+  border-color: color-mix(in srgb, var(--heading-accent) 22%, var(--surface));
+  background: linear-gradient(145deg, color-mix(in srgb, var(--heading-accent) 4%, var(--surface)), color-mix(in srgb, var(--heading-accent) 15%, var(--surface)));
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--heading-accent) 18%, var(--surface)),
+    0 12px 18px -10px color-mix(in srgb, var(--heading-accent) 30%, transparent),
+    inset 0 2px 0 color-mix(in srgb, var(--surface) 85%, transparent);
+  transform: rotate(-5deg);
+  transition: transform 400ms var(--motion-ease);
+}
+
+:global(.app-workspace) .pageIcon svg {
+  filter: drop-shadow(0 2px 0 color-mix(in srgb, var(--surface) 80%, transparent));
+}
+
+:global(.app-workspace) .section {
+  border-color: color-mix(in srgb, var(--border) 75%, transparent);
+}
+
+:global(.app-workspace) .sectionIcon {
+  background-image: linear-gradient(145deg, color-mix(in srgb, var(--surface) 65%, transparent), transparent);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--heading-accent) 9%, transparent), inset 0 1px 0 var(--surface);
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :global(.app-workspace) .page:hover .pageIcon {
+    transform: perspective(500px) rotate(-1deg) rotateY(12deg) translateY(-2px);
+  }
+}
+
 @media (max-width: 639px) {
   .page {
     gap: 20px;

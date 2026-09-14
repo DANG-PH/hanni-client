@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { WorkspaceMotion } from "@/components/workspace-motion";
 
 // Chuyển riêng nội dung trang, giữ sidebar và thanh công cụ ổn định.
 export default function WorkspaceTemplate({
@@ -6,5 +7,5 @@ export default function WorkspaceTemplate({
 }: {
   children: ReactNode;
 }) {
-  return <div className="workspace-enter">{children}</div>;
+  return <WorkspaceMotion>{children}</WorkspaceMotion>;
 }

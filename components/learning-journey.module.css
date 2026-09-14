@@ -201,6 +201,55 @@
   outline-offset: 4px;
 }
 
+/* This component also appears on the public home page. Keep the workspace
+   treatment scoped so the approved public design stays unchanged. */
+:global(.app-workspace) .journey {
+  border-color: color-mix(in srgb, var(--primary) 12%, var(--border));
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 60%),
+    radial-gradient(ellipse at 0% 100%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 55%),
+    var(--surface);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent),
+    0 4px 0 color-mix(in srgb, var(--primary) 3%, var(--border)),
+    0 18px 35px -32px color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+:global(.app-workspace) .stages {
+  gap: 9px;
+  padding: 10px;
+  background: color-mix(in srgb, var(--primary) 3%, var(--surface-2));
+  box-shadow: inset 0 2px 5px color-mix(in srgb, var(--foreground) 3%, transparent);
+}
+
+:global(.app-workspace) .character {
+  border: 1px solid color-mix(in srgb, var(--stage-color) 12%, var(--border));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent),
+    0 3px 0 color-mix(in srgb, var(--stage-color) 12%, var(--border));
+  transform: rotate(-5deg);
+}
+
+:global(.app-workspace) .stage[aria-selected="true"] .character {
+  color: var(--primary-fg);
+  background: var(--stage-color);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--primary-fg) 22%, transparent),
+    0 4px 0 color-mix(in srgb, var(--stage-color) 65%, var(--foreground)),
+    0 10px 16px -12px color-mix(in srgb, var(--stage-color) 60%, transparent);
+  transform: rotate(0deg) translateY(-2px);
+}
+
+:global(.app-workspace) .detail {
+  min-height: 129px;
+}
+
+:global(.app-workspace) .action {
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent),
+    0 3px 0 color-mix(in srgb, var(--primary) 8%, var(--border));
+}
+
 @media (hover: hover) and (pointer: fine) {
   .stage:hover {
     background: var(--surface);
@@ -214,6 +263,9 @@
   }
   .action:hover svg {
     transform: translateX(3px);
+  }
+  :global(.app-workspace) .stage:hover .character {
+    transform: translateY(-3px) rotate(2deg);
   }
 }
 
@@ -249,6 +301,13 @@
   .action {
     align-self: flex-start;
   }
+  :global(.app-workspace) .stages {
+    gap: 7px;
+    padding: 7px;
+  }
+  :global(.app-workspace) .detail {
+    min-height: 205px;
+  }
 }
 
 @keyframes detail-in {
@@ -276,6 +335,11 @@
   .stage:hover,
   .stage:hover .character,
   .action:hover svg {
+    transform: none;
+  }
+  :global(.app-workspace) .character,
+  :global(.app-workspace) .stage[aria-selected="true"] .character,
+  :global(.app-workspace) .stage:hover .character {
     transform: none;
   }
 }

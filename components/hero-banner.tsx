@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Icon } from "./icon";
-import { StudyArtwork } from "./study-artwork";
+import styles from "./hero-banner.module.css";
 
 /** Lời chào cá nhân và lối vào bài học đang tiếp tục. */
 export function HeroBanner({
@@ -19,37 +19,68 @@ export function HeroBanner({
   ctaHref: string;
 }) {
   return (
-    <section className="reveal relative isolate overflow-hidden tint-hero rounded-3xl border border-primary/15 p-6 shadow-sm shadow-primary/5 sm:p-9 lg:min-h-[340px] lg:p-11">
-      <div className="relative z-10 max-w-lg lg:max-w-[58%]">
-        <p className="eyebrow mb-4 flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+    <section className={`reveal ${styles.hero}`}>
+      <div className={styles.content}>
+        <p className={styles.eyebrow}>
+          <span className={styles.statusDot} />
           Mỗi ngày một bước tiến
         </p>
-        <h1 className="text-[28px] font-extrabold leading-[1.15] tracking-tight sm:text-[40px]">
+        <h1 className={styles.title}>
           {title}
           <br />
           <span className="text-primary">{highlight}</span>
         </h1>
-        <p className="mt-4 max-w-md text-[15px] leading-7 text-muted">
+        <p className={styles.subtitle}>
           {subtitle}
         </p>
         <Link
           href={ctaHref}
-          className="motion-button mt-7 inline-flex items-center gap-2 rounded-2xl bg-primary px-7 py-4 text-[15px] font-bold text-primary-fg shadow-lg shadow-primary/25 transition-transform hover:-translate-y-0.5"
+          className={`motion-button ${styles.cta}`}
         >
           {ctaLabel}
-          <Icon name="arrow" size={18} />
+          <span className={styles.ctaArrow}><Icon name="arrow" size={18} /></span>
         </Link>
+        <div className={styles.footnote}>
+          <span className="hanzi">学而不止</span>
+          <span>Học một chút. Tiến xa hơn.</span>
+        </div>
       </div>
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 right-0 -z-10 hidden w-[42%] select-none items-center justify-center overflow-hidden border-l border-primary/10 bg-primary/[0.06] lg:flex"
-      >
-        <div className="absolute -right-16 -top-24 h-64 w-64 rounded-full border border-primary/10" />
-        <div className="absolute -bottom-28 -left-12 h-72 w-72 rounded-full border border-primary/10" />
-        <div className="w-[min(460px,92%)] origin-center scale-[0.82] xl:scale-90">
-          <StudyArtwork />
+      <div aria-hidden="true" className={styles.illustration}>
+        <div className={styles.scene}>
+          <div className={styles.orbit} />
+          <div className={styles.orbitInner} />
+          <span className={styles.sparkOne}><Icon name="spark" size={22} /></span>
+          <span className={styles.sparkTwo}><Icon name="spark" size={12} /></span>
+          <div className={styles.stageShadow} />
+          <div className={styles.floatingDeck}>
+            <div className={styles.deck} data-depth="scene">
+              <div className={styles.backCard} />
+              <div className={styles.middleCard} />
+              <div className={styles.wordCard}>
+                <div className={styles.cardTopline}>
+                  <span>HANNI · 中文</span>
+                  <Icon name="spark" size={15} />
+                </div>
+                <div className={styles.characterGrid}>
+                  <span className="hanzi">学</span>
+                </div>
+                <span className={styles.pinyin}>xué</span>
+                <span className={styles.meaning}>học · khám phá · tiến bộ</span>
+                <div className={styles.cardBottom}>
+                  <span>MỘT TỪ MỚI, MỘT BƯỚC TIẾN</span>
+                  <Icon name="arrow" size={15} />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.soundChip}>
+            <span className={styles.soundIcon}><Icon name="sound" size={18} /></span>
+            <div className={styles.soundText}><strong>你好</strong><span>nǐ hǎo</span></div>
+            <span className={styles.wave}><i /><i /><i /><i /><i /></span>
+          </div>
+          <div className={styles.glyphTile}><span className="hanzi">语</span></div>
+          <div className={styles.smallSeal}><span className="hanzi">中</span></div>
         </div>
       </div>
     </section>

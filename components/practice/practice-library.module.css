@@ -1,10 +1,14 @@
 .setup {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 20px;
+  border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--border));
+  border-radius: 26px;
   background: var(--surface);
+  box-shadow:
+    0 4px 0 color-mix(in srgb, var(--primary) 4%, var(--border)),
+    0 24px 50px -40px color-mix(in srgb, var(--primary) 40%, transparent);
 }
 .setupMain {
   display: flex;
@@ -18,6 +22,14 @@
   display: flex;
   align-items: center;
   gap: 14px;
+}
+.setupHeading > span {
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent),
+    0 4px 0 color-mix(in srgb, var(--primary) 12%, var(--border)),
+    0 10px 18px -14px color-mix(in srgb, var(--primary) 40%, transparent);
+  transform: rotate(-6deg);
+  transition: transform 350ms var(--motion-ease);
 }
 .setupHeading h2 {
   font-size: 19px;
@@ -59,10 +71,18 @@
   color: var(--primary);
   font-size: 12px;
   font-weight: 650;
+  border: 1px solid color-mix(in srgb, var(--primary) 16%, var(--border));
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--primary) 7%, var(--border));
 }
 .startButton {
   width: 100%;
   min-height: 48px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--primary-fg) 20%, transparent),
+    0 7px 16px -9px color-mix(in srgb, var(--primary) 65%, transparent);
+}
+.startButton svg {
+  transition: transform 250ms var(--motion-ease);
 }
 .pagination {
   display: flex;
@@ -78,9 +98,35 @@
   font-size: 12px;
 }
 .guide {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   padding: 32px;
-  border-left: 1px solid var(--border);
-  background: color-mix(in srgb, var(--primary) 2.5%, var(--surface));
+  border-left: 1px solid color-mix(in srgb, var(--primary) 10%, var(--border));
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 65%),
+    linear-gradient(155deg, color-mix(in srgb, var(--primary) 3%, var(--surface)), color-mix(in srgb, var(--accent) 7%, var(--surface)));
+}
+.guide::before,
+.guide::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  right: -64px;
+  bottom: -85px;
+  width: 230px;
+  height: 230px;
+  border: 1px solid color-mix(in srgb, var(--primary) 12%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 24px color-mix(in srgb, var(--primary) 3%, transparent);
+}
+.guide::after {
+  width: 150px;
+  height: 150px;
+  right: -24px;
+  bottom: -45px;
+  box-shadow: none;
 }
 .guideLabel {
   display: flex;
@@ -99,10 +145,22 @@
   line-height: 1.4;
 }
 .guide ol {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 20px;
   margin-top: 26px;
+}
+.guide ol::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 13px;
+  bottom: 22px;
+  left: 13px;
+  width: 1px;
+  background: linear-gradient(var(--primary), color-mix(in srgb, var(--primary) 12%, transparent));
+  opacity: 0.25;
 }
 .guide li {
   display: flex;
@@ -119,10 +177,14 @@
   width: 26px;
   height: 26px;
   border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
-  border-radius: 50%;
+  border-radius: 9px;
+  background: var(--surface);
   color: var(--primary);
   font-size: 11px;
   font-weight: 600;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--primary) 9%, var(--border));
+  transform: rotate(-5deg);
+  transition: transform 300ms var(--motion-ease);
 }
 .guideNote {
   display: flex;
@@ -148,14 +210,29 @@
 }
 .sessionBar {
   justify-content: space-between;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 15px 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 8px 22px -22px color-mix(in srgb, var(--primary) 35%, transparent);
   color: var(--muted);
   font-size: 12px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .setup:hover .setupHeading > span {
+    transform: translateY(-2px) rotate(0deg);
+  }
+  .startButton:hover:not(:disabled) svg {
+    transform: translateX(4px);
+  }
+  .guide li:hover > span {
+    transform: translateY(-2px) rotate(0deg);
+  }
 }
 @media (max-width: 767px) {
   .setup {
     grid-template-columns: minmax(0, 1fr);
+    border-radius: 21px;
   }
   .setupMain,
   .guide {
@@ -175,5 +252,17 @@
   }
   .pagination {
     gap: 3px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .setupHeading > span,
+  .startButton svg,
+  .guide li > span {
+    transition: none;
+  }
+  .setup:hover .setupHeading > span,
+  .startButton:hover:not(:disabled) svg,
+  .guide li:hover > span {
+    transform: none;
   }
 }

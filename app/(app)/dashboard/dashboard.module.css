@@ -1,0 +1,171 @@
+.dashboard { min-width: 0; }
+
+.continueCard,
+.goalCard {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-width: 0;
+  border-radius: 22px;
+}
+
+.continueCard {
+  background: linear-gradient(120deg, var(--surface) 60%, color-mix(in srgb, var(--hero-from) 80%, var(--surface)));
+}
+
+.continueCard::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -83px;
+  right: -83px;
+  width: 200px;
+  height: 200px;
+  border: 1px solid color-mix(in srgb, var(--primary) 8%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 26px color-mix(in srgb, var(--primary) 2%, transparent), 0 0 0 52px color-mix(in srgb, var(--primary) 2%, transparent);
+  pointer-events: none;
+}
+
+.sectionIcon {
+  display: grid;
+  width: 33px;
+  height: 33px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--primary) 12%, transparent);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--primary) 7%, var(--surface));
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--primary) 8%, var(--surface));
+}
+
+.wordPreview {
+  width: fit-content;
+  margin-top: 10px;
+  border-radius: 9px;
+  padding: 5px 10px;
+  background: color-mix(in srgb, var(--primary) 5%, transparent);
+  color: color-mix(in srgb, var(--primary) 50%, var(--muted));
+  font-size: 16px;
+  letter-spacing: 0.12em;
+}
+
+.goalCard {
+  background: radial-gradient(ellipse at 100% 100%, color-mix(in srgb, var(--primary) 5%, transparent), transparent 70%), var(--surface);
+}
+
+.goalIcon {
+  display: grid;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--primary) 17%, var(--surface));
+  border-radius: 21px;
+  background: linear-gradient(145deg, var(--surface), color-mix(in srgb, var(--primary) 12%, var(--surface)));
+  color: var(--primary);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--primary) 11%, var(--surface)), 0 9px 18px -12px color-mix(in srgb, var(--primary) 35%, transparent), inset 0 1px 0 var(--surface);
+  transform: rotate(-7deg);
+}
+
+.goalIcon > svg { transform: rotate(7deg); }
+
+.practiceCard {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-width: 0;
+  min-height: 250px;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 22px;
+  padding: 20px;
+  background: linear-gradient(155deg, var(--surface) 40%, color-mix(in srgb, var(--hero-from) 50%, var(--surface)));
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--border) 58%, var(--surface)), 0 15px 30px -26px color-mix(in srgb, var(--foreground) 24%, transparent);
+  transition: transform 350ms var(--motion-ease), border-color 250ms ease, box-shadow 350ms var(--motion-ease);
+}
+
+.practiceCard::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 46px;
+  right: -31px;
+  width: 146px;
+  height: 146px;
+  border: 1px solid color-mix(in srgb, var(--primary) 6%, var(--border));
+  border-radius: 50%;
+  opacity: 0.7;
+  transition: scale 450ms var(--motion-ease), opacity 300ms ease;
+}
+
+.practiceTopline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
+
+.practiceNumber { color: var(--muted); font-size: 10px; font-weight: 650; letter-spacing: 0.15em; }
+.practiceArrow { display: grid; width: 27px; height: 27px; place-items: center; border: 1px solid var(--border); border-radius: 50%; color: var(--muted); transition: background 250ms ease, color 250ms ease, rotate 300ms var(--motion-ease); }
+
+.practiceCharacter {
+  position: absolute;
+  z-index: -1;
+  top: 49px;
+  right: 8px;
+  font-size: 84px;
+  line-height: 1;
+  transform: rotate(-7deg);
+  transition: transform 450ms var(--motion-ease);
+}
+
+.practiceIcon {
+  display: grid;
+  width: 47px;
+  height: 47px;
+  flex-shrink: 0;
+  place-items: center;
+  margin-bottom: 19px;
+  border: 1px solid color-mix(in srgb, currentColor 13%, transparent);
+  border-radius: 15px;
+  box-shadow: 0 4px 0 color-mix(in srgb, currentColor 10%, var(--surface)), inset 0 1px 0 color-mix(in srgb, var(--surface) 65%, transparent);
+  transition: transform 400ms var(--motion-ease);
+}
+
+.practiceTitle { font-size: 16px; font-weight: 700; letter-spacing: -0.025em; transition: color 250ms ease; }
+.practiceDescription { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.practiceFooter { display: flex; align-items: center; gap: 7px; margin-top: auto; border-top: 1px solid var(--border); padding-top: 13px; color: var(--primary); font-size: 11px; font-weight: 600; }
+.practiceDescription + .practiceFooter { margin-top: 19px; }
+.practiceDot { width: 5px; height: 5px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 7%, transparent); }
+
+.practiceCard:focus-visible { border-color: var(--primary); }
+.practiceCard:focus-visible .practiceTitle { color: var(--primary); }
+
+@media (hover: hover) and (pointer: fine) {
+  .practiceCard:hover { border-color: color-mix(in srgb, var(--primary) 28%, var(--border)); box-shadow: 0 5px 0 color-mix(in srgb, var(--primary) 8%, var(--surface)), 0 23px 35px -24px color-mix(in srgb, var(--primary) 35%, transparent); }
+  .practiceCard:hover .practiceTitle { color: var(--primary); }
+  .practiceCard:hover .practiceArrow { background: var(--primary); color: var(--primary-fg); }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .practiceCard:hover .practiceArrow { rotate: -35deg; }
+  .practiceCard:hover .practiceCharacter { transform: translateY(-5px) rotate(5deg) scale(1.08); }
+  .practiceCard:hover .practiceIcon { transform: perspective(450px) translateY(-4px) rotateX(9deg) rotateY(-12deg) rotate(-5deg); }
+  .practiceCard:hover::before { scale: 1.2; opacity: 1; }
+}
+
+@media (max-width: 639px) {
+  .practiceCard { display: grid; grid-template-columns: 48px minmax(0, 1fr); column-gap: 15px; min-height: 155px; padding: 19px; }
+  .practiceTopline { position: absolute; top: 18px; right: 17px; }
+  .practiceNumber { display: none; }
+  .practiceCharacter { top: auto; right: 16px; bottom: 6px; font-size: 64px; }
+  .practiceIcon { grid-column: 1; grid-row: 1 / span 2; margin: 3px 0 0; }
+  .practiceTitle { grid-column: 2; align-self: end; padding-right: 28px; }
+  .practiceDescription { grid-column: 2; margin-top: 4px; padding-right: 8px; }
+  .practiceFooter { grid-column: 1 / -1; }
+  .practiceCard::before { top: -28px; right: -55px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .practiceCard, .practiceCard::before, .practiceIcon, .practiceCharacter, .practiceTitle, .practiceArrow { transition: none; }
+}

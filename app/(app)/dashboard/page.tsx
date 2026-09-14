@@ -21,6 +21,7 @@ import {
 import { useRequireAuth } from "@/lib/auth";
 import { useLearnPath, useOnboarding, useStreak, useStudyStats } from "@/lib/hooks";
 import type { OnboardingGoal } from "@/lib/types";
+import styles from "./dashboard.module.css";
 
 /** Dựa theo mục tiêu đã khảo sát (`OnboardingProfile.goal`) để đổi lời chào +
  * ưu tiên thứ tự các mảng luyện tập cho phù hợp từng đối tượng — không dựng
@@ -186,7 +187,7 @@ export default function DashboardPage() {
     : PRACTICE_AREAS;
 
   return (
-    <div className="page-wrap space-y-8">
+    <div className={`page-wrap space-y-8 ${styles.dashboard}`}>
       <FeatureTour tourKey="dashboard" steps={DASHBOARD_TOUR_STEPS} />
       <div className="reveal flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted">
@@ -280,9 +281,9 @@ export default function DashboardPage() {
 
       <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
         {/* Tiếp tục học */}
-        <Card className="flex flex-col justify-between">
-          <div className="flex items-center gap-2 text-primary">
-            <Icon name="play" size={18} />
+        <Card className={`flex flex-col justify-between ${styles.continueCard}`}>
+          <div className="flex items-center gap-2.5 text-primary">
+            <span className={styles.sectionIcon}><Icon name="play" size={17} /></span>
             <span className="text-sm font-semibold">Tiếp tục học</span>
           </div>
           {path.isLoading ? (
@@ -295,13 +296,13 @@ export default function DashboardPage() {
           ) : current ? (
             <>
               <div className="my-4">
-                <p className="text-lg font-semibold">
+                <p className="text-xl font-semibold tracking-tight">
                   {current.title}
                   <span className="ml-2 text-sm font-normal text-muted">
                     {path.data?.levelName}
                   </span>
                 </p>
-                <p className="hanzi mt-1 text-sm text-muted">
+                <p className={`hanzi ${styles.wordPreview}`}>
                   {current.previewWords.join("  ")}…
                 </p>
                 <div className="mt-3 flex items-center gap-2">
@@ -345,7 +346,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Mục tiêu hôm nay */}
-        <Card className="flex flex-col justify-between">
+        <Card className={`flex flex-col justify-between ${styles.goalCard}`}>
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold">Mục tiêu hôm nay</span>
             <Link
@@ -359,7 +360,7 @@ export default function DashboardPage() {
           {goal ? (
             <>
               <div className="my-4 flex items-center gap-4">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <span className={styles.goalIcon}>
                   <Icon name={goal.met ? "check" : "target"} size={26} />
                 </span>
                 <div>
@@ -445,31 +446,36 @@ export default function DashboardPage() {
           </Link>
         </SectionHeading>
         <div className="reveal-group grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {orderedPracticeAreas.map((area) => (
+          {orderedPracticeAreas.map((area, index) => (
             <Link
               key={area.href}
               href={area.href}
-              className="reveal hover-card panel group relative overflow-hidden p-5"
+              className={`reveal panel group ${styles.practiceCard}`}
+              data-depth
             >
+              <div className={styles.practiceTopline}>
+                <span className={styles.practiceNumber}>0{index + 1}</span>
+                <span className={styles.practiceArrow}><Icon name="arrow" size={15} /></span>
+              </div>
               <span
                 aria-hidden="true"
-                className={`hanzi absolute right-4 top-2 text-6xl transition-transform duration-300 motion-safe:group-hover:-rotate-6 motion-safe:group-hover:scale-110 ${area.hanzi}`}
+                className={`hanzi ${styles.practiceCharacter} ${area.hanzi}`}
               >
                 {area.character}
               </span>
               <span
-                className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl ${area.tile}`}
+                className={`${styles.practiceIcon} ${area.tile}`}
               >
                 <Icon name={area.icon} size={21} />
               </span>
-              <h3 className="font-semibold group-hover:text-primary">
+              <h3 className={styles.practiceTitle}>
                 {area.title}
               </h3>
-              <p className="mt-1.5 text-xs leading-5 text-muted">
+              <p className={styles.practiceDescription}>
                 {area.description}
               </p>
-              <span className="mt-5 flex items-center justify-between border-t border-border pt-3 text-xs font-medium text-primary">
-                Bắt đầu luyện <Icon name="arrow" size={15} />
+              <span className={styles.practiceFooter}>
+                <span className={styles.practiceDot} /> Bắt đầu luyện
               </span>
             </Link>
           ))}

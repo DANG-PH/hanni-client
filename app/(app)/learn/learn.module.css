@@ -11,7 +11,7 @@
   justify-content: space-between;
   gap: 30px;
   overflow: hidden;
-  padding: 25px 30px;
+  padding: 30px;
   border: 1px solid color-mix(in srgb, var(--primary) 16%, var(--border));
   border-radius: 24px;
   background:
@@ -25,9 +25,26 @@
       var(--surface),
       color-mix(in srgb, var(--primary) 3%, var(--surface))
     );
-  box-shadow: 0 12px 30px -26px
-    color-mix(in srgb, var(--primary) 50%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent),
+    0 4px 0 color-mix(in srgb, var(--primary) 5%, var(--border)),
+    0 20px 40px -32px color-mix(in srgb, var(--primary) 45%, transparent);
   transition: opacity 180ms ease;
+  perspective: 1100px;
+}
+.continueCard::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 380px;
+  height: 380px;
+  right: -120px;
+  top: -180px;
+  border: 1px solid color-mix(in srgb, var(--primary) 12%, transparent);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 28px color-mix(in srgb, var(--primary) 3%, transparent),
+    0 0 0 58px color-mix(in srgb, var(--primary) 2%, transparent);
 }
 
 .continueCard[aria-busy="true"] {
@@ -90,8 +107,10 @@
   background: color-mix(in srgb, var(--surface) 76%, transparent);
   box-shadow:
     0 6px 0 color-mix(in srgb, var(--primary) 6%, var(--border)),
-    0 14px 24px -20px color-mix(in srgb, var(--foreground) 35%, transparent);
-  transform: rotate(2deg);
+    0 20px 30px -22px color-mix(in srgb, var(--primary) 40%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 90%, transparent);
+  transform: rotate(-3deg) rotateY(-8deg);
+  transition: transform 500ms var(--motion-ease);
 }
 .progressRing {
   display: grid;
@@ -103,6 +122,9 @@
     var(--primary) var(--progress),
     color-mix(in srgb, var(--primary) 10%, var(--surface)) 0
   );
+  box-shadow:
+    0 3px 0 color-mix(in srgb, var(--primary) 13%, var(--border)),
+    0 8px 16px -12px color-mix(in srgb, var(--primary) 45%, transparent);
 }
 .progressRing > span {
   display: grid;
@@ -113,6 +135,7 @@
   background: var(--surface);
   color: var(--primary);
   font-size: 33px;
+  box-shadow: inset 0 2px 5px color-mix(in srgb, var(--primary) 8%, transparent);
 }
 .progressLevel {
   color: var(--primary);
@@ -161,11 +184,18 @@
   font-size: 12px;
   font-weight: 650;
   cursor: pointer;
-  transition: color 180ms ease;
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    box-shadow 250ms ease,
+    transform 250ms var(--motion-ease);
 }
 .level[aria-pressed="true"] {
   color: var(--primary-fg);
   background: var(--primary);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--primary-fg) 20%, transparent),
+    0 3px 8px -3px color-mix(in srgb, var(--primary) 50%, transparent);
 }
 .level:focus-visible {
   outline: 2px solid var(--primary);
@@ -245,6 +275,12 @@
   gap: 14px;
   margin: 22px 0;
 }
+.stats > div {
+  padding: 12px 10px;
+  border: 1px solid color-mix(in srgb, var(--primary) 8%, var(--border));
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--primary) 3%, var(--surface));
+}
 .stats strong {
   font-size: 24px;
   font-weight: 650;
@@ -265,7 +301,10 @@
   gap: 12px;
   padding: 18px;
   border-radius: 18px;
-  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 15%, var(--border));
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 65%),
+    color-mix(in srgb, var(--accent) 5%, var(--surface));
 }
 .tip h3 {
   font-size: 13px;
@@ -280,6 +319,17 @@
 .skeleton {
   display: grid;
   gap: 12px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .continueCard:hover .progressTile {
+    transform: translateY(-4px) rotate(0deg) rotateY(-3deg);
+  }
+  .level:hover:not([aria-pressed="true"]) {
+    background: var(--surface);
+    color: var(--primary);
+    transform: translateY(-1px);
+  }
 }
 
 @media (max-width: 1000px) {
@@ -303,11 +353,33 @@
 }
 @media (max-width: 760px) {
   .continueCard {
+    flex-direction: column;
+    align-items: stretch;
     padding: 22px;
     gap: 20px;
   }
   .progressTile {
-    display: none;
+    align-self: flex-start;
+    gap: 16px;
+    padding: 12px 18px;
+    transform: rotate(-2deg);
+  }
+  .progressRing {
+    width: 53px;
+    height: 53px;
+  }
+  .progressRing > span {
+    width: 43px;
+    height: 43px;
+    font-size: 25px;
+  }
+  .progressValue {
+    margin-top: 3px;
+    font-size: 19px;
+  }
+  .progressValue span {
+    display: inline;
+    margin-left: 5px;
   }
   .courseGrid {
     grid-template-columns: minmax(0, 1fr);
@@ -343,7 +415,10 @@
   .level {
     transition: none;
   }
-  .progressTile {
+  .progressTile,
+  .continueCard:hover .progressTile,
+  .level:hover:not([aria-pressed="true"]) {
     transform: none;
+    transition: none;
   }
 }
