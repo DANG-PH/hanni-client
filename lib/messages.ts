@@ -51,6 +51,14 @@ export function markConversationRead(conversationId: string) {
     .catch(() => undefined);
 }
 
+/** Dịch nhanh 1 tin nhắn (pinyin + nghĩa) để luyện đọc ngay trong khung chat. */
+export function translateMessage(text: string) {
+  return api.post<{ pinyin: string; vi: string | null }>(
+    "/messages/translate",
+    { text },
+  );
+}
+
 // Dùng chung 1 kết nối với /notifications (socket.io-client tự cache theo
 // URL, không mở thêm socket mới) — NotificationsGateway đã phát "message:new"
 // qua đúng namespace này khi có tin nhắn tới (xem messages.service.ts).

@@ -77,7 +77,9 @@ ngày học chỉ trong nhóm chính mình + người đang theo dõi, cho lý d
 thay vì theo dõi xong không thấy tác dụng gì; tên/avatar ở bảng xếp hạng đầy đủ và thẻ này đều
 link sang trang hồ sơ công khai `/u/[id]` — avatar, ngày tham gia, streak, huy hiệu đã mở khoá,
 tab người theo dõi/đang theo dõi, nút Theo dõi + nút "Nhắn tin" mở/tạo hội thoại rồi điều hướng
-sang `/messages`), `/messages` (hộp thư nhắn tin 1-1 realtime, sidebar có badge số chưa đọc),
+sang `/messages`), `/messages` (hộp thư nhắn tin 1-1 realtime, sidebar có badge số chưa đọc,
+mỗi tin nhắn có chữ Hán hiện nút "Dịch" ra pinyin + nghĩa tiếng Việt ngay trong khung chat —
+biến việc nhắn tin cho nhau thành luyện đọc, xem `MessageTranslation` trong `messages/page.tsx`),
 `/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
 DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước — đã học

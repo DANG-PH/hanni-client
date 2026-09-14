@@ -10,12 +10,63 @@ import { useRequireAuth } from "@/lib/auth";
 import {
   markConversationRead,
   sendDirectMessage,
+  translateMessage,
   useConversationMessages,
   useConversations,
   useMessagesSocket,
 } from "@/lib/messages";
 import { timeAgo } from "@/lib/time";
 import type { DirectMessage } from "@/lib/types";
+
+const HAS_HAN = /\p{Script=Han}/u;
+
+type Translation = { pinyin: string; vi: string | null } | "loading" | "error";
+
+function MessageTranslation({
+  content,
+  mine,
+}: {
+  content: string;
+  mine: boolean;
+}) {
+  const [translation, setTranslation] = useState<Translation | null>(null);
+
+  if (!HAS_HAN.test(content)) return null;
+
+  const dim = mine ? "text-primary-fg/75" : "text-muted";
+
+  if (!translation) {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          setTranslation("loading");
+          translateMessage(content)
+            .then(setTranslation)
+            .catch(() => setTranslation("error"));
+        }}
+        className={`mt-1 block text-[11px] font-medium underline-offset-2 hover:underline ${mine ? "text-primary-fg/90" : "text-primary"}`}
+      >
+        Dịch
+      </button>
+    );
+  }
+
+  if (translation === "loading") {
+    return <p className={`mt-1 text-[11px] ${dim}`}>Đang dịch…</p>;
+  }
+  if (translation === "error") {
+    return <p className="mt-1 text-[11px] text-danger">Chưa dịch được.</p>;
+  }
+  return (
+    <div
+      className={`mt-1.5 border-t pt-1.5 text-[11px] leading-4 ${mine ? "border-primary-fg/20" : "border-border"} ${dim}`}
+    >
+      <p className="italic">{translation.pinyin}</p>
+      {translation.vi && <p>{translation.vi}</p>}
+    </div>
+  );
+}
 
 function ConversationList({
   activeId,
@@ -121,22 +172,21 @@ function ChatThread({ conversationId }: { conversationId: string }) {
         </div>
       )}
       <div ref={listRef} className="flex-1 space-y-2.5 overflow-y-auto p-4">
-        {data?.items.map((m: DirectMessage) => (
-          <div
-            key={m.id}
-            className={`flex ${m.senderId === conversation?.otherUser.id ? "justify-start" : "justify-end"}`}
-          >
-            <span
-              className={`max-w-[75%] break-words rounded-xl px-3 py-2 text-sm ${
-                m.senderId === conversation?.otherUser.id
-                  ? "bg-surface-2"
-                  : "bg-primary text-primary-fg"
-              }`}
-            >
-              {m.content}
-            </span>
-          </div>
-        ))}
+        {data?.items.map((m: DirectMessage) => {
+          const mine = m.senderId !== conversation?.otherUser.id;
+          return (
+            <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+              <div
+                className={`max-w-[75%] break-words rounded-xl px-3 py-2 text-sm ${
+                  mine ? "bg-primary text-primary-fg" : "bg-surface-2"
+                }`}
+              >
+                {m.content}
+                <MessageTranslation content={m.content} mine={mine} />
+              </div>
+            </div>
+          );
+        })}
       </div>
       <form
         className="flex items-center gap-2 border-t border-border p-3"
