@@ -1,4 +1,10 @@
 /* Một thư viện liền mạch: bộ lọc nằm sát nội dung, ảnh và tiêu đề là trọng tâm. */
+:global(.app-workspace) .toolbar { padding: var(--section-padding); border-radius: var(--radius-section); }
+:global(.app-workspace) .continueWatching { border-radius: var(--radius-card); }
+:global(.app-workspace) .videoCard { border-radius: var(--radius-card); padding: 6px; }
+:global(.app-workspace) .thumbnail { border-radius: var(--radius-inner); }
+:global(.app-workspace) .grid { gap: var(--card-gap); }
+
 .captionNote {
   display: flex;
   align-items: center;

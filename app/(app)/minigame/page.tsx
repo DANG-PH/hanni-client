@@ -116,6 +116,8 @@ function SoloMinigame() {
     const q = questions[qIndex];
     if (!q || phase !== "playing") return;
     const next = [...answersRef.current, { wordId: q.wordId, chosenIndex: index }];
+    // finish() chạy ngay ở câu cuối, trước khi effect đồng bộ state.
+    answersRef.current = next;
     setAnswers(next);
     if (qIndex + 1 >= questions.length) {
       void finish();

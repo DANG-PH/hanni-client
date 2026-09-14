@@ -1,9 +1,22 @@
 .workspace {
+  --radius-section: 26px;
+  --radius-card: 20px;
+  --radius-inner: 14px;
+  --radius-control: 12px;
+  --section-gap: 28px;
+  --card-gap: 18px;
+  --section-padding: 26px;
   --workspace-shadow: 0 2px 3px -2px color-mix(in srgb, var(--foreground) 7%, transparent),
     0 12px 32px -20px color-mix(in srgb, var(--foreground) 18%, transparent);
   background-image:
-    radial-gradient(ellipse at 98% 2%, color-mix(in srgb, var(--primary) 6%, transparent), transparent 38%),
-    radial-gradient(ellipse at 20% 65%, color-mix(in srgb, var(--accent) 3%, transparent), transparent 42%);
+    radial-gradient(ellipse at 98% 2%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 38%),
+    radial-gradient(ellipse at 20% 65%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 42%);
+}
+
+.workspace :global(.page-wrap) {
+  max-width: 1320px;
+  padding-inline: clamp(20px, 2.6vw, 36px);
+  padding-block: 28px 40px;
 }
 
 .sidebar {
@@ -68,9 +81,13 @@
 }
 
 .workspace :global(.panel) {
-  border-color: color-mix(in srgb, var(--border) 92%, var(--primary));
-  border-radius: 22px;
+  border-color: color-mix(in srgb, var(--border) 97%, var(--primary));
+  border-radius: var(--radius-card);
   box-shadow: var(--workspace-shadow), inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent);
+}
+
+.workspace :global(.hover-card.panel) {
+  background-image: linear-gradient(135deg, var(--surface) 60%, color-mix(in srgb, var(--hero-from) 55%, var(--surface)));
 }
 
 .workspace :global(.icon-tile) {
@@ -91,9 +108,11 @@
 }
 
 .workspace :global(.field) {
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   background-image: linear-gradient(color-mix(in srgb, var(--surface-2) 24%, transparent), transparent);
 }
+
+.workspace :global(.motion-button.min-h-11) { border-radius: var(--radius-control); }
 
 .workspace :global([role="progressbar"]) {
   box-shadow: inset 0 1px 3px color-mix(in srgb, var(--foreground) 6%, transparent);
@@ -157,11 +176,18 @@
 }
 
 @media (max-width: 639px) {
+  .workspace {
+    --radius-section: 22px;
+    --radius-card: 18px;
+    --radius-inner: 12px;
+    --section-gap: 22px;
+    --card-gap: 14px;
+    --section-padding: 18px;
+  }
   .topbar { height: 64px; gap: 8px; padding-inline: 12px; }
   .account { padding: 3px; border-radius: 50%; }
   .streak { padding-inline: 9px; gap: 4px; }
-  .workspace :global(.page-wrap) { padding: 22px 16px; }
-  .workspace :global(.panel) { border-radius: 18px; }
+  .workspace :global(.page-wrap) { padding: 20px 16px 28px; }
   .footer { padding-inline: 20px; padding-right: 76px; text-align: left; }
 
   /* The bell sits near the middle of a narrow header; use the full header width. */

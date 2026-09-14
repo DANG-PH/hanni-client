@@ -1,4 +1,18 @@
-.dashboard { min-width: 0; }
+.dashboard { display: flex; flex-direction: column; gap: var(--section-gap); min-width: 0; }
+.welcome { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; min-width: 0; }
+.welcome > * { min-width: 0; }
+.welcome .planCard { border-radius: var(--radius-inner); padding: 14px 20px; }
+.sessionGrid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: var(--card-gap); }
+.statsGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--card-gap); }
+.statsGrid > div { min-width: 0; }
+.statsGrid > div > div:nth-child(2) { font-variant-numeric: tabular-nums; }
+.skillsSection { min-width: 0; padding: var(--section-padding); border: 1px solid var(--border); border-radius: var(--radius-section); background: color-mix(in srgb, var(--surface) 80%, transparent); box-shadow: var(--workspace-shadow); }
+.skillsSection .skillsHeading { padding-bottom: 0; margin-bottom: 20px; border-bottom: 0; }
+.skillsGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.dashboard .skillsSection .practiceCard { border-radius: var(--radius-inner); min-height: 210px; padding: 18px; box-shadow: 0 3px 10px -7px color-mix(in srgb, var(--foreground) 15%, transparent); }
+
+.dailyGrid { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: var(--card-gap); align-items: stretch; }
+.dailyGrid > :only-child { grid-column: 1 / -1; }
 
 .continueCard,
 .goalCard {
@@ -6,7 +20,7 @@
   isolation: isolate;
   overflow: hidden;
   min-width: 0;
-  border-radius: 22px;
+  border-radius: var(--radius-card);
 }
 
 .continueCard {
@@ -74,12 +88,14 @@
   isolation: isolate;
   display: flex;
   min-width: 0;
-  min-height: 250px;
+  min-height: 230px;
   flex-direction: column;
   overflow: hidden;
   border-radius: 22px;
   padding: 20px;
-  background: linear-gradient(155deg, var(--surface) 40%, color-mix(in srgb, var(--hero-from) 50%, var(--surface)));
+  background:
+    radial-gradient(circle at var(--depth-x, 75%) var(--depth-y, 15%), color-mix(in srgb, var(--primary) 5%, transparent), transparent 65%),
+    linear-gradient(155deg, var(--surface) 40%, color-mix(in srgb, var(--hero-from) 50%, var(--surface)));
   box-shadow: 0 4px 0 color-mix(in srgb, var(--border) 58%, var(--surface)), 0 15px 30px -26px color-mix(in srgb, var(--foreground) 24%, transparent);
   transition: transform 350ms var(--motion-ease), border-color 250ms ease, box-shadow 350ms var(--motion-ease);
 }
@@ -96,6 +112,19 @@
   border-radius: 50%;
   opacity: 0.7;
   transition: scale 450ms var(--motion-ease), opacity 300ms ease;
+}
+
+.practiceCard::after {
+  content: "";
+  position: absolute;
+  top: 29px;
+  right: -49px;
+  width: 180px;
+  height: 180px;
+  border: 1px dashed color-mix(in srgb, var(--primary) 9%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .practiceTopline {
@@ -141,6 +170,21 @@
 .practiceCard:focus-visible { border-color: var(--primary); }
 .practiceCard:focus-visible .practiceTitle { color: var(--primary); }
 
+@media (prefers-reduced-motion: no-preference) {
+  .practiceCard[data-workspace-reveal="visible"] .practiceIcon {
+    animation: icon-unfold 950ms var(--motion-ease) var(--workspace-delay, 0ms) backwards;
+  }
+}
+
+@keyframes icon-unfold {
+  from { opacity: 0; transform: perspective(500px) rotateY(-65deg) rotate(-12deg) translateY(10px); }
+  to { opacity: 1; transform: perspective(500px) rotateY(0) rotate(0) translateY(0); }
+}
+
+@media (max-width: 1279px) { .skillsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1099px) { .statsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 899px) { .dailyGrid, .sessionGrid { grid-template-columns: minmax(0, 1fr); } }
+
 @media (hover: hover) and (pointer: fine) {
   .practiceCard:hover { border-color: color-mix(in srgb, var(--primary) 28%, var(--border)); box-shadow: 0 5px 0 color-mix(in srgb, var(--primary) 8%, var(--surface)), 0 23px 35px -24px color-mix(in srgb, var(--primary) 35%, transparent); }
   .practiceCard:hover .practiceTitle { color: var(--primary); }
@@ -155,6 +199,9 @@
 }
 
 @media (max-width: 639px) {
+  .skillsGrid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .dashboard .skillsSection .practiceCard { min-height: 132px; padding: 16px; }
+  .welcome .planCard { padding: 14px 16px; }
   .practiceCard { display: grid; grid-template-columns: 48px minmax(0, 1fr); column-gap: 15px; min-height: 155px; padding: 19px; }
   .practiceTopline { position: absolute; top: 18px; right: 17px; }
   .practiceNumber { display: none; }
@@ -164,6 +211,7 @@
   .practiceDescription { grid-column: 2; margin-top: 4px; padding-right: 8px; }
   .practiceFooter { grid-column: 1 / -1; }
   .practiceCard::before { top: -28px; right: -55px; }
+  .practiceCard::after { top: -45px; right: -72px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

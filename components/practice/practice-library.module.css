@@ -2,21 +2,20 @@
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--border));
-  border-radius: 26px;
-  background: var(--surface);
-  box-shadow:
-    0 4px 0 color-mix(in srgb, var(--primary) 4%, var(--border)),
-    0 24px 50px -40px color-mix(in srgb, var(--primary) 40%, transparent);
+  gap: var(--card-gap);
+  align-items: start;
 }
 .setupMain {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 24px;
-  padding: 32px;
+  padding: var(--section-padding);
   min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-section);
+  background: var(--surface);
+  box-shadow: var(--workspace-shadow);
 }
 .setupHeading {
   display: flex;
@@ -101,8 +100,9 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 32px;
-  border-left: 1px solid color-mix(in srgb, var(--primary) 10%, var(--border));
+  padding: var(--section-padding);
+  border: 1px solid color-mix(in srgb, var(--primary) 10%, var(--border));
+  border-radius: var(--radius-section);
   background:
     radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 65%),
     linear-gradient(155deg, color-mix(in srgb, var(--primary) 3%, var(--surface)), color-mix(in srgb, var(--accent) 7%, var(--surface)));
@@ -232,15 +232,13 @@
 @media (max-width: 767px) {
   .setup {
     grid-template-columns: minmax(0, 1fr);
-    border-radius: 21px;
   }
   .setupMain,
   .guide {
-    padding: 24px 20px;
+    padding: var(--section-padding);
   }
   .guide {
-    border-left: 0;
-    border-top: 1px solid var(--border);
+    border-color: var(--border);
   }
   .guide h2 {
     max-width: none;

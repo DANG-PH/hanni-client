@@ -200,6 +200,8 @@
 
 /* These treatments belong to the learning workspace, never the public site. */
 :global(.app-workspace) .page {
+  border-radius: var(--radius-section);
+  padding: var(--section-padding);
   overflow: hidden;
   border-color: color-mix(in srgb, var(--heading-accent) 15%, var(--border));
   background: linear-gradient(115deg, var(--surface) 40%, color-mix(in srgb, var(--heading-accent) 4%, var(--surface)));
@@ -255,6 +257,13 @@
 }
 
 @media (max-width: 639px) {
+  :global(.app-workspace) .identity { align-items: start; }
+  :global(.app-workspace) .pageIcon { grid-row: 1 / span 2; align-self: center; }
+  :global(.app-workspace) .pageTitle { grid-column: 2; grid-row: 2; margin-top: 4px; font-size: 24px; }
+  :global(.app-workspace) .identity:not(:has(.eyebrow)) .pageTitle { grid-row: 1 / span 2; align-self: center; margin-top: 0; }
+  :global(.app-workspace) .pageDescription { margin-top: 12px; }
+  :global(.app-workspace) .pageActions { padding-top: 14px; }
+
   .page {
     gap: 20px;
     padding: 20px;

@@ -1,4 +1,4 @@
-import { PageSkeleton } from "@/components/page-skeleton";
+import { StudyLoader } from "@/components/study-loader";
 export default function Loading() {
-  return <PageSkeleton />;
+  return <StudyLoader />;
 }
