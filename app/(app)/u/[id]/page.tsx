@@ -1,14 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { FollowButton } from "@/components/follow-button";
 import { Icon } from "@/components/icon";
-import { Card, ErrorNote, Spinner, Stat } from "@/components/ui";
+import { SendToFriendButton } from "@/components/send-to-friend";
+import { ShareButton } from "@/components/share-button";
+import { Button, Card, ErrorNote, Spinner, Stat } from "@/components/ui";
+import { ApiError } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { usePublicProfile } from "@/lib/hooks";
+import { getOrCreateConversation } from "@/lib/messages";
 import type { PublicProfileUser } from "@/lib/types";
 
 function joinedLabel(iso: string): string {
@@ -35,8 +39,29 @@ function UserRow({ user }: { user: PublicProfileUser }) {
 export default function PublicProfilePage() {
   const { user: me, loading } = useRequireAuth();
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const profile = usePublicProfile(params.id);
   const [tab, setTab] = useState<"followers" | "following" | null>(null);
+  const [opening, setOpening] = useState(false);
+  const [messageError, setMessageError] = useState("");
+
+  async function openConversation() {
+    if (opening) return;
+    setOpening(true);
+    setMessageError("");
+    try {
+      const conversation = await getOrCreateConversation(params.id);
+      router.push(`/messages?c=${conversation.id}`);
+    } catch (err) {
+      setMessageError(
+        err instanceof ApiError && err.status === 403
+          ? "Cần theo dõi nhau trước khi nhắn tin — bấm Theo dõi rồi thử lại nhé."
+          : "Chưa mở được hội thoại. Thử lại nhé.",
+      );
+    } finally {
+      setOpening(false);
+    }
+  }
 
   if (loading || !me) return <Spinner />;
 
@@ -58,23 +83,62 @@ export default function PublicProfilePage() {
 
   return (
     <div className="page-wrap max-w-3xl space-y-6">
-      <Card className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Avatar user={p} size={64} />
-          <div>
-            <h1 className="text-lg font-bold">{p.displayName}</h1>
-            <p className="text-xs text-muted">
-              Tham gia từ {joinedLabel(p.joinedAt)}
-            </p>
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Avatar user={p} size={64} />
+            <div>
+              <h1 className="text-lg font-bold">{p.displayName}</h1>
+              <p className="text-xs text-muted">
+                Tham gia từ {joinedLabel(p.joinedAt)}
+              </p>
+              {p.isMe && (
+                <button
+                  type="button"
+                  onClick={() => void navigator.clipboard?.writeText(p.id)}
+                  title="Sao chép mã người dùng"
+                  className="mt-1 flex items-center gap-1 text-[11px] text-muted hover:text-primary"
+                >
+                  <Icon name="user" size={11} />
+                  Mã của bạn: {p.id.slice(0, 8)}…
+                </button>
+              )}
+            </div>
           </div>
+          {p.isMe ? (
+            <div className="flex items-center gap-2">
+              <SendToFriendButton
+                text={`Mình đã học được ${p.learnedWordsCount} từ và giữ chuỗi ${p.currentStreak} ngày trên Hanni — xem hồ sơ của mình nhé!`}
+              />
+              <ShareButton
+                title="Hồ sơ Hanni của tôi"
+                text={`Mình đã học được ${p.learnedWordsCount} từ và giữ chuỗi ${p.currentStreak} ngày trên Hanni — cùng học tiếng Trung nhé!`}
+                path={`/u/${p.id}`}
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col items-end gap-2">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  onClick={() => void openConversation()}
+                  disabled={opening}
+                >
+                  <Icon name="message" size={16} />
+                  Nhắn tin
+                </Button>
+                <FollowButton
+                  userId={p.id}
+                  following={p.isFollowing}
+                  onChange={() => void profile.mutate()}
+                />
+              </div>
+              {messageError && (
+                <p className="text-xs text-danger">{messageError}</p>
+              )}
+            </div>
+          )}
         </div>
-        {!p.isMe && (
-          <FollowButton
-            userId={p.id}
-            following={p.isFollowing}
-            onChange={() => void profile.mutate()}
-          />
-        )}
       </Card>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

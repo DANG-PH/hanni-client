@@ -24,16 +24,22 @@ app/
 │                        tập đổi theo `OnboardingProfile.goal` (GOAL_PERSONA), xem "Trạng thái"
 ├── study               buổi ôn flashcard (SM-2) + quiz cuối buổi
 ├── vocabulary          duyệt/tìm từ theo cấp HSK
-├── progress            bucket đã thuộc / đang học / sắp quên theo cấp
-├── achievements
+├── progress            bucket đã thuộc / đang học / sắp quên theo cấp; có lịch hoạt động 30
+│                        ngày (`components/activity-calendar.tsx`, dùng GET /streak/history) +
+│                        lịch sử quiz gần đây (GET /quiz/recent)
+├── achievements         huy hiệu chưa mở khoá hiện thêm thanh tiến độ (progressCurrent/Target)
+├── (app)/u/[id]         hồ sơ công khai — streak, huy hiệu, follow, "Nhắn tin"
+├── (app)/messages       hộp thư nhắn tin 1-1 realtime (2 cột, mobile chỉ hiện 1 bên)
 ├── settings            mục tiêu ngày, thuật toán SRS, múi giờ
 └── nguon-du-lieu       trang ghi công nguồn dữ liệu (bắt buộc theo license)
 components/  ui.tsx · nav.tsx · flashcard.tsx · quiz-runner.tsx · comment-section.tsx
              · video-like-button.tsx · notification-bell.tsx · follow-button.tsx
+             · activity-calendar.tsx (lịch hoạt động 30 ngày)
              · assistant-widget.tsx (bong bóng chat nổi, mount trong app-shell.tsx)
              · markdown-lite.tsx (render **in đậm**/`code`/gạch đầu dòng cho trả lời AI)
 lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notifications.ts
-      (SWR + socket.io-client) · time.ts (timeAgo) · types.ts
+      (SWR + socket.io-client) · messages.ts (SWR + dùng CHUNG kết nối socket.io với
+      notifications.ts qua namespace /notifications — khác event name) · time.ts (timeAgo) · types.ts
 ```
 
 ## Convention
@@ -55,20 +61,53 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard (lật 3D, chạm cả thẻ) + quiz,
 duyệt từ vựng (có ghi chú giải thích chuẩn HSK 3.0 9 cấp khác chuẩn cũ 6 cấp), tiến độ, huy
 hiệu, cài đặt, học qua video (`/watch/[id]` dán video dưới topbar khi cuộn trên mobile để xem
-cùng bản chép, có bình luận 1 cấp trả lời + nút thích video), chuông thông báo realtime trong
+cùng bản chép, có bình luận 1 cấp trả lời + nút thích video; `/watch/add` — nút "Thêm video" ở
+`/watch` — chỉ cần dán link YouTube, các trường tiêu đề/cấp/thể loại gấp lại mặc định), chuông
+thông báo realtime trong
 topbar (`components/notification-bell.tsx`, đẩy qua WebSocket khi có người trả lời bình luận/
 bình luận hoặc thích video mình thêm/theo dõi mình/mở khoá huy hiệu mới — riêng loại huy hiệu
 hiện icon cúp thay vì avatar vì không có ai tác động, link sang `/achievements`), ngữ pháp (HSK 1–3 + HSK 4–9 đều có giải thích thật, 195/349 mục HSK 4–9; phần
 còn lại là danh sách từ vựng theo từ loại nên giữ dạng rút gọn), luyện viết Hán tự (`/writing`,
 xem/tô/kiểm tra nét bằng `hanzi-writer`, chuyển chữ trước/sau + hiện số nét), kiểm tra HSK
-(`/exams` — câu hỏi nghe + đọc, tính giờ từng câu, có lịch sử), bảng xếp hạng (có nút "Theo dõi"
+(`/exams` — câu hỏi nghe + đọc, tính giờ từng câu, có lịch sử), thẻ "Từ vựng hôm nay" ở dashboard
+(`components/word-of-the-day.tsx`, `GET /words/of-the-day` — im lặng ẩn đi nếu lỗi/chưa tải, chỉ
+là nội dung phụ), bảng xếp hạng (có nút "Theo dõi"
 mỗi dòng trong bảng đầy đủ, `components/follow-button.tsx`; podium top-3 không có nút để giữ
 nguyên bố cục; thẻ "So với bạn bè" ở dashboard —
 `components/friends-leaderboard.tsx`, `useLeaderboard("streak", "friends")` — xếp hạng chuỗi
 ngày học chỉ trong nhóm chính mình + người đang theo dõi, cho lý do cụ thể để theo dõi ai đó
 thay vì theo dõi xong không thấy tác dụng gì; tên/avatar ở bảng xếp hạng đầy đủ và thẻ này đều
 link sang trang hồ sơ công khai `/u/[id]` — avatar, ngày tham gia, streak, huy hiệu đã mở khoá,
-tab người theo dõi/đang theo dõi, nút Theo dõi), `/listening` +
+tab người theo dõi/đang theo dõi, nút Theo dõi + nút "Nhắn tin" mở/tạo hội thoại rồi điều hướng
+sang `/messages`, xem hồ sơ CHÍNH MÌNH thì thay 2 nút đó bằng nút "Chia sẻ" — `ShareButton`
+(`components/share-button.tsx`, dùng Web Share API trên di động, rơi về sao chép link vào
+clipboard trên máy tính) cũng gắn ở mỗi huy hiệu ĐÃ MỞ KHOÁ trong `/achievements`), `/messages`
+(hộp thư nhắn tin 1-1 realtime, sidebar có badge số chưa đọc,
+mỗi tin nhắn có chữ Hán hiện nút "Dịch" ra pinyin + nghĩa tiếng Việt ngay trong khung chat —
+biến việc nhắn tin cho nhau thành luyện đọc, xem `MessageTranslation` trong `messages/page.tsx`;
+nút "Tin nhắn mới" mở ô tìm người theo tên HOẶC mã người dùng (UID) qua `GET /users/search`,
+`NewMessageSearch` — trước đây chỉ bắt đầu hội thoại được từ trang hồ sơ công khai; ngoài ra
+`MessageIconButton` (`components/message-icon-button.tsx`) gắn thẳng ở bảng xếp hạng + thẻ "So
+với bạn bè" để nhắn tin ngay không cần vào hồ sơ trước — cả 2 chỗ này VÀ trang hồ sơ đều bắt lỗi
+403 riêng ("cần theo dõi nhau trước khi nhắn tin", xem mục kết nối bên dưới) thay vì để lỗi rơi
+mất. Khung chat có phân trang tải "Xem tin nhắn cũ hơn" (giữ nguyên vị trí cuộn khi tải, không
+giật xuống cuối), tách ngày "Hôm nay/Hôm qua/ngày cụ thể" + giờ dưới mỗi tin nhắn, tự focus ô
+nhập khi mở hội thoại, khôi phục lại nội dung + báo lỗi nếu gửi thất bại (trước đó gửi lỗi sẽ
+mất tin nhắn ĐÃ GÕ một cách im lặng, không có gì báo lại), **báo đã xem** ("Đã xem"/"Đã gửi"
+dưới tin nhắn CUỐI mình gửi, cập nhật realtime qua event `message:read`), và **báo đang nhập**
+("Đang nhập…" ở tiêu đề hội thoại, qua event `typing` — client tự throttle phát tối đa 1 lần/2s,
+tự tắt sau 3s không có tín hiệu mới, `emitTyping()` trong `lib/messages.ts`). **Kết nối trước
+khi nhắn tin**: hội thoại MỚI (chưa từng nhắn) yêu cầu đã theo dõi nhau (1 trong 2 chiều) — chủ ý
+để tránh cảm giác "tự nhiên nhắn cho người lạ", lỗi 403 hiện rõ ràng ở cả 3 điểm bắt đầu hội
+thoại (`MessageIconButton`, `NewMessageSearch`, trang hồ sơ). **Chia sẻ qua tin nhắn**:
+`SendToFriendButton` (`components/send-to-friend.tsx`) — khác `ShareButton` (chia sẻ RA NGOÀI),
+đây là gửi THẲNG nội dung (huy hiệu, hồ sơ) cho 1 người bạn Hanni cụ thể qua tin nhắn, tìm người
+nhận bằng tên/UID ngay trong 1 ô nhỏ xổ xuống, gắn ở `/achievements` (mỗi huy hiệu đã mở khoá)
+và hồ sơ công khai của chính mình),
+`/account` (đổi mật khẩu, thẻ "Mời bạn bè cùng học" — link `/register?ref=<userId>` qua
+`ShareButton`, số liệu từ `GET /referrals/me`, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ
+"XÓA" + mật khẩu nếu có đặt mới bấm được nút xoá vĩnh viễn, gọi `DELETE /users/me`),
+`/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
 DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước — đã học
 chưa/cấp tự đánh giá, mục tiêu, có định thi không — làm được TRƯỚC KHI có tài khoản, kiểu
@@ -135,4 +174,8 @@ thẻ cài trong `/settings`, popup mời cài nổi góc phải dưới (`compo
 Lời mời cài thật chỉ chạy ở bản production/HTTPS, không đăng ký worker ở `npm run dev`.
 **Thông báo đẩy**: `components/pwa/notification-card.tsx` (`/settings`) + `lib/pwa/push.ts` (subscribe/
 unsubscribe/gửi thử) + handler `push`/`notificationclick` trong `public/sw.js`. Dùng VAPID key lấy từ
-backend (`GET /push/public-key`), chưa có lịch nhắc tự động — chỉ gửi thủ công qua API.
+backend (`GET /push/public-key`). Khi đã bật thông báo trên thiết bị, `NotificationCard` hiện thêm
+1 ô chọn "giờ nhắc học mỗi ngày" (0-23, hoặc "Không nhắc") — ghi qua `PATCH /users/me/settings`
+(field `reminderHour`, `UserSettings`, state nâng lên `SettingsPage` để dùng chung SWR key với
+form cài đặt còn lại), server tự gửi nhắc mỗi ngày đúng giờ đó nếu chưa đạt mục tiêu ngày (xem
+`ReminderService` ở `hanni-server/CLAUDE.md`).

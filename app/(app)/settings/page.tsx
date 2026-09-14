@@ -41,7 +41,15 @@ export default function SettingsPage() {
 
       <AvatarCard user={user} onChange={() => void refresh()} />
       <InstallCard />
-      <NotificationCard />
+      <NotificationCard
+        reminderHour={data?.reminderHour ?? null}
+        onChangeReminderHour={async (hour) => {
+          const next = await api.patch<UserSettings>("/users/me/settings", {
+            reminderHour: hour,
+          });
+          await mutate(next, { revalidate: false });
+        }}
+      />
 
       {error && !data ? (
         <ErrorNote>
@@ -104,10 +112,13 @@ function SettingsForm({
       !Number.isInteger(form.dailyGoalValue) ||
       form.dailyGoalValue < 1 ||
       !Number.isInteger(form.newCardsPerDay) ||
-      form.newCardsPerDay < 0
+      form.newCardsPerDay < 0 ||
+      (form.maxReviewsPerDay != null &&
+        (!Number.isInteger(form.maxReviewsPerDay) ||
+          form.maxReviewsPerDay < 0))
     ) {
       setSaveError(
-        "Mục tiêu cần là số nguyên lớn hơn 0; số từ mới không được âm.",
+        "Mục tiêu cần là số nguyên lớn hơn 0; số từ mới/giới hạn lượt ôn không được âm.",
       );
       return;
     }
@@ -117,8 +128,10 @@ function SettingsForm({
         dailyGoalType: form.dailyGoalType,
         dailyGoalValue: form.dailyGoalValue,
         newCardsPerDay: form.newCardsPerDay,
+        maxReviewsPerDay: form.maxReviewsPerDay,
         srsScheduler: form.srsScheduler,
         targetRetention: form.targetRetention,
+        weeklyDigestEnabled: form.weeklyDigestEnabled,
       });
       setForm(next);
       await onSaved(next);
@@ -202,6 +215,30 @@ function SettingsForm({
                 />
                 <span className="mt-2 block text-xs font-normal text-muted">
                   Đặt bằng 0 nếu bạn chỉ muốn ôn từ đã học.
+                </span>
+              </label>
+              <label className="block text-sm font-medium sm:col-span-2">
+                Giới hạn số lượt ôn mỗi ngày{" "}
+                <span className="font-normal text-muted">(tuỳ chọn)</span>
+                <input
+                  type="number"
+                  min={0}
+                  step={1}
+                  value={form.maxReviewsPerDay ?? ""}
+                  placeholder="Không giới hạn"
+                  onChange={(event) =>
+                    update(
+                      "maxReviewsPerDay",
+                      event.target.value === ""
+                        ? null
+                        : Number(event.target.value),
+                    )
+                  }
+                  className="field mt-2"
+                />
+                <span className="mt-2 block text-xs font-normal text-muted">
+                  Để trống nếu không muốn giới hạn. Chỉ áp dụng cho lượt ôn từ
+                  đã học, không tính số từ mới ở trên.
                 </span>
               </label>
             </div>
@@ -334,6 +371,43 @@ function SettingsForm({
               >
                 Tự phát hiện
               </Button>
+            </div>
+          </Card>
+
+          <Card>
+            <div className="mb-5 flex items-start gap-3">
+              <span className="icon-tile">
+                <Icon name="message" />
+              </span>
+              <div>
+                <h2 className="font-semibold">Email tổng kết tuần</h2>
+                <p className="mt-1 text-sm text-muted">
+                  Mỗi thứ Hai, Hanni gửi email tóm tắt số ngày đã học, từ đã
+                  ôn/đã thuộc và chuỗi ngày hiện tại của bạn.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {(
+                [
+                  { value: true, label: "Bật" },
+                  { value: false, label: "Tắt" },
+                ] as const
+              ).map((option) => (
+                <button
+                  type="button"
+                  key={String(option.value)}
+                  aria-pressed={form.weeklyDigestEnabled === option.value}
+                  onClick={() => update("weeklyDigestEnabled", option.value)}
+                  className={`motion-button flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium ${form.weeklyDigestEnabled === option.value ? "border-primary/35 bg-primary/5 text-primary" : "border-border bg-surface text-muted hover:bg-surface-2"}`}
+                >
+                  <Icon
+                    name={option.value ? "check" : "close"}
+                    size={16}
+                  />
+                  {option.label}
+                </button>
+              ))}
             </div>
           </Card>
         </fieldset>

@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { Avatar } from "@/components/avatar";
 import { FollowButton } from "@/components/follow-button";
 import { Icon, type IconName } from "@/components/icon";
+import { MessageIconButton } from "@/components/message-icon-button";
 import { LinkButton, SectionHeading } from "@/components/ui";
 import type {
   Leaderboard,
@@ -289,7 +292,7 @@ export function LeaderboardRankings({
                       </span>
                     )}
                     {!row.isMe && (
-                      <div className="mt-1.5">
+                      <div className="mt-1.5 flex items-center gap-1.5">
                         <FollowButton
                           userId={row.userId}
                           following={row.isFollowing}
@@ -298,6 +301,7 @@ export function LeaderboardRankings({
                           }
                           compact
                         />
+                        <MessageIconButton userId={row.userId} />
                       </div>
                     )}
                   </div>

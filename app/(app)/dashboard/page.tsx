@@ -9,6 +9,7 @@ import { HeroBanner } from "@/components/hero-banner";
 import { Icon, type IconName } from "@/components/icon";
 import { LessonPath } from "@/components/lesson-path";
 import { VideoShelf } from "@/components/video-shelf";
+import { WordOfTheDayCard } from "@/components/word-of-the-day";
 import {
   Card,
   EmptyState,
@@ -398,7 +399,15 @@ export default function DashboardPage() {
         <Stat
           label="Chuỗi ngày học"
           value={streak.data ? `${streak.data.currentStreak}` : "—"}
-          hint={streak.data ? `Kỷ lục ${streak.data.longestStreak} ngày` : ""}
+          hint={
+            streak.data
+              ? `Kỷ lục ${streak.data.longestStreak} ngày${
+                  streak.data.streakFreezeCount > 0
+                    ? ` · 🧊 ${streak.data.streakFreezeCount} lá chắn`
+                    : ""
+                }`
+              : ""
+          }
           icon="flame"
           tone="text-warn bg-warn/10"
         />
@@ -428,6 +437,8 @@ export default function DashboardPage() {
           tone="text-good bg-good/10"
         />
       </div>
+
+      <WordOfTheDayCard />
 
       <FriendsLeaderboard />
 

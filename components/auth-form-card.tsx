@@ -18,6 +18,7 @@ export function AuthFormCard({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const next = safeNextPath(searchParams.get("next"));
+  const ref = searchParams.get("ref");
   const { user, loading, refresh } = useAuth();
   const router = useRouter();
 
@@ -109,11 +110,13 @@ export function AuthFormCard({
     setError(null);
     try {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const isUuid = ref && /^[0-9a-f-]{36}$/i.test(ref);
       await api.post("/auth/register", {
         displayName: regDisplayName,
         email: regEmail,
         password: regPassword,
         timezone: tz,
+        ...(isUuid ? { ref } : {}),
       });
       manualRedirect.current = true;
       await refresh();

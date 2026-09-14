@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AvatarEditor } from "@/components/avatar-editor";
 import { Icon } from "@/components/icon";
+import { ShareButton } from "@/components/share-button";
 import {
   Button,
   Card,
@@ -15,7 +16,8 @@ import {
   Spinner,
 } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
-import { useRequireAuth } from "@/lib/auth";
+import { useAuth, useRequireAuth } from "@/lib/auth";
+import { useReferralStats } from "@/lib/hooks";
 import { TIMEZONES } from "@/lib/timezones";
 
 export default function AccountPage() {
@@ -140,6 +142,8 @@ export default function AccountPage() {
               </Button>
             </div>
           </Card>
+          <ReferralCard userId={user.id} />
+          <DangerZone hasPassword={user.hasPassword} />
         </div>
         <aside className="space-y-5">
           <Card>
@@ -192,6 +196,11 @@ export default function AccountPage() {
                 label: "Bộ sưu tập huy hiệu",
               },
               { href: "/learn", icon: "route" as const, label: "Lộ trình HSK" },
+              {
+                href: `/u/${user.id}`,
+                icon: "user" as const,
+                label: "Hồ sơ công khai",
+              },
             ].map((item) => (
               <Link
                 key={item.href}
@@ -336,5 +345,152 @@ function PasswordForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+function ReferralCard({ userId }: { userId: string }) {
+  const { data } = useReferralStats();
+
+  return (
+    <Card>
+      <div className="flex items-start gap-3">
+        <span className="icon-tile">
+          <Icon name="spark" />
+        </span>
+        <div>
+          <h2 className="font-semibold">Mời bạn bè cùng học</h2>
+          <p className="mt-1 text-sm leading-6 text-muted">
+            Khi bạn mời hoàn thành ngày học đầu tiên, cả hai đều nhận thêm 1
+            🧊 lá chắn giữ chuỗi ngày học.
+          </p>
+        </div>
+      </div>
+      {data && data.totalReferred > 0 && (
+        <p className="mt-4 text-sm">
+          Đã mời <strong>{data.totalReferred}</strong> người ·{" "}
+          <strong className="text-good">{data.rewardedCount}</strong> đã nhận
+          thưởng
+          {data.pendingCount > 0 && ` · ${data.pendingCount} đang chờ`}
+        </p>
+      )}
+      <div className="mt-5">
+        <ShareButton
+          title="Học tiếng Trung cùng mình trên Hanni"
+          text="Mình đang học tiếng Trung theo chuẩn HSK 3.0 trên Hanni — vào học cùng mình nhé, cả hai sẽ nhận thêm lá chắn giữ chuỗi ngày học!"
+          path={`/register?ref=${userId}`}
+        />
+      </div>
+    </Card>
+  );
+}
+
+const DELETE_CONFIRM_WORD = "XÓA";
+
+function DangerZone({ hasPassword }: { hasPassword: boolean }) {
+  const { logout } = useAuth();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmText, setConfirmText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  const canSubmit =
+    confirmText.trim().toUpperCase() === DELETE_CONFIRM_WORD &&
+    (!hasPassword || password.length > 0);
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    if (!canSubmit || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      await api.del("/users/me", hasPassword ? { password } : undefined);
+      await logout();
+      router.replace("/");
+    } catch (err) {
+      setError(
+        err instanceof ApiError ? err.message : "Chưa xoá được tài khoản.",
+      );
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="border-danger/20">
+      <div className="flex items-start gap-3">
+        <span className="icon-tile bg-danger/10 text-danger">
+          <Icon name="trash" />
+        </span>
+        <div>
+          <h2 className="font-semibold text-danger">Vùng nguy hiểm</h2>
+          <p className="mt-1 text-sm leading-6 text-muted">
+            Xoá tài khoản sẽ xoá vĩnh viễn toàn bộ tiến độ học, tin nhắn, và
+            dữ liệu cá nhân — không thể khôi phục.
+          </p>
+        </div>
+      </div>
+
+      {!open ? (
+        <Button
+          variant="secondary"
+          className="mt-5 text-danger"
+          onClick={() => setOpen(true)}
+        >
+          <Icon name="trash" size={16} />
+          Xoá tài khoản
+        </Button>
+      ) : (
+        <form onSubmit={(e) => void submit(e)} className="mt-5 space-y-3">
+          {hasPassword && (
+            <label className="block text-sm font-medium">
+              Nhập mật khẩu để xác nhận
+              <input
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="field mt-1.5"
+              />
+            </label>
+          )}
+          <label className="block text-sm font-medium">
+            Gõ &quot;{DELETE_CONFIRM_WORD}&quot; để xác nhận
+            <input
+              type="text"
+              required
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              className="field mt-1.5"
+              placeholder={DELETE_CONFIRM_WORD}
+            />
+          </label>
+          {error && <ErrorNote>{error}</ErrorNote>}
+          <div className="flex gap-3">
+            <Button
+              type="submit"
+              disabled={!canSubmit || busy}
+              className="bg-danger! hover:bg-danger/90!"
+            >
+              {busy ? "Đang xoá…" : "Xoá vĩnh viễn"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={busy}
+              onClick={() => {
+                setOpen(false);
+                setError("");
+                setPassword("");
+                setConfirmText("");
+              }}
+            >
+              Huỷ
+            </Button>
+          </div>
+        </form>
+      )}
+    </Card>
   );
 }

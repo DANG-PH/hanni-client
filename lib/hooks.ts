@@ -7,6 +7,7 @@ import type {
   AssistantAction,
   AssistantMessage,
   AssistantSession,
+  DayActivity,
   ExamHistory,
   Leaderboard,
   LeaderboardMetric,
@@ -23,9 +24,12 @@ import type {
   PracticeStats,
   ProgressOverview,
   PublicProfile,
+  QuizAttemptSummary,
   StreakInfo,
+  ReferralStats,
   StudyStats,
   SubmitOnboardingInput,
+  UserSearchResult,
   VideoCard,
   VideoComment,
   VideoDetail,
@@ -46,6 +50,10 @@ export function useStreak() {
   return useSWR<StreakInfo>("/streak", fetcher);
 }
 
+export function useStreakHistory(days = 30) {
+  return useSWR<DayActivity[]>(`/streak/history?days=${days}`, fetcher);
+}
+
 export function useStudyStats() {
   return useSWR<StudyStats>("/study/stats", fetcher, {
     refreshInterval: 60_000,
@@ -54,6 +62,10 @@ export function useStudyStats() {
 
 export function useAchievements() {
   return useSWR<Achievement[]>("/achievements", fetcher);
+}
+
+export function useRecentQuizzes() {
+  return useSWR<QuizAttemptSummary[]>("/quiz/recent", fetcher);
 }
 
 export function useLearnPath(level?: number) {
@@ -145,6 +157,19 @@ export function unfollowUser(userId: string) {
 export function usePublicProfile(userId: string | null) {
   return useSWR<PublicProfile>(
     userId ? `/users/${userId}/profile` : null,
+    fetcher,
+  );
+}
+
+export function useReferralStats() {
+  return useSWR<ReferralStats>("/referrals/me", fetcher);
+}
+
+/** Tìm người dùng theo tên — để theo dõi/nhắn tin khi họ không lọt bảng xếp hạng. */
+export function useUserSearch(q: string) {
+  const query = q.trim();
+  return useSWR<UserSearchResult[]>(
+    query ? `/users/search?q=${encodeURIComponent(query)}` : null,
     fetcher,
   );
 }

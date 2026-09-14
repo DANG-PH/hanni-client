@@ -40,6 +40,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
                 ["Học qua video", "/watch"],
                 ["Cài ứng dụng Hanni", "/install"],
                 ["Câu hỏi thường gặp", "/#cau-hoi"],
+                ["Nguồn dữ liệu", "/nguon-du-lieu"],
               ],
             },
           ].map((group) => (

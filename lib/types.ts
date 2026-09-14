@@ -20,6 +20,7 @@ export interface UserSettings {
   srsScheduler: "sm2" | "fsrs";
   targetRetention: number;
   reminderHour: number | null;
+  weeklyDigestEnabled: boolean;
 }
 
 export interface HskLevel {
@@ -156,6 +157,13 @@ export interface StreakInfo {
   };
 }
 
+export interface DayActivity {
+  date: string | null;
+  wordsReviewed: number;
+  minutesStudied: number;
+  goalMet: boolean;
+}
+
 export interface LevelBucket {
   level: number;
   band: string;
@@ -183,6 +191,8 @@ export interface Achievement {
   threshold: number;
   unlocked: boolean;
   unlockedAt: string | null;
+  progressCurrent: number;
+  progressTarget: number;
 }
 
 export interface QuizQuestion {
@@ -198,6 +208,14 @@ export interface QuizQuestion {
 export interface Quiz {
   attemptId: string;
   questions: QuizQuestion[];
+}
+
+export interface QuizAttemptSummary {
+  id: string;
+  completedAt: string | null;
+  totalQuestions: number;
+  correctCount: number;
+  scorePct: number;
 }
 
 export type VideoKind =
@@ -405,6 +423,14 @@ export interface PublicProfile {
   following: PublicProfileUser[];
 }
 
+export interface UserSearchResult {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  currentStreak: number;
+  isFollowing: boolean;
+}
+
 export type OnboardingGoal =
   | "TRAVEL"
   | "WORK"
@@ -457,4 +483,27 @@ export interface AssistantSession {
   title: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface DirectMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  content: string;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export interface ConversationSummary {
+  id: string;
+  updatedAt: string;
+  otherUser: PublicProfileUser;
+  lastMessage: { content: string; createdAt: string; mine: boolean } | null;
+  unreadCount: number;
+}
+
+export interface ReferralStats {
+  totalReferred: number;
+  rewardedCount: number;
+  pendingCount: number;
 }

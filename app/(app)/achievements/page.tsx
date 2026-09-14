@@ -10,6 +10,8 @@ import {
   Spinner,
 } from "@/components/ui";
 import { Icon } from "@/components/icon";
+import { SendToFriendButton } from "@/components/send-to-friend";
+import { ShareButton } from "@/components/share-button";
 import { useRequireAuth } from "@/lib/auth";
 import { useAchievements } from "@/lib/hooks";
 
@@ -135,6 +137,22 @@ export default function AchievementsPage() {
                       <p className="mt-2 text-sm leading-6 text-muted">
                         {a.descriptionVi}
                       </p>
+                      {!a.unlocked && a.progressTarget > 0 && (
+                        <div className="mt-4">
+                          <ProgressBar
+                            value={
+                              (Math.min(a.progressCurrent, a.progressTarget) /
+                                a.progressTarget) *
+                              100
+                            }
+                            label={a.nameVi}
+                          />
+                          <p className="mt-1.5 text-xs text-muted">
+                            {Math.min(a.progressCurrent, a.progressTarget)}/
+                            {a.progressTarget}
+                          </p>
+                        </div>
+                      )}
                       <div
                         className={`mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-xs ${a.unlocked ? "text-good" : "text-muted"}`}
                       >
@@ -157,6 +175,20 @@ export default function AchievementsPage() {
                             </time>
                           )}
                       </div>
+                      {a.unlocked && (
+                        <div className="mt-3 flex justify-end gap-2">
+                          <SendToFriendButton
+                            compact
+                            text={`🏆 Mình vừa mở khóa huy hiệu "${a.nameVi}" trên Hanni!`}
+                          />
+                          <ShareButton
+                            compact
+                            title="Huy hiệu Hanni"
+                            text={`Mình vừa mở khóa huy hiệu "${a.nameVi}" trên Hanni — app học tiếng Trung theo chuẩn HSK 3.0!`}
+                            path={`/u/${user.id}`}
+                          />
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

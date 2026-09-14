@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Avatar } from "@/components/avatar";
 import { Icon } from "@/components/icon";
+import { MessageIconButton } from "@/components/message-icon-button";
 import { Card } from "@/components/ui";
 import { useLeaderboard } from "@/lib/hooks";
 
@@ -71,6 +72,7 @@ export function FriendsLeaderboard() {
               <span className="shrink-0 text-sm font-semibold text-primary">
                 {row.value} ngày
               </span>
+              {!row.isMe && <MessageIconButton userId={row.userId} />}
             </li>
           ))}
         </ul>
