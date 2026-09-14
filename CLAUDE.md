@@ -69,7 +69,9 @@ bình luận hoặc thích video mình thêm/theo dõi mình/mở khoá huy hi�
 hiện icon cúp thay vì avatar vì không có ai tác động, link sang `/achievements`), ngữ pháp (HSK 1–3 + HSK 4–9 đều có giải thích thật, 195/349 mục HSK 4–9; phần
 còn lại là danh sách từ vựng theo từ loại nên giữ dạng rút gọn), luyện viết Hán tự (`/writing`,
 xem/tô/kiểm tra nét bằng `hanzi-writer`, chuyển chữ trước/sau + hiện số nét), kiểm tra HSK
-(`/exams` — câu hỏi nghe + đọc, tính giờ từng câu, có lịch sử), bảng xếp hạng (có nút "Theo dõi"
+(`/exams` — câu hỏi nghe + đọc, tính giờ từng câu, có lịch sử), thẻ "Từ vựng hôm nay" ở dashboard
+(`components/word-of-the-day.tsx`, `GET /words/of-the-day` — im lặng ẩn đi nếu lỗi/chưa tải, chỉ
+là nội dung phụ), bảng xếp hạng (có nút "Theo dõi"
 mỗi dòng trong bảng đầy đủ, `components/follow-button.tsx`; podium top-3 không có nút để giữ
 nguyên bố cục; thẻ "So với bạn bè" ở dashboard —
 `components/friends-leaderboard.tsx`, `useLeaderboard("streak", "friends")` — xếp hạng chuỗi
@@ -90,8 +92,9 @@ tin ngay không cần vào hồ sơ trước. Khung chat có phân trang tải "
 nguyên vị trí cuộn khi tải, không giật xuống cuối), tách ngày "Hôm nay/Hôm qua/ngày cụ thể" +
 giờ dưới mỗi tin nhắn, tự focus ô nhập khi mở hội thoại, và khôi phục lại nội dung + báo lỗi
 nếu gửi thất bại (trước đó gửi lỗi sẽ mất tin nhắn ĐÃ GÕ một cách im lặng, không có gì báo lại)),
-`/account` (đổi mật khẩu, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ "XÓA" + mật khẩu
-nếu có đặt mới bấm được nút xoá vĩnh viễn, gọi `DELETE /users/me`),
+`/account` (đổi mật khẩu, thẻ "Mời bạn bè cùng học" — link `/register?ref=<userId>` qua
+`ShareButton`, số liệu từ `GET /referrals/me`, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ
+"XÓA" + mật khẩu nếu có đặt mới bấm được nút xoá vĩnh viễn, gọi `DELETE /users/me`),
 `/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
 DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước — đã học

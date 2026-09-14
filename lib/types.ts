@@ -501,3 +501,9 @@ export interface ConversationSummary {
   lastMessage: { content: string; createdAt: string; mine: boolean } | null;
   unreadCount: number;
 }
+
+export interface ReferralStats {
+  totalReferred: number;
+  rewardedCount: number;
+  pendingCount: number;
+}

@@ -26,6 +26,7 @@ import type {
   PublicProfile,
   QuizAttemptSummary,
   StreakInfo,
+  ReferralStats,
   StudyStats,
   SubmitOnboardingInput,
   UserSearchResult,
@@ -158,6 +159,10 @@ export function usePublicProfile(userId: string | null) {
     userId ? `/users/${userId}/profile` : null,
     fetcher,
   );
+}
+
+export function useReferralStats() {
+  return useSWR<ReferralStats>("/referrals/me", fetcher);
 }
 
 /** Tìm người dùng theo tên — để theo dõi/nhắn tin khi họ không lọt bảng xếp hạng. */

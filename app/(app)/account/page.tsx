@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AvatarEditor } from "@/components/avatar-editor";
 import { Icon } from "@/components/icon";
+import { ShareButton } from "@/components/share-button";
 import {
   Button,
   Card,
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
 import { useAuth, useRequireAuth } from "@/lib/auth";
+import { useReferralStats } from "@/lib/hooks";
 import { TIMEZONES } from "@/lib/timezones";
 
 export default function AccountPage() {
@@ -140,6 +142,7 @@ export default function AccountPage() {
               </Button>
             </div>
           </Card>
+          <ReferralCard userId={user.id} />
           <DangerZone hasPassword={user.hasPassword} />
         </div>
         <aside className="space-y-5">
@@ -342,6 +345,42 @@ function PasswordForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+function ReferralCard({ userId }: { userId: string }) {
+  const { data } = useReferralStats();
+
+  return (
+    <Card>
+      <div className="flex items-start gap-3">
+        <span className="icon-tile">
+          <Icon name="spark" />
+        </span>
+        <div>
+          <h2 className="font-semibold">Mời bạn bè cùng học</h2>
+          <p className="mt-1 text-sm leading-6 text-muted">
+            Khi bạn mời hoàn thành ngày học đầu tiên, cả hai đều nhận thêm 1
+            🧊 lá chắn giữ chuỗi ngày học.
+          </p>
+        </div>
+      </div>
+      {data && data.totalReferred > 0 && (
+        <p className="mt-4 text-sm">
+          Đã mời <strong>{data.totalReferred}</strong> người ·{" "}
+          <strong className="text-good">{data.rewardedCount}</strong> đã nhận
+          thưởng
+          {data.pendingCount > 0 && ` · ${data.pendingCount} đang chờ`}
+        </p>
+      )}
+      <div className="mt-5">
+        <ShareButton
+          title="Học tiếng Trung cùng mình trên Hanni"
+          text="Mình đang học tiếng Trung theo chuẩn HSK 3.0 trên Hanni — vào học cùng mình nhé, cả hai sẽ nhận thêm lá chắn giữ chuỗi ngày học!"
+          path={`/register?ref=${userId}`}
+        />
+      </div>
+    </Card>
   );
 }
 
