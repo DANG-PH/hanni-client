@@ -38,6 +38,7 @@ export const NAV_GROUPS: {
       { href: "/progress", label: "Tiến độ học tập", icon: "chart" },
       { href: "/achievements", label: "Huy hiệu", icon: "trophy" },
       { href: "/leaderboard", label: "Bảng xếp hạng", icon: "flame" },
+      { href: "/connections", label: "Kết nối", icon: "share" },
       { href: "/messages", label: "Tin nhắn", icon: "message" },
       { href: "/account", label: "Tài khoản", icon: "user" },
       { href: "/settings", label: "Cài đặt", icon: "settings" },

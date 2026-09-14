@@ -103,7 +103,13 @@ thoại (`MessageIconButton`, `NewMessageSearch`, trang hồ sơ). **Chia sẻ q
 `SendToFriendButton` (`components/send-to-friend.tsx`) — khác `ShareButton` (chia sẻ RA NGOÀI),
 đây là gửi THẲNG nội dung (huy hiệu, hồ sơ) cho 1 người bạn Hanni cụ thể qua tin nhắn, tìm người
 nhận bằng tên/UID ngay trong 1 ô nhỏ xổ xuống, gắn ở `/achievements` (mỗi huy hiệu đã mở khoá)
-và hồ sơ công khai của chính mình),
+và hồ sơ công khai của chính mình), `/connections` (trang "Kết nối" riêng — trước đó quy tắc
+"phải theo dõi nhau mới nhắn tin được" chỉ là 1 rào chắn ẩn không có nơi nào để CHỦ ĐỘNG kết nối,
+nên thêm hẳn 1 trang: ô tìm theo tên/UID, danh sách "Đã kết nối" (theo dõi lẫn nhau — mutual từ
+`usePublicProfile(myId)`'s `followers`/`following`), "Đang theo dõi bạn" (follow lại để thành
+2 chiều), "Bạn đang theo dõi", và "Gợi ý kết nối" (lấy từ bảng xếp hạng "Từ đã thuộc" toàn cục,
+lọc bớt người đã theo dõi) — mỗi dòng có sẵn nút Theo dõi + Nhắn tin (`MessageIconButton`) ngay
+tại chỗ, không cần vào hồ sơ riêng),
 `/account` (đổi mật khẩu, thẻ "Mời bạn bè cùng học" — link `/register?ref=<userId>` qua
 `ShareButton`, số liệu từ `GET /referrals/me`, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ
 "XÓA" + mật khẩu nếu có đặt mới bấm được nút xoá vĩnh viễn, gọi `DELETE /users/me`),
