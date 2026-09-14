@@ -67,7 +67,7 @@ export function Nav() {
             <>
               <Link
                 href="/login"
-                className="hidden rounded-lg border border-border px-4 py-2.5 text-xs font-semibold transition-colors hover:border-primary/40 hover:text-primary sm:block"
+                className="rounded-lg px-2.5 py-2.5 text-xs font-semibold text-muted transition-colors hover:text-primary sm:border sm:border-border sm:px-4 sm:hover:border-primary/40"
               >
                 Đăng nhập
               </Link>

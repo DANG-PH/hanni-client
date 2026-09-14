@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { Icon } from "@/components/icon";
 import { ErrorNote, PageHeading, Spinner } from "@/components/ui";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, ApiError } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { useUserSearch } from "@/lib/hooks";
 import {
+  emitTyping,
   getOrCreateConversation,
   markConversationRead,
   sendDirectMessage,
@@ -100,13 +101,21 @@ function NewMessageSearch({
   const [q, setQ] = useState("");
   const { data, isLoading } = useUserSearch(q);
   const [starting, setStarting] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   async function start(userId: string) {
     if (starting) return;
     setStarting(userId);
+    setError("");
     try {
       const conversation = await getOrCreateConversation(userId);
       onSelect(conversation.id);
+    } catch (err) {
+      setError(
+        err instanceof ApiError && err.status === 403
+          ? "Cần theo dõi nhau trước khi nhắn tin — vào hồ sơ của họ để theo dõi trước nhé."
+          : "Chưa mở được hội thoại. Thử lại nhé.",
+      );
     } finally {
       setStarting(null);
     }
@@ -120,16 +129,19 @@ function NewMessageSearch({
           autoFocus
           value={q}
           onChange={(event) => setQ(event.target.value)}
-          placeholder="Tìm người theo tên…"
+          placeholder="Tìm theo tên hoặc mã người dùng…"
           className="min-w-0 flex-1 bg-transparent text-sm outline-none"
         />
       </label>
+      {error && (
+        <p className="px-3 py-2 text-xs text-danger">{error}</p>
+      )}
       {q.trim() && isLoading && (
         <p className="px-3 py-3 text-sm text-muted">Đang tìm…</p>
       )}
       {q.trim() && !isLoading && data?.length === 0 && (
         <p className="px-3 py-3 text-sm text-muted">
-          Không tìm thấy ai tên này.
+          Không tìm thấy ai tên hoặc mã này.
         </p>
       )}
       <div className="space-y-0.5">
@@ -225,17 +237,47 @@ function ChatThread({ conversationId }: { conversationId: string }) {
   const { data: conversations } = useConversations();
   const { data, mutate } = useConversationMessages(conversationId);
   const conversation = conversations?.find((c) => c.id === conversationId);
+  const otherUserId = conversation?.otherUser.id;
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
   const [loadingOlder, setLoadingOlder] = useState(false);
+  const [otherTyping, setOtherTyping] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const otherTypingTimeout = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const lastTypingEmit = useRef(0);
   const lastMessageId = data?.items.at(-1)?.id;
+
+  const handleTypingEvent = useCallback(
+    (payload: { conversationId: string; userId: string }) => {
+      if (payload.conversationId !== conversationId) return;
+      if (payload.userId !== otherUserId) return;
+      setOtherTyping(true);
+      if (otherTypingTimeout.current) clearTimeout(otherTypingTimeout.current);
+      otherTypingTimeout.current = setTimeout(
+        () => setOtherTyping(false),
+        3000,
+      );
+    },
+    [conversationId, otherUserId],
+  );
+  useMessagesSocket(conversationId, handleTypingEvent);
 
   useEffect(() => {
     void markConversationRead(conversationId);
   }, [conversationId]);
+
+  // ChatThread được remount mỗi lần đổi hội thoại (key={activeId} ở
+  // MessagesInner) nên state otherTyping tự về false, chỉ cần dọn timeout.
+  useEffect(
+    () => () => {
+      if (otherTypingTimeout.current) clearTimeout(otherTypingTimeout.current);
+    },
+    [],
+  );
 
   // Chỉ tự cuộn xuống cuối khi có tin nhắn MỚI (id cuối cùng đổi) — không
   // cuộn khi tải thêm tin nhắn cũ ở trên (xử lý riêng trong loadOlder()),
@@ -304,9 +346,12 @@ function ChatThread({ conversationId }: { conversationId: string }) {
       {conversation && (
         <div className="flex items-center gap-2.5 border-b border-border px-4 py-3">
           <Avatar user={conversation.otherUser} size={32} />
-          <span className="font-semibold">
-            {conversation.otherUser.displayName}
-          </span>
+          <div className="min-w-0">
+            <p className="font-semibold">{conversation.otherUser.displayName}</p>
+            {otherTyping && (
+              <p className="text-xs text-primary">Đang nhập…</p>
+            )}
+          </div>
         </div>
       )}
       <div ref={listRef} className="flex-1 space-y-2.5 overflow-y-auto p-4">
@@ -333,6 +378,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
                 !prev ||
                 new Date(prev.createdAt).toDateString() !==
                   new Date(m.createdAt).toDateString();
+              const isLast = i === data.items.length - 1;
               return (
                 <div key={m.id}>
                   {showDay && (
@@ -357,6 +403,11 @@ function ChatThread({ conversationId }: { conversationId: string }) {
                       </p>
                     </div>
                   </div>
+                  {mine && isLast && (
+                    <p className="mt-0.5 text-right text-[10px] text-muted">
+                      {m.readAt ? "Đã xem" : "Đã gửi"}
+                    </p>
+                  )}
                 </div>
               );
             })}
@@ -378,7 +429,14 @@ function ChatThread({ conversationId }: { conversationId: string }) {
         <input
           ref={inputRef}
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {
+            setInput(e.target.value);
+            const now = Date.now();
+            if (otherUserId && now - lastTypingEmit.current > 2000) {
+              lastTypingEmit.current = now;
+              emitTyping(conversationId, otherUserId);
+            }
+          }}
           placeholder="Nhắn gì đó…"
           disabled={sending}
           className="field flex-1"

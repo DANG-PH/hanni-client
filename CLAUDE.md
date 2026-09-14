@@ -85,13 +85,25 @@ clipboard trên máy tính) cũng gắn ở mỗi huy hiệu ĐÃ MỞ KHOÁ tro
 (hộp thư nhắn tin 1-1 realtime, sidebar có badge số chưa đọc,
 mỗi tin nhắn có chữ Hán hiện nút "Dịch" ra pinyin + nghĩa tiếng Việt ngay trong khung chat —
 biến việc nhắn tin cho nhau thành luyện đọc, xem `MessageTranslation` trong `messages/page.tsx`;
-nút "Tin nhắn mới" mở ô tìm người theo tên qua `GET /users/search`, `NewMessageSearch` — trước
-đây chỉ bắt đầu hội thoại được từ trang hồ sơ công khai; ngoài ra `MessageIconButton`
-(`components/message-icon-button.tsx`) gắn thẳng ở bảng xếp hạng + thẻ "So với bạn bè" để nhắn
-tin ngay không cần vào hồ sơ trước. Khung chat có phân trang tải "Xem tin nhắn cũ hơn" (giữ
-nguyên vị trí cuộn khi tải, không giật xuống cuối), tách ngày "Hôm nay/Hôm qua/ngày cụ thể" +
-giờ dưới mỗi tin nhắn, tự focus ô nhập khi mở hội thoại, và khôi phục lại nội dung + báo lỗi
-nếu gửi thất bại (trước đó gửi lỗi sẽ mất tin nhắn ĐÃ GÕ một cách im lặng, không có gì báo lại)),
+nút "Tin nhắn mới" mở ô tìm người theo tên HOẶC mã người dùng (UID) qua `GET /users/search`,
+`NewMessageSearch` — trước đây chỉ bắt đầu hội thoại được từ trang hồ sơ công khai; ngoài ra
+`MessageIconButton` (`components/message-icon-button.tsx`) gắn thẳng ở bảng xếp hạng + thẻ "So
+với bạn bè" để nhắn tin ngay không cần vào hồ sơ trước — cả 2 chỗ này VÀ trang hồ sơ đều bắt lỗi
+403 riêng ("cần theo dõi nhau trước khi nhắn tin", xem mục kết nối bên dưới) thay vì để lỗi rơi
+mất. Khung chat có phân trang tải "Xem tin nhắn cũ hơn" (giữ nguyên vị trí cuộn khi tải, không
+giật xuống cuối), tách ngày "Hôm nay/Hôm qua/ngày cụ thể" + giờ dưới mỗi tin nhắn, tự focus ô
+nhập khi mở hội thoại, khôi phục lại nội dung + báo lỗi nếu gửi thất bại (trước đó gửi lỗi sẽ
+mất tin nhắn ĐÃ GÕ một cách im lặng, không có gì báo lại), **báo đã xem** ("Đã xem"/"Đã gửi"
+dưới tin nhắn CUỐI mình gửi, cập nhật realtime qua event `message:read`), và **báo đang nhập**
+("Đang nhập…" ở tiêu đề hội thoại, qua event `typing` — client tự throttle phát tối đa 1 lần/2s,
+tự tắt sau 3s không có tín hiệu mới, `emitTyping()` trong `lib/messages.ts`). **Kết nối trước
+khi nhắn tin**: hội thoại MỚI (chưa từng nhắn) yêu cầu đã theo dõi nhau (1 trong 2 chiều) — chủ ý
+để tránh cảm giác "tự nhiên nhắn cho người lạ", lỗi 403 hiện rõ ràng ở cả 3 điểm bắt đầu hội
+thoại (`MessageIconButton`, `NewMessageSearch`, trang hồ sơ). **Chia sẻ qua tin nhắn**:
+`SendToFriendButton` (`components/send-to-friend.tsx`) — khác `ShareButton` (chia sẻ RA NGOÀI),
+đây là gửi THẲNG nội dung (huy hiệu, hồ sơ) cho 1 người bạn Hanni cụ thể qua tin nhắn, tìm người
+nhận bằng tên/UID ngay trong 1 ô nhỏ xổ xuống, gắn ở `/achievements` (mỗi huy hiệu đã mở khoá)
+và hồ sơ công khai của chính mình),
 `/account` (đổi mật khẩu, thẻ "Mời bạn bè cùng học" — link `/register?ref=<userId>` qua
 `ShareButton`, số liệu từ `GET /referrals/me`, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ
 "XÓA" + mật khẩu nếu có đặt mới bấm được nút xoá vĩnh viễn, gọi `DELETE /users/me`),

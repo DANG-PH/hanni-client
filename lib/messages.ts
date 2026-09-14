@@ -64,9 +64,20 @@ export function translateMessage(text: string) {
 // qua đúng namespace này khi có tin nhắn tới (xem messages.service.ts).
 let socket: Socket | null = null;
 
+/** Báo cho người kia biết mình đang gõ — không lưu DB, chỉ chuyển tiếp qua
+ * socket (xem `NotificationsGateway.handleTyping()`). Im lặng bỏ qua nếu
+ * chưa có kết nối (vd mất mạng) — chỉ là hiệu ứng phụ, không cần đảm bảo gửi. */
+export function emitTyping(conversationId: string, toUserId: string) {
+  socket?.emit("typing", { conversationId, toUserId });
+}
+
 /** Lắng nghe tin nhắn mới, cập nhật badge chưa đọc + danh sách hội thoại
- * (và bơm thẳng vào luồng tin nhắn nếu người dùng đang mở đúng hội thoại). */
-export function useMessagesSocket(activeConversationId: string | null) {
+ * (và bơm thẳng vào luồng tin nhắn nếu người dùng đang mở đúng hội thoại).
+ * `onTyping` (tuỳ chọn) nhận sự kiện "đang nhập" của đúng hội thoại đang mở. */
+export function useMessagesSocket(
+  activeConversationId: string | null,
+  onTyping?: (payload: { conversationId: string; userId: string }) => void,
+) {
   const { user } = useAuth();
 
   useEffect(() => {
@@ -90,9 +101,23 @@ export function useMessagesSocket(activeConversationId: string | null) {
         void markConversationRead(payload.conversationId);
       }
     }
+    function onRead(payload: { conversationId: string }) {
+      if (payload.conversationId === activeConversationId) {
+        void mutate(
+          `/messages/conversations/${payload.conversationId}/messages?page=1`,
+        );
+      }
+    }
+    function onTypingEvent(payload: { conversationId: string; userId: string }) {
+      onTyping?.(payload);
+    }
     s.on("message:new", onNew);
+    s.on("message:read", onRead);
+    s.on("typing", onTypingEvent);
     return () => {
       s.off("message:new", onNew);
+      s.off("message:read", onRead);
+      s.off("typing", onTypingEvent);
     };
-  }, [user, activeConversationId]);
+  }, [user, activeConversationId, onTyping]);
 }
