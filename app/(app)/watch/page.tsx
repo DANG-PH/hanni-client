@@ -10,6 +10,7 @@ import {
   Button,
   EmptyState,
   ErrorNote,
+  LinkButton,
   PageHeading,
   SectionHeading,
 } from "@/components/ui";
@@ -66,6 +67,10 @@ export default function WatchPage() {
           <Icon name="headphones" size={17} /> Hán tự · Pinyin · Nghĩa tiếng
           Việt
         </span>
+        <LinkButton href="/watch/add" variant="secondary">
+          <Icon name="plus" size={17} />
+          Thêm video
+        </LinkButton>
       </PageHeading>
 
       {user && xemTiep && !error && (
