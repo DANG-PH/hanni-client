@@ -25,7 +25,8 @@ app/
 ├── study               buổi ôn flashcard (SM-2) + quiz cuối buổi
 ├── vocabulary          duyệt/tìm từ theo cấp HSK
 ├── progress            bucket đã thuộc / đang học / sắp quên theo cấp; có lịch hoạt động 30
-│                        ngày (`components/activity-calendar.tsx`, dùng GET /streak/history)
+│                        ngày (`components/activity-calendar.tsx`, dùng GET /streak/history) +
+│                        lịch sử quiz gần đây (GET /quiz/recent)
 ├── achievements         huy hiệu chưa mở khoá hiện thêm thanh tiến độ (progressCurrent/Target)
 ├── (app)/u/[id]         hồ sơ công khai — streak, huy hiệu, follow, "Nhắn tin"
 ├── (app)/messages       hộp thư nhắn tin 1-1 realtime (2 cột, mobile chỉ hiện 1 bên)
@@ -60,7 +61,9 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard (lật 3D, chạm cả thẻ) + quiz,
 duyệt từ vựng (có ghi chú giải thích chuẩn HSK 3.0 9 cấp khác chuẩn cũ 6 cấp), tiến độ, huy
 hiệu, cài đặt, học qua video (`/watch/[id]` dán video dưới topbar khi cuộn trên mobile để xem
-cùng bản chép, có bình luận 1 cấp trả lời + nút thích video), chuông thông báo realtime trong
+cùng bản chép, có bình luận 1 cấp trả lời + nút thích video; `/watch/add` — nút "Thêm video" ở
+`/watch` — chỉ cần dán link YouTube, các trường tiêu đề/cấp/thể loại gấp lại mặc định), chuông
+thông báo realtime trong
 topbar (`components/notification-bell.tsx`, đẩy qua WebSocket khi có người trả lời bình luận/
 bình luận hoặc thích video mình thêm/theo dõi mình/mở khoá huy hiệu mới — riêng loại huy hiệu
 hiện icon cúp thay vì avatar vì không có ai tác động, link sang `/achievements`), ngữ pháp (HSK 1–3 + HSK 4–9 đều có giải thích thật, 195/349 mục HSK 4–9; phần
