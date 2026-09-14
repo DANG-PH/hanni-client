@@ -65,7 +65,7 @@ function toRow(u: PublicProfileUser, isFollowing: boolean): Row {
 export default function ConnectionsPage() {
   const { user, loading } = useRequireAuth();
   const myProfile = usePublicProfile(user?.id ?? null);
-  const suggestions = useLeaderboard("learned", "global");
+  const suggestions = useLeaderboard("streak", "global");
   const [q, setQ] = useState("");
   const search = useUserSearch(q);
 
