@@ -50,6 +50,8 @@ const paths = {
   reply: "M9 14 4 9l5-5M4 9h9a7 7 0 0 1 7 7v2",
   trash:
     "M4 7h16M9 7V4h6v3m-9 0 1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13",
+  share:
+    "M18 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM6 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM18 16a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM8.59 13.51 15.42 17.49M15.41 6.51 8.59 10.49",
 } as const;
 
 export type IconName = keyof typeof paths;

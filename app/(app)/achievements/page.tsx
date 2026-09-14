@@ -10,6 +10,7 @@ import {
   Spinner,
 } from "@/components/ui";
 import { Icon } from "@/components/icon";
+import { ShareButton } from "@/components/share-button";
 import { useRequireAuth } from "@/lib/auth";
 import { useAchievements } from "@/lib/hooks";
 
@@ -173,6 +174,16 @@ export default function AchievementsPage() {
                             </time>
                           )}
                       </div>
+                      {a.unlocked && (
+                        <div className="mt-3 flex justify-end">
+                          <ShareButton
+                            compact
+                            title="Huy hiệu Hanni"
+                            text={`Mình vừa mở khóa huy hiệu "${a.nameVi}" trên Hanni — app học tiếng Trung theo chuẩn HSK 3.0!`}
+                            path={`/u/${user.id}`}
+                          />
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

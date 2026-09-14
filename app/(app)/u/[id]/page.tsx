@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { FollowButton } from "@/components/follow-button";
 import { Icon } from "@/components/icon";
+import { ShareButton } from "@/components/share-button";
 import { Button, Card, ErrorNote, Spinner, Stat } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { usePublicProfile } from "@/lib/hooks";
@@ -82,7 +83,13 @@ export default function PublicProfilePage() {
             </p>
           </div>
         </div>
-        {!p.isMe && (
+        {p.isMe ? (
+          <ShareButton
+            title="Hồ sơ Hanni của tôi"
+            text={`Mình đã học được ${p.learnedWordsCount} từ và giữ chuỗi ${p.currentStreak} ngày trên Hanni — cùng học tiếng Trung nhé!`}
+            path={`/u/${p.id}`}
+          />
+        ) : (
           <div className="flex items-center gap-2">
             <Button variant="secondary" onClick={() => void openConversation()} disabled={opening}>
               <Icon name="message" size={16} />
