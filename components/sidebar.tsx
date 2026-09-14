@@ -30,6 +30,7 @@ export const NAV_GROUPS: {
       { href: "/pronunciation", label: "Luyện phát âm", icon: "mic" },
       { href: "/writing", label: "Luyện viết Hán tự", icon: "pencil" },
       { href: "/exams", label: "Kiểm tra HSK", icon: "target" },
+      { href: "/minigame", label: "Dịch tốc độ", icon: "spark" },
     ],
   },
   {
@@ -38,7 +39,6 @@ export const NAV_GROUPS: {
       { href: "/progress", label: "Tiến độ học tập", icon: "chart" },
       { href: "/achievements", label: "Huy hiệu", icon: "trophy" },
       { href: "/leaderboard", label: "Bảng xếp hạng", icon: "flame" },
-      { href: "/connections", label: "Kết nối", icon: "share" },
       { href: "/messages", label: "Tin nhắn", icon: "message" },
       { href: "/account", label: "Tài khoản", icon: "user" },
       { href: "/settings", label: "Cài đặt", icon: "settings" },

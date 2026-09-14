@@ -19,6 +19,7 @@ import { api, ApiError } from "@/lib/api";
 import { useAuth, useRequireAuth } from "@/lib/auth";
 import { useReferralStats } from "@/lib/hooks";
 import { TIMEZONES } from "@/lib/timezones";
+import { buyStreakFreeze, useWallet } from "@/lib/wallet";
 
 export default function AccountPage() {
   const { user, loading, logout, refresh } = useRequireAuth();
@@ -177,6 +178,7 @@ export default function AccountPage() {
               Điều chỉnh mục tiêu <Icon name="arrow" size={16} />
             </Link>
           </Card>
+          <WalletCard />
           <Card>
             <SectionHeading
               icon="route"
@@ -345,6 +347,63 @@ function PasswordForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+function WalletCard() {
+  const { data, mutate } = useWallet();
+  const [buying, setBuying] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  async function buy() {
+    if (buying) return;
+    setBuying(true);
+    setError("");
+    setMessage("");
+    try {
+      const res = await buyStreakFreeze();
+      await mutate({ balance: res.balance }, { revalidate: false });
+      setMessage(`Đã mua thêm 1 lá chắn streak với ${res.price} xu!`);
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Chưa mua được, thử lại nhé.",
+      );
+    } finally {
+      setBuying(false);
+    }
+  }
+
+  return (
+    <Card>
+      <div className="flex items-center gap-3">
+        <span className="icon-tile bg-accent/10 text-accent">
+          <Icon name="spark" />
+        </span>
+        <div>
+          <h2 className="font-semibold">Ví xu</h2>
+          <p className="mt-1 text-sm text-muted">
+            Kiếm xu qua minigame &quot;Dịch tốc độ&quot; và học đều mỗi ngày.
+          </p>
+        </div>
+      </div>
+      <p className="mt-4 text-3xl font-bold text-accent">
+        {(data?.balance ?? 0).toLocaleString("vi-VN")}
+        <span className="ml-2 text-sm font-normal text-muted">xu</span>
+      </p>
+      <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-4">
+        <Button variant="secondary" onClick={() => void buy()} disabled={buying}>
+          {buying ? "Đang mua…" : "Mua lá chắn streak (300 xu)"}
+        </Button>
+        <LinkButton href="/minigame" variant="ghost">
+          Chơi ngay <Icon name="arrow" size={16} />
+        </LinkButton>
+      </div>
+      {message && <p className="mt-3 text-sm text-good">{message}</p>}
+      {error && <ErrorNote>{error}</ErrorNote>}
+    </Card>
   );
 }
 
