@@ -15,7 +15,19 @@ export function StudyLoader({
         <span className={styles.halo} />
         <span className={styles.orbit} />
         <span className={styles.innerOrbit} />
-        <Image src="/brand/hanni.png" alt="" width={56} height={56} className={styles.logo} />
+        <span className={styles.shadow} />
+        <span className={styles.sparkle} />
+        <span className={styles.smallSparkle} />
+        <Image
+          src="/anhloading.png"
+          alt=""
+          width={1367}
+          height={1150}
+          sizes={variant === "compact" ? "96px" : "(max-width: 639px) 200px, 240px"}
+          loading="eager"
+          fetchPriority={variant === "startup" ? "high" : "auto"}
+          className={styles.mascot}
+        />
       </div>
       <div className={styles.copy}>
         <span className={styles.brand}>Hanni<span>.</span></span>
