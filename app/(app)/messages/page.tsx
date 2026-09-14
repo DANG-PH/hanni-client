@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { Icon } from "@/components/icon";
-import { PageHeading, Spinner } from "@/components/ui";
+import { ErrorNote, PageHeading, Spinner } from "@/components/ui";
+import { apiFetch } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { useUserSearch } from "@/lib/hooks";
 import {
@@ -18,9 +19,30 @@ import {
   useMessagesSocket,
 } from "@/lib/messages";
 import { timeAgo } from "@/lib/time";
-import type { DirectMessage } from "@/lib/types";
+import type { DirectMessage, Paginated } from "@/lib/types";
 
 const HAS_HAN = /\p{Script=Han}/u;
+
+function dayLabel(iso: string): string {
+  const d = new Date(iso);
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) return "Hôm nay";
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return "Hôm qua";
+  return d.toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: d.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+  });
+}
+
+function timeLabel(iso: string): string {
+  return new Date(iso).toLocaleTimeString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 type Translation = { pinyin: string; vi: string | null } | "loading" | "error";
 
@@ -205,20 +227,59 @@ function ChatThread({ conversationId }: { conversationId: string }) {
   const conversation = conversations?.find((c) => c.id === conversationId);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
+  const [loadingOlder, setLoadingOlder] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const lastMessageId = data?.items.at(-1)?.id;
 
   useEffect(() => {
     void markConversationRead(conversationId);
   }, [conversationId]);
 
+  // Chỉ tự cuộn xuống cuối khi có tin nhắn MỚI (id cuối cùng đổi) — không
+  // cuộn khi tải thêm tin nhắn cũ ở trên (xử lý riêng trong loadOlder()),
+  // tránh giật màn hình về cuối ngay khi vừa bấm "Xem tin nhắn cũ hơn".
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
-  }, [data?.items.length]);
+  }, [lastMessageId]);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [conversationId]);
+
+  async function loadOlder() {
+    if (!data || loadingOlder || data.page >= data.totalPages) return;
+    const el = listRef.current;
+    const prevScrollHeight = el?.scrollHeight ?? 0;
+    setLoadingOlder(true);
+    try {
+      const nextPage = data.page + 1;
+      const older = await apiFetch<Paginated<DirectMessage>>(
+        `/messages/conversations/${conversationId}/messages?page=${nextPage}`,
+      );
+      await mutate(
+        (current) =>
+          current && {
+            ...current,
+            items: [...older.items, ...current.items],
+            page: nextPage,
+          },
+        { revalidate: false },
+      );
+      requestAnimationFrame(() => {
+        if (el) el.scrollTop = el.scrollHeight - prevScrollHeight;
+      });
+    } finally {
+      setLoadingOlder(false);
+    }
+  }
 
   async function send() {
     const content = input.trim();
     if (!content || sending) return;
     setInput("");
+    setSendError("");
     setSending(true);
     try {
       const message = await sendDirectMessage(conversationId, content);
@@ -230,6 +291,9 @@ function ChatThread({ conversationId }: { conversationId: string }) {
           },
         { revalidate: false },
       );
+    } catch {
+      setInput(content); // khôi phục để người dùng thử gửi lại
+      setSendError("Chưa gửi được tin nhắn. Kiểm tra mạng và thử lại.");
     } finally {
       setSending(false);
     }
@@ -246,22 +310,64 @@ function ChatThread({ conversationId }: { conversationId: string }) {
         </div>
       )}
       <div ref={listRef} className="flex-1 space-y-2.5 overflow-y-auto p-4">
-        {data?.items.map((m: DirectMessage) => {
-          const mine = m.senderId !== conversation?.otherUser.id;
-          return (
-            <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[75%] break-words rounded-xl px-3 py-2 text-sm ${
-                  mine ? "bg-primary text-primary-fg" : "bg-surface-2"
-                }`}
-              >
-                {m.content}
-                <MessageTranslation content={m.content} mine={mine} />
+        {!data ? (
+          <Spinner />
+        ) : (
+          <>
+            {data.page < data.totalPages && (
+              <div className="flex justify-center pb-2">
+                <button
+                  type="button"
+                  onClick={() => void loadOlder()}
+                  disabled={loadingOlder}
+                  className="text-xs font-medium text-primary hover:underline disabled:opacity-60"
+                >
+                  {loadingOlder ? "Đang tải…" : "Xem tin nhắn cũ hơn"}
+                </button>
               </div>
-            </div>
-          );
-        })}
+            )}
+            {data.items.map((m: DirectMessage, i) => {
+              const mine = m.senderId !== conversation?.otherUser.id;
+              const prev = data.items[i - 1];
+              const showDay =
+                !prev ||
+                new Date(prev.createdAt).toDateString() !==
+                  new Date(m.createdAt).toDateString();
+              return (
+                <div key={m.id}>
+                  {showDay && (
+                    <p className="my-3 text-center text-[11px] font-medium text-muted">
+                      {dayLabel(m.createdAt)}
+                    </p>
+                  )}
+                  <div
+                    className={`flex ${mine ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`max-w-[75%] break-words rounded-xl px-3 py-2 text-sm ${
+                        mine ? "bg-primary text-primary-fg" : "bg-surface-2"
+                      }`}
+                    >
+                      {m.content}
+                      <MessageTranslation content={m.content} mine={mine} />
+                      <p
+                        className={`mt-1 text-[10px] ${mine ? "text-primary-fg/70" : "text-muted"}`}
+                      >
+                        {timeLabel(m.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
       </div>
+      {sendError && (
+        <div className="px-3 pt-2">
+          <ErrorNote>{sendError}</ErrorNote>
+        </div>
+      )}
       <form
         className="flex items-center gap-2 border-t border-border p-3"
         onSubmit={(e) => {
@@ -270,6 +376,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
         }}
       >
         <input
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Nhắn gì đó…"

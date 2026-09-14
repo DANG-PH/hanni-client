@@ -84,7 +84,14 @@ clipboard trên máy tính) cũng gắn ở mỗi huy hiệu ĐÃ MỞ KHOÁ tro
 mỗi tin nhắn có chữ Hán hiện nút "Dịch" ra pinyin + nghĩa tiếng Việt ngay trong khung chat —
 biến việc nhắn tin cho nhau thành luyện đọc, xem `MessageTranslation` trong `messages/page.tsx`;
 nút "Tin nhắn mới" mở ô tìm người theo tên qua `GET /users/search`, `NewMessageSearch` — trước
-đây chỉ bắt đầu hội thoại được từ trang hồ sơ công khai),
+đây chỉ bắt đầu hội thoại được từ trang hồ sơ công khai; ngoài ra `MessageIconButton`
+(`components/message-icon-button.tsx`) gắn thẳng ở bảng xếp hạng + thẻ "So với bạn bè" để nhắn
+tin ngay không cần vào hồ sơ trước. Khung chat có phân trang tải "Xem tin nhắn cũ hơn" (giữ
+nguyên vị trí cuộn khi tải, không giật xuống cuối), tách ngày "Hôm nay/Hôm qua/ngày cụ thể" +
+giờ dưới mỗi tin nhắn, tự focus ô nhập khi mở hội thoại, và khôi phục lại nội dung + báo lỗi
+nếu gửi thất bại (trước đó gửi lỗi sẽ mất tin nhắn ĐÃ GÕ một cách im lặng, không có gì báo lại)),
+`/account` (đổi mật khẩu, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ "XÓA" + mật khẩu
+nếu có đặt mới bấm được nút xoá vĩnh viễn, gọi `DELETE /users/me`),
 `/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
 DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước — đã học

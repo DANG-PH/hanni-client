@@ -15,7 +15,7 @@ import {
   Spinner,
 } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
-import { useRequireAuth } from "@/lib/auth";
+import { useAuth, useRequireAuth } from "@/lib/auth";
 import { TIMEZONES } from "@/lib/timezones";
 
 export default function AccountPage() {
@@ -140,6 +140,7 @@ export default function AccountPage() {
               </Button>
             </div>
           </Card>
+          <DangerZone hasPassword={user.hasPassword} />
         </div>
         <aside className="space-y-5">
           <Card>
@@ -341,5 +342,116 @@ function PasswordForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+const DELETE_CONFIRM_WORD = "XÓA";
+
+function DangerZone({ hasPassword }: { hasPassword: boolean }) {
+  const { logout } = useAuth();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmText, setConfirmText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  const canSubmit =
+    confirmText.trim().toUpperCase() === DELETE_CONFIRM_WORD &&
+    (!hasPassword || password.length > 0);
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    if (!canSubmit || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      await api.del("/users/me", hasPassword ? { password } : undefined);
+      await logout();
+      router.replace("/");
+    } catch (err) {
+      setError(
+        err instanceof ApiError ? err.message : "Chưa xoá được tài khoản.",
+      );
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="border-danger/20">
+      <div className="flex items-start gap-3">
+        <span className="icon-tile bg-danger/10 text-danger">
+          <Icon name="trash" />
+        </span>
+        <div>
+          <h2 className="font-semibold text-danger">Vùng nguy hiểm</h2>
+          <p className="mt-1 text-sm leading-6 text-muted">
+            Xoá tài khoản sẽ xoá vĩnh viễn toàn bộ tiến độ học, tin nhắn, và
+            dữ liệu cá nhân — không thể khôi phục.
+          </p>
+        </div>
+      </div>
+
+      {!open ? (
+        <Button
+          variant="secondary"
+          className="mt-5 text-danger"
+          onClick={() => setOpen(true)}
+        >
+          <Icon name="trash" size={16} />
+          Xoá tài khoản
+        </Button>
+      ) : (
+        <form onSubmit={(e) => void submit(e)} className="mt-5 space-y-3">
+          {hasPassword && (
+            <label className="block text-sm font-medium">
+              Nhập mật khẩu để xác nhận
+              <input
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="field mt-1.5"
+              />
+            </label>
+          )}
+          <label className="block text-sm font-medium">
+            Gõ &quot;{DELETE_CONFIRM_WORD}&quot; để xác nhận
+            <input
+              type="text"
+              required
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              className="field mt-1.5"
+              placeholder={DELETE_CONFIRM_WORD}
+            />
+          </label>
+          {error && <ErrorNote>{error}</ErrorNote>}
+          <div className="flex gap-3">
+            <Button
+              type="submit"
+              disabled={!canSubmit || busy}
+              className="bg-danger! hover:bg-danger/90!"
+            >
+              {busy ? "Đang xoá…" : "Xoá vĩnh viễn"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={busy}
+              onClick={() => {
+                setOpen(false);
+                setError("");
+                setPassword("");
+                setConfirmText("");
+              }}
+            >
+              Huỷ
+            </Button>
+          </div>
+        </form>
+      )}
+    </Card>
   );
 }
