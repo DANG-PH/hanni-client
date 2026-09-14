@@ -6,6 +6,7 @@ import { Icon } from "@/components/icon";
 import { MessageIconButton } from "@/components/message-icon-button";
 import { Card } from "@/components/ui";
 import { useLeaderboard } from "@/lib/hooks";
+import styles from "./friends-leaderboard.module.css";
 
 /**
  * Thẻ "So với bạn bè" ở dashboard — bảng xếp hạng chuỗi ngày học nhưng chỉ
@@ -19,8 +20,8 @@ export function FriendsLeaderboard() {
   const hasFriends = rows.some((r) => !r.isMe);
 
   return (
-    <Card>
-      <div className="flex items-center justify-between">
+    <Card className={styles.card}>
+      <div className={styles.heading}>
         <div className="flex items-center gap-2 text-primary">
           <Icon name="flame" size={18} />
           <span className="text-sm font-semibold">So với bạn bè</span>
@@ -49,15 +50,14 @@ export function FriendsLeaderboard() {
           </Link>
         </div>
       ) : (
-        <ul className="mt-4 space-y-2.5">
+        <ul className={styles.list}>
           {rows.slice(0, 5).map((row) => (
             <li
               key={row.userId}
-              className={`flex items-center gap-3 rounded-xl px-2 py-1.5 ${
-                row.isMe ? "bg-primary/8" : ""
-              }`}
+              className={styles.row}
+              data-me={row.isMe || undefined}
             >
-              <span className="w-4 shrink-0 text-center text-xs font-semibold text-muted">
+              <span className={styles.rank}>
                 {row.rank}
               </span>
               <Link

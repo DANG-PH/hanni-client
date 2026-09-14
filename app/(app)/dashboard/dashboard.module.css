@@ -1,5 +1,8 @@
 .dashboard { min-width: 0; }
 
+.dailyGrid { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 20px; align-items: stretch; }
+.dailyGrid > :only-child { grid-column: 1 / -1; }
+
 .continueCard,
 .goalCard {
   position: relative;
@@ -74,12 +77,14 @@
   isolation: isolate;
   display: flex;
   min-width: 0;
-  min-height: 250px;
+  min-height: 230px;
   flex-direction: column;
   overflow: hidden;
   border-radius: 22px;
   padding: 20px;
-  background: linear-gradient(155deg, var(--surface) 40%, color-mix(in srgb, var(--hero-from) 50%, var(--surface)));
+  background:
+    radial-gradient(circle at var(--depth-x, 75%) var(--depth-y, 15%), color-mix(in srgb, var(--primary) 5%, transparent), transparent 65%),
+    linear-gradient(155deg, var(--surface) 40%, color-mix(in srgb, var(--hero-from) 50%, var(--surface)));
   box-shadow: 0 4px 0 color-mix(in srgb, var(--border) 58%, var(--surface)), 0 15px 30px -26px color-mix(in srgb, var(--foreground) 24%, transparent);
   transition: transform 350ms var(--motion-ease), border-color 250ms ease, box-shadow 350ms var(--motion-ease);
 }
@@ -96,6 +101,19 @@
   border-radius: 50%;
   opacity: 0.7;
   transition: scale 450ms var(--motion-ease), opacity 300ms ease;
+}
+
+.practiceCard::after {
+  content: "";
+  position: absolute;
+  top: 29px;
+  right: -49px;
+  width: 180px;
+  height: 180px;
+  border: 1px dashed color-mix(in srgb, var(--primary) 9%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .practiceTopline {
@@ -141,6 +159,19 @@
 .practiceCard:focus-visible { border-color: var(--primary); }
 .practiceCard:focus-visible .practiceTitle { color: var(--primary); }
 
+@media (prefers-reduced-motion: no-preference) {
+  .practiceCard[data-workspace-reveal="visible"] .practiceIcon {
+    animation: icon-unfold 950ms var(--motion-ease) var(--workspace-delay, 0ms) backwards;
+  }
+}
+
+@keyframes icon-unfold {
+  from { opacity: 0; transform: perspective(500px) rotateY(-65deg) rotate(-12deg) translateY(10px); }
+  to { opacity: 1; transform: perspective(500px) rotateY(0) rotate(0) translateY(0); }
+}
+
+@media (max-width: 899px) { .dailyGrid { grid-template-columns: minmax(0, 1fr); } }
+
 @media (hover: hover) and (pointer: fine) {
   .practiceCard:hover { border-color: color-mix(in srgb, var(--primary) 28%, var(--border)); box-shadow: 0 5px 0 color-mix(in srgb, var(--primary) 8%, var(--surface)), 0 23px 35px -24px color-mix(in srgb, var(--primary) 35%, transparent); }
   .practiceCard:hover .practiceTitle { color: var(--primary); }
@@ -164,6 +195,7 @@
   .practiceDescription { grid-column: 2; margin-top: 4px; padding-right: 8px; }
   .practiceFooter { grid-column: 1 / -1; }
   .practiceCard::before { top: -28px; right: -55px; }
+  .practiceCard::after { top: -45px; right: -72px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

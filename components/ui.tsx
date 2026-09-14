@@ -4,6 +4,8 @@ import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { Icon, type IconName } from "./icon";
 import headingStyles from "./headings.module.css";
+import { StudyLoader } from "./study-loader";
+import loaderStyles from "./study-loader.module.css";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 const VARIANTS: Record<Variant, string> = {
@@ -92,13 +94,18 @@ export function ProgressBar({
 }
 export function Spinner() {
   return (
-    <div
-      role="status"
-      className="flex items-center justify-center gap-3 py-20 text-sm text-muted"
-    >
-      <span className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary" />
-      Đang tải…
-    </div>
+    <>
+      <div className={loaderStyles.workspaceSpinner}>
+        <StudyLoader variant="compact" label="Đang tải nội dung học tập…" />
+      </div>
+      <div
+        role="status"
+        className={`flex items-center justify-center gap-3 py-20 text-sm text-muted ${loaderStyles.legacySpinner}`}
+      >
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary" />
+        Đang tải…
+      </div>
+    </>
   );
 }
 export function Stat({

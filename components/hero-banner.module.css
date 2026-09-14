@@ -328,6 +328,8 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .orbit { animation: orbit-turn 38s linear infinite; }
+  .orbitInner { animation: orbit-turn 52s linear reverse infinite; }
   .floatingDeck { animation: drift 7s ease-in-out infinite; }
   .soundChip { animation: drift 6.5s ease-in-out -2.5s infinite; }
   .glyphTile { animation: drift 8s ease-in-out -3s infinite; }
@@ -340,6 +342,7 @@
 
 @keyframes drift { 0%, 100% { translate: 0 0; } 50% { translate: 0 -9px; } }
 @keyframes waveform { 0%, 100% { scale: 1 0.65; } 50% { scale: 1 1; } }
+@keyframes orbit-turn { from { transform: rotate(-28deg); } to { transform: rotate(332deg); } }
 
 @media (min-width: 1024px) and (max-width: 1279px) {
   .scene { transform: translate(-50%, -50%) scale(0.82); }

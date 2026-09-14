@@ -7,6 +7,7 @@ import { Icon } from "./icon";
 import { Card } from "./ui";
 import { apiFetch } from "@/lib/api";
 import type { Word } from "@/lib/types";
+import styles from "./word-of-the-day.module.css";
 
 const fetcher = (path: string) => apiFetch<Word>(path);
 
@@ -19,24 +20,32 @@ export function WordOfTheDayCard() {
   if (!data) return null;
 
   return (
-    <Card className="flex flex-wrap items-center gap-5 border-accent/15 bg-accent/5">
-      <span className="hanzi flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-surface text-3xl text-accent">
-        {data.simplified}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="eyebrow mb-1 text-accent">Từ vựng hôm nay</p>
-        <p className="flex flex-wrap items-center gap-1.5 text-sm">
-          <span className="font-semibold">{data.pinyin}</span>
-          <AudioButton src={data.audioUrl} size={15} />
-          <span className="text-muted">— {data.meaningVi}</span>
-        </p>
-        <p className="mt-1 text-xs text-muted">HSK {data.hskLevel}</p>
+    <Card className={styles.card}>
+      <div className={styles.topline}>
+        <span className={styles.label}><Icon name="spark" size={14} /> Từ vựng hôm nay</span>
+        <span className={styles.level}>HSK {data.hskLevel}</span>
+      </div>
+      <div className={styles.word}>
+        <span
+          className={`hanzi ${styles.character}`}
+          lang="zh"
+          data-long={Array.from(data.simplified).length > 2 || undefined}
+        >
+          {data.simplified}
+        </span>
+        <div className={styles.definition}>
+          <p className={styles.pinyin}>
+            <span>{data.pinyin}</span>
+            <AudioButton src={data.audioUrl} size={15} />
+          </p>
+          <p className={styles.meaning}>{data.meaningVi}</p>
+        </div>
       </div>
       <Link
         href={`/vocabulary?level=${data.hskLevel}`}
-        className="shrink-0 text-sm font-semibold text-primary"
+        className={styles.action}
       >
-        Khám phá thêm <Icon name="arrow" size={14} className="inline" />
+        Khám phá thêm <span><Icon name="arrow" size={15} /></span>
       </Link>
     </Card>
   );

@@ -438,9 +438,10 @@ export default function DashboardPage() {
         />
       </div>
 
-      <WordOfTheDayCard />
-
-      <FriendsLeaderboard />
+      <div className={styles.dailyGrid}>
+        <WordOfTheDayCard />
+        <FriendsLeaderboard />
+      </div>
 
       <section>
         <SectionHeading

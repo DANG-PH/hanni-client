@@ -11,10 +11,11 @@ import { NotificationBell } from "./notification-bell";
 import { ThemeToggle } from "./theme-toggle";
 import { Icon } from "./icon";
 import { Avatar } from "./avatar";
+import { StudyLoader } from "./study-loader";
 import styles from "./app-shell.module.css";
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const streak = useStreak();
   const pathname = usePathname();
   const drawer = useRef<HTMLDialogElement>(null);
@@ -23,6 +24,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       (link) => pathname === link.href || pathname.startsWith(link.href + "/"),
     )?.label ?? "Góc học tập";
   const close = () => drawer.current?.close();
+  if (loading) return <StudyLoader variant="startup" label="Đang chuẩn bị không gian học của bạn…" />;
   return (
     <div className={`app-workspace flex min-h-screen bg-background ${styles.workspace}`}>
       <a

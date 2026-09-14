@@ -1,0 +1,110 @@
+.loader {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.startup {
+  min-height: 100dvh;
+  background:
+    radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--primary) 5%, transparent), transparent 45%),
+    var(--surface);
+}
+
+.page { min-height: min(65dvh, 620px); }
+.compact { gap: 14px; padding: 30px 16px; }
+
+.emblem {
+  position: relative;
+  display: grid;
+  width: 120px;
+  height: 120px;
+  place-items: center;
+}
+
+.halo {
+  position: absolute;
+  inset: 12px;
+  border: 1px solid color-mix(in srgb, var(--primary) 8%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--primary) 3%, var(--surface));
+}
+
+.orbit,
+.innerOrbit {
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  border-top-color: var(--primary);
+  border-bottom-color: var(--primary);
+  border-radius: 50%;
+}
+
+.orbit::after {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 8%, transparent);
+  content: "";
+}
+
+.innerOrbit {
+  inset: 8px;
+  border-width: 1px;
+  border-top-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  border-bottom-color: transparent;
+  border-left-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.logo {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  box-shadow: 0 12px 24px -12px color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+.brand { color: var(--foreground); font-size: 27px; font-weight: 800; letter-spacing: -0.055em; }
+.brand > span { color: var(--primary); }
+.copy p { margin-top: 7px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.dots { display: flex; justify-content: center; gap: 5px; margin-top: 15px; }
+.dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--primary); opacity: 0.4; }
+.caption { margin-top: 28px; color: var(--muted); font-size: 11px; letter-spacing: 0.02em; }
+.compact .emblem { width: 70px; height: 70px; }
+.compact .logo { width: 34px; height: 34px; border-radius: 10px; }
+.compact .brand { display: none; }
+.compact .copy p { margin: 0; font-size: 12px; }
+.compact .dots { margin-top: 10px; }
+.compact .orbit::after { top: 6px; right: 6px; width: 4px; height: 4px; }
+
+/* Shared Spinner keeps its existing appearance on public and auth pages. */
+.workspaceSpinner { display: none; }
+:global(.app-workspace) .workspaceSpinner { display: block; }
+:global(.app-workspace) .legacySpinner { display: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .orbit { animation: revolve 1.8s linear infinite; }
+  .innerOrbit { animation: revolve 3s linear reverse infinite; }
+  .logo { animation: breathe 2.8s ease-in-out infinite; }
+  .dots i { animation: dot 1.2s ease-in-out infinite; }
+  .dots i:nth-child(2) { animation-delay: 160ms; }
+  .dots i:nth-child(3) { animation-delay: 320ms; }
+}
+
+@keyframes revolve { to { transform: rotate(360deg); } }
+@keyframes breathe { 50% { transform: translateY(-3px); } }
+@keyframes dot { 50% { opacity: 1; transform: translateY(-3px); } }
+
+@media (max-width: 639px) {
+  .startup .emblem { width: 104px; height: 104px; }
+  .page { min-height: 55dvh; }
+}
