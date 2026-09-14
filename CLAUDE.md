@@ -145,4 +145,8 @@ thẻ cài trong `/settings`, popup mời cài nổi góc phải dưới (`compo
 Lời mời cài thật chỉ chạy ở bản production/HTTPS, không đăng ký worker ở `npm run dev`.
 **Thông báo đẩy**: `components/pwa/notification-card.tsx` (`/settings`) + `lib/pwa/push.ts` (subscribe/
 unsubscribe/gửi thử) + handler `push`/`notificationclick` trong `public/sw.js`. Dùng VAPID key lấy từ
-backend (`GET /push/public-key`), chưa có lịch nhắc tự động — chỉ gửi thủ công qua API.
+backend (`GET /push/public-key`). Khi đã bật thông báo trên thiết bị, `NotificationCard` hiện thêm
+1 ô chọn "giờ nhắc học mỗi ngày" (0-23, hoặc "Không nhắc") — ghi qua `PATCH /users/me/settings`
+(field `reminderHour`, `UserSettings`, state nâng lên `SettingsPage` để dùng chung SWR key với
+form cài đặt còn lại), server tự gửi nhắc mỗi ngày đúng giờ đó nếu chưa đạt mục tiêu ngày (xem
+`ReminderService` ở `hanni-server/CLAUDE.md`).

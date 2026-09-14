@@ -13,7 +13,19 @@ import {
 } from "@/lib/pwa/push";
 import { usePwaState } from "@/lib/pwa/store";
 
-export function NotificationCard() {
+const REMINDER_HOURS = Array.from({ length: 24 }, (_, h) => h);
+
+function reminderLabel(h: number) {
+  return `${h.toString().padStart(2, "0")}:00`;
+}
+
+export function NotificationCard({
+  reminderHour,
+  onChangeReminderHour,
+}: {
+  reminderHour: number | null;
+  onChangeReminderHour: (hour: number | null) => Promise<void>;
+}) {
   const state = usePwaState();
   const [subscribed, setSubscribed] = useState<boolean | null>(null);
   const [busy, setBusy] = useState<"subscribe" | "unsubscribe" | "test" | null>(
@@ -21,6 +33,22 @@ export function NotificationCard() {
   );
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [reminderBusy, setReminderBusy] = useState(false);
+  const [reminderSaved, setReminderSaved] = useState(false);
+
+  async function saveReminderHour(hour: number | null) {
+    setReminderBusy(true);
+    setReminderSaved(false);
+    setError("");
+    try {
+      await onChangeReminderHour(hour);
+      setReminderSaved(true);
+    } catch {
+      setError("Chưa lưu được giờ nhắc học. Vui lòng thử lại.");
+    } finally {
+      setReminderBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (state.workerStatus !== "ready" || !pushSupported()) return;
@@ -134,6 +162,45 @@ export function NotificationCard() {
           </Button>
         )}
       </div>
+      {subscribed && (
+        <div className="rounded-2xl border border-border bg-surface-2/50 p-5">
+          <label
+            htmlFor="reminder-hour"
+            className="block text-sm font-medium"
+          >
+            Giờ nhắc học mỗi ngày
+          </label>
+          <p className="mt-1 text-xs leading-5 text-muted">
+            Hanni sẽ gửi thông báo đúng giờ này (theo múi giờ học tập của bạn)
+            vào những ngày bạn chưa đạt mục tiêu.
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <select
+              id="reminder-hour"
+              className="field w-auto"
+              value={reminderHour ?? ""}
+              disabled={reminderBusy}
+              onChange={(event) => {
+                const value = event.target.value;
+                void saveReminderHour(value === "" ? null : Number(value));
+              }}
+            >
+              <option value="">Không nhắc</option>
+              {REMINDER_HOURS.map((h) => (
+                <option key={h} value={h}>
+                  {reminderLabel(h)}
+                </option>
+              ))}
+            </select>
+            {reminderSaved && (
+              <span className="flex items-center gap-1.5 text-sm text-good">
+                <Icon name="check" size={16} />
+                Đã lưu
+              </span>
+            )}
+          </div>
+        </div>
+      )}
       {message && (
         <p
           role="status"
