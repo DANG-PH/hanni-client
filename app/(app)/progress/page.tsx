@@ -15,7 +15,7 @@ import {
 } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { useRequireAuth } from "@/lib/auth";
-import { useProgress } from "@/lib/hooks";
+import { useProgress, useRecentQuizzes } from "@/lib/hooks";
 
 const BAND_VI: Record<string, string> = {
   ELEMENTARY: "Sơ cấp",
@@ -26,6 +26,7 @@ const BAND_VI: Record<string, string> = {
 export default function ProgressPage() {
   const { user, loading } = useRequireAuth();
   const { data, isLoading, error, mutate } = useProgress();
+  const quizzes = useRecentQuizzes();
   if (loading || !user) return <Spinner />;
   const completion = data?.totals.totalWords
     ? Math.round((data.totals.learned / data.totals.totalWords) * 100)
@@ -165,6 +166,49 @@ export default function ProgressPage() {
                 <ActivityCalendar days={30} />
               </Card>
             </section>
+            {!!quizzes.data?.length && (
+              <section>
+                <SectionHeading
+                  icon="check"
+                  tone="lavender"
+                  title="Quiz gần đây"
+                  description="Kết quả các bài quiz cuối buổi ôn tập."
+                  className="mb-5"
+                />
+                <Card className="divide-y divide-border p-0!">
+                  {quizzes.data.map((q) => (
+                    <div
+                      key={q.id}
+                      className="flex items-center justify-between gap-3 px-5 py-3.5"
+                    >
+                      <span className="text-sm text-muted">
+                        {q.completedAt
+                          ? new Date(q.completedAt).toLocaleDateString("vi-VN", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })
+                          : "—"}
+                      </span>
+                      <span className="text-sm">
+                        {q.correctCount}/{q.totalQuestions} câu
+                      </span>
+                      <span
+                        className={`text-sm font-semibold ${
+                          q.scorePct >= 80
+                            ? "text-good"
+                            : q.scorePct >= 50
+                              ? "text-warn"
+                              : "text-danger"
+                        }`}
+                      >
+                        {Math.round(q.scorePct)}%
+                      </span>
+                    </div>
+                  ))}
+                </Card>
+              </section>
+            )}
             <section>
               <SectionHeading
                 icon="chart"

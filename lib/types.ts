@@ -209,6 +209,14 @@ export interface Quiz {
   questions: QuizQuestion[];
 }
 
+export interface QuizAttemptSummary {
+  id: string;
+  completedAt: string | null;
+  totalQuestions: number;
+  correctCount: number;
+  scorePct: number;
+}
+
 export type VideoKind =
   | "PODCAST"
   | "STORY"

@@ -24,6 +24,7 @@ import type {
   PracticeStats,
   ProgressOverview,
   PublicProfile,
+  QuizAttemptSummary,
   StreakInfo,
   StudyStats,
   SubmitOnboardingInput,
@@ -59,6 +60,10 @@ export function useStudyStats() {
 
 export function useAchievements() {
   return useSWR<Achievement[]>("/achievements", fetcher);
+}
+
+export function useRecentQuizzes() {
+  return useSWR<QuizAttemptSummary[]>("/quiz/recent", fetcher);
 }
 
 export function useLearnPath(level?: number) {
