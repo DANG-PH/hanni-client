@@ -1,5 +1,5 @@
-.layout {
-  display: grid;
+.layout,
+.connectionsPanel {
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--border);
@@ -7,6 +7,7 @@
   background: var(--surface);
   box-shadow: var(--workspace-shadow);
 }
+.layout { display: grid; }
 .threadPane { display: flex; flex-direction: column; min-width: 0; min-height: 0; height: clamp(420px, 65dvh, 720px); }
 .threadPane > div:last-child { flex: 1; min-height: 0; height: auto; }
 .backLink { flex-shrink: 0; }

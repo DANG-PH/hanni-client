@@ -82,29 +82,43 @@ tab người theo dõi/đang theo dõi, nút Theo dõi + nút "Nhắn tin" mở/
 sang `/messages`, xem hồ sơ CHÍNH MÌNH thì thay 2 nút đó bằng nút "Chia sẻ" — `ShareButton`
 (`components/share-button.tsx`, dùng Web Share API trên di động, rơi về sao chép link vào
 clipboard trên máy tính) cũng gắn ở mỗi huy hiệu ĐÃ MỞ KHOÁ trong `/achievements`), `/messages`
-(hộp thư nhắn tin 1-1 realtime, sidebar có badge số chưa đọc,
-mỗi tin nhắn có chữ Hán hiện nút "Dịch" ra pinyin + nghĩa tiếng Việt ngay trong khung chat —
-biến việc nhắn tin cho nhau thành luyện đọc, xem `MessageTranslation` trong `messages/page.tsx`;
-nút "Tin nhắn mới" mở ô tìm người theo tên HOẶC mã người dùng (UID) qua `GET /users/search`,
-`NewMessageSearch` — trước đây chỉ bắt đầu hội thoại được từ trang hồ sơ công khai; ngoài ra
-`MessageIconButton` (`components/message-icon-button.tsx`) gắn thẳng ở bảng xếp hạng + thẻ "So
-với bạn bè" để nhắn tin ngay không cần vào hồ sơ trước — cả 2 chỗ này VÀ trang hồ sơ đều bắt lỗi
-403 riêng ("cần theo dõi nhau trước khi nhắn tin", xem mục kết nối bên dưới) thay vì để lỗi rơi
-mất. Khung chat có phân trang tải "Xem tin nhắn cũ hơn" (giữ nguyên vị trí cuộn khi tải, không
-giật xuống cuối), tách ngày "Hôm nay/Hôm qua/ngày cụ thể" + giờ dưới mỗi tin nhắn, tự focus ô
-nhập khi mở hội thoại, khôi phục lại nội dung + báo lỗi nếu gửi thất bại (trước đó gửi lỗi sẽ
-mất tin nhắn ĐÃ GÕ một cách im lặng, không có gì báo lại), **báo đã xem** ("Đã xem"/"Đã gửi"
-dưới tin nhắn CUỐI mình gửi, cập nhật realtime qua event `message:read`), và **báo đang nhập**
-("Đang nhập…" ở tiêu đề hội thoại, qua event `typing` — client tự throttle phát tối đa 1 lần/2s,
-tự tắt sau 3s không có tín hiệu mới, `emitTyping()` trong `lib/messages.ts`). **Kết nối trước
-khi nhắn tin**: hội thoại MỚI (chưa từng nhắn) yêu cầu đã theo dõi nhau (1 trong 2 chiều) — chủ ý
-để tránh cảm giác "tự nhiên nhắn cho người lạ", lỗi 403 hiện rõ ràng ở cả 3 điểm bắt đầu hội
-thoại (`MessageIconButton`, `NewMessageSearch`, trang hồ sơ). **Chia sẻ qua tin nhắn**:
-`SendToFriendButton` (`components/send-to-friend.tsx`) — khác `ShareButton` (chia sẻ RA NGOÀI),
-đây là gửi THẲNG nội dung (huy hiệu, hồ sơ) cho 1 người bạn Hanni cụ thể qua tin nhắn, tìm người
-nhận bằng tên/UID ngay trong 1 ô nhỏ xổ xuống, gắn ở `/achievements` (mỗi huy hiệu đã mở khoá)
-và hồ sơ công khai của chính mình),
-`/account` (đổi mật khẩu, thẻ "Mời bạn bè cùng học" — link `/register?ref=<userId>` qua
+(hộp thư nhắn tin 1-1 realtime + kết nối, gộp chung 2 tab **"Trò chuyện"** và **"Kết nối"** trên
+CÙNG 1 trang qua query param `?tab=connect` (xem `MessagesInner` trong `messages/page.tsx`) —
+trước đó tách riêng `/connections` nhưng bị trùng lặp gần như y hệt phần "tìm người + bắt đầu
+nhắn tin" đã có sẵn ở "Tin nhắn mới", nên gộp lại cho đỡ phải nhảy trang; route `/connections`
+cũ giờ chỉ còn là redirect sang `/messages?tab=connect` để link/bookmark cũ không 404.
+  - Tab **"Trò chuyện"**: sidebar có badge số chưa đọc, mỗi tin nhắn có chữ Hán hiện nút "Dịch"
+    ra pinyin + nghĩa tiếng Việt ngay trong khung chat — biến việc nhắn tin cho nhau thành luyện
+    đọc (`MessageTranslation`). Khung chat có phân trang tải "Xem tin nhắn cũ hơn" (giữ nguyên vị
+    trí cuộn khi tải, không giật xuống cuối), tách ngày "Hôm nay/Hôm qua/ngày cụ thể" + giờ dưới
+    mỗi tin nhắn, tự focus ô nhập khi mở hội thoại, khôi phục lại nội dung + báo lỗi nếu gửi thất
+    bại (trước đó gửi lỗi sẽ mất tin nhắn ĐÃ GÕ một cách im lặng, không có gì báo lại), **báo đã
+    xem** ("Đã xem"/"Đã gửi" dưới tin nhắn CUỐI mình gửi, cập nhật realtime qua event
+    `message:read`), và **báo đang nhập** ("Đang nhập…" ở tiêu đề hội thoại, qua event `typing`
+    — client tự throttle phát tối đa 1 lần/2s, tự tắt sau 3s không có tín hiệu mới,
+    `emitTyping()` trong `lib/messages.ts`). Danh sách hội thoại trống thì mời chuyển sang tab
+    "Kết nối" thay vì chỉ báo suông.
+  - Tab **"Kết nối"** (`components/connections-panel.tsx`, dùng chung cho cả tab này lẫn trang
+    redirect cũ): ô tìm theo tên HOẶC mã người dùng (UID) qua `GET /users/search`, danh sách "Đã
+    kết nối" (theo dõi lẫn nhau — mutual từ `usePublicProfile(myId)`'s `followers`/`following`),
+    "Đang theo dõi bạn" (follow lại để thành 2 chiều), "Bạn đang theo dõi", và "Gợi ý kết nối"
+    (lấy từ bảng xếp hạng "Chuỗi hiện tại" toàn cục — không dùng "Từ đã thuộc" vì metric đó
+    thường trống lúc mới launch, chưa ai đạt ngưỡng "đã thuộc" ≥21 ngày ôn — lọc bớt người đã
+    theo dõi) — mỗi dòng có sẵn nút Theo dõi + Nhắn tin (`MessageIconButton`) ngay tại chỗ, bấm
+    Nhắn tin từ đây tự nhảy về tab "Trò chuyện" đúng hội thoại (vì `MessageIconButton` điều
+    hướng qua `?c=<id>`, và `?c=` có mặt thì trang luôn ưu tiên hiện tab "Trò chuyện").
+  - **Kết nối trước khi nhắn tin**: hội thoại MỚI (chưa từng nhắn) yêu cầu đã theo dõi nhau (1
+    trong 2 chiều) — chủ ý để tránh cảm giác "tự nhiên nhắn cho người lạ", lỗi 403 hiện rõ ràng ở
+    `MessageIconButton` và trang hồ sơ.
+  - **Chia sẻ qua tin nhắn**: `SendToFriendButton` (`components/send-to-friend.tsx`) — khác
+    `ShareButton` (chia sẻ RA NGOÀI), đây là gửi THẲNG nội dung (huy hiệu, hồ sơ) cho 1 người bạn
+    Hanni cụ thể qua tin nhắn, tìm người nhận bằng tên/UID ngay trong 1 ô nhỏ xổ xuống, gắn ở
+    `/achievements` (mỗi huy hiệu đã mở khoá) và hồ sơ công khai của chính mình),
+`/minigame` ("Dịch tốc độ" — Giai đoạn 1 của đề xuất minigame trong `FEATURES.md`: chơi 1 mình,
+đồng hồ đếm ngược 60s tự chạy bằng `setInterval` so với `startTimeRef` (không cộng dồn sai số),
+chọn đáp án xong tự chuyển câu hoặc tự nộp bài khi hết giờ/hết câu, bảng xếp hạng ngày/tuần),
+`/account` (đổi mật khẩu, thẻ "Ví xu" (`useWallet()`) hiện số dư + nút mua thêm lá chắn streak
+(300 xu, `buyStreakFreeze()`), thẻ "Mời bạn bè cùng học" — link `/register?ref=<userId>` qua
 `ShareButton`, số liệu từ `GET /referrals/me`, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ
 "XÓA" + mật khẩu nếu có đặt mới bấm được nút xoá vĩnh viễn, gọi `DELETE /users/me`),
 `/listening` +

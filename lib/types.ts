@@ -507,3 +507,44 @@ export interface ReferralStats {
   rewardedCount: number;
   pendingCount: number;
 }
+
+export interface MinigameQuestion {
+  wordId: string;
+  prompt: string;
+  pinyin: string;
+  options: string[];
+}
+
+export interface MinigameStartResponse {
+  sessionId: string;
+  questions: MinigameQuestion[];
+}
+
+export interface MinigameResult {
+  score: number;
+  totalAsked: number;
+  coinsEarned: number;
+  balance: number;
+}
+
+export interface MinigameLeaderboardRow {
+  rank: number;
+  userId: string;
+  displayName: string;
+  avatarUrl: string | null;
+  score: number;
+  totalAsked: number;
+  durationMs: number;
+}
+
+export interface WalletBalance {
+  balance: number;
+}
+
+export interface CoinTransaction {
+  id: string;
+  userId: string;
+  amount: number;
+  reason: string;
+  createdAt: string;
+}

@@ -5,14 +5,13 @@ import styles from "./messages.module.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/avatar";
+import { ConnectionsPanel } from "@/components/connections-panel";
 import { Icon } from "@/components/icon";
 import { ErrorNote, PageHeading, Spinner } from "@/components/ui";
-import { apiFetch, ApiError } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
-import { useUserSearch } from "@/lib/hooks";
 import {
   emitTyping,
-  getOrCreateConversation,
   markConversationRead,
   sendDirectMessage,
   translateMessage,
@@ -94,104 +93,29 @@ function MessageTranslation({
   );
 }
 
-function NewMessageSearch({
-  onSelect,
-}: {
-  onSelect: (conversationId: string) => void;
-}) {
-  const [q, setQ] = useState("");
-  const { data, isLoading } = useUserSearch(q);
-  const [starting, setStarting] = useState<string | null>(null);
-  const [error, setError] = useState("");
-
-  async function start(userId: string) {
-    if (starting) return;
-    setStarting(userId);
-    setError("");
-    try {
-      const conversation = await getOrCreateConversation(userId);
-      onSelect(conversation.id);
-    } catch (err) {
-      setError(
-        err instanceof ApiError && err.status === 403
-          ? "Cần theo dõi nhau trước khi nhắn tin — vào hồ sơ của họ để theo dõi trước nhé."
-          : "Chưa mở được hội thoại. Thử lại nhé.",
-      );
-    } finally {
-      setStarting(null);
-    }
-  }
-
-  return (
-    <div className="space-y-1">
-      <label className="field flex items-center gap-2 py-2">
-        <Icon name="search" size={16} className="text-muted" />
-        <input
-          autoFocus
-          value={q}
-          onChange={(event) => setQ(event.target.value)}
-          placeholder="Tìm theo tên hoặc mã người dùng…"
-          className="min-w-0 flex-1 bg-transparent text-sm outline-none"
-        />
-      </label>
-      {error && (
-        <p className="px-3 py-2 text-xs text-danger">{error}</p>
-      )}
-      {q.trim() && isLoading && (
-        <p className="px-3 py-3 text-sm text-muted">Đang tìm…</p>
-      )}
-      {q.trim() && !isLoading && data?.length === 0 && (
-        <p className="px-3 py-3 text-sm text-muted">
-          Không tìm thấy ai tên hoặc mã này.
-        </p>
-      )}
-      <div className="space-y-0.5">
-        {data?.map((u) => (
-          <button
-            key={u.id}
-            type="button"
-            disabled={starting !== null}
-            onClick={() => void start(u.id)}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-surface-2 disabled:opacity-60"
-          >
-            <Avatar user={u} size={36} />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">
-                {u.displayName}
-              </p>
-              {u.currentStreak > 0 && (
-                <p className="text-xs text-muted">🔥 {u.currentStreak} ngày</p>
-              )}
-            </div>
-            {starting === u.id && (
-              <Icon
-                name="refresh"
-                size={16}
-                className="animate-spin text-muted"
-              />
-            )}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function ConversationList({
   activeId,
   onSelect,
+  onFindPeople,
 }: {
   activeId: string | null;
   onSelect: (id: string) => void;
+  onFindPeople: () => void;
 }) {
   const { data, isLoading } = useConversations();
   if (isLoading) return <Spinner />;
   if (!data || data.length === 0) {
     return (
-      <p className="px-4 py-8 text-center text-sm text-muted">
-        Chưa có cuộc trò chuyện nào. Vào hồ sơ ai đó và bấm &quot;Nhắn
-        tin&quot; để bắt đầu.
-      </p>
+      <div className="px-4 py-8 text-center text-sm text-muted">
+        <p>Chưa có cuộc trò chuyện nào.</p>
+        <button
+          type="button"
+          onClick={onFindPeople}
+          className="mt-2 font-semibold text-primary hover:underline"
+        >
+          Tìm người quen để bắt đầu
+        </button>
+      </div>
     );
   }
   return (
@@ -455,19 +379,26 @@ function ChatThread({ conversationId }: { conversationId: string }) {
   );
 }
 
+type Tab = "chats" | "connect";
+
 function MessagesInner() {
   const { user, loading } = useRequireAuth();
   const router = useRouter();
   const params = useSearchParams();
   const activeId = params.get("c");
-  const [composing, setComposing] = useState(false);
+  // Đang mở 1 hội thoại thì luôn ưu tiên hiện tab "chats" — chọn người ở
+  // tab "connect" xong sẽ tự nhảy về đây (xem select()).
+  const tab: Tab = activeId ? "chats" : params.get("tab") === "connect" ? "connect" : "chats";
   useMessagesSocket(activeId);
 
   if (loading || !user) return <Spinner />;
 
   function select(id: string) {
-    setComposing(false);
     router.push(`/messages?c=${id}`);
+  }
+
+  function switchTab(next: Tab) {
+    router.push(next === "connect" ? "/messages?tab=connect" : "/messages");
   }
 
   return (
@@ -477,49 +408,73 @@ function MessagesInner() {
         tone="primary"
         eyebrow="Kết nối với bạn bè"
         title="Tin nhắn"
-        description="Trò chuyện trực tiếp với những người bạn theo dõi hoặc gặp trên Hanni."
-      >
-        <button
-          type="button"
-          onClick={() => setComposing((v) => !v)}
-          aria-pressed={composing}
-          className={`motion-button inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold ${composing ? "bg-surface-2 text-foreground" : "bg-primary/10 text-primary hover:bg-primary/15"}`}
-        >
-          <Icon name={composing ? "close" : "plus"} size={16} />
-          {composing ? "Đóng" : "Tin nhắn mới"}
-        </button>
-      </PageHeading>
-      <div className={styles.layout}>
-        <div
-          className={`border-border p-2 md:block md:border-r ${activeId ? "hidden" : "block"}`}
-        >
-          {composing ? (
-            <NewMessageSearch onSelect={select} />
-          ) : (
-            <ConversationList activeId={activeId} onSelect={select} />
-          )}
-        </div>
-        <div
-          className={styles.threadPane}
-          data-active={!!activeId}
-        >
-          {activeId ? (
-            <>
-              <Link
-                href="/messages"
-                className={`flex items-center gap-1.5 border-b border-border px-4 py-2 text-xs font-medium text-primary md:hidden ${styles.backLink}`}
-              >
-                <Icon name="back" size={14} /> Danh sách hội thoại
-              </Link>
-              <ChatThread key={activeId} conversationId={activeId} />
-            </>
-          ) : (
-            <div className="hidden h-full items-center justify-center text-sm text-muted md:flex">
-              Chọn 1 cuộc trò chuyện để bắt đầu
-            </div>
-          )}
-        </div>
+        description="Trò chuyện và kết nối với những người học khác trên Hanni."
+      />
+      <div className="flex gap-1 border-b border-border">
+        {(
+          [
+            { key: "chats", label: "Trò chuyện", icon: "message" },
+            { key: "connect", label: "Kết nối", icon: "share" },
+          ] as const
+        ).map((t) => (
+          <button
+            key={t.key}
+            type="button"
+            aria-pressed={tab === t.key}
+            onClick={() => switchTab(t.key)}
+            className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
+              tab === t.key
+                ? "border-primary text-primary"
+                : "border-transparent text-muted hover:text-foreground"
+            }`}
+          >
+            <Icon name={t.icon} size={16} />
+            {t.label}
+          </button>
+        ))}
       </div>
+
+      {tab === "connect" ? (
+        <div className={styles.connectionsPanel}>
+          <ConnectionsPanel myUserId={user.id} />
+        </div>
+      ) : (
+        <div className={styles.layout}>
+          <div
+            className={`border-border p-2 md:block md:border-r ${activeId ? "hidden" : "block"}`}
+          >
+            <ConversationList
+              activeId={activeId}
+              onSelect={select}
+              onFindPeople={() => switchTab("connect")}
+            />
+          </div>
+          <div className={styles.threadPane} data-active={!!activeId}>
+            {activeId ? (
+              <>
+                <Link
+                  href="/messages"
+                  className={`flex items-center gap-1.5 border-b border-border px-4 py-2 text-xs font-medium text-primary md:hidden ${styles.backLink}`}
+                >
+                  <Icon name="back" size={14} /> Danh sách hội thoại
+                </Link>
+                <ChatThread key={activeId} conversationId={activeId} />
+              </>
+            ) : (
+              <div className="hidden h-full flex-col items-center justify-center gap-3 text-sm text-muted md:flex">
+                <p>Chọn 1 cuộc trò chuyện để bắt đầu</p>
+                <button
+                  type="button"
+                  onClick={() => switchTab("connect")}
+                  className="font-semibold text-primary hover:underline"
+                >
+                  Tìm người để nhắn tin →
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
