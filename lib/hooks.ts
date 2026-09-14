@@ -28,6 +28,7 @@ import type {
   StreakInfo,
   StudyStats,
   SubmitOnboardingInput,
+  UserSearchResult,
   VideoCard,
   VideoComment,
   VideoDetail,
@@ -155,6 +156,15 @@ export function unfollowUser(userId: string) {
 export function usePublicProfile(userId: string | null) {
   return useSWR<PublicProfile>(
     userId ? `/users/${userId}/profile` : null,
+    fetcher,
+  );
+}
+
+/** Tìm người dùng theo tên — để theo dõi/nhắn tin khi họ không lọt bảng xếp hạng. */
+export function useUserSearch(q: string) {
+  const query = q.trim();
+  return useSWR<UserSearchResult[]>(
+    query ? `/users/search?q=${encodeURIComponent(query)}` : null,
     fetcher,
   );
 }

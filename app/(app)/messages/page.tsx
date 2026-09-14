@@ -7,7 +7,9 @@ import { Avatar } from "@/components/avatar";
 import { Icon } from "@/components/icon";
 import { PageHeading, Spinner } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
+import { useUserSearch } from "@/lib/hooks";
 import {
+  getOrCreateConversation,
   markConversationRead,
   sendDirectMessage,
   translateMessage,
@@ -64,6 +66,78 @@ function MessageTranslation({
     >
       <p className="italic">{translation.pinyin}</p>
       {translation.vi && <p>{translation.vi}</p>}
+    </div>
+  );
+}
+
+function NewMessageSearch({
+  onSelect,
+}: {
+  onSelect: (conversationId: string) => void;
+}) {
+  const [q, setQ] = useState("");
+  const { data, isLoading } = useUserSearch(q);
+  const [starting, setStarting] = useState<string | null>(null);
+
+  async function start(userId: string) {
+    if (starting) return;
+    setStarting(userId);
+    try {
+      const conversation = await getOrCreateConversation(userId);
+      onSelect(conversation.id);
+    } finally {
+      setStarting(null);
+    }
+  }
+
+  return (
+    <div className="space-y-1">
+      <label className="field flex items-center gap-2 py-2">
+        <Icon name="search" size={16} className="text-muted" />
+        <input
+          autoFocus
+          value={q}
+          onChange={(event) => setQ(event.target.value)}
+          placeholder="Tìm người theo tên…"
+          className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+        />
+      </label>
+      {q.trim() && isLoading && (
+        <p className="px-3 py-3 text-sm text-muted">Đang tìm…</p>
+      )}
+      {q.trim() && !isLoading && data?.length === 0 && (
+        <p className="px-3 py-3 text-sm text-muted">
+          Không tìm thấy ai tên này.
+        </p>
+      )}
+      <div className="space-y-0.5">
+        {data?.map((u) => (
+          <button
+            key={u.id}
+            type="button"
+            disabled={starting !== null}
+            onClick={() => void start(u.id)}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-surface-2 disabled:opacity-60"
+          >
+            <Avatar user={u} size={36} />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold">
+                {u.displayName}
+              </p>
+              {u.currentStreak > 0 && (
+                <p className="text-xs text-muted">🔥 {u.currentStreak} ngày</p>
+              )}
+            </div>
+            {starting === u.id && (
+              <Icon
+                name="refresh"
+                size={16}
+                className="animate-spin text-muted"
+              />
+            )}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -220,11 +294,13 @@ function MessagesInner() {
   const router = useRouter();
   const params = useSearchParams();
   const activeId = params.get("c");
+  const [composing, setComposing] = useState(false);
   useMessagesSocket(activeId);
 
   if (loading || !user) return <Spinner />;
 
   function select(id: string) {
+    setComposing(false);
     router.push(`/messages?c=${id}`);
   }
 
@@ -236,12 +312,26 @@ function MessagesInner() {
         eyebrow="Kết nối với bạn bè"
         title="Tin nhắn"
         description="Trò chuyện trực tiếp với những người bạn theo dõi hoặc gặp trên Hanni."
-      />
+      >
+        <button
+          type="button"
+          onClick={() => setComposing((v) => !v)}
+          aria-pressed={composing}
+          className={`motion-button inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold ${composing ? "bg-surface-2 text-foreground" : "bg-primary/10 text-primary hover:bg-primary/15"}`}
+        >
+          <Icon name={composing ? "close" : "plus"} size={16} />
+          {composing ? "Đóng" : "Tin nhắn mới"}
+        </button>
+      </PageHeading>
       <div className="grid gap-0 overflow-hidden rounded-2xl border border-border md:grid-cols-[320px_1fr]">
         <div
           className={`border-border p-2 md:block md:border-r ${activeId ? "hidden" : "block"}`}
         >
-          <ConversationList activeId={activeId} onSelect={select} />
+          {composing ? (
+            <NewMessageSearch onSelect={select} />
+          ) : (
+            <ConversationList activeId={activeId} onSelect={select} />
+          )}
         </div>
         <div
           className={`h-[60vh] md:block ${activeId ? "block" : "hidden"}`}

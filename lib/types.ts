@@ -422,6 +422,14 @@ export interface PublicProfile {
   following: PublicProfileUser[];
 }
 
+export interface UserSearchResult {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  currentStreak: number;
+  isFollowing: boolean;
+}
+
 export type OnboardingGoal =
   | "TRAVEL"
   | "WORK"

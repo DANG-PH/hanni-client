@@ -79,7 +79,9 @@ link sang trang hồ sơ công khai `/u/[id]` — avatar, ngày tham gia, streak
 tab người theo dõi/đang theo dõi, nút Theo dõi + nút "Nhắn tin" mở/tạo hội thoại rồi điều hướng
 sang `/messages`), `/messages` (hộp thư nhắn tin 1-1 realtime, sidebar có badge số chưa đọc,
 mỗi tin nhắn có chữ Hán hiện nút "Dịch" ra pinyin + nghĩa tiếng Việt ngay trong khung chat —
-biến việc nhắn tin cho nhau thành luyện đọc, xem `MessageTranslation` trong `messages/page.tsx`),
+biến việc nhắn tin cho nhau thành luyện đọc, xem `MessageTranslation` trong `messages/page.tsx`;
+nút "Tin nhắn mới" mở ô tìm người theo tên qua `GET /users/search`, `NewMessageSearch` — trước
+đây chỉ bắt đầu hội thoại được từ trang hồ sơ công khai),
 `/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
 DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước — đã học
