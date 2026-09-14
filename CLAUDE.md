@@ -114,9 +114,17 @@ cũ giờ chỉ còn là redirect sang `/messages?tab=connect` để link/bookma
     `ShareButton` (chia sẻ RA NGOÀI), đây là gửi THẲNG nội dung (huy hiệu, hồ sơ) cho 1 người bạn
     Hanni cụ thể qua tin nhắn, tìm người nhận bằng tên/UID ngay trong 1 ô nhỏ xổ xuống, gắn ở
     `/achievements` (mỗi huy hiệu đã mở khoá) và hồ sơ công khai của chính mình),
-`/minigame` ("Dịch tốc độ" — Giai đoạn 1 của đề xuất minigame trong `FEATURES.md`: chơi 1 mình,
-đồng hồ đếm ngược 60s tự chạy bằng `setInterval` so với `startTimeRef` (không cộng dồn sai số),
-chọn đáp án xong tự chuyển câu hoặc tự nộp bài khi hết giờ/hết câu, bảng xếp hạng ngày/tuần),
+`/minigame` ("Dịch tốc độ", 2 tab — **Luyện tập** (Giai đoạn 1 `FEATURES.md`): chơi 1 mình, đồng
+hồ đếm ngược 60s tự chạy bằng `setInterval` so với `startTimeRef` (không cộng dồn sai số), chọn
+đáp án xong tự chuyển câu hoặc tự nộp bài khi hết giờ/hết câu, bảng xếp hạng ngày/tuần; và **Đấu
+1v1** (Giai đoạn 2): bấm "Tìm đối thủ" phát `duel:join-queue` qua socket dùng chung
+`/notifications` (`lib/socket.ts` — tách riêng khỏi `lib/messages.ts` thành 1 file `getNotificationsSocket()`
+DÙNG CHUNG, vì cần 2 nơi độc lập cùng emit/listen trên 1 kết nối), server tự ghép trận rồi đẩy
+`duel:matched` → `duel:round` (8 vòng, mỗi vòng có `deadlineMs` để tự chạy đồng hồ y hệt phần
+luyện tập) → `duel:round-result` (tô xanh đáp án đúng, đỏ đáp án mình chọn sai) → `duel:finished`
+(thắng/thua/hoà + biến động ELO). `useDuelSocket()` (`lib/duel.ts`) dùng ref cho handlers để
+không bắt component gọi phải tự `useCallback` — effect chỉ đăng ký socket theo `user`, không theo
+từng lần đổi state trong ván đấu),
 `/account` (đổi mật khẩu, thẻ "Ví xu" (`useWallet()`) hiện số dư + nút mua thêm lá chắn streak
 (300 xu, `buyStreakFreeze()`), thẻ "Mời bạn bè cùng học" — link `/register?ref=<userId>` qua
 `ShareButton`, số liệu từ `GET /referrals/me`, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ

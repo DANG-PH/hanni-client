@@ -548,3 +548,65 @@ export interface CoinTransaction {
   reason: string;
   createdAt: string;
 }
+
+export interface DuelOpponent {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+}
+
+export interface DuelMatched {
+  matchId: string;
+  opponent: DuelOpponent;
+  totalRounds: number;
+}
+
+export interface DuelRoundQuestion {
+  wordId: string;
+  prompt: string;
+  pinyin: string;
+  options: string[];
+}
+
+export interface DuelRoundPayload {
+  matchId: string;
+  round: number;
+  totalRounds: number;
+  question: DuelRoundQuestion;
+  deadlineMs: number;
+}
+
+export interface DuelRoundResult {
+  matchId: string;
+  round: number;
+  correctIndex: number;
+  scores: Record<string, number>;
+}
+
+export interface DuelFinished {
+  matchId: string;
+  opponent: DuelOpponent;
+  myScore: number;
+  opponentScore: number;
+  winnerId: string | null;
+  eloChange: number;
+  newElo: number;
+}
+
+export interface DuelRatingStats {
+  elo: number;
+  wins: number;
+  losses: number;
+  draws: number;
+}
+
+export interface DuelLeaderboardRow {
+  rank: number;
+  userId: string;
+  displayName: string;
+  avatarUrl: string | null;
+  elo: number;
+  wins: number;
+  losses: number;
+  draws: number;
+}

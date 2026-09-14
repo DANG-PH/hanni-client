@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { io, type Socket } from "socket.io-client";
 import useSWR, { mutate } from "swr";
-import { api, apiFetch, SERVER_ORIGIN } from "./api";
+import { api, apiFetch } from "./api";
 import { useAuth } from "./auth";
+import { getNotificationsSocket } from "./socket";
 import type { ConversationSummary, DirectMessage, Paginated } from "./types";
 
 const fetcher = <T>(path: string) => apiFetch<T>(path);
@@ -59,16 +59,11 @@ export function translateMessage(text: string) {
   );
 }
 
-// Dùng chung 1 kết nối với /notifications (socket.io-client tự cache theo
-// URL, không mở thêm socket mới) — NotificationsGateway đã phát "message:new"
-// qua đúng namespace này khi có tin nhắn tới (xem messages.service.ts).
-let socket: Socket | null = null;
-
 /** Báo cho người kia biết mình đang gõ — không lưu DB, chỉ chuyển tiếp qua
  * socket (xem `NotificationsGateway.handleTyping()`). Im lặng bỏ qua nếu
  * chưa có kết nối (vd mất mạng) — chỉ là hiệu ứng phụ, không cần đảm bảo gửi. */
 export function emitTyping(conversationId: string, toUserId: string) {
-  socket?.emit("typing", { conversationId, toUserId });
+  getNotificationsSocket(true)?.emit("typing", { conversationId, toUserId });
 }
 
 /** Lắng nghe tin nhắn mới, cập nhật badge chưa đọc + danh sách hội thoại
@@ -81,15 +76,8 @@ export function useMessagesSocket(
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!user) {
-      socket?.disconnect();
-      socket = null;
-      return;
-    }
-    if (!socket) {
-      socket = io(`${SERVER_ORIGIN}/notifications`, { withCredentials: true });
-    }
-    const s = socket;
+    const s = getNotificationsSocket(Boolean(user));
+    if (!s) return;
 
     function onNew(payload: { conversationId: string; message: DirectMessage }) {
       void mutate(CONVERSATIONS_KEY);
