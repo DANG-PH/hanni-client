@@ -1,8 +1,9 @@
 .page {
+  min-width: 0;
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 24px 28px 40px;
+  padding: 28px clamp(16px, 2.6vw, 36px) 40px;
 }
 
 .navigation {
@@ -34,8 +35,8 @@
   overflow: hidden;
   position: relative;
   border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--border));
-  border-radius: 28px;
-  padding: 38px 40px;
+  border-radius: var(--radius-section);
+  padding: var(--section-padding);
   background:
     radial-gradient(
       ellipse at 95% 100%,

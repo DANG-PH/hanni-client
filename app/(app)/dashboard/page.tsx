@@ -188,7 +188,7 @@ export default function DashboardPage() {
     : PRACTICE_AREAS;
 
   return (
-    <div className={`page-wrap space-y-8 ${styles.dashboard}`}>
+    <div className={`page-wrap ${styles.dashboard}`}>
       <FeatureTour tourKey="dashboard" steps={DASHBOARD_TOUR_STEPS} />
       <div className="reveal flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted">
@@ -204,63 +204,65 @@ export default function DashboardPage() {
           <Icon name="arrow" size={13} />
         </Link>
       </div>
-      <HeroBanner
-        title="Học mỗi ngày,"
-        highlight="tiến bộ không ngừng!"
-        subtitle={heroSubtitle}
-        ctaLabel={
-          current?.startedWords ? "Tiếp tục bài học" : "Bắt đầu học ngay"
-        }
-        ctaHref={current ? `/study?lesson=${current.id}` : "/learn"}
-      />
+      <div className={styles.welcome}>
+        <HeroBanner
+          title="Học mỗi ngày,"
+          highlight="tiến bộ không ngừng!"
+          subtitle={heroSubtitle}
+          ctaLabel={
+            current?.startedWords ? "Tiếp tục bài học" : "Bắt đầu học ngay"
+          }
+          ctaHref={current ? `/study?lesson=${current.id}` : "/learn"}
+        />
 
-      {onboarding.data === null ? (
-        <Card className="flex flex-wrap items-center justify-between gap-4 border-primary/15 bg-primary/5!">
-          <div className="flex items-center gap-3">
-            <span className="icon-tile text-primary">
-              <Icon name="route" size={18} />
-            </span>
-            <div>
-              <h2 className="text-sm font-semibold">
-                Chưa có lộ trình cá nhân
-              </h2>
-              <p className="mt-0.5 text-xs text-muted">
-                Làm khảo sát 1 phút để Hanni gợi ý cấp HSK và nhịp học phù hợp mục tiêu của bạn.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/onboarding"
-            className="motion-button inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-fg hover:bg-primary/90"
-          >
-            Làm khảo sát <Icon name="arrow" size={16} />
-          </Link>
-        </Card>
-      ) : (
-        onboarding.data && (
-          <Card className="flex flex-wrap items-center justify-between gap-4 border-primary/15 bg-primary/5!">
-            <div className="flex min-w-0 items-center gap-3">
+        {onboarding.data === null ? (
+          <Card className={`flex flex-wrap items-center justify-between gap-4 border-primary/15 bg-primary/5! ${styles.planCard}`}>
+            <div className="flex items-center gap-3">
               <span className="icon-tile text-primary">
                 <Icon name="route" size={18} />
               </span>
-              <div className="min-w-0">
+              <div>
                 <h2 className="text-sm font-semibold">
-                  Lộ trình của bạn: HSK {onboarding.data.recommendedLevel}
+                  Chưa có lộ trình cá nhân
                 </h2>
-                <p className="mt-0.5 truncate text-xs text-muted">
-                  {onboarding.data.recommendationVi}
+                <p className="mt-0.5 text-xs text-muted">
+                  Làm khảo sát 1 phút để Hanni gợi ý cấp HSK và nhịp học phù hợp mục tiêu của bạn.
                 </p>
               </div>
             </div>
             <Link
               href="/onboarding"
-              className="inline-flex min-h-11 shrink-0 items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+              className="motion-button inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-fg hover:bg-primary/90"
             >
-              Xem lại <Icon name="arrow" size={16} />
+              Làm khảo sát <Icon name="arrow" size={16} />
             </Link>
           </Card>
-        )
-      )}
+        ) : (
+          onboarding.data && (
+            <Card className={`flex flex-wrap items-center justify-between gap-4 border-primary/15 bg-primary/5! ${styles.planCard}`}>
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="icon-tile text-primary">
+                  <Icon name="route" size={18} />
+                </span>
+                <div className="min-w-0">
+                  <h2 className="text-sm font-semibold">
+                    Lộ trình của bạn: HSK {onboarding.data.recommendedLevel}
+                  </h2>
+                  <p className="mt-0.5 truncate text-xs text-muted">
+                    {onboarding.data.recommendationVi}
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/onboarding"
+                className="inline-flex min-h-11 shrink-0 items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+              >
+                Xem lại <Icon name="arrow" size={16} />
+              </Link>
+            </Card>
+          )
+        )}
+      </div>
 
       {(stats.error || streak.error || path.error) && (
         <ErrorNote>
@@ -280,7 +282,7 @@ export default function DashboardPage() {
         </ErrorNote>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
+      <div className={styles.sessionGrid}>
         {/* Tiếp tục học */}
         <Card className={`flex flex-col justify-between ${styles.continueCard}`}>
           <div className="flex items-center gap-2.5 text-primary">
@@ -395,7 +397,7 @@ export default function DashboardPage() {
 
       <VideoShelf />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className={styles.statsGrid}>
         <Stat
           label="Chuỗi ngày học"
           value={streak.data ? `${streak.data.currentStreak}` : "—"}
@@ -443,12 +445,12 @@ export default function DashboardPage() {
         <FriendsLeaderboard />
       </div>
 
-      <section>
+      <section className={styles.skillsSection}>
         <SectionHeading
           icon="spark"
           eyebrow="Học theo cách của bạn"
           title="Rèn từng kỹ năng"
-          className="mb-4"
+          className={styles.skillsHeading}
         >
           <Link
             href="/exams"
@@ -457,7 +459,7 @@ export default function DashboardPage() {
             Kiểm tra kiến thức <Icon name="arrow" size={16} />
           </Link>
         </SectionHeading>
-        <div className="reveal-group grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className={`reveal-group ${styles.skillsGrid}`}>
           {orderedPracticeAreas.map((area, index) => (
             <Link
               key={area.href}

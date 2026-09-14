@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import styles from "./messages.module.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/avatar";
@@ -354,7 +355,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
           </div>
         </div>
       )}
-      <div ref={listRef} className="flex-1 space-y-2.5 overflow-y-auto p-4">
+      <div ref={listRef} className={`flex-1 space-y-2.5 overflow-y-auto p-4 ${styles.messageList}`}>
         {!data ? (
           <Spinner />
         ) : (
@@ -439,7 +440,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
           }}
           placeholder="Nhắn gì đó…"
           disabled={sending}
-          className="field flex-1"
+          className="field min-w-0 flex-1"
         />
         <button
           type="submit"
@@ -488,7 +489,7 @@ function MessagesInner() {
           {composing ? "Đóng" : "Tin nhắn mới"}
         </button>
       </PageHeading>
-      <div className="grid gap-0 overflow-hidden rounded-2xl border border-border md:grid-cols-[320px_1fr]">
+      <div className={styles.layout}>
         <div
           className={`border-border p-2 md:block md:border-r ${activeId ? "hidden" : "block"}`}
         >
@@ -499,13 +500,14 @@ function MessagesInner() {
           )}
         </div>
         <div
-          className={`h-[60vh] md:block ${activeId ? "block" : "hidden"}`}
+          className={styles.threadPane}
+          data-active={!!activeId}
         >
           {activeId ? (
             <>
               <Link
                 href="/messages"
-                className="flex items-center gap-1.5 border-b border-border px-4 py-2 text-xs font-medium text-primary md:hidden"
+                className={`flex items-center gap-1.5 border-b border-border px-4 py-2 text-xs font-medium text-primary md:hidden ${styles.backLink}`}
               >
                 <Icon name="back" size={14} /> Danh sách hội thoại
               </Link>

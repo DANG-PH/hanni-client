@@ -204,6 +204,8 @@
 /* This component also appears on the public home page. Keep the workspace
    treatment scoped so the approved public design stays unchanged. */
 :global(.app-workspace) .journey {
+  border-radius: var(--radius-section);
+  padding: var(--section-padding);
   border-color: color-mix(in srgb, var(--primary) 12%, var(--border));
   background:
     radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 60%),
@@ -216,11 +218,14 @@
 }
 
 :global(.app-workspace) .stages {
+  border-radius: var(--radius-inner);
   gap: 9px;
   padding: 10px;
   background: color-mix(in srgb, var(--primary) 3%, var(--surface-2));
   box-shadow: inset 0 2px 5px color-mix(in srgb, var(--foreground) 3%, transparent);
 }
+
+:global(.app-workspace) .stage { border-radius: var(--radius-control); }
 
 :global(.app-workspace) .character {
   border: 1px solid color-mix(in srgb, var(--stage-color) 12%, var(--border));
