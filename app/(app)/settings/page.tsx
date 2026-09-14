@@ -131,6 +131,7 @@ function SettingsForm({
         maxReviewsPerDay: form.maxReviewsPerDay,
         srsScheduler: form.srsScheduler,
         targetRetention: form.targetRetention,
+        weeklyDigestEnabled: form.weeklyDigestEnabled,
       });
       setForm(next);
       await onSaved(next);
@@ -370,6 +371,43 @@ function SettingsForm({
               >
                 Tự phát hiện
               </Button>
+            </div>
+          </Card>
+
+          <Card>
+            <div className="mb-5 flex items-start gap-3">
+              <span className="icon-tile">
+                <Icon name="message" />
+              </span>
+              <div>
+                <h2 className="font-semibold">Email tổng kết tuần</h2>
+                <p className="mt-1 text-sm text-muted">
+                  Mỗi thứ Hai, Hanni gửi email tóm tắt số ngày đã học, từ đã
+                  ôn/đã thuộc và chuỗi ngày hiện tại của bạn.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {(
+                [
+                  { value: true, label: "Bật" },
+                  { value: false, label: "Tắt" },
+                ] as const
+              ).map((option) => (
+                <button
+                  type="button"
+                  key={String(option.value)}
+                  aria-pressed={form.weeklyDigestEnabled === option.value}
+                  onClick={() => update("weeklyDigestEnabled", option.value)}
+                  className={`motion-button flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium ${form.weeklyDigestEnabled === option.value ? "border-primary/35 bg-primary/5 text-primary" : "border-border bg-surface text-muted hover:bg-surface-2"}`}
+                >
+                  <Icon
+                    name={option.value ? "check" : "close"}
+                    size={16}
+                  />
+                  {option.label}
+                </button>
+              ))}
             </div>
           </Card>
         </fieldset>

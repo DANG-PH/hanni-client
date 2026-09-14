@@ -20,6 +20,7 @@ export interface UserSettings {
   srsScheduler: "sm2" | "fsrs";
   targetRetention: number;
   reminderHour: number | null;
+  weeklyDigestEnabled: boolean;
 }
 
 export interface HskLevel {
