@@ -365,7 +365,12 @@ export interface ExamHistory {
   };
 }
 
-export type LeaderboardMetricKey = "learned" | "streak" | "longest" | "lessons";
+export type LeaderboardMetricKey =
+  | "learned"
+  | "streak"
+  | "longest"
+  | "lessons"
+  | "elo";
 
 export interface LeaderboardMetric {
   key: LeaderboardMetricKey;
@@ -382,6 +387,9 @@ export interface LeaderboardRow {
   currentStreak: number;
   isMe: boolean;
   isFollowing: boolean;
+  /** chỉ có khi metric = "elo" */
+  tier?: string;
+  tierColor?: string;
 }
 
 export interface Leaderboard {

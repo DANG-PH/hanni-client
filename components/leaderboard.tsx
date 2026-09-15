@@ -5,7 +5,9 @@ import { Avatar } from "@/components/avatar";
 import { FollowButton } from "@/components/follow-button";
 import { Icon, type IconName } from "@/components/icon";
 import { MessageIconButton } from "@/components/message-icon-button";
+import { RankEmblem } from "@/components/rank-emblem";
 import { LinkButton, SectionHeading } from "@/components/ui";
+import { useRankTiers } from "@/lib/duel";
 import type {
   Leaderboard,
   LeaderboardMetric,
@@ -65,6 +67,17 @@ export const LEADERBOARD_METRICS: (LeaderboardMetric & {
     href: "/learn",
     action: "Tiếp tục học bài",
   },
+  {
+    key: "elo",
+    label: "Đấu 1v1 (ELO)",
+    unit: "ELO",
+    icon: "flame",
+    description:
+      "Xếp hạng theo điểm ELO đấu 1v1 — thắng tăng, thua giảm, xem chi tiết bậc rank ở trang Minigame.",
+    encouragement: "Vào đấu 1v1 để leo rank và kiếm thêm xu mỗi mùa!",
+    href: "/minigame",
+    action: "Vào đấu 1v1",
+  },
 ];
 
 export function metricDetails(key: LeaderboardMetricKey) {
@@ -84,6 +97,7 @@ export function LeaderboardOverview({
     .filter((row) => row.rank >= 1 && row.rank <= 3)
     .slice(0, 3);
   const details = metricDetails(board.metric);
+  const tiersInfo = useRankTiers();
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px] xl:gap-5">
@@ -138,11 +152,27 @@ export function LeaderboardOverview({
                 <p className={styles.podiumName} title={row.displayName}>
                   {row.displayName}
                 </p>
-                <span
-                  className={`mt-1 text-[10px] font-semibold ${row.isMe ? "text-primary" : "text-muted"}`}
-                >
-                  {row.isMe ? "Bạn" : `Hạng ${row.rank}`}
-                </span>
+                {board.metric === "elo" && row.tier && row.tierColor ? (
+                  <span className="mt-1 flex items-center gap-1.5">
+                    <RankEmblem
+                      tierName={row.tier}
+                      color={row.tierColor}
+                      tiers={tiersInfo.data?.tiers}
+                      size={18}
+                    />
+                    <span
+                      className={`text-[10px] font-semibold ${row.isMe ? "text-primary" : "text-muted"}`}
+                    >
+                      {row.tier}
+                    </span>
+                  </span>
+                ) : (
+                  <span
+                    className={`mt-1 text-[10px] font-semibold ${row.isMe ? "text-primary" : "text-muted"}`}
+                  >
+                    {row.isMe ? "Bạn" : `Hạng ${row.rank}`}
+                  </span>
+                )}
                 <div className={styles.podiumStep}>
                   <strong className="block text-lg leading-6 font-bold tabular-nums sm:text-xl">
                     {number(row.value)}
@@ -218,6 +248,7 @@ export function LeaderboardRankings({
   onFollowChange: (userId: string, following: boolean) => void;
 }) {
   const limited = board.rows.length < board.me.totalRanked;
+  const tiersInfo = useRankTiers();
 
   return (
     <section className="panel overflow-hidden" aria-labelledby="rankings-title">
@@ -276,6 +307,14 @@ export function LeaderboardRankings({
                       href={`/u/${row.userId}`}
                       className="flex flex-wrap items-center gap-x-2 gap-y-0.5 hover:underline"
                     >
+                      {board.metric === "elo" && row.tier && row.tierColor && (
+                        <RankEmblem
+                          tierName={row.tier}
+                          color={row.tierColor}
+                          tiers={tiersInfo.data?.tiers}
+                          size={22}
+                        />
+                      )}
                       <span className="break-words text-sm font-semibold [overflow-wrap:anywhere]">
                         {row.displayName}
                       </span>
