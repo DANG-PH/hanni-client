@@ -99,14 +99,19 @@ cũ giờ chỉ còn là redirect sang `/messages?tab=connect` để link/bookma
     `emitTyping()` trong `lib/messages.ts`). Danh sách hội thoại trống thì mời chuyển sang tab
     "Kết nối" thay vì chỉ báo suông.
   - Tab **"Kết nối"** (`components/connections-panel.tsx`, dùng chung cho cả tab này lẫn trang
-    redirect cũ): ô tìm theo tên HOẶC mã người dùng (UID) qua `GET /users/search`, danh sách "Đã
-    kết nối" (theo dõi lẫn nhau — mutual từ `usePublicProfile(myId)`'s `followers`/`following`),
-    "Đang theo dõi bạn" (follow lại để thành 2 chiều), "Bạn đang theo dõi", và "Gợi ý kết nối"
-    (lấy từ bảng xếp hạng "Chuỗi hiện tại" toàn cục — không dùng "Từ đã thuộc" vì metric đó
-    thường trống lúc mới launch, chưa ai đạt ngưỡng "đã thuộc" ≥21 ngày ôn — lọc bớt người đã
-    theo dõi) — mỗi dòng có sẵn nút Theo dõi + Nhắn tin (`MessageIconButton`) ngay tại chỗ, bấm
-    Nhắn tin từ đây tự nhảy về tab "Trò chuyện" đúng hội thoại (vì `MessageIconButton` điều
-    hướng qua `?c=<id>`, và `?c=` có mặt thì trang luôn ưu tiên hiện tab "Trò chuyện").
+    redirect cũ): ô tìm theo tên HOẶC mã người dùng (UID) qua `GET /users/search` — có tìm kiếm
+    thì THAY THẾ hẳn phần dưới bằng kết quả tìm (không hiện chung với sub-tab, giống hầu hết app
+    khác). Không tìm kiếm thì chia SUB-TAB (thay vì dồn hết vào 1 cuộn dài như bản đầu — dễ định
+    vị hơn khi số lượng kết nối tăng lên): "Đã kết nối" (theo dõi lẫn nhau — mutual từ
+    `usePublicProfile(myId)`'s `followers`/`following`), "Đang theo dõi bạn" (follow lại để
+    thành 2 chiều), "Bạn đang theo dõi", "Gợi ý" (lấy từ bảng xếp hạng "Chuỗi hiện tại" toàn cục
+    — không dùng "Từ đã thuộc" vì metric đó thường trống lúc mới launch, chưa ai đạt ngưỡng "đã
+    thuộc" ≥21 ngày ôn — lọc bớt người đã theo dõi) — mỗi sub-tab có badge số lượng để biết ngay
+    chỗ nào "có việc cần làm" (vd có người đang theo dõi mình mà mình chưa theo dõi lại), sub-tab
+    rỗng hiện `TabEmpty` giải thích thay vì chỉ ẩn đi im lặng. Mỗi dòng có sẵn nút Theo dõi +
+    Nhắn tin (`MessageIconButton`) ngay tại chỗ, bấm Nhắn tin từ đây tự nhảy về tab "Trò chuyện"
+    đúng hội thoại (vì `MessageIconButton` điều hướng qua `?c=<id>`, và `?c=` có mặt thì trang
+    luôn ưu tiên hiện tab "Trò chuyện").
   - **Kết nối trước khi nhắn tin**: hội thoại MỚI (chưa từng nhắn) yêu cầu đã theo dõi nhau (1
     trong 2 chiều) — chủ ý để tránh cảm giác "tự nhiên nhắn cho người lạ", lỗi 403 hiện rõ ràng ở
     `MessageIconButton` và trang hồ sơ.
@@ -114,17 +119,36 @@ cũ giờ chỉ còn là redirect sang `/messages?tab=connect` để link/bookma
     `ShareButton` (chia sẻ RA NGOÀI), đây là gửi THẲNG nội dung (huy hiệu, hồ sơ) cho 1 người bạn
     Hanni cụ thể qua tin nhắn, tìm người nhận bằng tên/UID ngay trong 1 ô nhỏ xổ xuống, gắn ở
     `/achievements` (mỗi huy hiệu đã mở khoá) và hồ sơ công khai của chính mình),
-`/minigame` ("Dịch tốc độ", 2 tab — **Luyện tập** (Giai đoạn 1 `FEATURES.md`): chơi 1 mình, đồng
-hồ đếm ngược 60s tự chạy bằng `setInterval` so với `startTimeRef` (không cộng dồn sai số), chọn
-đáp án xong tự chuyển câu hoặc tự nộp bài khi hết giờ/hết câu, bảng xếp hạng ngày/tuần; và **Đấu
-1v1** (Giai đoạn 2): bấm "Tìm đối thủ" phát `duel:join-queue` qua socket dùng chung
-`/notifications` (`lib/socket.ts` — tách riêng khỏi `lib/messages.ts` thành 1 file `getNotificationsSocket()`
-DÙNG CHUNG, vì cần 2 nơi độc lập cùng emit/listen trên 1 kết nối), server tự ghép trận rồi đẩy
-`duel:matched` → `duel:round` (8 vòng, mỗi vòng có `deadlineMs` để tự chạy đồng hồ y hệt phần
-luyện tập) → `duel:round-result` (tô xanh đáp án đúng, đỏ đáp án mình chọn sai) → `duel:finished`
-(thắng/thua/hoà + biến động ELO). `useDuelSocket()` (`lib/duel.ts`) dùng ref cho handlers để
-không bắt component gọi phải tự `useCallback` — effect chỉ đăng ký socket theo `user`, không theo
-từng lần đổi state trong ván đấu),
+`/minigame` (SẢNH chọn game thay vì nhảy thẳng vào 1 trò — `GameHub` hiện thẻ mỗi minigame
+(`GAMES` trong `page.tsx`), bấm vào ra `GameIntro` (luật chơi + nút "Bắt đầu chơi") RỒI mới vào
+`GameWorkspace`, tránh kiểu cũ "sidebar chỉ ghi chữ minigame" mà không rõ đang chơi gì/luật ra
+sao. 2 minigame hiện có, dùng CHUNG 1 engine solo (`SoloMinigame`, tham số hoá theo `game.mode`)
+— **Dịch tốc độ** (`TRANSLATE`, Giai đoạn 1 `FEATURES.md`) và **Nghe đoán từ** (`LISTENING` —
+ẩn Hán tự/pinyin lúc chơi, tự phát audio mỗi câu mới qua `useEffect([qIndex])` giống
+`quiz-runner.tsx`, `AudioButton` cho nghe lại): đồng hồ đếm ngược 60s tự chạy bằng `setInterval`
+so với `startTimeRef` (không cộng dồn sai số), chọn đáp án xong tự chuyển câu hoặc tự nộp bài
+khi hết giờ/hết câu, bảng xếp hạng ngày/tuần RIÊNG theo mode (`useMinigameLeaderboard(period,
+mode)`). `GameWorkspace` chỉ hiện tab **Đấu 1v1** nếu `game.supportsDuel` (hiện chỉ Dịch tốc độ
+— Nghe đoán từ chưa có đấu 1v1, tránh chia nhỏ hàng chờ ghép trận khi lượng người chơi còn ít).
+  - **Đấu 1v1** (`DuelMinigame`, Giai đoạn 2-3): bấm "Tìm đối thủ" phát `duel:join-queue` qua
+    socket dùng chung `/notifications` (`lib/socket.ts` — tách riêng khỏi `lib/messages.ts`
+    thành 1 file `getNotificationsSocket()` DÙNG CHUNG, vì cần 2 nơi độc lập cùng emit/listen
+    trên 1 kết nối). Màn "Đang tìm đối thủ" hiện đồng hồ đếm giây ĐÃ CHỜ (đếm bằng
+    `queueStartedAtRef`, reset lúc bấm nút chứ không phải trong effect — tránh cảnh báo
+    `set-state-in-effect`) + số người khác đang chờ (`useDuelQueueSize()`, poll 3s qua
+    `GET /duel/queue-size`, chỉ bật khi đang ở phase "queueing"). Ghép xong: server đẩy
+    `duel:matched` (kèm `introMs`) → FE hiện màn **"VS"** (2 avatar + đếm ngược `introMs`, phase
+    `matched`) → `duel:round` (8 vòng, mỗi vòng có `deadlineMs`) → `duel:round-result` (tô xanh
+    đáp án đúng, đỏ đáp án mình chọn sai) → `duel:finished` (thắng/thua/hoà + biến động ELO +
+    huy hiệu tier `TierBadge`, hiện rõ nếu trận kết thúc do 1 bên rớt mạng qua
+    `finishResult.forfeitedBy`). **Tự phục hồi khi refresh giữa trận**: mount gọi
+    `getActiveDuelMatch()` (`GET /duel/active`) 1 lần — có trận dở thì set thẳng state + phase
+    đúng chỗ (nếu đã trả lời câu hiện tại nhưng không rõ chọn ô nào, dùng sentinel `myAnswer =
+    -1` để khoá nút mà không tô sai màu ô nào). Bảng xếp hạng ELO hiện huy hiệu tier
+    (`TierBadge`, màu lấy từ `tierColor` do server tính) + đếm ngược mùa giải
+    (`SeasonCountdown`, `useDuelSeason()` → `GET /duel/season`). `useDuelSocket()`
+    (`lib/duel.ts`) dùng ref cho handlers để không bắt component gọi phải tự `useCallback` —
+    effect chỉ đăng ký socket theo `user`, không theo từng lần đổi state trong ván đấu.
 `/account` (đổi mật khẩu, thẻ "Ví xu" (`useWallet()`) hiện số dư + nút mua thêm lá chắn streak
 (300 xu, `buyStreakFreeze()`), thẻ "Mời bạn bè cùng học" — link `/register?ref=<userId>` qua
 `ShareButton`, số liệu từ `GET /referrals/me`, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ

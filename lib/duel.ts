@@ -6,12 +6,14 @@ import { apiFetch } from "./api";
 import { useAuth } from "./auth";
 import { getNotificationsSocket } from "./socket";
 import type {
+  DuelActiveMatch,
   DuelFinished,
   DuelLeaderboardRow,
   DuelMatched,
   DuelRatingStats,
   DuelRoundPayload,
   DuelRoundResult,
+  DuelSeasonInfo,
 } from "./types";
 
 const fetcher = <T>(path: string) => apiFetch<T>(path);
@@ -22,6 +24,26 @@ export function useDuelRating() {
 
 export function useDuelLeaderboard() {
   return useSWR<DuelLeaderboardRow[]>("/duel/leaderboard", fetcher);
+}
+
+export function useDuelSeason() {
+  return useSWR<DuelSeasonInfo>("/duel/season", fetcher);
+}
+
+/** Poll nhẹ trong lúc đang xếp hàng chờ ghép trận, cho người chơi thấy có
+ * bao nhiêu người khác cũng đang chờ thay vì chỉ 1 icon xoay vô nghĩa. */
+export function useDuelQueueSize(active: boolean) {
+  return useSWR<{ size: number }>(
+    active ? "/duel/queue-size" : null,
+    fetcher,
+    { refreshInterval: active ? 3000 : 0 },
+  );
+}
+
+/** Gọi 1 lần lúc vào trang — nếu đang có trận dở (vd vừa refresh giữa
+ * trận), FE tự phục hồi đúng màn hình thay vì bị kẹt ở "Tìm đối thủ". */
+export function getActiveDuelMatch() {
+  return apiFetch<DuelActiveMatch | null>("/duel/active");
 }
 
 export function joinDuelQueue() {

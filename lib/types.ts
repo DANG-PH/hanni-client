@@ -508,15 +508,21 @@ export interface ReferralStats {
   pendingCount: number;
 }
 
+/** TRANSLATE = "Dịch tốc độ" (Hán tự → nghĩa), LISTENING = "Nghe đoán từ"
+ * (nghe phát âm → nghĩa) — 2 chế độ dùng chung engine minigame ở server. */
+export type GameMode = "TRANSLATE" | "LISTENING";
+
 export interface MinigameQuestion {
   wordId: string;
   prompt: string;
   pinyin: string;
+  audioUrl: string | null;
   options: string[];
 }
 
 export interface MinigameStartResponse {
   sessionId: string;
+  mode: GameMode;
   questions: MinigameQuestion[];
 }
 
@@ -559,6 +565,8 @@ export interface DuelMatched {
   matchId: string;
   opponent: DuelOpponent;
   totalRounds: number;
+  /** ms nghỉ trước câu hỏi đầu tiên — FE dùng để chạy đếm ngược màn "VS". */
+  introMs: number;
 }
 
 export interface DuelRoundQuestion {
@@ -589,6 +597,8 @@ export interface DuelFinished {
   myScore: number;
   opponentScore: number;
   winnerId: string | null;
+  /** khác null nếu trận kết thúc sớm do 1 bên rớt mạng quá lâu. */
+  forfeitedBy: "me" | "opponent" | null;
   eloChange: number;
   newElo: number;
 }
@@ -598,6 +608,8 @@ export interface DuelRatingStats {
   wins: number;
   losses: number;
   draws: number;
+  tier: string;
+  tierColor: string;
 }
 
 export interface DuelLeaderboardRow {
@@ -606,7 +618,28 @@ export interface DuelLeaderboardRow {
   displayName: string;
   avatarUrl: string | null;
   elo: number;
+  tier: string;
+  tierColor: string;
   wins: number;
   losses: number;
   draws: number;
+}
+
+export interface DuelSeasonInfo {
+  number: number;
+  startedAt: string;
+  endsAt: string;
+  daysRemaining: number;
+}
+
+/** Trận ĐANG DIỄN RA của mình, nếu có — dùng để tự phục hồi UI khi mở lại
+ * trang giữa 1 trận (xem `GET /duel/active`). */
+export interface DuelActiveMatch {
+  matchId: string;
+  opponent: DuelOpponent;
+  totalRounds: number;
+  round: number;
+  scores: Record<string, number>;
+  question: DuelRoundQuestion | null;
+  myAnswered: boolean;
 }

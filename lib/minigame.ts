@@ -3,6 +3,7 @@
 import useSWR from "swr";
 import { api, apiFetch } from "./api";
 import type {
+  GameMode,
   MinigameLeaderboardRow,
   MinigameResult,
   MinigameStartResponse,
@@ -10,8 +11,8 @@ import type {
 
 const fetcher = <T>(path: string) => apiFetch<T>(path);
 
-export function startMinigame() {
-  return api.post<MinigameStartResponse>("/minigame/start");
+export function startMinigame(mode: GameMode = "TRANSLATE") {
+  return api.post<MinigameStartResponse>("/minigame/start", { mode });
 }
 
 export function finishMinigame(
@@ -25,9 +26,12 @@ export function finishMinigame(
   });
 }
 
-export function useMinigameLeaderboard(period: "daily" | "weekly" = "daily") {
+export function useMinigameLeaderboard(
+  period: "daily" | "weekly" = "daily",
+  mode: GameMode = "TRANSLATE",
+) {
   return useSWR<MinigameLeaderboardRow[]>(
-    `/minigame/leaderboard?period=${period}`,
+    `/minigame/leaderboard?period=${period}&mode=${mode}`,
     fetcher,
   );
 }
