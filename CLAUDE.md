@@ -125,14 +125,26 @@ cũ giờ chỉ còn là redirect sang `/messages?tab=connect` để link/bookma
 `/minigame` (SẢNH chọn game thay vì nhảy thẳng vào 1 trò — `GameHub` hiện thẻ mỗi minigame
 (`GAMES` trong `page.tsx`), bấm vào ra `GameIntro` (luật chơi + nút "Bắt đầu chơi") RỒI mới vào
 `GameWorkspace`, tránh kiểu cũ "sidebar chỉ ghi chữ minigame" mà không rõ đang chơi gì/luật ra
-sao. 2 minigame hiện có, dùng CHUNG 1 engine solo (`SoloMinigame`, tham số hoá theo `game.mode`)
-— **Dịch tốc độ** (`TRANSLATE`, Giai đoạn 1 `FEATURES.md`) và **Nghe đoán từ** (`LISTENING` —
-ẩn Hán tự/pinyin lúc chơi, tự phát audio mỗi câu mới qua `useEffect([qIndex])` giống
-`quiz-runner.tsx`, `AudioButton` cho nghe lại): đồng hồ đếm ngược 60s tự chạy bằng `setInterval`
-so với `startTimeRef` (không cộng dồn sai số), chọn đáp án xong tự chuyển câu hoặc tự nộp bài
-khi hết giờ/hết câu, bảng xếp hạng ngày/tuần RIÊNG theo mode (`useMinigameLeaderboard(period,
-mode)`). `GameWorkspace` chỉ hiện tab **Đấu 1v1** nếu `game.supportsDuel` (hiện chỉ Dịch tốc độ
-— Nghe đoán từ chưa có đấu 1v1, tránh chia nhỏ hàng chờ ghép trận khi lượng người chơi còn ít).
+sao. 3 minigame hiện có — **Dịch tốc độ** và **Nghe đoán từ** dùng CHUNG 1 engine solo
+(`SoloMinigame`, tham số hoá theo `game.mode`) — **Dịch tốc độ** (`TRANSLATE`, Giai đoạn 1
+`FEATURES.md`) và **Nghe đoán từ** (`LISTENING` — ẩn Hán tự/pinyin lúc chơi, tự phát audio mỗi
+câu mới qua `useEffect([qIndex])` giống `quiz-runner.tsx`, `AudioButton` cho nghe lại): đồng hồ
+đếm ngược 60s tự chạy bằng `setInterval` so với `startTimeRef` (không cộng dồn sai số), chọn đáp
+án xong tự chuyển câu hoặc tự nộp bài khi hết giờ/hết câu, bảng xếp hạng ngày/tuần RIÊNG theo
+mode (`useMinigameLeaderboard(period, mode)`). `GameWorkspace` chỉ hiện tab **Đấu 1v1** nếu
+`game.supportsDuel` (hiện chỉ Dịch tốc độ — Nghe đoán từ/Ghép cặp chưa có đấu 1v1, tránh chia
+nhỏ hàng chờ ghép trận khi lượng người chơi còn ít).
+  - **Ghép cặp** (`MatchMinigame`, `MATCH`) — engine RIÊNG hẳn (không dùng chung `SoloMinigame`
+    vì cơ chế khác hoàn toàn trắc nghiệm): lưới 16 thẻ (`MATCH_PAIRS`=8 cặp, `MatchCard[]` từ
+    `POST /minigame/start`), lật 2 thẻ/lượt qua `flipCard()` — khớp `wordId` thì giữ nguyên (thêm
+    vào `matchedWordIds`), sai thì khoá thao tác 700ms rồi úp lại cả 2 (đếm dồn `mistakesRef`, y
+    hệt kiểu `answersRef` ở `SoloMinigame` — dùng ref để tránh stale closure khi đọc trong
+    `finish()`). Nộp bài khi hoàn thành đặt trong 1 `useEffect` riêng theo dõi `matchedWordIds`
+    (KHÔNG gọi thẳng trong `flipCard()`) — ESLint rule mới `react-hooks/purity` chặn gọi
+    `Date.now()` (tính `durationMs`) trực tiếp trong 1 event handler tự định nghĩa nếu hàm đó
+    KHÔNG có nhánh gọi nào khác đi qua `useEffect`/timer, phải tách qua effect mới hết báo lỗi —
+    xem thêm nếu gặp lại lỗi tương tự ở minigame khác sau này. `finishMatchMinigame()`
+    (`lib/minigame.ts`) gửi `{mistakes, durationMs}` thay vì `answers` như 2 mode kia.
   - **Đấu 1v1** (`DuelMinigame`, Giai đoạn 2-3): bấm "Tìm đối thủ" phát `duel:join-queue` qua
     socket dùng chung `/notifications` (`lib/socket.ts` — tách riêng khỏi `lib/messages.ts`
     thành 1 file `getNotificationsSocket()` DÙNG CHUNG, vì cần 2 nơi độc lập cùng emit/listen

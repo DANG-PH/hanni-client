@@ -21,6 +21,7 @@ import {
   useRankTiers,
 } from "@/lib/duel";
 import {
+  finishMatchMinigame,
   finishMinigame,
   startMinigame,
   useMinigameLeaderboard,
@@ -30,6 +31,7 @@ import type {
   DuelOpponent,
   DuelRoundQuestion,
   GameMode,
+  MatchCard,
   MinigameQuestion,
   MinigameResult,
 } from "@/lib/types";
@@ -73,13 +75,26 @@ const GAMES: GameDef[] = [
     ],
     supportsDuel: false,
   },
+  {
+    mode: "MATCH",
+    title: "Ghép cặp",
+    icon: "cards",
+    tileClass: "bg-good/10 text-good",
+    tagline:
+      "Lật thẻ tìm đúng cặp Hán tự ↔ nghĩa — luyện trí nhớ từ vựng, càng ít lật sai càng nhiều xu.",
+    rules: [
+      "8 cặp thẻ (16 ô) — lật 2 thẻ mỗi lượt, khớp đúng cặp thì giữ nguyên, sai thì úp lại.",
+      "Hoàn thành càng ít lần lật sai càng được nhiều xu (tối đa 8 xu nếu không sai lần nào).",
+    ],
+    supportsDuel: false,
+  },
 ];
 
 // ------------------------------ Sảnh chọn game ------------------------------
 
 function GameHub({ onSelect }: { onSelect: (game: GameDef) => void }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {GAMES.map((g) => (
         <button
           key={g.mode}
@@ -196,7 +211,7 @@ function SoloMinigame({ game }: { game: GameDef }) {
     try {
       const res = await startMinigame(game.mode);
       setSessionId(res.sessionId);
-      setQuestions(res.questions);
+      setQuestions(res.questions ?? []);
       setQIndex(0);
       setAnswers([]);
       setResult(null);
@@ -382,6 +397,280 @@ function SoloMinigame({ game }: { game: GameDef }) {
                 </span>
                 <span className="text-sm font-semibold text-primary">
                   {row.score}/{row.totalAsked} câu
+                </span>
+              </div>
+            ))
+          ) : (
+            <p className="px-5 py-8 text-center text-sm text-muted">
+              Chưa có ai chơi trong khoảng này — chơi ngay để dẫn đầu!
+            </p>
+          )}
+        </Card>
+      </section>
+    </>
+  );
+}
+
+// ------------------------------ Ghép cặp ------------------------------
+
+type MatchPhase = "idle" | "playing" | "finished";
+
+function MatchMinigame() {
+  const [phase, setPhase] = useState<MatchPhase>("idle");
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [cards, setCards] = useState<MatchCard[]>([]);
+  const [flipped, setFlipped] = useState<string[]>([]);
+  const [matchedWordIds, setMatchedWordIds] = useState<Set<string>>(new Set());
+  const [mistakes, setMistakes] = useState(0);
+  const [locked, setLocked] = useState(false);
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const [result, setResult] = useState<MinigameResult | null>(null);
+  const [starting, setStarting] = useState(false);
+  const [error, setError] = useState("");
+  const startTimeRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const mistakesRef = useRef(0);
+  const sessionIdRef = useRef<string | null>(null);
+  const finishedRef = useRef(false);
+  const [period, setPeriod] = useState<"daily" | "weekly">("daily");
+  const leaderboard = useMinigameLeaderboard(period, "MATCH");
+
+  useEffect(() => {
+    sessionIdRef.current = sessionId;
+  }, [sessionId]);
+
+  async function finish(durationMs: number) {
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+    if (timerRef.current) clearInterval(timerRef.current);
+    const id = sessionIdRef.current;
+    setPhase("finished");
+    if (!id) return;
+    try {
+      const res = await finishMatchMinigame(id, mistakesRef.current, durationMs);
+      setResult(res);
+      void leaderboard.mutate();
+    } catch {
+      setError("Chưa nộp được kết quả. Kiểm tra mạng và thử lại.");
+    }
+  }
+
+  async function start() {
+    setStarting(true);
+    setError("");
+    try {
+      const res = await startMinigame("MATCH");
+      setSessionId(res.sessionId);
+      setCards(res.cards ?? []);
+      setFlipped([]);
+      setMatchedWordIds(new Set());
+      setMistakes(0);
+      mistakesRef.current = 0;
+      setResult(null);
+      startTimeRef.current = Date.now();
+      setElapsedMs(0);
+      finishedRef.current = false;
+      setPhase("playing");
+    } catch {
+      setError("Chưa bắt đầu được, thử lại nhé.");
+    } finally {
+      setStarting(false);
+    }
+  }
+
+  useEffect(() => {
+    if (phase !== "playing") return;
+    timerRef.current = setInterval(() => {
+      setElapsedMs(Date.now() - startTimeRef.current);
+    }, 200);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [phase]);
+
+  // Nộp bài khi đã ghép đủ mọi cặp — đặt trong effect (thay vì gọi thẳng
+  // trong flipCard) để giống đúng cách SoloMinigame gọi finish() từ effect
+  // đếm giờ, tránh gọi Date.now() ngay trong luồng xử lý sự kiện lật thẻ.
+  useEffect(() => {
+    if (phase !== "playing" || cards.length === 0) return;
+    if (matchedWordIds.size === cards.length / 2) {
+      void finish(Date.now() - startTimeRef.current);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [matchedWordIds, phase]);
+
+  function flipCard(cardId: string) {
+    if (locked || phase !== "playing") return;
+    if (flipped.includes(cardId)) return;
+    const card = cards.find((c) => c.cardId === cardId);
+    if (!card || matchedWordIds.has(card.wordId)) return;
+
+    const next = [...flipped, cardId];
+    setFlipped(next);
+    if (next.length < 2) return;
+
+    setLocked(true);
+    const [firstId, secondId] = next;
+    const first = cards.find((c) => c.cardId === firstId)!;
+    const second = cards.find((c) => c.cardId === secondId)!;
+
+    if (first.wordId === second.wordId) {
+      const updated = new Set(matchedWordIds);
+      updated.add(first.wordId);
+      setMatchedWordIds(updated);
+      setFlipped([]);
+      setLocked(false);
+    } else {
+      mistakesRef.current += 1;
+      setMistakes(mistakesRef.current);
+      setTimeout(() => {
+        setFlipped([]);
+        setLocked(false);
+      }, 700);
+    }
+  }
+
+  function playAgain() {
+    setPhase("idle");
+  }
+
+  return (
+    <>
+      <Card>
+        {phase === "idle" && (
+          <div className="py-8 text-center">
+            <Icon name="cards" size={36} className="mx-auto mb-4 text-good" />
+            <p className="mx-auto mb-5 max-w-md text-sm leading-6 text-muted">
+              Lật 2 thẻ mỗi lượt để tìm đúng cặp Hán tự ↔ nghĩa. Hoàn thành
+              không sai lần nào được thưởng tối đa 8 xu, mỗi lần lật sai trừ
+              1 xu.
+            </p>
+            <Button onClick={() => void start()} disabled={starting}>
+              {starting ? "Đang chuẩn bị…" : "Bắt đầu chơi"}
+            </Button>
+            {error && <p className="mt-3 text-sm text-danger">{error}</p>}
+          </div>
+        )}
+
+        {phase === "playing" && (
+          <div>
+            <div className="mb-5 flex items-center justify-between text-sm">
+              <span className="text-muted">
+                Đã ghép {matchedWordIds.size}/{cards.length / 2} cặp
+              </span>
+              <span className="flex items-center gap-3">
+                <span className="text-danger">Sai {mistakes} lần</span>
+                <span className="font-bold tabular-nums text-primary">
+                  {Math.floor(elapsedMs / 1000)}s
+                </span>
+              </span>
+            </div>
+            <div className="grid grid-cols-4 gap-2.5 sm:gap-3">
+              {cards.map((card) => {
+                const isMatched = matchedWordIds.has(card.wordId);
+                const isFlipped = isMatched || flipped.includes(card.cardId);
+                return (
+                  <button
+                    key={card.cardId}
+                    type="button"
+                    disabled={isMatched}
+                    onClick={() => flipCard(card.cardId)}
+                    className={`motion-button flex aspect-square items-center justify-center rounded-xl border p-1.5 text-center transition-colors ${
+                      isMatched
+                        ? "border-good bg-good/10"
+                        : isFlipped
+                          ? "border-primary/40 bg-primary/5"
+                          : "border-border bg-surface-2 hover:border-primary/30"
+                    }`}
+                  >
+                    {isFlipped ? (
+                      <span
+                        className={
+                          card.kind === "hanzi"
+                            ? "hanzi text-lg sm:text-2xl"
+                            : "text-[11px] font-medium leading-tight sm:text-xs"
+                        }
+                      >
+                        {card.content}
+                      </span>
+                    ) : (
+                      <Icon name="spark" size={18} className="text-muted/50" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {phase === "finished" && (
+          <div className="py-6 text-center">
+            {!result ? (
+              error ? (
+                <p className="text-sm text-danger">{error}</p>
+              ) : (
+                <Spinner />
+              )
+            ) : (
+              <>
+                <Icon
+                  name="trophy"
+                  size={40}
+                  className="mx-auto mb-3 text-primary"
+                />
+                <p className="text-2xl font-bold">Hoàn thành!</p>
+                <p className="mt-2 text-sm text-muted">
+                  Sai {mistakes} lần · {Math.floor(elapsedMs / 1000)} giây
+                </p>
+                <p className="mt-2 text-sm text-good">
+                  +{result.coinsEarned} xu — số dư hiện tại:{" "}
+                  {result.balance.toLocaleString("vi-VN")} xu
+                </p>
+                <Button className="mt-5" onClick={playAgain}>
+                  Chơi lại
+                </Button>
+              </>
+            )}
+          </div>
+        )}
+      </Card>
+
+      <section className="mt-8">
+        <SectionHeading
+          icon="trophy"
+          tone="good"
+          title="Bảng xếp hạng luyện tập"
+          className="mb-4"
+        >
+          <div className="flex gap-2">
+            {(["daily", "weekly"] as const).map((p) => (
+              <button
+                key={p}
+                type="button"
+                aria-pressed={period === p}
+                onClick={() => setPeriod(p)}
+                className={`rounded-full px-3 py-1.5 text-xs font-semibold ${period === p ? "bg-primary/10 text-primary" : "text-muted hover:bg-surface-2"}`}
+              >
+                {p === "daily" ? "Hôm nay" : "Tuần này"}
+              </button>
+            ))}
+          </div>
+        </SectionHeading>
+        <Card className="divide-y divide-border p-0!">
+          {leaderboard.data?.length ? (
+            leaderboard.data.map((row) => (
+              <div
+                key={row.userId}
+                className="flex items-center justify-between gap-3 px-5 py-3.5"
+              >
+                <span className="flex items-center gap-3 text-sm">
+                  <span className="w-5 shrink-0 text-center text-xs font-semibold text-muted">
+                    {row.rank}
+                  </span>
+                  {row.displayName}
+                </span>
+                <span className="text-sm font-semibold text-primary">
+                  {row.score} xu · {Math.floor(row.durationMs / 1000)}s
                 </span>
               </div>
             ))
@@ -887,7 +1176,15 @@ function GameWorkspace({
           ))}
         </div>
       )}
-      {sub === "solo" ? <SoloMinigame game={game} /> : <DuelMinigame />}
+      {sub === "solo" ? (
+        game.mode === "MATCH" ? (
+          <MatchMinigame />
+        ) : (
+          <SoloMinigame game={game} />
+        )
+      ) : (
+        <DuelMinigame />
+      )}
     </div>
   );
 }

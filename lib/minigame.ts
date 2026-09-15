@@ -26,6 +26,19 @@ export function finishMinigame(
   });
 }
 
+/** MATCH ("Ghép cặp") — không có `answers` trắc nghiệm, chỉ báo số lần lật
+ * sai + thời gian, xem `finishMatchGame()` ở server. */
+export function finishMatchMinigame(
+  sessionId: string,
+  mistakes: number,
+  durationMs: number,
+) {
+  return api.post<MinigameResult>(`/minigame/${sessionId}/finish`, {
+    mistakes,
+    durationMs,
+  });
+}
+
 export function useMinigameLeaderboard(
   period: "daily" | "weekly" = "daily",
   mode: GameMode = "TRANSLATE",

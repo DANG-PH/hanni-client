@@ -517,8 +517,10 @@ export interface ReferralStats {
 }
 
 /** TRANSLATE = "Dịch tốc độ" (Hán tự → nghĩa), LISTENING = "Nghe đoán từ"
- * (nghe phát âm → nghĩa) — 2 chế độ dùng chung engine minigame ở server. */
-export type GameMode = "TRANSLATE" | "LISTENING";
+ * (nghe phát âm → nghĩa), MATCH = "Ghép cặp" (lật thẻ tìm đúng cặp) — 3 chế
+ * độ, TRANSLATE/LISTENING dùng chung engine trắc nghiệm ở server, MATCH có
+ * response shape riêng (`cards` thay vì `questions`). */
+export type GameMode = "TRANSLATE" | "LISTENING" | "MATCH";
 
 export interface MinigameQuestion {
   wordId: string;
@@ -528,10 +530,23 @@ export interface MinigameQuestion {
   options: string[];
 }
 
+/** 1 thẻ trong minigame "Ghép cặp" — `wordId` trùng nhau giữa 2 thẻ nghĩa
+ * là 1 cặp đúng, tự so khớp được ngay ở client (không cần giấu, khác
+ * `correctIndex` của 2 mode trắc nghiệm). */
+export interface MatchCard {
+  cardId: string;
+  wordId: string;
+  kind: "hanzi" | "meaning";
+  content: string;
+}
+
 export interface MinigameStartResponse {
   sessionId: string;
   mode: GameMode;
-  questions: MinigameQuestion[];
+  /** có khi mode = TRANSLATE | LISTENING */
+  questions?: MinigameQuestion[];
+  /** có khi mode = MATCH */
+  cards?: MatchCard[];
 }
 
 export interface MinigameResult {
