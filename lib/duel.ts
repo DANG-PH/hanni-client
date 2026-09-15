@@ -14,6 +14,7 @@ import type {
   DuelRoundPayload,
   DuelRoundResult,
   DuelSeasonInfo,
+  RankTiersInfo,
 } from "./types";
 
 const fetcher = <T>(path: string) => apiFetch<T>(path);
@@ -28,6 +29,12 @@ export function useDuelLeaderboard() {
 
 export function useDuelSeason() {
   return useSWR<DuelSeasonInfo>("/duel/season", fetcher);
+}
+
+/** Bảng ngưỡng rank — tĩnh, gần như không đổi giữa các lần deploy, nên
+ * không cần refresh tự động (mặc định SWR vẫn cache lại bình thường). */
+export function useRankTiers() {
+  return useSWR<RankTiersInfo>("/duel/rank-tiers", fetcher);
 }
 
 /** Poll nhẹ trong lúc đang xếp hàng chờ ghép trận, cho người chơi thấy có

@@ -632,6 +632,20 @@ export interface DuelSeasonInfo {
   daysRemaining: number;
 }
 
+export interface RankTierInfo {
+  name: string;
+  min: number;
+  color: string;
+}
+
+/** Bảng ngưỡng rank + luật riêng của Thách Đấu (giới hạn số lượng, xem
+ * `GET /duel/rank-tiers`) — nguồn dữ liệu DUY NHẤT cho bảng chú giải rank,
+ * tránh chép tay lại ngưỡng ELO ở client. */
+export interface RankTiersInfo {
+  tiers: RankTierInfo[];
+  challengerTopN: number;
+}
+
 /** Trận ĐANG DIỄN RA của mình, nếu có — dùng để tự phục hồi UI khi mở lại
  * trang giữa 1 trận (xem `GET /duel/active`). */
 export interface DuelActiveMatch {

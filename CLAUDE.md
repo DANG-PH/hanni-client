@@ -138,17 +138,25 @@ mode)`). `GameWorkspace` chỉ hiện tab **Đấu 1v1** nếu `game.supportsDue
     `set-state-in-effect`) + số người khác đang chờ (`useDuelQueueSize()`, poll 3s qua
     `GET /duel/queue-size`, chỉ bật khi đang ở phase "queueing"). Ghép xong: server đẩy
     `duel:matched` (kèm `introMs`) → FE hiện màn **"VS"** (2 avatar + đếm ngược `introMs`, phase
-    `matched`) → `duel:round` (8 vòng, mỗi vòng có `deadlineMs`) → `duel:round-result` (tô xanh
-    đáp án đúng, đỏ đáp án mình chọn sai) → `duel:finished` (thắng/thua/hoà + biến động ELO +
-    huy hiệu tier `TierBadge`, hiện rõ nếu trận kết thúc do 1 bên rớt mạng qua
+    `matched`) → `duel:round` (8 vòng, mỗi vòng có `deadlineMs`, độ khó câu hỏi tăng theo ELO
+    trung bình 2 người — xem `wordPoolSkipForElo()` ở `hanni-server/CLAUDE.md`) →
+    `duel:round-result` (tô xanh đáp án đúng, đỏ đáp án mình chọn sai) → `duel:finished`
+    (thắng/thua/hoà + biến động ELO, hiện rõ nếu trận kết thúc do 1 bên rớt mạng qua
     `finishResult.forfeitedBy`). **Tự phục hồi khi refresh giữa trận**: mount gọi
     `getActiveDuelMatch()` (`GET /duel/active`) 1 lần — có trận dở thì set thẳng state + phase
     đúng chỗ (nếu đã trả lời câu hiện tại nhưng không rõ chọn ô nào, dùng sentinel `myAnswer =
-    -1` để khoá nút mà không tô sai màu ô nào). Bảng xếp hạng ELO hiện huy hiệu tier
-    (`TierBadge`, màu lấy từ `tierColor` do server tính) + đếm ngược mùa giải
-    (`SeasonCountdown`, `useDuelSeason()` → `GET /duel/season`). `useDuelSocket()`
-    (`lib/duel.ts`) dùng ref cho handlers để không bắt component gọi phải tự `useCallback` —
-    effect chỉ đăng ký socket theo `user`, không theo từng lần đổi state trong ván đấu.
+    -1` để khoá nút mà không tô sai màu ô nào).
+    **Huy hiệu rank** (`RankEmblem`) — khiên SVG tự vẽ (không dùng ảnh ngoài), pip tròn tăng dần
+    theo bậc, riêng Thách Đấu đổi sang sao + quầng sáng vì đây là bậc GIỚI HẠN SỐ LƯỢNG (top 100
+    toàn server, không phải chỉ cần đủ ELO — xem `CHALLENGER_TOP_N`/`computeTier()` ở
+    `hanni-server/CLAUDE.md`), dùng ở màn hình chờ đấu (size 64), mỗi dòng bảng xếp hạng (size
+    26). `RankTiersLegend` (nút "Xem các bậc rank", gấp lại mặc định) hiện đủ 9 bậc kèm khoảng
+    ELO — dữ liệu lấy DUY NHẤT từ `GET /duel/rank-tiers` (`useRankTiers()`), không chép tay
+    ngưỡng ở client, Thách Đấu ghi rõ luật riêng thay vì 1 khoảng ELO thường. Bảng xếp hạng ELO
+    còn có đếm ngược mùa giải (`SeasonCountdown`, `useDuelSeason()` → `GET /duel/season`).
+    `useDuelSocket()` (`lib/duel.ts`) dùng ref cho handlers để không bắt component gọi phải tự
+    `useCallback` — effect chỉ đăng ký socket theo `user`, không theo từng lần đổi state trong
+    ván đấu.
 `/account` (đổi mật khẩu, thẻ "Ví xu" (`useWallet()`) hiện số dư + nút mua thêm lá chắn streak
 (300 xu, `buyStreakFreeze()`), thẻ "Mời bạn bè cùng học" — link `/register?ref=<userId>` qua
 `ShareButton`, số liệu từ `GET /referrals/me`, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ
