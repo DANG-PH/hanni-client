@@ -26,6 +26,14 @@ import {
   startMinigame,
   useMinigameLeaderboard,
 } from "@/lib/minigame";
+import {
+  getActiveTeamDuelMatch,
+  joinTeamDuelQueue,
+  leaveTeamDuelQueue,
+  submitTeamDuelAnswer,
+  useTeamDuelQueueSize,
+  useTeamDuelSocket,
+} from "@/lib/team-duel";
 import type {
   DuelFinished,
   DuelOpponent,
@@ -34,6 +42,7 @@ import type {
   MatchCard,
   MinigameQuestion,
   MinigameResult,
+  TeamDuelFinished,
 } from "@/lib/types";
 
 const GAME_DURATION_MS = 60_000;
@@ -46,6 +55,7 @@ interface GameDef {
   tagline: string;
   rules: string[];
   supportsDuel: boolean;
+  supportsTeamDuel: boolean;
 }
 
 const GAMES: GameDef[] = [
@@ -59,8 +69,10 @@ const GAMES: GameDef[] = [
     rules: [
       "Luyện tập 1 mình: 60 giây, trả lời càng nhiều câu càng tốt, mỗi câu đúng thưởng 1 xu.",
       "Đấu 1v1: 8 câu hỏi, ai trả lời đúng nhiều hơn thắng, điểm ELO tăng/giảm theo kết quả.",
+      "Đấu đôi 2v2: ghép ngẫu nhiên theo ELO thành 2 đội 2 người, điểm đội = tổng điểm 2 thành viên, ELO tính theo đội (dùng chung bảng xếp hạng với đấu 1v1).",
     ],
     supportsDuel: true,
+    supportsTeamDuel: true,
   },
   {
     mode: "LISTENING",
@@ -74,6 +86,7 @@ const GAMES: GameDef[] = [
       "Chưa có chế độ Đấu 1v1 — sẽ thêm sau khi chế độ luyện tập ổn định.",
     ],
     supportsDuel: false,
+    supportsTeamDuel: false,
   },
   {
     mode: "MATCH",
@@ -87,6 +100,7 @@ const GAMES: GameDef[] = [
       "Hoàn thành càng ít lần lật sai càng được nhiều xu (tối đa 8 xu nếu không sai lần nào).",
     ],
     supportsDuel: false,
+    supportsTeamDuel: false,
   },
 ];
 
@@ -1085,54 +1099,440 @@ function DuelMinigame() {
         )}
       </Card>
 
-      <section className="mt-8">
-        <SectionHeading
-          icon="flame"
-          tone="primary"
-          title="Bảng xếp hạng ELO"
-          className="mb-4"
-        >
-          <SeasonCountdown />
-        </SectionHeading>
-        <RankTiersLegend />
-        <Card className="divide-y divide-border p-0!">
-          {leaderboard.data?.length ? (
-            leaderboard.data.map((row) => (
-              <div
-                key={row.userId}
-                className="flex items-center justify-between gap-3 px-5 py-3.5"
-              >
-                <span className="flex items-center gap-3 text-sm">
-                  <span className="w-5 shrink-0 text-center text-xs font-semibold text-muted">
-                    {row.rank}
-                  </span>
-                  <RankEmblem
-                    tierName={row.tier}
-                    color={row.tierColor}
-                    tiers={tiersInfo.data?.tiers}
-                    size={26}
-                  />
-                  {row.displayName}
+      <EloLeaderboardSection />
+    </>
+  );
+}
+
+/** Dùng chung cho cả Đấu 1v1 và Đấu đôi — 2 chế độ đều đọc/ghi CÙNG 1
+ * `UserRating`/rank tier/mùa giải (xem `TeamDuelService` phía server), nên
+ * chỉ cần 1 bảng xếp hạng ELO duy nhất thay vì lặp lại cho từng chế độ. */
+function EloLeaderboardSection() {
+  const leaderboard = useDuelLeaderboard();
+  const tiersInfo = useRankTiers();
+  return (
+    <section className="mt-8">
+      <SectionHeading
+        icon="flame"
+        tone="primary"
+        title="Bảng xếp hạng ELO"
+        className="mb-4"
+      >
+        <SeasonCountdown />
+      </SectionHeading>
+      <RankTiersLegend />
+      <Card className="divide-y divide-border p-0!">
+        {leaderboard.data?.length ? (
+          leaderboard.data.map((row) => (
+            <div
+              key={row.userId}
+              className="flex items-center justify-between gap-3 px-5 py-3.5"
+            >
+              <span className="flex items-center gap-3 text-sm">
+                <span className="w-5 shrink-0 text-center text-xs font-semibold text-muted">
+                  {row.rank}
                 </span>
-                <span className="text-sm font-semibold text-primary">
-                  {row.elo} ELO · {row.wins}T/{row.losses}B/{row.draws}H
+                <RankEmblem
+                  tierName={row.tier}
+                  color={row.tierColor}
+                  tiers={tiersInfo.data?.tiers}
+                  size={26}
+                />
+                {row.displayName}
+              </span>
+              <span className="text-sm font-semibold text-primary">
+                {row.elo} ELO · {row.wins}T/{row.losses}B/{row.draws}H
+              </span>
+            </div>
+          ))
+        ) : (
+          <p className="px-5 py-8 text-center text-sm text-muted">
+            Chưa có ai đấu — vào tìm đối thủ đầu tiên nào!
+          </p>
+        )}
+      </Card>
+    </section>
+  );
+}
+
+// ------------------------------ Đấu đôi 2v2 ------------------------------
+
+type TeamDuelPhase =
+  | "idle"
+  | "queueing"
+  | "matched"
+  | "playing"
+  | "round-result"
+  | "finished";
+
+function TeamDuelMinigame() {
+  const { user } = useAuth();
+  const rating = useDuelRating();
+  const tiersInfo = useRankTiers();
+  const [phase, setPhase] = useState<TeamDuelPhase>("idle");
+  const [matchId, setMatchId] = useState<string | null>(null);
+  const [myTeammates, setMyTeammates] = useState<DuelOpponent[]>([]);
+  const [opponentTeam, setOpponentTeam] = useState<DuelOpponent[]>([]);
+  const [totalRounds, setTotalRounds] = useState(0);
+  const [round, setRound] = useState(0);
+  const [question, setQuestion] = useState<DuelRoundQuestion | null>(null);
+  const [deadline, setDeadline] = useState(0);
+  const [timeLeftMs, setTimeLeftMs] = useState(0);
+  const [scores, setScores] = useState<Record<string, number>>({});
+  const [myAnswer, setMyAnswer] = useState<number | null>(null);
+  const [roundCorrectIndex, setRoundCorrectIndex] = useState<number | null>(
+    null,
+  );
+  const [finishResult, setFinishResult] = useState<TeamDuelFinished | null>(
+    null,
+  );
+  const [introSecondsLeft, setIntroSecondsLeft] = useState<number | null>(
+    null,
+  );
+  const [queueElapsedS, setQueueElapsedS] = useState(0);
+  const [resumeChecked, setResumeChecked] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const introTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const queueStartedAtRef = useRef(0);
+  const queueSize = useTeamDuelQueueSize(phase === "queueing");
+
+  useEffect(() => {
+    let cancelled = false;
+    void getActiveTeamDuelMatch().then((active) => {
+      if (cancelled) return;
+      setResumeChecked(true);
+      if (!active) return;
+      setMatchId(active.matchId);
+      setMyTeammates(active.myTeammates);
+      setOpponentTeam(active.opponentTeam);
+      setTotalRounds(active.totalRounds);
+      setRound(active.round);
+      setScores(active.scores);
+      if (active.question) {
+        setQuestion(active.question);
+        setMyAnswer(active.myAnswered ? -1 : null);
+        setPhase("playing");
+      } else {
+        setPhase("matched");
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useTeamDuelSocket({
+    onMatched: (p) => {
+      setMatchId(p.matchId);
+      setMyTeammates(p.myTeammates);
+      setOpponentTeam(p.opponentTeam);
+      setTotalRounds(p.totalRounds);
+      setScores({});
+      setPhase("matched");
+      setIntroSecondsLeft(Math.ceil(p.introMs / 1000));
+      if (introTimerRef.current) clearInterval(introTimerRef.current);
+      introTimerRef.current = setInterval(() => {
+        setIntroSecondsLeft((s) => (s === null || s <= 1 ? 0 : s - 1));
+      }, 1000);
+    },
+    onRound: (p) => {
+      if (introTimerRef.current) clearInterval(introTimerRef.current);
+      setRound(p.round);
+      setQuestion(p.question);
+      setMyAnswer(null);
+      setRoundCorrectIndex(null);
+      setDeadline(Date.now() + p.deadlineMs);
+      setPhase("playing");
+    },
+    onRoundResult: (p) => {
+      setRoundCorrectIndex(p.correctIndex);
+      setScores(p.scores);
+      setPhase("round-result");
+    },
+    onFinished: (p) => {
+      setFinishResult(p);
+      setPhase("finished");
+      void rating.mutate();
+    },
+  });
+
+  useEffect(() => {
+    if (phase !== "playing" || !deadline) return;
+    timerRef.current = setInterval(() => {
+      setTimeLeftMs(Math.max(0, deadline - Date.now()));
+    }, 200);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [phase, deadline]);
+
+  useEffect(() => {
+    if (phase !== "queueing") return;
+    const t = setInterval(() => {
+      setQueueElapsedS(
+        Math.floor((Date.now() - queueStartedAtRef.current) / 1000),
+      );
+    }, 1000);
+    return () => clearInterval(t);
+  }, [phase]);
+
+  function startQueue() {
+    queueStartedAtRef.current = Date.now();
+    setQueueElapsedS(0);
+    setPhase("queueing");
+    joinTeamDuelQueue();
+  }
+
+  function cancelQueue() {
+    leaveTeamDuelQueue();
+    setPhase("idle");
+  }
+
+  function choose(index: number) {
+    if (myAnswer !== null || !matchId) return;
+    setMyAnswer(index);
+    submitTeamDuelAnswer(matchId, index);
+  }
+
+  function playAgain() {
+    setPhase("idle");
+    setMatchId(null);
+    setMyTeammates([]);
+    setOpponentTeam([]);
+    setFinishResult(null);
+    setScores({});
+  }
+
+  const myId = user?.id ?? "";
+  const myTeamScore =
+    (scores[myId] ?? 0) +
+    myTeammates.reduce((sum, p) => sum + (scores[p.id] ?? 0), 0);
+  const opponentTeamScore = opponentTeam.reduce(
+    (sum, p) => sum + (scores[p.id] ?? 0),
+    0,
+  );
+
+  if (!resumeChecked) return <Spinner />;
+
+  return (
+    <>
+      <Card>
+        {phase === "idle" && (
+          <div className="py-8 text-center">
+            {rating.data ? (
+              <div className="mb-5 flex flex-col items-center gap-2">
+                <RankEmblem
+                  tierName={rating.data.tier}
+                  color={rating.data.tierColor}
+                  tiers={tiersInfo.data?.tiers}
+                  size={64}
+                />
+                <p className="text-sm text-muted">
+                  <strong className="text-foreground">{rating.data.tier}</strong>
+                  {" · "}
+                  {rating.data.elo} ELO
+                </p>
+              </div>
+            ) : (
+              <Icon name="cards" size={36} className="mx-auto mb-4 text-danger" />
+            )}
+            <p className="mx-auto mb-5 max-w-md text-sm leading-6 text-muted">
+              Ghép ngẫu nhiên theo ELO thành 2 đội 2 người, đấu qua {8} câu
+              hỏi — điểm đội là tổng điểm 2 thành viên, ELO tính theo đội
+              (dùng chung bảng xếp hạng với Đấu 1v1).
+            </p>
+            <Button onClick={startQueue}>Tìm đội đấu</Button>
+          </div>
+        )}
+
+        {phase === "queueing" && (
+          <div className="py-10 text-center">
+            <Icon
+              name="refresh"
+              size={32}
+              className="mx-auto mb-4 animate-spin text-primary"
+            />
+            <p className="text-sm font-semibold tabular-nums text-foreground">
+              Đang tìm đội… {queueElapsedS}s
+            </p>
+            <p className="mt-1.5 text-xs text-muted">
+              {queueSize.data
+                ? `${queueSize.data.size} người khác đang trong hàng chờ`
+                : "Đang kết nối hàng chờ…"}
+            </p>
+            <Button variant="ghost" className="mt-4" onClick={cancelQueue}>
+              Huỷ
+            </Button>
+          </div>
+        )}
+
+        {phase === "matched" && myTeammates[0] && opponentTeam.length > 0 && (
+          <div className="py-8 text-center">
+            <p className="mb-6 text-sm font-semibold text-primary">
+              Đã tìm thấy đội đấu!
+            </p>
+            <div className="flex items-center justify-center gap-4 sm:gap-6">
+              <div className="flex items-center gap-2">
+                <div className="flex flex-col items-center gap-1.5">
+                  <Avatar user={user ?? {}} size={48} />
+                  <span className="max-w-16 truncate text-xs font-medium">
+                    Bạn
+                  </span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5">
+                  <Avatar user={myTeammates[0]} size={48} />
+                  <span className="max-w-16 truncate text-xs font-medium">
+                    {myTeammates[0].displayName}
+                  </span>
+                </div>
+              </div>
+              <span className="text-lg font-bold text-muted">VS</span>
+              <div className="flex items-center gap-2">
+                {opponentTeam.map((p) => (
+                  <div key={p.id} className="flex flex-col items-center gap-1.5">
+                    <Avatar user={p} size={48} />
+                    <span className="max-w-16 truncate text-xs font-medium">
+                      {p.displayName}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="mt-6 text-3xl font-bold tabular-nums text-primary">
+              {introSecondsLeft ?? "…"}
+            </p>
+            <p className="mt-1 text-xs text-muted">Trận đấu sắp bắt đầu</p>
+          </div>
+        )}
+
+        {(phase === "playing" || phase === "round-result") &&
+          question &&
+          myTeammates[0] &&
+          opponentTeam.length > 0 && (
+            <div>
+              <div className="mb-4 flex items-center justify-between gap-2 text-sm">
+                <span className="flex min-w-0 items-center gap-1.5">
+                  <Avatar user={myTeammates[0]} size={20} />
+                  <span className="truncate text-xs">
+                    Bạn &amp; {myTeammates[0].displayName}
+                  </span>
+                </span>
+                <span className="shrink-0 font-semibold">
+                  {myTeamScore} - {opponentTeamScore}
+                </span>
+                <span className="flex min-w-0 flex-row-reverse items-center gap-1.5">
+                  <Avatar user={opponentTeam[0]} size={20} />
+                  <span className="truncate text-xs">
+                    {opponentTeam.map((p) => p.displayName).join(" & ")}
+                  </span>
                 </span>
               </div>
-            ))
-          ) : (
-            <p className="px-5 py-8 text-center text-sm text-muted">
-              Chưa có ai đấu — vào tìm đối thủ đầu tiên nào!
-            </p>
+              <div className="mb-4 flex items-center justify-between text-xs text-muted">
+                <span>
+                  Câu {round + 1}/{totalRounds}
+                </span>
+                {phase === "playing" && (
+                  <span
+                    className={`font-bold tabular-nums ${timeLeftMs < 3000 ? "text-danger" : "text-primary"}`}
+                  >
+                    {Math.ceil(timeLeftMs / 1000)}s
+                  </span>
+                )}
+              </div>
+              <p className="hanzi mb-2 text-center text-5xl">
+                {question.prompt}
+              </p>
+              <p className="mb-6 text-center text-sm text-muted">
+                {question.pinyin}
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {question.options.map((opt, i) => {
+                  const isCorrect =
+                    phase === "round-result" && roundCorrectIndex === i;
+                  const isWrongChosen =
+                    phase === "round-result" &&
+                    myAnswer === i &&
+                    roundCorrectIndex !== i;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      disabled={phase === "round-result" || myAnswer !== null}
+                      onClick={() => choose(i)}
+                      className={`motion-button rounded-xl border p-4 text-left text-sm font-medium ${
+                        isCorrect
+                          ? "border-good bg-good/10"
+                          : isWrongChosen
+                            ? "border-danger bg-danger/10"
+                            : myAnswer === i
+                              ? "border-primary/40 bg-primary/5"
+                              : "border-border hover:border-primary/40 hover:bg-primary/5"
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+              {phase === "playing" && myAnswer !== null && (
+                <p className="mt-4 text-center text-xs text-muted">
+                  Đã trả lời — đợi mọi người…
+                </p>
+              )}
+            </div>
           )}
-        </Card>
-      </section>
+
+        {phase === "finished" && finishResult && (
+          <div className="py-6 text-center">
+            <Icon name="trophy" size={40} className="mx-auto mb-3 text-primary" />
+            <p className="text-2xl font-bold">
+              {finishResult.winnerIsMyTeam === true
+                ? "Đội bạn thắng!"
+                : finishResult.winnerIsMyTeam === false
+                  ? "Đội bạn thua"
+                  : "Hoà!"}
+            </p>
+            <p className="mt-2 text-sm text-muted">
+              {finishResult.myTeamScore} - {finishResult.opponentTeamScore} với{" "}
+              {finishResult.opponentTeam.map((p) => p.displayName).join(" & ")}
+            </p>
+            {finishResult.forfeitedBy === "me" && (
+              <p className="mt-2 text-xs text-danger">
+                Bạn bị xử thua do mất kết nối quá lâu giữa trận.
+              </p>
+            )}
+            {finishResult.forfeitedBy === "teammate" && (
+              <p className="mt-2 text-xs text-danger">
+                Đồng đội của bạn mất kết nối quá lâu nên cả đội bị xử thua.
+              </p>
+            )}
+            {finishResult.forfeitedBy === "opponent" && (
+              <p className="mt-2 text-xs text-muted">
+                Đội đối thủ có người rớt mạng quá lâu nên xử thắng cho đội
+                bạn.
+              </p>
+            )}
+            <p
+              className={`mt-2 text-sm font-semibold ${finishResult.eloChange >= 0 ? "text-good" : "text-danger"}`}
+            >
+              ELO {finishResult.eloChange >= 0 ? "+" : ""}
+              {finishResult.eloChange} → {finishResult.newElo}
+            </p>
+            <Button className="mt-5" onClick={playAgain}>
+              Chơi tiếp
+            </Button>
+          </div>
+        )}
+      </Card>
+
+      <EloLeaderboardSection />
     </>
   );
 }
 
 // ------------------------------ Trang chính ------------------------------
 
-type SubMode = "solo" | "duel";
+type SubMode = "solo" | "duel" | "teamduel";
 
 function GameWorkspace({
   game,
@@ -1142,6 +1542,21 @@ function GameWorkspace({
   onBack: () => void;
 }) {
   const [sub, setSub] = useState<SubMode>("solo");
+  const tabs: { key: SubMode; label: string; icon: IconName }[] = [
+    { key: "solo", label: "Luyện tập", icon: "clock" },
+    ...(game.supportsDuel
+      ? [{ key: "duel" as const, label: "Đấu 1v1", icon: "flame" as const }]
+      : []),
+    ...(game.supportsTeamDuel
+      ? [
+          {
+            key: "teamduel" as const,
+            label: "Đấu đôi",
+            icon: "cards" as const,
+          },
+        ]
+      : []),
+  ];
   return (
     <div className="space-y-6">
       <button
@@ -1151,14 +1566,9 @@ function GameWorkspace({
       >
         <Icon name="back" size={15} /> Chọn minigame khác
       </button>
-      {game.supportsDuel && (
+      {tabs.length > 1 && (
         <div className="flex gap-1 border-b border-border">
-          {(
-            [
-              { key: "solo", label: "Luyện tập", icon: "clock" },
-              { key: "duel", label: "Đấu 1v1", icon: "flame" },
-            ] as const
-          ).map((m) => (
+          {tabs.map((m) => (
             <button
               key={m.key}
               type="button"
@@ -1182,8 +1592,10 @@ function GameWorkspace({
         ) : (
           <SoloMinigame game={game} />
         )
-      ) : (
+      ) : sub === "duel" ? (
         <DuelMinigame />
+      ) : (
+        <TeamDuelMinigame />
       )}
     </div>
   );

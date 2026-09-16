@@ -131,9 +131,9 @@ sao. 3 minigame hiện có — **Dịch tốc độ** và **Nghe đoán từ** d
 câu mới qua `useEffect([qIndex])` giống `quiz-runner.tsx`, `AudioButton` cho nghe lại): đồng hồ
 đếm ngược 60s tự chạy bằng `setInterval` so với `startTimeRef` (không cộng dồn sai số), chọn đáp
 án xong tự chuyển câu hoặc tự nộp bài khi hết giờ/hết câu, bảng xếp hạng ngày/tuần RIÊNG theo
-mode (`useMinigameLeaderboard(period, mode)`). `GameWorkspace` chỉ hiện tab **Đấu 1v1** nếu
-`game.supportsDuel` (hiện chỉ Dịch tốc độ — Nghe đoán từ/Ghép cặp chưa có đấu 1v1, tránh chia
-nhỏ hàng chờ ghép trận khi lượng người chơi còn ít).
+mode (`useMinigameLeaderboard(period, mode)`). `GameWorkspace` build mảng `tabs` động theo
+`game.supportsDuel`/`game.supportsTeamDuel` (hiện chỉ Dịch tốc độ có cả 2 — Nghe đoán từ/Ghép
+cặp chưa có đấu 1v1/2v2, tránh chia nhỏ hàng chờ ghép trận khi lượng người chơi còn ít).
   - **Ghép cặp** (`MatchMinigame`, `MATCH`) — engine RIÊNG hẳn (không dùng chung `SoloMinigame`
     vì cơ chế khác hoàn toàn trắc nghiệm): lưới 16 thẻ (`MATCH_PAIRS`=8 cặp, `MatchCard[]` từ
     `POST /minigame/start`), lật 2 thẻ/lượt qua `flipCard()` — khớp `wordId` thì giữ nguyên (thêm
@@ -172,6 +172,15 @@ nhỏ hàng chờ ghép trận khi lượng người chơi còn ít).
     `useDuelSocket()` (`lib/duel.ts`) dùng ref cho handlers để không bắt component gọi phải tự
     `useCallback` — effect chỉ đăng ký socket theo `user`, không theo từng lần đổi state trong
     ván đấu.
+  - **Đấu đôi 2v2** (`TeamDuelMinigame`, `lib/team-duel.ts`, Giai đoạn 4) — cấu trúc SONG SONG
+    với `DuelMinigame` (queue → màn "VS" đếm ngược → round → finished), khác ở chỗ mọi state theo
+    NHÓM thay vì 1 đối thủ: `myTeammates: DuelOpponent[]` (đúng 1 người) + `opponentTeam:
+    DuelOpponent[]` (đúng 2 người), điểm đội tự cộng ở client từ `scores` (theo từng người) +
+    danh sách đồng đội/đối thủ — KHÔNG dựa vào `teamScores` server gửi kèm (thứ tự đội 0/1 không
+    khớp trực tiếp với "đội của tôi") để tránh nhầm thứ tự. Màn "VS" hiện 2 avatar đội mình cạnh
+    nhau rồi "VS" rồi 2 avatar đội đối thủ. Dùng CHUNG `EloLeaderboardSection` (tách từ
+    `DuelMinigame` thành 1 component riêng vì giờ dùng ở CẢ 2 nơi) — 2v2 không có bảng xếp hạng
+    riêng, ELO/tier/mùa giải là 1 hệ chung với đấu 1v1.
 `/account` (đổi mật khẩu, thẻ "Ví xu" (`useWallet()`) hiện số dư + nút mua thêm lá chắn streak
 (300 xu, `buyStreakFreeze()`), thẻ "Mời bạn bè cùng học" — link `/register?ref=<userId>` qua
 `ShareButton`, số liệu từ `GET /referrals/me`, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ
