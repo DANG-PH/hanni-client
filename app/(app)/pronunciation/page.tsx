@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Icon } from "@/components/icon";
 import { Button, Card, ErrorNote, SectionHeading } from "@/components/ui";
 import {
@@ -10,6 +10,46 @@ import {
 import { useWordAudio } from "@/components/practice/use-word-audio";
 import { recordPracticeAttempt, usePracticeStats } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
+
+interface SpeechRecognitionAlternativeLike {
+  transcript: string;
+}
+interface SpeechRecognitionEventLike {
+  results: { [index: number]: { [index: number]: SpeechRecognitionAlternativeLike } };
+}
+interface SpeechRecognitionLike {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+}
+declare global {
+  interface Window {
+    SpeechRecognition?: new () => SpeechRecognitionLike;
+    webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+  }
+}
+
+/** So khớp thô: bỏ khoảng trắng + dấu câu để so văn bản nhận diện với từ gốc. */
+function normalizeHanzi(text: string): string {
+  return text.replace(/[\s，。！？、,.!?~～]/g, "");
+}
+
+function noSubscription() {
+  return () => {};
+}
+function useSpeechRecognitionSupport(): boolean {
+  return useSyncExternalStore(
+    noSubscription,
+    () => !!(window.SpeechRecognition ?? window.webkitSpeechRecognition),
+    () => false,
+  );
+}
 
 export default function PronunciationPage() {
   return (
@@ -31,6 +71,7 @@ export default function PronunciationPage() {
 function PronunciationSession({ words }: { words: Word[] }) {
   const [index, setIndex] = useState(0);
   const stats = usePracticeStats("PRONUNCIATION");
+  const speechSupported = useSpeechRecognitionSupport();
   const word = words[index];
 
   return (
@@ -50,10 +91,13 @@ function PronunciationSession({ words }: { words: Word[] }) {
           <PronunciationWord
             key={word.id}
             word={word}
-            onRecorded={() =>
-              void recordPracticeAttempt(word.id, "PRONUNCIATION").then(() =>
-                stats.mutate(),
-              )
+            speechSupported={speechSupported}
+            onRecorded={(isCorrect) =>
+              void recordPracticeAttempt(
+                word.id,
+                "PRONUNCIATION",
+                isCorrect,
+              ).then(() => stats.mutate())
             }
           />
         </Card>
@@ -91,8 +135,9 @@ function PronunciationSession({ words }: { words: Word[] }) {
             tone="good"
           />
           <p className="mt-3 text-sm leading-6 text-muted">
-            So sánh bản thu với âm mẫu để tự điều chỉnh. Bài luyện này chưa có
-            chức năng chấm điểm phát âm tự động.
+            {speechSupported
+              ? "So sánh bản thu với âm mẫu để tự điều chỉnh. Hanni cũng dùng nhận diện giọng nói của trình duyệt để kiểm tra bạn đọc có đúng từ không (chưa đánh giá chuẩn thanh điệu)."
+              : "So sánh bản thu với âm mẫu để tự điều chỉnh. Trình duyệt này chưa hỗ trợ nhận diện giọng nói nên chưa chấm điểm phát âm tự động được."}
           </p>
           <div className="mt-5 rounded-xl bg-primary/5 px-4 py-3 text-xs leading-5 text-primary">
             Mỗi lần luyện là một cơ hội nói tự nhiên hơn.
@@ -115,11 +160,16 @@ function PronunciationSession({ words }: { words: Word[] }) {
               </div>
               <div>
                 <p className="text-2xl font-semibold text-primary">
-                  {stats.data.distinctWordsCount.toLocaleString("vi-VN")}
+                  {stats.data.accuracyPct ?? "—"}
+                  {stats.data.accuracyPct !== null && "%"}
                 </p>
-                <p className="text-xs text-muted">từ khác nhau</p>
+                <p className="text-xs text-muted">nhận diện đúng</p>
               </div>
             </div>
+            <p className="mt-4 text-xs leading-5 text-muted">
+              {stats.data.distinctWordsCount.toLocaleString("vi-VN")} từ khác
+              nhau đã được luyện.
+            </p>
           </Card>
         )}
       </PracticeTips>
@@ -129,10 +179,12 @@ function PronunciationSession({ words }: { words: Word[] }) {
 
 function PronunciationWord({
   word,
+  speechSupported,
   onRecorded,
 }: {
   word: Word;
-  onRecorded: () => void;
+  speechSupported: boolean;
+  onRecorded: (isCorrect?: boolean) => void;
 }) {
   const model = useWordAudio(word.simplified, word.audioUrl);
   const [phase, setPhase] = useState<"idle" | "requesting" | "recording">(
@@ -143,6 +195,10 @@ function PronunciationWord({
     url: string;
     extension: string;
   } | null>(null);
+  const [heard, setHeard] = useState<{
+    text: string;
+    correct: boolean;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const recorder = useRef<MediaRecorder | null>(null);
   const stream = useRef<MediaStream | null>(null);
@@ -150,6 +206,9 @@ function PronunciationWord({
   const playback = useRef<HTMLAudioElement | null>(null);
   const mounted = useRef(true);
   const limitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const recognition = useRef<SpeechRecognitionLike | null>(null);
+  const heardRef = useRef<{ text: string; correct: boolean } | null>(null);
+  const finished = useRef(false);
 
   useEffect(() => {
     mounted.current = true;
@@ -164,6 +223,16 @@ function PronunciationWord({
       }
       stream.current?.getTracks().forEach((track) => track.stop());
       if (recordingUrl.current) URL.revokeObjectURL(recordingUrl.current);
+      if (recognition.current) {
+        recognition.current.onresult = null;
+        recognition.current.onerror = null;
+        recognition.current.onend = null;
+        try {
+          recognition.current.abort();
+        } catch {
+          /* đã dừng sẵn rồi thì thôi */
+        }
+      }
     };
   }, []);
 
@@ -184,6 +253,9 @@ function PronunciationWord({
     model.stop();
     playback.current?.pause();
     setError(null);
+    setHeard(null);
+    heardRef.current = null;
+    finished.current = false;
     if (!navigator.mediaDevices?.getUserMedia || !("MediaRecorder" in window)) {
       setError(
         "Trình duyệt chưa hỗ trợ ghi âm ở trang này. Mở Hanni bằng HTTPS trên trình duyệt có hỗ trợ micro.",
@@ -220,6 +292,12 @@ function PronunciationWord({
         const blob = new Blob(chunks, { type: nextRecorder.mimeType });
         if (!blob.size) {
           setError("Chưa thu được âm thanh. Kiểm tra micro và thử ghi lại.");
+          finished.current = true;
+          try {
+            recognition.current?.abort();
+          } catch {
+            /* bỏ qua */
+          }
           return;
         }
         if (recordingUrl.current) URL.revokeObjectURL(recordingUrl.current);
@@ -233,7 +311,20 @@ function PronunciationWord({
               ? "ogg"
               : "webm",
         });
-        onRecorded();
+        if (recognition.current) {
+          setTimeout(() => {
+            if (finished.current || !mounted.current) return;
+            finished.current = true;
+            onRecorded(heardRef.current?.correct);
+          }, 1500);
+          try {
+            recognition.current.stop();
+          } catch {
+            /* onend hoặc timer dự phòng ở trên sẽ tự lo tiếp */
+          }
+        } else {
+          onRecorded(undefined);
+        }
       };
       nextRecorder.onerror = () => {
         if (limitTimer.current) clearTimeout(limitTimer.current);
@@ -242,6 +333,42 @@ function PronunciationWord({
         setPhase("idle");
         setError("Ghi âm bị gián đoạn. Kiểm tra micro rồi thử lại.");
       };
+
+      const RecognitionCtor =
+        window.SpeechRecognition ?? window.webkitSpeechRecognition;
+      if (RecognitionCtor) {
+        const instance = new RecognitionCtor();
+        instance.lang = "zh-CN";
+        instance.interimResults = false;
+        instance.maxAlternatives = 1;
+        instance.onresult = (event) => {
+          const transcript = event.results[0]?.[0]?.transcript ?? "";
+          const result = {
+            text: transcript,
+            correct:
+              normalizeHanzi(transcript) === normalizeHanzi(word.simplified),
+          };
+          heardRef.current = result;
+          if (mounted.current) setHeard(result);
+        };
+        instance.onerror = () => {
+          /* im lặng — vẫn giữ bản ghi âm, chỉ là không chấm được điểm lần này */
+        };
+        instance.onend = () => {
+          if (finished.current || !mounted.current) return;
+          finished.current = true;
+          onRecorded(heardRef.current?.correct);
+        };
+        recognition.current = instance;
+        try {
+          instance.start();
+        } catch {
+          recognition.current = null;
+        }
+      } else {
+        recognition.current = null;
+      }
+
       nextRecorder.start();
       setSeconds(0);
       setPhase("recording");
@@ -330,6 +457,26 @@ function PronunciationWord({
             >
               Tải bản ghi về máy
             </a>
+            {heard && (
+              <div
+                className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm ${
+                  heard.correct
+                    ? "bg-good/10 text-good"
+                    : "bg-danger/10 text-danger"
+                }`}
+              >
+                <Icon name={heard.correct ? "check" : "close"} size={16} />
+                {heard.correct
+                  ? "Nhận diện đúng từ này!"
+                  : `Trình duyệt nghe ra "${heard.text || "…"}" — thử đọc rõ hơn nhé.`}
+              </div>
+            )}
+            {!heard && speechSupported && (
+              <p className="text-xs text-muted">
+                Không nhận diện được giọng nói lần này, vẫn tính là một lượt
+                luyện.
+              </p>
+            )}
           </div>
         ) : (
           <p className="mt-4 text-sm leading-6 text-muted">

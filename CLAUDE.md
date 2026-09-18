@@ -202,7 +202,13 @@ cùng học" — link `/register?ref=<userId>` qua `ShareButton`, số liệu t�
 vĩnh viễn, gọi `DELETE /users/me`),
 `/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
-DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước — đã học
+DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu; từ 2026-09-18: ghi âm xong client tự chạy song
+song Web Speech API (`window.SpeechRecognition`/`webkitSpeechRecognition`, `lang: zh-CN`) để
+nhận diện giọng nói, so văn bản nhận được với `word.simplified` rồi gửi `isCorrect` kèm attempt —
+CHỈ hoạt động trên Chrome/Edge (Firefox/Safari không có `zh-CN`, tự rơi về hành vi cũ là chỉ ghi
+nhận lượt luyện, không báo đúng/sai); dùng `useSyncExternalStore` (không phải
+`useEffect`+`setState`) để phát hiện hỗ trợ trình duyệt — tránh lỗi lint
+`react-hooks/set-state-in-effect` mà vẫn an toàn SSR), `/onboarding` (khảo sát 3 bước — đã học
 chưa/cấp tự đánh giá, mục tiêu, có định thi không — làm được TRƯỚC KHI có tài khoản, kiểu
 Duolingo "gradual engagement": trang chủ + nav nút chính giờ trỏ vào đây thay vì thẳng
 `/register`; ẩn danh làm xong thì lưu tạm câu trả lời vào `sessionStorage`
