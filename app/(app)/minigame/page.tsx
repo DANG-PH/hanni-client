@@ -122,7 +122,7 @@ const GAMES: GameDef[] = [
 
 function GameHub({ onSelect }: { onSelect: (game: GameDef) => void }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {GAMES.map((g) => (
         <button
           key={g.mode}

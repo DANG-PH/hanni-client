@@ -14,8 +14,8 @@
 }
 
 .workspace :global(.page-wrap) {
-  max-width: 1320px;
-  padding-inline: clamp(20px, 2.6vw, 36px);
+  max-width: 1680px;
+  padding-inline: clamp(20px, 2.2vw, 32px);
   padding-block: 28px 40px;
 }
 
