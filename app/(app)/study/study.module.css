@@ -1,9 +1,11 @@
 .page {
   min-width: 0;
   width: 100%;
-  max-width: 1180px;
+  /* Trang ôn tập có hero và bố cục hai cột nên không dùng khung 1180px
+   * như trước — trên laptop rộng sẽ bị co giữa màn hình, dư hai bên. */
+  max-width: 1680px;
   margin: 0 auto;
-  padding: 28px clamp(16px, 2.6vw, 36px) 40px;
+  padding: 28px clamp(20px, 2.2vw, 32px) 40px;
 }
 
 .navigation {
