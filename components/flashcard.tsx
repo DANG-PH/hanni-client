@@ -48,7 +48,7 @@ export function Flashcard({
   const [revealed, setRevealed] = useState(false);
   const [start] = useState(() => Date.now());
   const revealButton = useRef<HTMLButtonElement>(null);
-  const answer = useRef<HTMLDivElement>(null);
+  const flipBackButton = useRef<HTMLButtonElement>(null);
   const player = useRef<HTMLAudioElement | null>(null);
   const example = word.examples?.[0];
 
@@ -67,12 +67,15 @@ export function Flashcard({
   }, [revealed, word.audioUrl]);
 
   useEffect(() => {
-    revealButton.current?.focus({ preventScroll: true });
     return () => player.current?.pause();
   }, []);
 
   useEffect(() => {
-    if (revealed) answer.current?.focus({ preventScroll: true });
+    if (revealed) {
+      flipBackButton.current?.focus({ preventScroll: true });
+    } else {
+      revealButton.current?.focus({ preventScroll: true });
+    }
   }, [revealed]);
 
   useEffect(() => {
@@ -88,9 +91,13 @@ export function Flashcard({
         )
       )
         return;
-      if (e.code === "Space" && !revealed) {
+      if (e.code === "Space") {
         e.preventDefault();
-        reveal();
+        if (revealed) {
+          setRevealed(false);
+        } else {
+          reveal();
+        }
       }
       const rating = RATINGS[Number(e.key) - 1];
       if (revealed && !busy && rating) {
@@ -154,22 +161,27 @@ export function Flashcard({
           </div>
 
           <div
-            ref={answer}
-            tabIndex={-1}
             className={`${styles.face} ${styles.back}`}
             inert={!revealed}
             aria-hidden={!revealed}
             aria-label={`Đáp án: ${word.meaningVi ?? word.meaningEn ?? "Nghĩa đang được cập nhật"}`}
           >
-            <p className={styles.answerLabel}>
-              <Icon name="check" size={14} /> Cùng xem đáp án
-            </p>
+            <button
+              ref={flipBackButton}
+              type="button"
+              onClick={() => setRevealed(false)}
+              aria-label="Lật về mặt trước"
+              className={styles.flipBackButton}
+              tabIndex={revealed ? 0 : -1}
+            />
             <div className={styles.answerWord}>
               <span lang="zh" className="hanzi">
                 {word.simplified}
               </span>
               <span className={styles.answerPinyin}>{word.pinyin}</span>
-              <AudioButton src={word.audioUrl} />
+              <span className={styles.audio}>
+                <AudioButton src={word.audioUrl} />
+              </span>
             </div>
             <div className={styles.meaning}>
               <p>
