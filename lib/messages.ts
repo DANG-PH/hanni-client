@@ -59,6 +59,16 @@ export function translateMessage(text: string) {
   );
 }
 
+/** "Dịch trước khi gửi" — dịch nội dung ĐANG SOẠN sang ngôn ngữ đích, KHÔNG
+ * gửi luôn — FE điền lại vào ô nhập để người dùng xem/sửa trước khi gửi
+ * thật. Khác `translateMessage()` ở trên (dịch 1 tin ĐÃ gửi để đọc). */
+export function translateForCompose(text: string, targetLang: "zh" | "vi") {
+  return api.post<{ translated: string }>("/messages/translate-compose", {
+    text,
+    targetLang,
+  });
+}
+
 /** Báo cho người kia biết mình đang gõ — không lưu DB, chỉ chuyển tiếp qua
  * socket (xem `NotificationsGateway.handleTyping()`). Im lặng bỏ qua nếu
  * chưa có kết nối (vd mất mạng) — chỉ là hiệu ứng phụ, không cần đảm bảo gửi. */

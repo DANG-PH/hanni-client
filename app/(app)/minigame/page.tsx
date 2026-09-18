@@ -102,6 +102,20 @@ const GAMES: GameDef[] = [
     supportsDuel: false,
     supportsTeamDuel: false,
   },
+  {
+    mode: "PINYIN",
+    title: "Chọn pinyin đúng",
+    icon: "sound",
+    tileClass: "bg-primary/10 text-primary",
+    tagline:
+      "Nhìn Hán tự, chọn đúng pinyin — luyện phát âm/thanh điệu thay vì nghĩa.",
+    rules: [
+      "Luyện tập 1 mình: 60 giây, trả lời càng nhiều câu càng tốt, mỗi câu đúng thưởng 1 xu.",
+      "Chưa có chế độ Đấu 1v1 — sẽ thêm sau khi chế độ luyện tập ổn định.",
+    ],
+    supportsDuel: false,
+    supportsTeamDuel: false,
+  },
 ];
 
 // ------------------------------ Sảnh chọn game ------------------------------
@@ -176,6 +190,9 @@ type SoloPhase = "idle" | "playing" | "finished";
 
 function SoloMinigame({ game }: { game: GameDef }) {
   const listening = game.mode === "LISTENING";
+  // PINYIN: pinyin ĐÚNG chính là đáp án đang cho chọn trong `options`, nên
+  // phải ẩn caption pinyin thường thấy ở TRANSLATE — hiện ra là lộ đáp án.
+  const hidePinyinCaption = game.mode === "PINYIN";
   const [phase, setPhase] = useState<SoloPhase>("idle");
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<MinigameQuestion[]>([]);
@@ -321,12 +338,16 @@ function SoloMinigame({ game }: { game: GameDef }) {
               </div>
             ) : (
               <>
-                <p className="hanzi mb-2 text-center text-5xl">
+                <p
+                  className={`hanzi text-center text-5xl ${hidePinyinCaption ? "mb-6" : "mb-2"}`}
+                >
                   {current.prompt}
                 </p>
-                <p className="mb-6 text-center text-sm text-muted">
-                  {current.pinyin}
-                </p>
+                {!hidePinyinCaption && (
+                  <p className="mb-6 text-center text-sm text-muted">
+                    {current.pinyin}
+                  </p>
+                )}
               </>
             )}
             <div className="grid gap-3 sm:grid-cols-2">

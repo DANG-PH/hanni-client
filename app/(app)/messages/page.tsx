@@ -14,6 +14,7 @@ import {
   emitTyping,
   markConversationRead,
   sendDirectMessage,
+  translateForCompose,
   translateMessage,
   useConversationMessages,
   useConversations,
@@ -166,6 +167,8 @@ function ChatThread({ conversationId }: { conversationId: string }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
+  const [translating, setTranslating] = useState(false);
+  const [translateError, setTranslateError] = useState("");
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
@@ -239,6 +242,26 @@ function ChatThread({ conversationId }: { conversationId: string }) {
       });
     } finally {
       setLoadingOlder(false);
+    }
+  }
+
+  /** "Dịch trước khi gửi" — dịch nội dung đang gõ sang ngôn ngữ CÒN LẠI rồi
+   * điền lại vào ô nhập để người dùng xem/sửa trước khi bấm Gửi như bình
+   * thường (không tự gửi luôn — máy dịch không phải lúc nào cũng đúng).
+   * Hướng dịch tự nhận theo chữ Hán có trong nội dung, không cần chọn tay. */
+  async function translateInput() {
+    const text = input.trim();
+    if (!text || translating) return;
+    setTranslating(true);
+    setTranslateError("");
+    try {
+      const targetLang = HAS_HAN.test(text) ? "vi" : "zh";
+      const { translated } = await translateForCompose(text, targetLang);
+      setInput(translated);
+    } catch {
+      setTranslateError("Chưa dịch được, thử lại nhé.");
+    } finally {
+      setTranslating(false);
     }
   }
 
@@ -339,9 +362,9 @@ function ChatThread({ conversationId }: { conversationId: string }) {
           </>
         )}
       </div>
-      {sendError && (
+      {(sendError || translateError) && (
         <div className="px-3 pt-2">
-          <ErrorNote>{sendError}</ErrorNote>
+          <ErrorNote>{sendError || translateError}</ErrorNote>
         </div>
       )}
       <form
@@ -362,10 +385,19 @@ function ChatThread({ conversationId }: { conversationId: string }) {
               emitTyping(conversationId, otherUserId);
             }
           }}
-          placeholder="Nhắn gì đó…"
+          placeholder="Nhắn gì đó… (gõ tiếng Việt hoặc tiếng Trung đều được)"
           disabled={sending}
           className="field min-w-0 flex-1"
         />
+        <button
+          type="button"
+          onClick={() => void translateInput()}
+          disabled={!input.trim() || sending || translating}
+          title="Dịch nội dung đang gõ sang ngôn ngữ còn lại trước khi gửi"
+          className="shrink-0 rounded-xl border border-border px-3 py-2.5 text-xs font-semibold text-muted hover:border-primary/40 hover:text-primary disabled:opacity-40"
+        >
+          {translating ? "Đang dịch…" : "Dịch"}
+        </button>
         <button
           type="submit"
           disabled={!input.trim() || sending}

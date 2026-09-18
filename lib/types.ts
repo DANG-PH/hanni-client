@@ -517,10 +517,11 @@ export interface ReferralStats {
 }
 
 /** TRANSLATE = "Dịch tốc độ" (Hán tự → nghĩa), LISTENING = "Nghe đoán từ"
- * (nghe phát âm → nghĩa), MATCH = "Ghép cặp" (lật thẻ tìm đúng cặp) — 3 chế
- * độ, TRANSLATE/LISTENING dùng chung engine trắc nghiệm ở server, MATCH có
- * response shape riêng (`cards` thay vì `questions`). */
-export type GameMode = "TRANSLATE" | "LISTENING" | "MATCH";
+ * (nghe phát âm → nghĩa), MATCH = "Ghép cặp" (lật thẻ tìm đúng cặp), PINYIN
+ * = "Chọn pinyin đúng" (Hán tự → pinyin) — 4 chế độ, TRANSLATE/LISTENING/
+ * PINYIN dùng chung engine trắc nghiệm ở server, MATCH có response shape
+ * riêng (`cards` thay vì `questions`). */
+export type GameMode = "TRANSLATE" | "LISTENING" | "MATCH" | "PINYIN";
 
 export interface MinigameQuestion {
   wordId: string;

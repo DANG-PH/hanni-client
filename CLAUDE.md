@@ -100,7 +100,12 @@ cũ giờ chỉ còn là redirect sang `/messages?tab=connect` để link/bookma
     `message:read`), và **báo đang nhập** ("Đang nhập…" ở tiêu đề hội thoại, qua event `typing`
     — client tự throttle phát tối đa 1 lần/2s, tự tắt sau 3s không có tín hiệu mới,
     `emitTyping()` trong `lib/messages.ts`). Danh sách hội thoại trống thì mời chuyển sang tab
-    "Kết nối" thay vì chỉ báo suông.
+    "Kết nối" thay vì chỉ báo suông. **Nút "Dịch" cạnh ô nhập** (`translateInput()`) — khác
+    `MessageTranslation` (dịch tin ĐÃ gửi để đọc) — dịch nội dung ĐANG GÕ sang ngôn ngữ còn lại
+    rồi ĐIỀN LẠI vào ô nhập (không tự gửi luôn) để xem/sửa trước khi bấm Gửi bình thường; hướng
+    dịch tự nhận theo `HAS_HAN.test(text)` (có chữ Hán → dịch sang Việt, không có → dịch sang
+    Trung), gọi `POST /messages/translate-compose` (`translateForCompose()` trong
+    `lib/messages.ts`).
   - Tab **"Kết nối"** (`components/connections-panel.tsx`, dùng chung cho cả tab này lẫn trang
     redirect cũ): ô tìm theo tên HOẶC mã người dùng (UID) qua `GET /users/search` — có tìm kiếm
     thì THAY THẾ hẳn phần dưới bằng kết quả tìm (không hiện chung với sub-tab, giống hầu hết app
@@ -125,15 +130,17 @@ cũ giờ chỉ còn là redirect sang `/messages?tab=connect` để link/bookma
 `/minigame` (SẢNH chọn game thay vì nhảy thẳng vào 1 trò — `GameHub` hiện thẻ mỗi minigame
 (`GAMES` trong `page.tsx`), bấm vào ra `GameIntro` (luật chơi + nút "Bắt đầu chơi") RỒI mới vào
 `GameWorkspace`, tránh kiểu cũ "sidebar chỉ ghi chữ minigame" mà không rõ đang chơi gì/luật ra
-sao. 3 minigame hiện có — **Dịch tốc độ** và **Nghe đoán từ** dùng CHUNG 1 engine solo
-(`SoloMinigame`, tham số hoá theo `game.mode`) — **Dịch tốc độ** (`TRANSLATE`, Giai đoạn 1
-`FEATURES.md`) và **Nghe đoán từ** (`LISTENING` — ẩn Hán tự/pinyin lúc chơi, tự phát audio mỗi
-câu mới qua `useEffect([qIndex])` giống `quiz-runner.tsx`, `AudioButton` cho nghe lại): đồng hồ
-đếm ngược 60s tự chạy bằng `setInterval` so với `startTimeRef` (không cộng dồn sai số), chọn đáp
-án xong tự chuyển câu hoặc tự nộp bài khi hết giờ/hết câu, bảng xếp hạng ngày/tuần RIÊNG theo
-mode (`useMinigameLeaderboard(period, mode)`). `GameWorkspace` build mảng `tabs` động theo
-`game.supportsDuel`/`game.supportsTeamDuel` (hiện chỉ Dịch tốc độ có cả 2 — Nghe đoán từ/Ghép
-cặp chưa có đấu 1v1/2v2, tránh chia nhỏ hàng chờ ghép trận khi lượng người chơi còn ít).
+sao. 4 minigame hiện có — **Dịch tốc độ**, **Nghe đoán từ**, **Chọn pinyin đúng** dùng CHUNG 1
+engine solo (`SoloMinigame`, tham số hoá theo `game.mode`) — **Dịch tốc độ** (`TRANSLATE`, Giai
+đoạn 1 `FEATURES.md`), **Nghe đoán từ** (`LISTENING` — ẩn Hán tự/pinyin lúc chơi, tự phát audio
+mỗi câu mới qua `useEffect([qIndex])` giống `quiz-runner.tsx`, `AudioButton` cho nghe lại), và
+**Chọn pinyin đúng** (`PINYIN` — hiện Hán tự, chọn đúng pinyin trong 4 lựa chọn; PHẢI ẩn caption
+pinyin thường thấy ở TRANSLATE vì đó chính là đáp án đang cho chọn, xem `hidePinyinCaption`):
+đồng hồ đếm ngược 60s tự chạy bằng `setInterval` so với `startTimeRef` (không cộng dồn sai số),
+chọn đáp án xong tự chuyển câu hoặc tự nộp bài khi hết giờ/hết câu, bảng xếp hạng ngày/tuần
+RIÊNG theo mode (`useMinigameLeaderboard(period, mode)`). `GameWorkspace` build mảng `tabs` động
+theo `game.supportsDuel`/`game.supportsTeamDuel` (hiện chỉ Dịch tốc độ có cả 2 — các mode còn
+lại chưa có đấu 1v1/2v2, tránh chia nhỏ hàng chờ ghép trận khi lượng người chơi còn ít).
   - **Ghép cặp** (`MatchMinigame`, `MATCH`) — engine RIÊNG hẳn (không dùng chung `SoloMinigame`
     vì cơ chế khác hoàn toàn trắc nghiệm): lưới 16 thẻ (`MATCH_PAIRS`=8 cặp, `MatchCard[]` từ
     `POST /minigame/start`), lật 2 thẻ/lượt qua `flipCard()` — khớp `wordId` thì giữ nguyên (thêm
