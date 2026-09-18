@@ -138,7 +138,10 @@
     scrollbar-gutter: stable;
   }
   .app-workspace .page-wrap {
-    max-width: 1440px;
+    /* Desktop dùng container fluid; chỉ giới hạn ở màn hình siêu rộng để
+     * tránh dòng chữ và các card bị kéo quá dài. Các trang cần tập trung vẫn
+     * có thể ghi đè bằng max-w-*! ngay tại page. */
+    max-width: 1680px;
   }
   .app-workspace {
     background-image: radial-gradient(ellipse at 95% 0%, color-mix(in srgb, var(--primary) 4%, transparent), transparent 55%);
