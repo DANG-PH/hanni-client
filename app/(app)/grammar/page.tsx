@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useMemo, useState } from "react";
 import { Icon } from "@/components/icon";
 import {
   LearningHeader,
@@ -30,29 +31,19 @@ function normalizeSearch(text: string) {
     .replace(/đ/g, "d");
 }
 
-/**
- * Đọc query param lúc mount, cho phép link thẳng từ trang khác (vd. bài học)
- * tới 1 điểm ngữ pháp cụ thể qua ?level=&open= — chỉ đọc trong lazy initializer
- * (không phải useEffect) để tránh cảnh báo set-state-in-effect, và an toàn SSR
- * vì window chỉ được truy cập lúc initializer thật sự chạy trên client.
- */
-function initialQueryParam(key: string): string | null {
-  if (typeof window === "undefined") return null;
-  return new URLSearchParams(window.location.search).get(key);
-}
-
-export default function GrammarPage() {
+function GrammarView({
+  initialLevel,
+  initialOpenSlug,
+}: {
+  initialLevel: number | null;
+  initialOpenSlug: string | null;
+}) {
   const { user, loading } = useRequireAuth();
   const levels = useGrammarLevels();
-  const [level, setLevel] = useState<number | null>(() => {
-    const fromUrl = Number(initialQueryParam("level"));
-    return fromUrl > 0 ? fromUrl : null;
-  });
+  const [level, setLevel] = useState<number | null>(initialLevel);
   const active = level ?? levels.data?.[0]?.level;
   const list = useGrammar(active);
-  const [openSlug, setOpenSlug] = useState<string | null>(() =>
-    initialQueryParam("open"),
-  );
+  const [openSlug, setOpenSlug] = useState<string | null>(initialOpenSlug);
   const [query, setQuery] = useState("");
   const grouped = useMemo(() => {
     const term = normalizeSearch(query.trim());
@@ -280,6 +271,27 @@ export default function GrammarPage() {
         </>
       )}
     </div>
+  );
+}
+
+function GrammarPageWithParams() {
+  const params = useSearchParams();
+  const levelParam = Number(params.get("level"));
+  const openParam = params.get("open");
+  return (
+    <GrammarView
+      key={`${levelParam || ""}-${openParam || ""}`}
+      initialLevel={levelParam > 0 ? levelParam : null}
+      initialOpenSlug={openParam}
+    />
+  );
+}
+
+export default function GrammarPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <GrammarPageWithParams />
+    </Suspense>
   );
 }
 

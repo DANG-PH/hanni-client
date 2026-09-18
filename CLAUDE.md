@@ -45,14 +45,21 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
 ## Convention
 - Mọi request qua `lib/api.ts` (`api.get/post/patch`) — `credentials: "include"`, tự refresh 401 một lần.
 - Trang cần đăng nhập: gọi `useRequireAuth()` ở đầu component.
-- Component dùng `useSearchParams()` phải bọc trong `<Suspense>` (yêu cầu của Next 16). Đọc
-  query param 1 lần lúc mount mà không muốn bọc `<Suspense>` → đọc thẳng
-  `window.location.search`: nếu chỉ cần ĐỌC (không set state ngay) thì trong `useEffect` (vd.
-  `/account` đọc `?topup=`); nếu cần SET STATE NGAY (giá trị ban đầu của 1 `useState`) thì đọc
-  trong **lazy initializer** của `useState(() => ...)` (có guard `typeof window === "undefined"`
-  cho SSR), KHÔNG đọc trong `useEffect` rồi gọi `setState` — dính cảnh báo ESLint
-  `react-hooks/set-state-in-effect` (vd. `/grammar` đọc `?level=&open=` từ link của
-  `/learn/[lessonId]`).
+- Component dùng `useSearchParams()` phải bọc trong `<Suspense>` (yêu cầu của Next 16).
+  **CHỈ dùng cách đọc `window.location.search` thủ công (né `<Suspense>`) cho trang chỉ vào
+  qua ĐIỀU HƯỚNG TẢI LẠI TRANG THẬT** (redirect từ bên ngoài như payOS trả về `/account?topup=`,
+  hoặc gõ thẳng URL) — đọc trong `useEffect` nếu chỉ cần đọc rồi set state 1 lần, hoặc trong
+  **lazy initializer** của `useState(() => ...)` (guard `typeof window === "undefined"` cho SSR)
+  nếu cần set state ngay, tránh cảnh báo ESLint `react-hooks/set-state-in-effect`. **KHÔNG dùng
+  cách này nếu trang được điều hướng tới bằng `<Link>` trong app** (client-side navigation) —
+  Next.js có thể tái dùng lại instance component cũ khi chỉ đổi query string, khiến lazy
+  initializer/effect không chạy lại và param mới bị bỏ qua (bug thật đã gặp: nút "Ngữ pháp liên
+  quan" ở `/learn/[lessonId]` link sang `/grammar?level=&open=`, và nút "Luyện nghe"/"Luyện phát
+  âm" link sang `/listening?lesson=`/`/pronunciation?lesson=` — cả 2 ban đầu code theo lazy
+  initializer, test Playwright bằng click Link thật phát hiện param không được đọc). Trường hợp
+  này PHẢI dùng `useSearchParams()` thật (bọc `<Suspense>`) + đặt `key={param}` trên component
+  con để ép remount mỗi khi param đổi — xem pattern chuẩn ở `/study` (`StudySession` +
+  `key={lessonId ?? "review"}`), đã áp dụng lại cho `/grammar`, `/listening`, `/pronunciation`.
 - Biến môi trường client: prefix `NEXT_PUBLIC_`. API base: `NEXT_PUBLIC_API_URL`.
 - Màu qua token Tailwind (`bg-surface`, `text-muted`, `bg-primary`…), không hardcode hex.
 - Next.js 16: đọc `node_modules/next/dist/docs/` khi cần — `params`/`searchParams`/`cookies()` là async.
@@ -216,10 +223,13 @@ CHỈ hoạt động trên Chrome/Edge (Firefox/Safari không có `zh-CN`, tự 
 nhận lượt luyện, không báo đúng/sai); dùng `useSyncExternalStore` (không phải
 `useEffect`+`setState`) để phát hiện hỗ trợ trình duyệt — tránh lỗi lint
 `react-hooks/set-state-in-effect` mà vẫn an toàn SSR; từ 2026-09-18: cả 2 trang nhận thêm
-`?lesson=<id>` (đọc qua `useState(initialLessonId)` — lazy initializer, không phải effect) để
-luyện đúng từ của 1 bài học thay vì chọn cấp rồi luyện ngẫu nhiên — `PracticeLibrary` nhận prop
-`lessonId`, tự ẩn `LevelFilter`, gọi `useWords({lessonId})` và `useLesson(lessonId)` để lấy tên
-bài hiện lên; `/learn/[lessonId]` có 2 nút "Luyện nghe"/"Luyện phát âm" trỏ vào đây), `/onboarding` (khảo sát 3 bước — đã học
+`?lesson=<id>` để luyện đúng từ của 1 bài học thay vì chọn cấp rồi luyện ngẫu nhiên — đọc qua
+`useSearchParams()` thật (bọc `<Suspense>`, KHÔNG phải lazy initializer — trang này được vào
+chủ yếu bằng `<Link>` từ `/learn/[lessonId]`, lazy initializer không đọc lại được param khi
+Next.js tái dùng component instance, xem mục Convention phía trên), `key={lessonId ?? "free"}`
+trên `PracticeLibrary` để ép remount đúng lúc đổi bài. `PracticeLibrary` nhận prop `lessonId`,
+tự ẩn `LevelFilter`, gọi `useWords({lessonId})` và `useLesson(lessonId)` để lấy tên bài hiện
+lên; `/learn/[lessonId]` có 2 nút "Luyện nghe"/"Luyện phát âm" trỏ vào đây), `/onboarding` (khảo sát 3 bước — đã học
 chưa/cấp tự đánh giá, mục tiêu, có định thi không — làm được TRƯỚC KHI có tài khoản, kiểu
 Duolingo "gradual engagement": trang chủ + nav nút chính giờ trỏ vào đây thay vì thẳng
 `/register`; ẩn danh làm xong thì lưu tạm câu trả lời vào `sessionStorage`

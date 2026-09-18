@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { Icon } from "@/components/icon";
 import {
   Button,
@@ -8,6 +9,7 @@ import {
   ErrorNote,
   ProgressBar,
   SectionHeading,
+  Spinner,
 } from "@/components/ui";
 import {
   PracticeLibrary,
@@ -17,15 +19,11 @@ import { useWordAudio } from "@/components/practice/use-word-audio";
 import { recordPracticeAttempt, usePracticeStats } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
 
-function initialLessonId(): string | undefined {
-  if (typeof window === "undefined") return undefined;
-  return new URLSearchParams(window.location.search).get("lesson") ?? undefined;
-}
-
-export default function ListeningPage() {
-  const [lessonId] = useState(initialLessonId);
+function ListeningLibrary() {
+  const lessonId = useSearchParams().get("lesson") ?? undefined;
   return (
     <PracticeLibrary
+      key={lessonId ?? "free"}
       skill="listening"
       title="Luyện nghe"
       description="Nghe một từ, viết lại điều bạn nghe và đối chiếu để nhớ lâu hơn."
@@ -38,6 +36,14 @@ export default function ListeningPage() {
     >
       {(words) => <ListeningSession words={words} />}
     </PracticeLibrary>
+  );
+}
+
+export default function ListeningPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <ListeningLibrary />
+    </Suspense>
   );
 }
 

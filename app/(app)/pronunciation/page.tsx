@@ -1,8 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useSearchParams } from "next/navigation";
+import {
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { Icon } from "@/components/icon";
-import { Button, Card, ErrorNote, SectionHeading } from "@/components/ui";
+import {
+  Button,
+  Card,
+  ErrorNote,
+  SectionHeading,
+  Spinner,
+} from "@/components/ui";
 import {
   PracticeLibrary,
   PracticeTips,
@@ -51,15 +64,11 @@ function useSpeechRecognitionSupport(): boolean {
   );
 }
 
-function initialLessonId(): string | undefined {
-  if (typeof window === "undefined") return undefined;
-  return new URLSearchParams(window.location.search).get("lesson") ?? undefined;
-}
-
-export default function PronunciationPage() {
-  const [lessonId] = useState(initialLessonId);
+function PronunciationLibrary() {
+  const lessonId = useSearchParams().get("lesson") ?? undefined;
   return (
     <PracticeLibrary
+      key={lessonId ?? "free"}
       skill="pronunciation"
       title="Luyện phát âm"
       description="Nghe mẫu, ghi âm và nghe lại. Từng lần luyện giúp bạn nói rõ và tự nhiên hơn."
@@ -72,6 +81,14 @@ export default function PronunciationPage() {
     >
       {(words) => <PronunciationSession words={words} />}
     </PracticeLibrary>
+  );
+}
+
+export default function PronunciationPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <PronunciationLibrary />
+    </Suspense>
   );
 }
 
