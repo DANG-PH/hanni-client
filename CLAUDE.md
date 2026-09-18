@@ -103,8 +103,8 @@ xem/tô/kiểm tra nét bằng `hanzi-writer`, chuyển chữ trước/sau + hi�
 (`/exams` — câu hỏi nghe + đọc, tính giờ từng câu, có lịch sử), thẻ "Từ vựng hôm nay" ở dashboard
 (`components/word-of-the-day.tsx`, `GET /words/of-the-day` — im lặng ẩn đi nếu lỗi/chưa tải, chỉ
 là nội dung phụ; từ 2026-09-18 hiện thêm ảnh minh hoạ nếu `data.imageUrl` có — xem
-`hanni-server/CLAUDE.md` mục ảnh minh hoạ từ vựng, ảnh chỉ có với 1 số danh từ + cần
-`PEXELS_API_KEY` mới bật), bảng xếp hạng (5 tab tiêu chí — 4 tab học tập + tab **"Đấu 1v1 (ELO)"**
+`hanni-server/CLAUDE.md` mục ảnh minh hoạ từ vựng, lấy qua Wikimedia Commons miễn phí không cần
+key, chỉ có với 1 số danh từ cụ thể + đã được xem qua ít nhất 1 lần), bảng xếp hạng (5 tab tiêu chí — 4 tab học tập + tab **"Đấu 1v1 (ELO)"**
 (`LEADERBOARD_METRICS` trong `components/leaderboard.tsx`) hiện huy hiệu rank `RankEmblem`
 (`components/rank-emblem.tsx` — tách riêng để dùng chung với `/minigame`) ngay cạnh tên ở cả
 podium top-3 lẫn bảng đầy đủ, có nút "Theo dõi"
