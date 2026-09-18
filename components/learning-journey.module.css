@@ -15,6 +15,14 @@
     color-mix(in srgb, var(--foreground) 28%, transparent);
 }
 
+.journey.embedded {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .heading {
   display: flex;
   justify-content: space-between;
@@ -253,6 +261,14 @@
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent),
     0 3px 0 color-mix(in srgb, var(--primary) 8%, var(--border));
+}
+
+:global(.app-workspace) .journey.embedded {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 @media (hover: hover) and (pointer: fine) {

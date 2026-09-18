@@ -7,7 +7,7 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { ConnectionsPanel } from "@/components/connections-panel";
 import { Icon } from "@/components/icon";
-import { ErrorNote, PageHeading, Spinner } from "@/components/ui";
+import { ErrorNote, Spinner } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import {
@@ -104,52 +104,67 @@ function ConversationList({
   onFindPeople: () => void;
 }) {
   const { data, isLoading } = useConversations();
-  if (isLoading) return <Spinner />;
+  if (isLoading) {
+    return (
+      <div className={styles.listEmpty}>
+        <Spinner />
+      </div>
+    );
+  }
   if (!data || data.length === 0) {
     return (
-      <div className="px-4 py-8 text-center text-sm text-muted">
-        <p>Chưa có cuộc trò chuyện nào.</p>
+      <div className={styles.listEmpty}>
+        <span className={styles.emptyIcon}>
+          <Icon name="message" size={19} />
+        </span>
+        <p className={styles.emptyTitle}>Hộp thư đang trống</p>
+        <p className={styles.emptyDescription}>
+          Kết nối với một người học để cùng luyện tiếng Trung mỗi ngày.
+        </p>
         <button
           type="button"
           onClick={onFindPeople}
-          className="mt-2 font-semibold text-primary hover:underline"
+          className={styles.emptyAction}
         >
-          Tìm người quen để bắt đầu
+          <Icon name="search" size={14} />
+          Tìm bạn học
         </button>
       </div>
     );
   }
   return (
-    <div className="space-y-0.5">
+    <div className={styles.conversationList}>
       {data.map((c) => (
         <button
           key={c.id}
           type="button"
           onClick={() => onSelect(c.id)}
-          className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors ${
-            activeId === c.id ? "bg-primary/8" : "hover:bg-surface-2"
+          className={`${styles.conversationItem} ${
+            activeId === c.id ? styles.conversationActive : ""
           }`}
         >
-          <Avatar user={c.otherUser} size={40} />
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2">
-              <span className="truncate text-sm font-semibold">
+          <span className={styles.conversationAvatar}>
+            <Avatar user={c.otherUser} size={40} />
+          </span>
+          <div className={styles.conversationCopy}>
+            <div className={styles.conversationMeta}>
+              <span className={styles.conversationName}>
                 {c.otherUser.displayName}
               </span>
               {c.lastMessage && (
-                <span className="shrink-0 text-[11px] text-muted">
+                <span className={styles.conversationTime}>
                   {timeAgo(c.lastMessage.createdAt)}
                 </span>
               )}
             </div>
-            <p className="truncate text-xs text-muted">
+            <p className={styles.conversationPreview}>
               {c.lastMessage
                 ? `${c.lastMessage.mine ? "Bạn: " : ""}${c.lastMessage.content}`
                 : "Chưa có tin nhắn"}
             </p>
           </div>
           {c.unreadCount > 0 && (
-            <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-bold text-primary-fg">
+            <span className={styles.unreadBadge}>
               {c.unreadCount > 9 ? "9+" : c.unreadCount}
             </span>
           )}
@@ -292,17 +307,19 @@ function ChatThread({ conversationId }: { conversationId: string }) {
   return (
     <div className="flex h-full flex-col">
       {conversation && (
-        <div className="flex items-center gap-2.5 border-b border-border px-4 py-3">
-          <Avatar user={conversation.otherUser} size={32} />
-          <div className="min-w-0">
-            <p className="font-semibold">{conversation.otherUser.displayName}</p>
+        <div className={styles.threadHeader}>
+          <span className={styles.threadAvatar}>
+            <Avatar user={conversation.otherUser} size={36} />
+          </span>
+          <div className={styles.threadIdentity}>
+            <p className={styles.threadName}>{conversation.otherUser.displayName}</p>
             {otherTyping && (
-              <p className="text-xs text-primary">Đang nhập…</p>
+              <p className={styles.threadStatus}>Đang nhập…</p>
             )}
           </div>
         </div>
       )}
-      <div ref={listRef} className={`flex-1 space-y-2.5 overflow-y-auto p-4 ${styles.messageList}`}>
+      <div ref={listRef} className={`space-y-2.5 overflow-y-auto p-4 ${styles.messageList}`}>
         {!data ? (
           <Spinner />
         ) : (
@@ -317,6 +334,19 @@ function ChatThread({ conversationId }: { conversationId: string }) {
                 >
                   {loadingOlder ? "Đang tải…" : "Xem tin nhắn cũ hơn"}
                 </button>
+              </div>
+            )}
+            {data.items.length === 0 && (
+              <div className={styles.threadEmpty}>
+                <div>
+                  <span className={styles.emptyIcon}>
+                    <Icon name="message" size={21} />
+                  </span>
+                  <p className={styles.emptyTitle}>Bắt đầu cuộc trò chuyện</p>
+                  <p className={styles.emptyDescription}>
+                    Gửi một lời chào hoặc rủ bạn học cùng ôn bài hôm nay.
+                  </p>
+                </div>
               </div>
             )}
             {data.items.map((m: DirectMessage, i) => {
@@ -338,9 +368,9 @@ function ChatThread({ conversationId }: { conversationId: string }) {
                     className={`flex ${mine ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[75%] break-words rounded-xl px-3 py-2 text-sm ${
-                        mine ? "bg-primary text-primary-fg" : "bg-surface-2"
-                      }`}
+                      className={`${styles.messageBubble} ${
+                        mine ? styles.messageMine : styles.messageOther
+                      } max-w-[75%] break-words`}
                     >
                       {m.content}
                       <MessageTranslation content={m.content} mine={mine} />
@@ -368,7 +398,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
         </div>
       )}
       <form
-        className="flex items-center gap-2 border-t border-border p-3"
+        className={styles.composeForm}
         onSubmit={(e) => {
           e.preventDefault();
           void send();
@@ -387,14 +417,14 @@ function ChatThread({ conversationId }: { conversationId: string }) {
           }}
           placeholder="Nhắn gì đó… (gõ tiếng Việt hoặc tiếng Trung đều được)"
           disabled={sending}
-          className="field min-w-0 flex-1"
+          className={`field ${styles.composeInput}`}
         />
         <button
           type="button"
           onClick={() => void translateInput()}
           disabled={!input.trim() || sending || translating}
           title="Dịch nội dung đang gõ sang ngôn ngữ còn lại trước khi gửi"
-          className="shrink-0 rounded-xl border border-border px-3 py-2.5 text-xs font-semibold text-muted hover:border-primary/40 hover:text-primary disabled:opacity-40"
+          className={styles.translateButton}
         >
           {translating ? "Đang dịch…" : "Dịch"}
         </button>
@@ -402,7 +432,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
           type="submit"
           disabled={!input.trim() || sending}
           aria-label="Gửi"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-fg disabled:opacity-50"
+          className={styles.sendButton}
         >
           <Icon name="arrow" size={18} />
         </button>
@@ -412,6 +442,63 @@ function ChatThread({ conversationId }: { conversationId: string }) {
 }
 
 type Tab = "chats" | "connect";
+
+function MessagesHero({ onConnect }: { onConnect: () => void }) {
+  return (
+    <section className={styles.hero} aria-labelledby="messages-title">
+      <div className={styles.heroIdentity}>
+        <span className={styles.heroIcon}>
+          <Icon name="message" size={28} />
+        </span>
+        <p className={styles.heroEyebrow}>Góc kết nối</p>
+        <h1 id="messages-title" className={styles.heroTitle}>
+          Học cùng nhau, tiến bộ mỗi ngày
+        </h1>
+        <p className={styles.heroDescription}>
+          Trò chuyện với người học khác, hỏi bài và cùng giữ nhịp học tiếng
+          Trung trên Hanni.
+        </p>
+      </div>
+      <button type="button" onClick={onConnect} className={styles.heroRoute}>
+        <span className={styles.routeItem}>
+          <strong>01</strong>
+          Tìm bạn học
+        </span>
+        <span className={styles.routeArrow}>→</span>
+        <span className={styles.routeItem}>
+          <strong>02</strong>
+          Cùng luyện tập
+        </span>
+      </button>
+    </section>
+  );
+}
+
+function MessagesWelcome({ onConnect }: { onConnect: () => void }) {
+  return (
+    <div className={styles.threadWelcome}>
+      <div className={styles.welcomeIcon}>
+        <Icon name="message" size={25} />
+      </div>
+      <p className={styles.welcomeKicker}>KHÔNG GIAN HỌC CÙNG NHAU</p>
+      <h2 className={styles.welcomeTitle}>Chọn một cuộc trò chuyện</h2>
+      <p className={styles.welcomeDescription}>
+        Chọn người học ở bên trái để tiếp tục, hoặc tìm một người bạn mới để
+        cùng luyện tiếng Trung.
+      </p>
+      <button type="button" onClick={onConnect} className={styles.welcomeAction}>
+        <Icon name="search" size={15} />
+        Tìm bạn học
+        <Icon name="arrow" size={15} />
+      </button>
+      <div className={styles.welcomeSteps} aria-label="Các bước bắt đầu">
+        <span>Chọn người học</span>
+        <span>→</span>
+        <span>Gửi lời chào</span>
+      </div>
+    </div>
+  );
+}
 
 function MessagesInner() {
   const { user, loading } = useRequireAuth();
@@ -434,15 +521,9 @@ function MessagesInner() {
   }
 
   return (
-    <div className="page-wrap space-y-6">
-      <PageHeading
-        icon="message"
-        tone="primary"
-        eyebrow="Kết nối với bạn bè"
-        title="Tin nhắn"
-        description="Trò chuyện và kết nối với những người học khác trên Hanni."
-      />
-      <div className="flex gap-1 border-b border-border">
+    <div className={`page-wrap ${styles.page}`}>
+      <MessagesHero onConnect={() => switchTab("connect")} />
+      <nav className={styles.tabs} aria-label="Khu vực tin nhắn">
         {(
           [
             { key: "chats", label: "Trò chuyện", icon: "message" },
@@ -454,17 +535,15 @@ function MessagesInner() {
             type="button"
             aria-pressed={tab === t.key}
             onClick={() => switchTab(t.key)}
-            className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
-              tab === t.key
-                ? "border-primary text-primary"
-                : "border-transparent text-muted hover:text-foreground"
-            }`}
+            className={`${styles.tab} ${tab === t.key ? styles.tabActive : ""}`}
           >
-            <Icon name={t.icon} size={16} />
+            <span className={styles.tabIcon}>
+              <Icon name={t.icon} size={15} />
+            </span>
             {t.label}
           </button>
         ))}
-      </div>
+      </nav>
 
       {tab === "connect" ? (
         <div className={styles.connectionsPanel}>
@@ -473,8 +552,25 @@ function MessagesInner() {
       ) : (
         <div className={styles.layout}>
           <div
-            className={`border-border p-2 md:block md:border-r ${activeId ? "hidden" : "block"}`}
+            className={`${styles.inboxPane} ${activeId ? "hidden" : "block"} md:block`}
           >
+            <div className={styles.inboxHeader}>
+              <div>
+                <p className={styles.inboxKicker}>Hộp thư</p>
+                <h2 className={styles.inboxTitle}>Cuộc trò chuyện</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => switchTab("connect")}
+                className={styles.findButton}
+              >
+                <Icon name="search" size={13} />
+                Tìm bạn
+              </button>
+            </div>
+            <p className={styles.inboxHint}>
+              Những cuộc trò chuyện gần đây của bạn.
+            </p>
             <ConversationList
               activeId={activeId}
               onSelect={select}
@@ -493,15 +589,8 @@ function MessagesInner() {
                 <ChatThread key={activeId} conversationId={activeId} />
               </>
             ) : (
-              <div className="hidden h-full flex-col items-center justify-center gap-3 text-sm text-muted md:flex">
-                <p>Chọn 1 cuộc trò chuyện để bắt đầu</p>
-                <button
-                  type="button"
-                  onClick={() => switchTab("connect")}
-                  className="font-semibold text-primary hover:underline"
-                >
-                  Tìm người để nhắn tin →
-                </button>
+              <div className="hidden h-full md:flex">
+                <MessagesWelcome onConnect={() => switchTab("connect")} />
               </div>
             )}
           </div>

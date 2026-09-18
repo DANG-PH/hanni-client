@@ -4,15 +4,16 @@ import Link from "next/link";
 import { Icon } from "./icon";
 import { ProgressBar } from "./ui";
 import type { LessonNode } from "@/lib/types";
+import styles from "./lesson-path.module.css";
 
 const STATUS_META: Record<
   LessonNode["status"],
   { label: string; tone: string }
 > = {
-  COMPLETED: { label: "Đã xong", tone: "bg-good/10 text-good" },
-  IN_PROGRESS: { label: "Đang học", tone: "bg-primary/10 text-primary" },
-  AVAILABLE: { label: "Sẵn sàng", tone: "bg-accent/10 text-accent" },
-  LOCKED: { label: "Chưa mở", tone: "bg-surface-2 text-muted" },
+  COMPLETED: { label: "Đã xong", tone: styles.completed },
+  IN_PROGRESS: { label: "Đang học", tone: styles.inProgress },
+  AVAILABLE: { label: "Sẵn sàng", tone: styles.available },
+  LOCKED: { label: "Chưa mở", tone: styles.locked },
 };
 
 export function LessonPath({
@@ -25,52 +26,43 @@ export function LessonPath({
   const shown = limit ? lessons.slice(0, limit) : lessons;
 
   return (
-    <ol className="space-y-3">
-      {shown.map((l) => {
-        const meta = STATUS_META[l.status];
-        const pct = l.wordCount ? (l.learnedWords / l.wordCount) * 100 : 0;
-        const locked = l.status === "LOCKED";
-        const inner = (
+    <ol className={styles.list}>
+      {shown.map((lesson) => {
+        const meta = STATUS_META[lesson.status];
+        const pct = lesson.wordCount
+          ? (lesson.learnedWords / lesson.wordCount) * 100
+          : 0;
+        const locked = lesson.status === "LOCKED";
+        const card = (
           <div
-            className={`panel group flex items-center gap-4 p-4 sm:p-5 ${
-              locked ? "opacity-60" : "hover-card"
-            }`}
+            className={`${styles.card} ${locked ? styles.cardLocked : ""}`}
+            data-status={lesson.status}
           >
-            <span
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${
-                l.status === "COMPLETED"
-                  ? "bg-good/15 text-good"
-                  : l.status === "LOCKED"
-                    ? "bg-surface-2 text-muted"
-                    : "bg-primary/12 text-primary"
-              }`}
-            >
-              {l.status === "COMPLETED" ? (
-                <Icon name="check" size={20} />
-              ) : l.status === "LOCKED" ? (
-                <Icon name="lock" size={16} />
+            <span className={`${styles.number} ${meta.tone}`}>
+              {lesson.status === "COMPLETED" ? (
+                <Icon name="check" size={18} />
+              ) : lesson.status === "LOCKED" ? (
+                <Icon name="lock" size={15} />
               ) : (
-                l.orderIndex
+                lesson.orderIndex
               )}
             </span>
 
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-semibold">{l.title}</span>
-                <span
-                  className={`rounded-md px-1.5 py-0.5 text-[11px] font-medium ${meta.tone}`}
-                >
+            <div className={styles.copy}>
+              <div className={styles.titleRow}>
+                <span className={styles.title}>{lesson.title}</span>
+                <span className={`${styles.status} ${meta.tone}`}>
                   {meta.label}
                 </span>
               </div>
-              <p className="hanzi mt-0.5 truncate text-sm text-muted">
-                {l.previewWords.join("  ")}
-                {l.previewWords.length ? "…" : ""}
+              <p className={`hanzi ${styles.preview}`}>
+                {lesson.previewWords.join("  ")}
+                {lesson.previewWords.length ? "…" : ""}
               </p>
-              <div className="mt-2 flex items-center gap-2">
-                <ProgressBar value={pct} label={`Tiến độ ${l.title}`} />
-                <span className="shrink-0 text-xs text-muted">
-                  {l.learnedWords}/{l.wordCount}
+              <div className={styles.progressRow}>
+                <ProgressBar value={pct} label={`Tiến độ ${lesson.title}`} />
+                <span className={styles.progressValue}>
+                  {lesson.learnedWords}/{lesson.wordCount}
                 </span>
               </div>
             </div>
@@ -79,23 +71,28 @@ export function LessonPath({
               <Icon
                 name="arrow"
                 size={18}
-                className="shrink-0 text-muted transition-transform group-hover:translate-x-1 group-hover:text-primary"
+                className={styles.arrow}
                 data-icon="arrow"
               />
             )}
           </div>
         );
+
         return (
-          <li key={l.id}>
+          <li
+            key={lesson.id}
+            className={styles.item}
+            data-status={lesson.status}
+          >
             {locked ? (
-              inner
+              card
             ) : (
               <Link
-                href={`/learn/${l.id}`}
-                className="block rounded-2xl"
-                aria-label={`Xem ${l.title}`}
+                href={`/learn/${lesson.id}`}
+                className={styles.link}
+                aria-label={`Xem ${lesson.title}`}
               >
-                {inner}
+                {card}
               </Link>
             )}
           </li>

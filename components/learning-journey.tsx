@@ -79,7 +79,7 @@ const STAGES: Stage[] = [
   },
 ];
 
-export function LearningJourney() {
+export function LearningJourney({ embedded = false }: { embedded?: boolean }) {
   const [active, setActive] = useState(0);
   const id = useId();
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -102,7 +102,10 @@ export function LearningJourney() {
   }
 
   return (
-    <section aria-labelledby={`${id}-heading`} className={styles.journey}>
+    <section
+      aria-labelledby={`${id}-heading`}
+      className={`${styles.journey} ${embedded ? styles.embedded : ""}`}
+    >
       <div className={styles.heading}>
         <div>
           <p className={styles.eyebrow}>
