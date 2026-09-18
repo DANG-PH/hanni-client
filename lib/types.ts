@@ -89,6 +89,7 @@ export interface LessonDetail {
     wordCount: number;
   };
   words: Word[];
+  relatedGrammar: GrammarListItem[];
 }
 
 export interface WordExample {

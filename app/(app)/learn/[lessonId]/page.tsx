@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { AudioButton } from "@/components/audio-button";
@@ -11,6 +12,7 @@ import {
   ErrorNote,
   LinkButton,
   PageHeading,
+  SectionHeading,
   Spinner,
 } from "@/components/ui";
 import { ApiError } from "@/lib/api";
@@ -43,7 +45,7 @@ export default function LessonDetailPage() {
     );
   if (isLoading || !data) return <Spinner />;
 
-  const { lesson, words } = data;
+  const { lesson, words, relatedGrammar } = data;
   const examples = words.flatMap((word) =>
     (word.examples ?? []).map((example) => ({
       ...example,
@@ -239,6 +241,12 @@ export default function LessonDetailPage() {
                 <dt className="text-muted">Ví dụ</dt>
                 <dd className="font-semibold">{examples.length} câu</dd>
               </div>
+              {relatedGrammar.length > 0 && (
+                <div className="flex justify-between">
+                  <dt className="text-muted">Ngữ pháp liên quan</dt>
+                  <dd className="font-semibold">{relatedGrammar.length}</dd>
+                </div>
+              )}
             </dl>
             {words.length > 0 && (
               <LinkButton
@@ -249,6 +257,38 @@ export default function LessonDetailPage() {
               </LinkButton>
             )}
           </Card>
+          {relatedGrammar.length > 0 && (
+            <Card>
+              <SectionHeading
+                icon="cards"
+                eyebrow="Dùng ngay trong bài này"
+                title="Ngữ pháp liên quan"
+                tone="lavender"
+              />
+              <ul className="mt-4 space-y-2">
+                {relatedGrammar.map((point) => (
+                  <li key={point.slug}>
+                    <Link
+                      href={`/grammar?level=${lesson.hskLevel}&open=${point.slug}`}
+                      className="motion-button flex items-center gap-3 rounded-xl border border-border px-3 py-2.5 hover:bg-surface-2"
+                    >
+                      <span lang="zh" className="hanzi text-lg text-primary">
+                        {point.titleZh}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                        {point.titleVi}
+                      </span>
+                      <Icon
+                        name="arrow"
+                        size={14}
+                        className="shrink-0 text-muted"
+                      />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
           <div className="rounded-2xl border border-primary/15 bg-primary/4 p-5">
             <p className="flex items-center gap-2 text-sm font-semibold text-primary">
               <Icon name="sound" size={18} /> Nghe, đọc, ghi nhớ
