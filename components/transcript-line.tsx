@@ -1,7 +1,7 @@
 "use client";
 
 import { TonePinyin } from "./tone-pinyin";
-import type { VideoLine } from "@/lib/types";
+import type { LineToken, VideoLine } from "@/lib/types";
 
 export function TranscriptLine({
   line,
@@ -9,6 +9,7 @@ export function TranscriptLine({
   showPinyin,
   showTrans,
   onSelect,
+  onWordClick,
   compact = false,
 }: {
   line: VideoLine;
@@ -16,6 +17,7 @@ export function TranscriptLine({
   showPinyin: boolean;
   showTrans: boolean;
   onSelect: () => void;
+  onWordClick?: (token: LineToken) => void;
   compact?: boolean;
 }) {
   return (
@@ -59,6 +61,8 @@ export function TranscriptLine({
               zh={line.zh}
               pinyin={line.pinyin}
               pinyinNum={line.pinyinNum}
+              tokens={line.tokens}
+              onWordClick={onWordClick}
               size={compact || active ? "base" : "sm"}
             />
           ) : (
@@ -67,7 +71,33 @@ export function TranscriptLine({
                 compact || active ? "text-2xl" : "text-xl"
               }`}
             >
-              {line.zh}
+              {line.tokens?.length
+                ? line.tokens.map((token, i) =>
+                    token.word && onWordClick ? (
+                      <span
+                        key={i}
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onWordClick(token);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onWordClick(token);
+                          }
+                        }}
+                        className="cursor-pointer rounded underline decoration-primary/40 decoration-dotted underline-offset-4 hover:bg-primary/8"
+                      >
+                        {token.text}
+                      </span>
+                    ) : (
+                      <span key={i}>{token.text}</span>
+                    ),
+                  )
+                : line.zh}
             </p>
           )}
           {showTrans && line.vi && (

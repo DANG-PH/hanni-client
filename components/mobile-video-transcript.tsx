@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { VideoLine } from "@/lib/types";
+import type { LineToken, VideoLine } from "@/lib/types";
 import { Icon } from "./icon";
 import { TranscriptLine } from "./transcript-line";
 import styles from "./video-learning.module.css";
@@ -18,6 +18,7 @@ export function MobileVideoTranscript({
   onToggleTrans,
   onToggleCaption,
   onSelect,
+  onWordClick,
 }: {
   lines: VideoLine[];
   active: number | null;
@@ -30,6 +31,7 @@ export function MobileVideoTranscript({
   onToggleTrans: () => void;
   onToggleCaption: () => void;
   onSelect: (index: number) => void;
+  onWordClick?: (token: LineToken) => void;
 }) {
   const viewport = useRef<HTMLDivElement>(null);
   const [following, setFollowing] = useState(true);
@@ -159,6 +161,7 @@ export function MobileVideoTranscript({
                 showPinyin={showPinyin}
                 showTrans={showTrans}
                 onSelect={() => select(line.index)}
+                onWordClick={onWordClick}
               />
             ))
           )}

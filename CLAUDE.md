@@ -75,7 +75,16 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard (lật 3D, chạm cả thẻ) + quiz,
 duyệt từ vựng (có ghi chú giải thích chuẩn HSK 3.0 9 cấp khác chuẩn cũ 6 cấp), tiến độ, huy
 hiệu, cài đặt, học qua video (`/watch/[id]` dán video dưới topbar khi cuộn trên mobile để xem
-cùng bản chép, có bình luận 1 cấp trả lời + nút thích video; `/watch/add` — nút "Thêm video" ở
+cùng bản chép, có bình luận 1 cấp trả lời + nút thích video; **từ 2026-09-18: bấm vào 1 từ
+trong bản chép (cả chế độ có pinyin lẫn không) hiện popup nghĩa + pinyin + nút "Lưu để ôn tập"**
+— server tách sẵn câu thành `tokens` (đoạn khớp `Word` thật / đoạn không khớp), client chỉ việc
+render: `components/tone-pinyin.tsx` nhóm các ký tự theo token thay vì từng ký tự rời (vẫn giữ
+pinyin trên từng chữ), `components/transcript-line.tsx` xử lý cả nhánh không hiện pinyin. Bấm
+từ gọi `stopPropagation()` để không kích hoạt luôn nút chọn dòng bao ngoài (2 phần tử tương tác
+lồng nhau — dùng `<span role="button">` chứ không phải `<button>` lồng `<button>`, tránh HTML
+không hợp lệ). "Lưu để ôn tập" gọi `addWordToSrs()` (`lib/hooks.ts`, `POST
+/study/add-word`) — từ xuất hiện ngay trong hàng đợi flashcard ở `/study` lượt sau, không cần
+đợi tới lượt "từ mới" theo cấp/bài học. `/watch/add` — nút "Thêm video" ở
 `/watch` — chỉ cần dán link YouTube, các trường tiêu đề/cấp/thể loại gấp lại mặc định), chuông
 thông báo realtime trong
 topbar (`components/notification-bell.tsx`, đẩy qua WebSocket khi có người trả lời bình luận/

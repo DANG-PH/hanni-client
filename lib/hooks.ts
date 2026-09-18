@@ -224,6 +224,13 @@ export function recordPracticeAttempt(
     .catch(() => undefined);
 }
 
+/** Lưu 1 từ vào hàng đợi SRS (vd. bấm vào từ trong bản chép video) — tạo
+ * thẳng ở trạng thái sẵn sàng ôn, không cần chờ tới lượt "từ mới" theo cấp/
+ * bài học. `added: false` nghĩa là từ đã có sẵn trong tiến độ học rồi. */
+export function addWordToSrs(wordId: string) {
+  return api.post<{ added: boolean }>("/study/add-word", { wordId });
+}
+
 /** null = chưa làm khảo sát bao giờ. `enabled=false` khi chưa đăng nhập (tránh gọi API cần auth). */
 export function useOnboarding(enabled = true) {
   return useSWR<OnboardingProfile | null>(enabled ? "/onboarding" : null, fetcher);

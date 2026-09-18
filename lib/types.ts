@@ -246,6 +246,18 @@ export interface VideoCard {
   likedByMe: boolean;
 }
 
+export interface WordMatch {
+  id: string;
+  pinyin: string;
+  meaningVi: string | null;
+  hskLevel: number;
+}
+
+export interface LineToken {
+  text: string;
+  word: WordMatch | null;
+}
+
 export interface VideoLine {
   id: string;
   index: number;
@@ -254,6 +266,7 @@ export interface VideoLine {
   pinyin: string;
   pinyinNum: string;
   vi: string | null;
+  tokens: LineToken[];
 }
 
 export interface VideoDetail {

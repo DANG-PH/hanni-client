@@ -14,9 +14,9 @@ import { YoutubePlayer } from "@/components/youtube-player";
 import styles from "@/components/video-learning.module.css";
 import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
-import { useVideo } from "@/lib/hooks";
+import { addWordToSrs, useVideo } from "@/lib/hooks";
 import { hskBand } from "@/lib/hsk";
-import type { VideoLine } from "@/lib/types";
+import type { LineToken, VideoLine } from "@/lib/types";
 
 /**
  * Thời điểm bắt đầu (giây) mỗi câu.
@@ -81,6 +81,9 @@ export default function WatchDetailPage() {
   const [showCaption, setShowCaption] = useState(false);
   const [active, setActive] = useState<number | null>(null);
   const [readMax, setReadMax] = useState(0);
+  const [wordPopup, setWordPopup] = useState<LineToken | null>(null);
+  const [savingWord, setSavingWord] = useState(false);
+  const [savedWordIds, setSavedWordIds] = useState<Set<string>>(new Set());
   const seekRef = useRef<((s: number) => void) | null>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -230,6 +233,18 @@ export default function WatchDetailPage() {
     saveProgress(index, readRef.current, true);
   }
 
+  async function saveWord(wordId: string) {
+    setSavingWord(true);
+    try {
+      await addWordToSrs(wordId);
+      setSavedWordIds((prev) => new Set(prev).add(wordId));
+    } catch {
+      // im lặng — nút vẫn hiện lại "Lưu từ này" để thử lại, không chặn xem video
+    } finally {
+      setSavingWord(false);
+    }
+  }
+
   async function del() {
     if (!confirm("Xoá video này?")) return;
     await api.del(`/videos/${id}`).catch(() => undefined);
@@ -345,6 +360,7 @@ export default function WatchDetailPage() {
           onToggleTrans={() => setShowTrans((v) => !v)}
           onToggleCaption={() => setShowCaption((v) => !v)}
           onSelect={selectLine}
+          onWordClick={setWordPopup}
         />
 
         <div className="panel hidden h-[72vh] flex-col overflow-hidden lg:flex">
@@ -414,6 +430,7 @@ export default function WatchDetailPage() {
                   showPinyin={showPinyin}
                   showTrans={showTrans}
                   onSelect={() => selectLine(l.index)}
+                  onWordClick={setWordPopup}
                 />
               ))}
               <div style={{ height: vpH / 2 }} />
@@ -445,6 +462,55 @@ export default function WatchDetailPage() {
           Xong
         </Button>
       </div>
+
+      {wordPopup?.word && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+          onClick={() => setWordPopup(null)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl bg-surface p-5 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p lang="zh" className="hanzi text-3xl">
+                  {wordPopup.text}
+                </p>
+                <p className="mt-1 text-sm text-primary">
+                  {wordPopup.word.pinyin}
+                </p>
+              </div>
+              <span className="rounded-lg bg-surface-2 px-2 py-1 text-[11px] font-semibold text-muted">
+                HSK {wordPopup.word.hskLevel}
+              </span>
+            </div>
+            <p className="mt-3 text-sm leading-6">
+              {wordPopup.word.meaningVi ?? "Nghĩa đang được cập nhật."}
+            </p>
+            <div className="mt-5 flex gap-2">
+              <Button
+                variant="secondary"
+                className="flex-1"
+                onClick={() => setWordPopup(null)}
+              >
+                Đóng
+              </Button>
+              <Button
+                className="flex-1"
+                disabled={savingWord || savedWordIds.has(wordPopup.word.id)}
+                onClick={() => void saveWord(wordPopup.word!.id)}
+              >
+                {savedWordIds.has(wordPopup.word.id)
+                  ? "Đã lưu"
+                  : savingWord
+                    ? "Đang lưu…"
+                    : "Lưu để ôn tập"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
