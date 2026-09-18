@@ -323,8 +323,8 @@
 .sparkTwo { top: 24px; left: 147px; }
 
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .cta:hover { transform: translateY(-2px); box-shadow: 0 7px 0 color-mix(in srgb, var(--primary) 73%, var(--foreground)), 0 17px 25px -10px color-mix(in srgb, var(--primary) 55%, transparent); }
-  .cta:active { transform: translateY(3px); box-shadow: 0 2px 0 color-mix(in srgb, var(--primary) 73%, var(--foreground)); }
+  .hero .cta:hover:not(:active):not(:disabled) { transform: translateY(-2px); box-shadow: 0 7px 0 color-mix(in srgb, var(--primary) 73%, var(--foreground)), 0 17px 25px -10px color-mix(in srgb, var(--primary) 55%, transparent); }
+  .hero .cta:active:not(:disabled) { transform: translateY(3px) scale(0.98); box-shadow: 0 2px 0 color-mix(in srgb, var(--primary) 73%, var(--foreground)); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
