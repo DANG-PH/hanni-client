@@ -215,7 +215,11 @@ nhận diện giọng nói, so văn bản nhận được với `word.simplified
 CHỈ hoạt động trên Chrome/Edge (Firefox/Safari không có `zh-CN`, tự rơi về hành vi cũ là chỉ ghi
 nhận lượt luyện, không báo đúng/sai); dùng `useSyncExternalStore` (không phải
 `useEffect`+`setState`) để phát hiện hỗ trợ trình duyệt — tránh lỗi lint
-`react-hooks/set-state-in-effect` mà vẫn an toàn SSR), `/onboarding` (khảo sát 3 bước — đã học
+`react-hooks/set-state-in-effect` mà vẫn an toàn SSR; từ 2026-09-18: cả 2 trang nhận thêm
+`?lesson=<id>` (đọc qua `useState(initialLessonId)` — lazy initializer, không phải effect) để
+luyện đúng từ của 1 bài học thay vì chọn cấp rồi luyện ngẫu nhiên — `PracticeLibrary` nhận prop
+`lessonId`, tự ẩn `LevelFilter`, gọi `useWords({lessonId})` và `useLesson(lessonId)` để lấy tên
+bài hiện lên; `/learn/[lessonId]` có 2 nút "Luyện nghe"/"Luyện phát âm" trỏ vào đây), `/onboarding` (khảo sát 3 bước — đã học
 chưa/cấp tự đánh giá, mục tiêu, có định thi không — làm được TRƯỚC KHI có tài khoản, kiểu
 Duolingo "gradual engagement": trang chủ + nav nút chính giờ trỏ vào đây thay vì thẳng
 `/register`; ẩn danh làm xong thì lưu tạm câu trả lời vào `sessionStorage`

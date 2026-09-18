@@ -249,12 +249,27 @@ export default function LessonDetailPage() {
               )}
             </dl>
             {words.length > 0 && (
-              <LinkButton
-                href={`/study?lesson=${lesson.id}`}
-                className="mt-5 w-full"
-              >
-                <Icon name="cards" size={17} /> Học với flashcard
-              </LinkButton>
+              <div className="mt-5 space-y-2.5">
+                <LinkButton href={`/study?lesson=${lesson.id}`} className="w-full">
+                  <Icon name="cards" size={17} /> Học với flashcard
+                </LinkButton>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <LinkButton
+                    href={`/listening?lesson=${lesson.id}`}
+                    variant="secondary"
+                    className="w-full"
+                  >
+                    <Icon name="headphones" size={16} /> Luyện nghe
+                  </LinkButton>
+                  <LinkButton
+                    href={`/pronunciation?lesson=${lesson.id}`}
+                    variant="secondary"
+                    className="w-full"
+                  >
+                    <Icon name="mic" size={16} /> Luyện phát âm
+                  </LinkButton>
+                </div>
+              </div>
             )}
           </Card>
           {relatedGrammar.length > 0 && (
