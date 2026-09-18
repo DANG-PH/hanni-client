@@ -51,7 +51,13 @@ function useSpeechRecognitionSupport(): boolean {
   );
 }
 
+function initialLessonId(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  return new URLSearchParams(window.location.search).get("lesson") ?? undefined;
+}
+
 export default function PronunciationPage() {
+  const [lessonId] = useState(initialLessonId);
   return (
     <PracticeLibrary
       skill="pronunciation"
@@ -62,6 +68,7 @@ export default function PronunciationPage() {
         'Nhấn "Bắt đầu ghi âm", đọc theo rồi nhấn dừng khi xong.',
         "Nghe lại giọng của bạn, so sánh với mẫu rồi chuyển từ tiếp theo.",
       ]}
+      lessonId={lessonId}
     >
       {(words) => <PronunciationSession words={words} />}
     </PracticeLibrary>

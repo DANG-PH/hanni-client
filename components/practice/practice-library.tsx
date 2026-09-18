@@ -11,7 +11,7 @@ import {
   Spinner,
 } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
-import { useWords } from "@/lib/hooks";
+import { useLesson, useWords } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
 import { LevelFilter } from "@/components/learning-library";
 import styles from "./practice-library.module.css";
@@ -28,6 +28,8 @@ type LibraryProps = {
   description: string;
   /** Các bước làm, hiện trên màn hình dẫn dắt trước khi vào bài luyện thật. */
   startSteps: string[];
+  /** Luyện đúng từ vựng của 1 bài học thay vì chọn cấp độ rồi luyện ngẫu nhiên. */
+  lessonId?: string;
   children: (words: Word[]) => ReactNode;
 };
 
@@ -43,12 +45,15 @@ function LibraryContent({
   title,
   description,
   startSteps,
+  lessonId,
   children,
 }: LibraryProps) {
+  const lessonQuery = useLesson(lessonId ?? null);
+  const lesson = lessonId ? lessonQuery.data?.lesson : undefined;
   const [level, setLevel] = useState(1);
   const [page, setPage] = useState(1);
   const [started, setStarted] = useState(false);
-  const words = useWords({ level, page });
+  const words = useWords(lessonId ? { lessonId } : { level, page });
   const sessionRef = useRef<HTMLDivElement>(null);
 
   const pagination = words.data &&
@@ -96,8 +101,20 @@ function LibraryContent({
         <>
           <div className={styles.sessionBar}>
             <p>
-              <span className={styles.levelBadge}>HSK {level}</span> Nhóm {page}{" "}
-              · {words.data?.items.length ?? 0} từ
+              {lessonId ? (
+                <>
+                  <span className={styles.levelBadge}>
+                    HSK {lesson?.hskLevel ?? "…"}
+                  </span>{" "}
+                  Bài: {lesson?.title ?? "…"} ·{" "}
+                  {words.data?.items.length ?? 0} từ
+                </>
+              ) : (
+                <>
+                  <span className={styles.levelBadge}>HSK {level}</span> Nhóm{" "}
+                  {page} · {words.data?.items.length ?? 0} từ
+                </>
+              )}
             </p>
             <Button variant="ghost" onClick={() => setStarted(false)}>
               <Icon name="settings" size={16} /> Đổi bài luyện
@@ -122,7 +139,9 @@ function LibraryContent({
             ) : words.isLoading ? (
               <Spinner />
             ) : words.data?.items.length ? (
-              <div key={`${level}-${page}`}>{children(words.data.items)}</div>
+              <div key={lessonId ?? `${level}-${page}`}>
+                {children(words.data.items)}
+              </div>
             ) : (
               <EmptyState
                 title="Chưa có từ trong nhóm này"
@@ -141,25 +160,33 @@ function LibraryContent({
               </span>
               <div>
                 <h2>Bài luyện của bạn</h2>
-                <p>Chọn mức vừa sức, tiến bộ từng chút một.</p>
+                <p>
+                  {lessonId
+                    ? `Luyện đúng từ vựng của bài "${lesson?.title ?? "…"}".`
+                    : "Chọn mức vừa sức, tiến bộ từng chút một."}
+                </p>
               </div>
             </div>
-            <div className={styles.levelPicker}>
-              <h3>Chọn cấp độ HSK</h3>
-              <LevelFilter
-                options={Array.from({ length: 9 }, (_, i) => ({
-                  value: i + 1,
-                  label: `HSK ${i + 1}`,
-                }))}
-                value={level}
-                onChange={(value) => {
-                  setLevel(value ?? 1);
-                  setPage(1);
-                }}
-              />
-            </div>
+            {!lessonId && (
+              <div className={styles.levelPicker}>
+                <h3>Chọn cấp độ HSK</h3>
+                <LevelFilter
+                  options={Array.from({ length: 9 }, (_, i) => ({
+                    value: i + 1,
+                    label: `HSK ${i + 1}`,
+                  }))}
+                  value={level}
+                  onChange={(value) => {
+                    setLevel(value ?? 1);
+                    setPage(1);
+                  }}
+                />
+              </div>
+            )}
             <div className={styles.sessionSummary} aria-live="polite">
-              <span className={styles.levelBadge}>HSK {level}</span>
+              <span className={styles.levelBadge}>
+                HSK {lesson?.hskLevel ?? level}
+              </span>
               <div>
                 <strong>
                   {words.isLoading
@@ -169,9 +196,11 @@ function LibraryContent({
                       : `${words.data?.items.length ?? 0} từ trong bài luyện`}
                 </strong>
                 <p>
-                  {words.data && !words.error
-                    ? `${words.data.total.toLocaleString("vi-VN")} từ trong thư viện · Nhóm ${page}`
-                    : "Nghe kỹ, luyện từng từ theo nhịp của bạn."}
+                  {lessonId
+                    ? `Bài: ${lesson?.title ?? "…"}`
+                    : words.data && !words.error
+                      ? `${words.data.total.toLocaleString("vi-VN")} từ trong thư viện · Nhóm ${page}`
+                      : "Nghe kỹ, luyện từng từ theo nhịp của bạn."}
                 </p>
               </div>
             </div>
@@ -214,6 +243,14 @@ function LibraryContent({
                   : "Bắt đầu luyện tập"}
               <Icon name="arrow" size={17} />
             </Button>
+            {lessonId && (
+              <Link
+                href={skill === "listening" ? "/listening" : "/pronunciation"}
+                className="mt-3 inline-flex min-h-9 items-center text-xs font-medium text-muted hover:text-primary"
+              >
+                Hoặc luyện tự do theo cấp độ <Icon name="arrow" size={13} />
+              </Link>
+            )}
             {pagination}
           </div>
           <aside className={styles.guide}>

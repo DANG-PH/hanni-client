@@ -82,11 +82,13 @@ export function useLesson(id: string | null) {
 
 export function useWords(params: {
   level?: number;
+  lessonId?: string;
   q?: string;
   page?: number;
 }) {
   const qs = new URLSearchParams();
   if (params.level) qs.set("level", String(params.level));
+  if (params.lessonId) qs.set("lessonId", params.lessonId);
   if (params.q) qs.set("q", params.q);
   qs.set("page", String(params.page ?? 1));
   qs.set("pageSize", "24");

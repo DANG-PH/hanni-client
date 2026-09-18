@@ -17,7 +17,13 @@ import { useWordAudio } from "@/components/practice/use-word-audio";
 import { recordPracticeAttempt, usePracticeStats } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
 
+function initialLessonId(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  return new URLSearchParams(window.location.search).get("lesson") ?? undefined;
+}
+
 export default function ListeningPage() {
+  const [lessonId] = useState(initialLessonId);
   return (
     <PracticeLibrary
       skill="listening"
@@ -28,6 +34,7 @@ export default function ListeningPage() {
         "Gõ lại đúng Hán tự bạn nghe được vào ô bên dưới rồi kiểm tra.",
         "Sai thì xem đáp án và nghĩa, rồi chuyển sang từ tiếp theo.",
       ]}
+      lessonId={lessonId}
     >
       {(words) => <ListeningSession words={words} />}
     </PracticeLibrary>
