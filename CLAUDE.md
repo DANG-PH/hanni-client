@@ -189,9 +189,17 @@ lại chưa có đấu 1v1/2v2, tránh chia nhỏ hàng chờ ghép trận khi l
     `DuelMinigame` thành 1 component riêng vì giờ dùng ở CẢ 2 nơi) — 2v2 không có bảng xếp hạng
     riêng, ELO/tier/mùa giải là 1 hệ chung với đấu 1v1.
 `/account` (đổi mật khẩu, thẻ "Ví xu" (`useWallet()`) hiện số dư + nút mua thêm lá chắn streak
-(300 xu, `buyStreakFreeze()`), thẻ "Mời bạn bè cùng học" — link `/register?ref=<userId>` qua
-`ShareButton`, số liệu từ `GET /referrals/me`, và "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ
-"XÓA" + mật khẩu nếu có đặt mới bấm được nút xoá vĩnh viễn, gọi `DELETE /users/me`),
+(300 xu, `buyStreakFreeze()`) + khối "Nạp thêm xu" (CHỈ hiện nếu `useTopUpConfigured()` trả
+`configured: true` — server chưa cấu hình payOS thì tự ẩn gọn, không hiện nút vào báo lỗi): chọn
+mức tiền (nút nhanh 10k/20k/50k/100k hoặc gõ tay), bấm "Nạp qua payOS" gọi `createTopUp()`
+(`lib/payments.ts`) rồi REDIRECT THẲNG sang `checkoutUrl` do payOS trả về (không tự dựng UI
+thanh toán/QR — dựng nhẹ theo đúng tinh thần "để FE khác chỉnh sau"). payOS trả người dùng về
+`/account?topup=<orderCode>` sau khi thanh toán — đọc thẳng `window.location.search` trong
+`useEffect` (KHÔNG dùng `useSearchParams()` để khỏi phải bọc cả trang trong `<Suspense>` chỉ vì
+1 khối nhỏ), gọi `getTopUpStatus()` hiện kết quả rồi dọn query param khỏi URL, thẻ "Mời bạn bè
+cùng học" — link `/register?ref=<userId>` qua `ShareButton`, số liệu từ `GET /referrals/me`, và
+"Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ "XÓA" + mật khẩu nếu có đặt mới bấm được nút xoá
+vĩnh viễn, gọi `DELETE /users/me`),
 `/listening` +
 `/pronunciation` (mỗi lần kiểm tra đáp án/ghi âm xong đều gọi `POST /practice/attempts` lưu
 DB, thẻ thống kê lũy kế hiện ngay khi có dữ liệu), `/onboarding` (khảo sát 3 bước — đã học

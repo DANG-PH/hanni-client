@@ -579,6 +579,23 @@ export interface CoinTransaction {
   createdAt: string;
 }
 
+/** Nạp tiền thật lấy xu qua payOS (1 VNĐ = 1 xu) — xem `hanni-server/CLAUDE.md`
+ * mục PaymentsService. */
+export interface TopUpResponse {
+  checkoutUrl: string;
+  qrCode: string;
+  orderCode: number;
+}
+
+export type PaymentOrderStatus = "PENDING" | "PAID" | "CANCELLED" | "EXPIRED";
+
+export interface TopUpOrder {
+  orderCode: number;
+  amountVnd: number;
+  xuAmount: number;
+  status: PaymentOrderStatus;
+}
+
 export interface DuelOpponent {
   id: string;
   displayName: string;
