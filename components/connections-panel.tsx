@@ -9,6 +9,7 @@ import { MessageIconButton } from "@/components/message-icon-button";
 import { Spinner } from "@/components/ui";
 import { useLeaderboard, usePublicProfile, useUserSearch } from "@/lib/hooks";
 import type { PublicProfileUser } from "@/lib/types";
+import styles from "./connections-panel.module.css";
 
 interface Row {
   id: string;
@@ -26,25 +27,25 @@ function ConnectionCard({
   onFollowChange: (following: boolean) => void;
 }) {
   return (
-    <div className="hover-card reveal flex items-center gap-3 rounded-xl border border-border bg-surface p-3.5">
+    <div className={`${styles.connectionCard} hover-card reveal`}>
       <Link href={`/u/${row.id}`} className="shrink-0">
         <Avatar user={row} size={42} />
       </Link>
-      <div className="min-w-0 flex-1">
+      <div className={styles.cardCopy}>
         <Link
           href={`/u/${row.id}`}
-          className="block truncate text-sm font-semibold hover:underline"
+          className={`${styles.cardName} hover:underline`}
         >
           {row.displayName}
         </Link>
         {!!row.currentStreak && (
-          <span className="flex items-center gap-1 text-xs text-muted">
+          <span className={styles.cardStreak}>
             <Icon name="flame" size={12} className="text-primary" />
             {row.currentStreak} ngày
           </span>
         )}
       </div>
-      <div className="flex shrink-0 items-center gap-1.5">
+      <div className={styles.cardActions}>
         <FollowButton
           userId={row.id}
           following={row.isFollowing}
@@ -59,7 +60,7 @@ function ConnectionCard({
 
 function CardGrid({ rows, onFollowChange }: { rows: Row[]; onFollowChange: () => void }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className={styles.cardGrid}>
       {rows.map((row) => (
         <ConnectionCard key={row.id} row={row} onFollowChange={onFollowChange} />
       ))}
@@ -69,12 +70,12 @@ function CardGrid({ rows, onFollowChange }: { rows: Row[]; onFollowChange: () =>
 
 function TabEmpty({ title, description }: { title: string; description: string }) {
   return (
-    <div className="rounded-xl border border-dashed border-border py-10 text-center">
-      <span className="icon-tile mx-auto mb-3">
-        <Icon name="user" />
+    <div className={styles.empty}>
+      <span className={styles.emptyIcon}>
+        <Icon name="user" size={19} />
       </span>
-      <p className="text-sm font-semibold">{title}</p>
-      <p className="mx-auto mt-1.5 max-w-xs text-xs leading-5 text-muted">
+      <p className={styles.emptyTitle}>{title}</p>
+      <p className={styles.emptyDescription}>
         {description}
       </p>
     </div>
@@ -145,14 +146,28 @@ export function ConnectionsPanel({ myUserId }: { myUserId: string }) {
   const searching = q.trim().length > 0;
 
   return (
-    <div className="space-y-5 p-4">
-      <label className="field flex items-center gap-2">
+    <div className={styles.panel}>
+      <div className={styles.heading}>
+        <div>
+          <p className={styles.eyebrow}>MỞ RỘNG VÒNG KẾT NỐI</p>
+          <h2 className={styles.title}>Tìm bạn học cùng</h2>
+          <p className={styles.description}>
+            Tìm người học có cùng mục tiêu, theo dõi nhau và bắt đầu một cuộc
+            trò chuyện hữu ích.
+          </p>
+        </div>
+        <span className={styles.headingIcon}>
+          <Icon name="share" size={21} />
+        </span>
+      </div>
+
+      <label className={`field flex items-center gap-2 ${styles.search}`}>
         <Icon name="search" size={16} className="text-muted" />
         <input
           value={q}
           onChange={(event) => setQ(event.target.value)}
           placeholder="Tìm theo tên hoặc mã người dùng (UID)…"
-          className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+          className={`${styles.searchInput} min-w-0 flex-1 bg-transparent text-sm outline-none`}
         />
         {searching && (
           <button
@@ -167,7 +182,7 @@ export function ConnectionsPanel({ myUserId }: { myUserId: string }) {
       </label>
 
       {searching ? (
-        <div className="space-y-2">
+        <div className={styles.results}>
           {search.isLoading && <p className="text-sm text-muted">Đang tìm…</p>}
           {!search.isLoading && search.data?.length === 0 && (
             <TabEmpty
@@ -181,26 +196,18 @@ export function ConnectionsPanel({ myUserId }: { myUserId: string }) {
         </div>
       ) : (
         <>
-          <div className="flex flex-wrap gap-1.5 border-b border-border pb-3">
+          <div className={styles.filters}>
             {TABS.map((t) => (
               <button
                 key={t.key}
                 type="button"
                 aria-pressed={sub === t.key}
                 onClick={() => setSub(t.key)}
-                className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors ${
-                  sub === t.key
-                    ? "bg-primary text-primary-fg"
-                    : "bg-surface-2 text-muted hover:text-foreground"
-                }`}
+                className={`${styles.filter} ${sub === t.key ? styles.filterActive : ""}`}
               >
                 {t.label}
                 {t.rows.length > 0 && (
-                  <span
-                    className={`rounded-full px-1.5 py-0.5 text-[10px] ${
-                      sub === t.key ? "bg-primary-fg/20" : "bg-border/60"
-                    }`}
-                  >
+                  <span className={styles.count}>
                     {t.rows.length}
                   </span>
                 )}
@@ -209,7 +216,9 @@ export function ConnectionsPanel({ myUserId }: { myUserId: string }) {
           </div>
 
           {activeRows.length > 0 ? (
-            <CardGrid rows={activeRows} onFollowChange={refresh} />
+            <div className={styles.results}>
+              <CardGrid rows={activeRows} onFollowChange={refresh} />
+            </div>
           ) : sub === "mutual" ? (
             <TabEmpty
               title="Chưa kết nối với ai"
