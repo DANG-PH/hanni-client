@@ -1,0 +1,214 @@
+.list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  min-width: 0;
+  padding: 0 0 10px 54px;
+}
+
+.item:not(:last-child)::before {
+  position: absolute;
+  top: 47px;
+  bottom: 0;
+  left: 21px;
+  width: 2px;
+  border-radius: 99px;
+  background: repeating-linear-gradient(180deg, var(--border) 0 5px, transparent 5px 9px);
+  content: "";
+}
+
+.link {
+  display: block;
+  border-radius: var(--radius-inner);
+}
+
+.card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 82px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inner);
+  background: var(--surface);
+  box-shadow: 0 3px 12px -12px color-mix(in srgb, var(--foreground) 28%, transparent);
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 220ms ease, transform 220ms var(--motion-ease);
+}
+
+.number {
+  position: absolute;
+  top: 16px;
+  left: -54px;
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--border));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary) 7%, var(--surface));
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 750;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--primary) 8%, var(--border));
+}
+
+.copy {
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-width: 0;
+}
+
+.title {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  border-radius: 6px;
+  padding: 3px 7px;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.completed {
+  border-color: color-mix(in srgb, var(--good) 15%, var(--border));
+  background: color-mix(in srgb, var(--good) 11%, var(--surface));
+  color: var(--good);
+}
+
+.inProgress {
+  border-color: color-mix(in srgb, var(--primary) 15%, var(--border));
+  background: color-mix(in srgb, var(--primary) 11%, var(--surface));
+  color: var(--primary);
+}
+
+.available {
+  border-color: color-mix(in srgb, var(--accent) 14%, var(--border));
+  background: color-mix(in srgb, var(--accent) 11%, var(--surface));
+  color: var(--accent);
+}
+
+.locked {
+  border-color: var(--border);
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.preview {
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 9px;
+}
+
+.progressValue {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.arrow {
+  flex-shrink: 0;
+  color: var(--muted);
+  transition: color 180ms ease, transform 180ms var(--motion-ease);
+}
+
+.cardLocked {
+  opacity: 0.58;
+  box-shadow: none;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover .card {
+    border-color: color-mix(in srgb, var(--primary) 28%, var(--border));
+    background: linear-gradient(110deg, var(--surface), color-mix(in srgb, var(--primary) 3%, var(--surface)));
+    box-shadow: 0 4px 0 color-mix(in srgb, var(--primary) 11%, var(--border)), 0 15px 24px -22px color-mix(in srgb, var(--primary) 38%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .link:hover .arrow {
+    color: var(--primary);
+    transform: translateX(3px);
+  }
+}
+
+@media (max-width: 560px) {
+  .item {
+    padding-left: 45px;
+  }
+
+  .item:not(:last-child)::before {
+    left: 17px;
+  }
+
+  .number {
+    left: -45px;
+    width: 35px;
+    height: 35px;
+    border-radius: 11px;
+    font-size: 11px;
+  }
+
+  .card {
+    min-height: 78px;
+    padding: 13px;
+  }
+
+  .title {
+    max-width: 100%;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .arrow {
+    transition: none;
+  }
+
+  .link:hover .card,
+  .link:hover .arrow {
+    transform: none;
+  }
+}

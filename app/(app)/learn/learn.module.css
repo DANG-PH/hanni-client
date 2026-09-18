@@ -1,176 +1,290 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--section-gap);
+  gap: 18px;
 }
 
-.continueCard {
+.pageIntro,
+.nextCard,
+.pathBoard {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 30px;
   overflow: hidden;
-  padding: var(--section-padding);
-  border: 1px solid color-mix(in srgb, var(--primary) 16%, var(--border));
+  border: 1px solid var(--border);
   border-radius: var(--radius-section);
-  background:
-    radial-gradient(
-      ellipse at 100% 10%,
-      color-mix(in srgb, var(--primary) 10%, transparent),
-      transparent 60%
-    ),
-    linear-gradient(
-      110deg,
-      var(--surface),
-      color-mix(in srgb, var(--primary) 3%, var(--surface))
-    );
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent),
-    0 4px 0 color-mix(in srgb, var(--primary) 5%, var(--border)),
-    0 20px 40px -32px color-mix(in srgb, var(--primary) 45%, transparent);
-  transition: opacity 180ms ease;
-  perspective: 1100px;
-}
-.continueCard::before {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  width: 380px;
-  height: 380px;
-  right: -120px;
-  top: -180px;
-  border: 1px solid color-mix(in srgb, var(--primary) 12%, transparent);
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 28px color-mix(in srgb, var(--primary) 3%, transparent),
-    0 0 0 58px color-mix(in srgb, var(--primary) 2%, transparent);
+  box-shadow: var(--workspace-shadow);
 }
 
-.continueCard[aria-busy="true"] {
-  opacity: 0.5;
+.pageIntro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 30px;
+  padding: 25px 30px;
+  border-color: color-mix(in srgb, var(--primary) 13%, var(--border));
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 45%),
+    linear-gradient(115deg, var(--surface) 50%, color-mix(in srgb, var(--hero-from) 65%, var(--surface)));
 }
-.continueCopy {
+
+.pageIntro::after,
+.nextCard::after {
+  position: absolute;
+  top: -125px;
+  right: -70px;
+  width: 265px;
+  height: 265px;
+  border: 1px solid color-mix(in srgb, var(--primary) 9%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 25px color-mix(in srgb, var(--primary) 3%, transparent), 0 0 0 50px color-mix(in srgb, var(--primary) 2%, transparent);
+  content: "";
+  pointer-events: none;
+}
+
+.introCopy,
+.introActions,
+.nextTopline,
+.nextLayout,
+.nextFooter {
   position: relative;
-  min-width: 0;
+  z-index: 1;
 }
-.continueLabel {
+
+.introEyebrow,
+.pathEyebrow {
   display: flex;
   align-items: center;
   gap: 7px;
   color: var(--primary);
   font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 0.06em;
+  font-weight: 750;
+  letter-spacing: 0.1em;
 }
-.continueLabel > span {
+
+.introDot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--primary);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 8%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 10%, transparent);
 }
-.continueCopy h2 {
-  margin-top: 9px;
-  font-size: clamp(20px, 2vw, 25px);
-  font-weight: 650;
-  letter-spacing: -0.035em;
+
+.introCopy h1 {
+  max-width: 22ch;
+  margin-top: 8px;
+  color: var(--foreground);
+  font-size: clamp(25px, 3vw, 36px);
+  font-weight: 750;
+  line-height: 1.16;
+  letter-spacing: -0.055em;
   text-wrap: balance;
 }
-.continueCopy > p {
-  margin-top: 7px;
+
+.introCopy > p:last-child {
+  max-width: 62ch;
+  margin-top: 9px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
 }
-.continueActions {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-top: 19px;
-}
-.previewWords {
-  color: var(--muted);
-  font-size: 20px;
-  letter-spacing: 0.09em;
-}
-.progressTile {
-  position: relative;
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 19px;
-  padding: 20px 22px;
-  border: 1px solid color-mix(in srgb, var(--surface) 70%, var(--border));
-  border-radius: 21px;
-  background: color-mix(in srgb, var(--surface) 76%, transparent);
-  box-shadow:
-    0 6px 0 color-mix(in srgb, var(--primary) 6%, var(--border)),
-    0 20px 30px -22px color-mix(in srgb, var(--primary) 40%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--surface) 90%, transparent);
-  transform: rotate(-3deg) rotateY(-8deg);
-  transition: transform 500ms var(--motion-ease);
-}
-.progressRing {
-  display: grid;
-  place-items: center;
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: conic-gradient(
-    var(--primary) var(--progress),
-    color-mix(in srgb, var(--primary) 10%, var(--surface)) 0
-  );
-  box-shadow:
-    0 3px 0 color-mix(in srgb, var(--primary) 13%, var(--border)),
-    0 8px 16px -12px color-mix(in srgb, var(--primary) 45%, transparent);
-}
-.progressRing > span {
-  display: grid;
-  place-items: center;
-  width: 66px;
-  height: 66px;
-  border-radius: 50%;
-  background: var(--surface);
-  color: var(--primary);
-  font-size: 33px;
-  box-shadow: inset 0 2px 5px color-mix(in srgb, var(--primary) 8%, transparent);
-}
-.progressLevel {
-  color: var(--primary);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-}
-.progressValue {
-  margin-top: 5px;
-  font-size: 22px;
-  font-weight: 700;
-}
-.progressValue span {
-  display: block;
-  margin-top: 1px;
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 500;
-}
-.progressCount {
-  margin-top: 5px;
-  color: var(--muted);
-  font-size: 11px;
-}
-.course {
+
+.introActions {
   display: flex;
   flex-direction: column;
-  gap: 19px;
-  min-width: 0;
-  padding: var(--section-padding);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-section);
-  background: var(--surface);
-  box-shadow: var(--workspace-shadow);
+  align-items: flex-end;
+  gap: 13px;
 }
+
+.introPromise {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--foreground);
+  font-size: 12px;
+}
+
+.introPromise > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.introPromise strong {
+  font-weight: 700;
+}
+
+.introPromise small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.promiseIcon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--border));
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+  color: var(--primary);
+}
+
+.nextCard {
+  padding: 20px 26px 17px;
+  border-color: color-mix(in srgb, var(--primary) 20%, var(--border));
+  background:
+    radial-gradient(ellipse at 100% 15%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 50%),
+    linear-gradient(115deg, var(--surface), color-mix(in srgb, var(--hero-from) 65%, var(--surface)));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--surface) 80%, transparent), 0 4px 0 color-mix(in srgb, var(--primary) 6%, var(--border)), 0 20px 35px -30px color-mix(in srgb, var(--primary) 45%, transparent);
+  transition: transform 300ms var(--motion-ease), box-shadow 300ms ease;
+}
+
+.nextTopline,
+.nextFooter,
+.nextProgressMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.nextLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.075em;
+}
+
+.nextLabel > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 9%, transparent);
+}
+
+.nextLevel {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.nextLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+  margin-top: 17px;
+}
+
+.nextCopy {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.nextNumber {
+  display: grid;
+  flex: 0 0 42px;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.nextCopy h2 {
+  color: var(--foreground);
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 720;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.nextCopy p {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.nextAction {
+  min-width: 162px;
+}
+
+.nextFooter {
+  margin-top: 17px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--primary) 11%, var(--border));
+}
+
+.previewWords {
+  color: color-mix(in srgb, var(--primary) 48%, var(--muted));
+  font-size: 19px;
+  letter-spacing: 0.09em;
+}
+
+.nextProgress {
+  width: min(290px, 42%);
+}
+
+.nextProgressMeta {
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.nextProgressMeta strong {
+  color: var(--primary);
+  font-size: 11px;
+}
+
+.pathBoard {
+  padding: 25px 26px 29px;
+  border-color: color-mix(in srgb, var(--primary) 10%, var(--border));
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--primary) 5%, transparent), transparent 44%),
+    var(--surface);
+}
+
+.pathHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pathEyebrow {
+  font-size: 10px;
+}
+
+.pathEyebrow svg {
+  color: var(--primary);
+}
+
+.pathHeader h2 {
+  margin-top: 5px;
+  color: var(--foreground);
+  font-size: 22px;
+  font-weight: 720;
+  letter-spacing: -0.04em;
+}
+
+.pathHeader > div:first-child > p:last-child {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .levels {
   display: flex;
   flex-wrap: wrap;
@@ -181,156 +295,278 @@
   border-radius: 14px;
   background: color-mix(in srgb, var(--surface-2) 80%, var(--surface));
 }
+
 .level {
   position: relative;
-  min-height: 38px;
-  padding: 8px 13px;
+  min-height: 36px;
+  padding: 8px 12px;
   border-radius: 10px;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 650;
+  font-size: 11px;
+  font-weight: 700;
   cursor: pointer;
-  transition:
-    color 180ms ease,
-    background 180ms ease,
-    box-shadow 250ms ease,
-    transform 250ms var(--motion-ease);
+  transition: color 180ms ease, background 180ms ease, box-shadow 250ms ease, transform 250ms var(--motion-ease);
 }
+
 .level[aria-pressed="true"] {
   color: var(--primary-fg);
   background: var(--primary);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--primary-fg) 20%, transparent),
-    0 3px 8px -3px color-mix(in srgb, var(--primary) 50%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--primary-fg) 20%, transparent), 0 3px 8px -3px color-mix(in srgb, var(--primary) 50%, transparent);
 }
+
 .level:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 3px;
 }
+
+.flowSteps {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 38px minmax(0, 1fr) 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 8px;
+  padding: 13px 15px;
+  border: 1px solid color-mix(in srgb, var(--primary) 8%, var(--border));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--primary) 3%, var(--surface));
+}
+
+.flowStep {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.flowStep > span {
+  display: grid;
+  flex: 0 0 30px;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.flowStep[data-active="true"] > span {
+  border-color: color-mix(in srgb, var(--primary) 25%, var(--border));
+  background: var(--primary);
+  color: var(--primary-fg);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--primary) 50%, var(--foreground));
+}
+
+.flowStep strong,
+.flowStep small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flowStep strong {
+  color: var(--foreground);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.flowStep small {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.flowConnector {
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--border) 0 5px, transparent 5px 9px);
+}
+
+.boardDivider {
+  height: 1px;
+  margin: 24px 0 22px;
+  background: var(--border);
+}
+
 .courseBody {
   position: relative;
 }
+
 .courseGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
+  grid-template-columns: minmax(0, 1fr) 258px;
   align-items: start;
   gap: 24px;
   transition: opacity 180ms ease;
 }
+
 .courseGrid[data-loading="true"] {
   opacity: 0.4;
 }
-.loadingNote {
-  position: absolute;
-  z-index: 1;
-  top: 12px;
-  left: 50%;
-  padding: 9px 15px;
-  border: 1px solid var(--border);
-  border-radius: 99px;
-  background: var(--surface);
-  box-shadow: 0 4px 18px color-mix(in srgb, var(--foreground) 8%, transparent);
-  color: var(--primary);
-  font-size: 12px;
-  transform: translateX(-50%);
+
+.lessonColumn {
+  min-width: 0;
 }
+
 .lessonHeading {
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 0 3px;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 0 2px;
 }
-.lessonHeading > span:first-child {
+
+.lessonHeading p {
+  color: var(--primary);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+}
+
+.lessonHeading h3 {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 650;
+  gap: 7px;
+  margin-top: 4px;
+  color: var(--foreground);
+  font-size: 15px;
+  font-weight: 700;
 }
-.lessonHeading svg {
+
+.lessonHeading h3 svg {
   color: var(--primary);
 }
-.lessonHeading > span:last-child {
+
+.lessonHeading > span {
   color: var(--muted);
   font-size: 11px;
 }
+
 .sidebar {
   position: sticky;
   top: 95px;
   display: flex;
   flex-direction: column;
-  gap: 17px;
+  gap: 14px;
 }
+
+.progressCard {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inner);
+  background: color-mix(in srgb, var(--surface) 85%, var(--hero-from));
+  box-shadow: 0 4px 15px -13px color-mix(in srgb, var(--foreground) 22%, transparent);
+}
+
 .asideLabel {
   display: flex;
   align-items: center;
   gap: 7px;
   color: var(--muted);
   font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 0.035em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
+
 .asideLabel svg {
   color: var(--primary);
 }
+
 .stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin: 22px 0;
+  gap: 9px;
+  margin: 16px 0;
 }
+
 .stats > div {
-  padding: 12px 10px;
-  border: 1px solid color-mix(in srgb, var(--primary) 8%, var(--border));
-  border-radius: 13px;
+  min-width: 0;
+  padding: 11px 9px;
+  border: 1px solid color-mix(in srgb, var(--primary) 9%, var(--border));
+  border-radius: 12px;
   background: color-mix(in srgb, var(--primary) 3%, var(--surface));
 }
+
 .stats strong {
-  font-size: 24px;
-  font-weight: 650;
+  font-size: 21px;
+  font-weight: 700;
   letter-spacing: -0.04em;
 }
+
 .stats strong span {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
 }
+
 .stats p {
   margin-top: 3px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 9px;
+  line-height: 1.35;
 }
+
+.progressLink {
+  margin-top: 8px;
+  margin-left: -10px;
+  padding-inline: 10px !important;
+}
+
 .tip {
   display: flex;
-  gap: 12px;
-  padding: 18px;
-  border-radius: 18px;
+  gap: 11px;
+  padding: 15px;
   border: 1px solid color-mix(in srgb, var(--accent) 15%, var(--border));
-  background:
-    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 65%),
-    color-mix(in srgb, var(--accent) 5%, var(--surface));
+  border-radius: var(--radius-inner);
+  background: radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 65%), color-mix(in srgb, var(--accent) 5%, var(--surface));
 }
+
 .tip h3 {
-  font-size: 13px;
-  font-weight: 650;
-}
-.tip p {
-  margin-top: 7px;
-  color: var(--muted);
+  color: var(--foreground);
   font-size: 12px;
-  line-height: 1.7;
+  font-weight: 700;
 }
+
+.tip p {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.loadingNote {
+  position: absolute;
+  z-index: 1;
+  top: 12px;
+  left: 50%;
+  padding: 8px 13px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  background: var(--surface);
+  box-shadow: 0 4px 18px color-mix(in srgb, var(--foreground) 8%, transparent);
+  color: var(--primary);
+  font-size: 11px;
+  transform: translateX(-50%);
+}
+
 .skeleton {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .continueCard:hover .progressTile {
-    transform: translateY(-4px) rotate(0deg) rotateY(-3deg);
+  .pageIntro,
+  .nextCard {
+    transition: transform 300ms var(--motion-ease), box-shadow 300ms ease;
   }
+
+  .nextCard:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--surface) 80%, transparent), 0 5px 0 color-mix(in srgb, var(--primary) 8%, var(--border)), 0 24px 40px -30px color-mix(in srgb, var(--primary) 52%, transparent);
+  }
+
   .level:hover:not([aria-pressed="true"]) {
     background: var(--surface);
     color: var(--primary);
@@ -338,101 +574,162 @@
   }
 }
 
-@media (max-width: 1000px) {
-  .progressTile {
-    padding: 17px;
-    gap: 13px;
-  }
-  .progressRing {
-    width: 63px;
-    height: 63px;
-  }
-  .progressRing > span {
-    width: 53px;
-    height: 53px;
-    font-size: 28px;
-  }
+@media (max-width: 1050px) {
   .courseGrid {
-    grid-template-columns: minmax(0, 1fr) 245px;
+    grid-template-columns: minmax(0, 1fr) 230px;
     gap: 18px;
   }
+
+  .level {
+    padding-inline: 9px;
+  }
 }
-@media (max-width: 760px) {
-  .continueCard {
-    flex-direction: column;
-    align-items: stretch;
-    padding: var(--section-padding);
-    gap: 20px;
+
+@media (max-width: 900px) {
+  .pageIntro {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .progressTile {
-    align-self: flex-start;
-    gap: 16px;
-    padding: 12px 18px;
-    transform: rotate(-2deg);
+
+  .introActions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
-  .progressRing {
-    width: 53px;
-    height: 53px;
-  }
-  .progressRing > span {
-    width: 43px;
-    height: 43px;
-    font-size: 25px;
-  }
-  .progressValue {
-    margin-top: 3px;
-    font-size: 19px;
-  }
-  .progressValue span {
-    display: inline;
-    margin-left: 5px;
-  }
+
   .courseGrid {
     grid-template-columns: minmax(0, 1fr);
   }
+
   .sidebar {
     position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sidebar > :last-child {
+    grid-column: 1 / -1;
   }
 }
-@media (max-width: 440px) {
+
+@media (max-width: 700px) {
+  .pageIntro,
+  .nextCard,
+  .pathBoard {
+    border-radius: var(--radius-card);
+  }
+
+  .pageIntro {
+    padding: 21px;
+  }
+
+  .introCopy h1 {
+    max-width: 18ch;
+    font-size: 28px;
+  }
+
+  .pathBoard {
+    padding: 20px 18px 23px;
+  }
+
+  .pathHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
   .levels {
     width: 100%;
   }
+
   .level {
     flex: 1 0 auto;
-    padding-inline: 11px;
+    padding-inline: 10px;
   }
-  .continueCard {
-    border-radius: var(--radius-section);
+
+  .flowSteps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 13px;
   }
-  .continueActions {
-    gap: 12px;
+
+  .flowConnector {
+    width: 1px;
+    height: 9px;
+    margin-left: 14px;
+    background: repeating-linear-gradient(180deg, var(--border) 0 4px, transparent 4px 8px);
   }
+
+  .nextCard {
+    padding: 18px 20px 16px;
+  }
+
+  .nextTopline,
+  .nextFooter {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .nextLayout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 17px;
+  }
+
+  .nextAction {
+    width: 100%;
+  }
+
+  .nextProgress {
+    width: 100%;
+  }
+
+  .sidebar {
+    display: flex;
+  }
+}
+
+@media (max-width: 440px) {
+  .introActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .introActions > a {
+    width: 100%;
+  }
+
+  .introPromise {
+    align-self: flex-start;
+  }
+
+  .nextNumber {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
   .previewWords {
     font-size: 17px;
   }
+
+  .lessonHeading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
 }
 
-@media (max-width: 1100px) {
-  .courseGrid { grid-template-columns: minmax(0, 1fr); }
-  .sidebar { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; }
-}
-
-@media (max-width: 639px) {
-  .sidebar { display: flex; }
-  .levels { width: 100%; }
-  .level { flex: 1 0 auto; }
-}
 @media (prefers-reduced-motion: reduce) {
-  .continueCard,
+  .pageIntro,
+  .nextCard,
   .courseGrid,
   .level {
     transition: none;
   }
-  .progressTile,
-  .continueCard:hover .progressTile,
+
+  .nextCard:hover,
   .level:hover:not([aria-pressed="true"]) {
     transform: none;
-    transition: none;
   }
 }

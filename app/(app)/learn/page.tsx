@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, type CSSProperties } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { FeatureTour, type TourStep } from "@/components/feature-tour";
 import { Icon } from "@/components/icon";
@@ -13,9 +13,7 @@ import {
   EmptyState,
   ErrorNote,
   LinkButton,
-  PageHeading,
   ProgressBar,
-  SectionHeading,
   Spinner,
 } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
@@ -39,7 +37,7 @@ const LEARN_TOUR_STEPS: TourStep[] = [
     icon: "cards",
     title: "Bài học theo chủ đề",
     description:
-      "Mỗi cấp chia thành nhiều bài theo chủ đề thực tế (chào hỏi, gia đình...). Hoàn thành bài này để mở bài tiếp theo, hoặc bấm \"Ôn tập hôm nay\" để ôn flashcard.",
+      "Mỗi cấp chia thành nhiều bài theo chủ đề thực tế. Hoàn thành bài này để mở bài tiếp theo, hoặc bấm Ôn tập hôm nay để ôn flashcard.",
   },
 ];
 
@@ -74,91 +72,107 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
   return (
     <div className={`page-wrap ${styles.page}`}>
       <FeatureTour tourKey="learn" steps={LEARN_TOUR_STEPS} />
-      <PageHeading
-        icon="route"
-        eyebrow="Lộ trình HSK"
-        title="Từng bước nhỏ, tiến bộ mỗi ngày"
-        description="Chọn cấp độ của bạn. Học một bài mới, ôn một chút và tiến thêm một bước."
-      >
-        <LinkButton href="/study" variant="secondary">
-          <Icon name="cards" size={17} /> Ôn tập hôm nay
-        </LinkButton>
-      </PageHeading>
+
+      <section className={styles.pageIntro} aria-labelledby="learn-page-title">
+        <div className={styles.introCopy}>
+          <p className={styles.introEyebrow}>
+            <span className={styles.introDot} aria-hidden="true" />
+            LỘ TRÌNH HỌC TIẾNG TRUNG
+          </p>
+          <h1 id="learn-page-title">Mỗi ngày một bước, bạn sẽ tiến xa hơn</h1>
+          <p>
+            Đi theo đúng thứ tự: chọn cấp HSK, học bài đang mở, rồi ôn lại để
+            nhớ lâu hơn. Bạn không cần học hết mọi thứ trong một lần.
+          </p>
+        </div>
+        <div className={styles.introActions}>
+          <div className={styles.introPromise}>
+            <span className={styles.promiseIcon}>
+              <Icon name="clock" size={16} />
+            </span>
+            <span>
+              <strong>15 phút mỗi ngày</strong>
+              <small>đều đặn là đủ để bắt đầu</small>
+            </span>
+          </div>
+          <LinkButton href="/study" variant="secondary">
+            <Icon name="cards" size={17} /> Ôn tập hôm nay
+          </LinkButton>
+        </div>
+      </section>
 
       {data && data.lessons.length > 0 && !error && (
         <section
-          className={styles.continueCard}
-          aria-label="Tiếp tục hành trình"
+          className={styles.nextCard}
+          aria-labelledby="next-lesson-heading"
           aria-busy={switchingLevel}
           inert={switchingLevel}
         >
-          <div className={styles.continueCopy}>
-            <span className={styles.continueLabel}>
-              <span />{" "}
-              {currentLesson
-                ? "BƯỚC TIẾP THEO CỦA BẠN"
-                : "MỘT CHẶNG ĐƯỜNG ĐÁNG NHỚ"}
+          <div className={styles.nextTopline}>
+            <span className={styles.nextLabel}>
+              <span aria-hidden="true" /> BƯỚC TIẾP THEO CỦA BẠN
             </span>
-            <h2>
-              {currentLesson?.title ?? `Bạn đã hoàn thành ${data.levelName}`}
-            </h2>
-            <p>
-              {currentLesson
-                ? `${currentLesson.wordCount} từ vựng mới đang chờ bạn. Tiếp tục từ nơi bạn đã dừng lại.`
-                : "Ôn lại những từ đã học hoặc chọn một cấp độ mới để tiếp tục khám phá."}
-            </p>
-            <div className={styles.continueActions}>
-              <LinkButton
-                href={currentLesson ? `/learn/${currentLesson.id}` : "/study"}
-              >
-                {currentLesson
-                  ? currentLesson.status === "IN_PROGRESS"
-                    ? "Tiếp tục bài học"
-                    : "Bắt đầu bài học"
-                  : "Ôn lại từ đã học"}
-                <Icon name="arrow" size={16} />
-              </LinkButton>
-              {currentLesson && (
-                <span lang="zh" className={`hanzi ${styles.previewWords}`}>
-                  {currentLesson.previewWords.slice(0, 4).join(" · ")}
-                </span>
-              )}
-            </div>
+            <span className={styles.nextLevel}>
+              HSK {data.level === 7 ? "7–9" : data.level} · {data.levelName}
+            </span>
           </div>
-          <div className={styles.progressTile}>
-            <div
-              className={styles.progressRing}
-              style={{ "--progress": `${pct}%` } as CSSProperties}
-              aria-hidden="true"
-            >
-              <span lang="zh" className="hanzi">
-                学
+          <div className={styles.nextLayout}>
+            <div className={styles.nextCopy}>
+              <span className={styles.nextNumber} aria-hidden="true">
+                {currentLesson?.orderIndex ?? "✓"}
               </span>
+              <div>
+                <h2 id="next-lesson-heading">
+                  {currentLesson?.title ?? `Bạn đã hoàn thành ${data.levelName}`}
+                </h2>
+                <p>
+                  {currentLesson
+                    ? `${currentLesson.wordCount} từ vựng mới đang chờ bạn. Mình học tiếp từ nơi đã dừng lại nhé.`
+                    : "Ôn lại những từ đã học hoặc chọn một cấp độ mới để tiếp tục khám phá."}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className={styles.progressLevel}>
-                HSK {data.level === 7 ? "7–9" : data.level}
-              </p>
-              <p className={styles.progressValue}>
-                {Math.round(pct)}% <span>hoàn thành</span>
-              </p>
-              <p className={styles.progressCount}>
-                {data.completedLessons}/{data.totalLessons} bài học
-              </p>
+            <LinkButton
+              href={currentLesson ? `/learn/${currentLesson.id}` : "/study"}
+              className={styles.nextAction}
+            >
+              {currentLesson
+                ? currentLesson.status === "IN_PROGRESS"
+                  ? "Tiếp tục bài học"
+                  : "Bắt đầu bài học"
+                : "Ôn lại từ đã học"}
+              <Icon name="arrow" size={16} />
+            </LinkButton>
+          </div>
+          <div className={styles.nextFooter}>
+            <span lang="zh" className={`hanzi ${styles.previewWords}`}>
+              {currentLesson?.previewWords.slice(0, 4).join(" · ") ??
+                "学 · 习 · 进 · 步"}
+            </span>
+            <div className={styles.nextProgress}>
+              <div className={styles.nextProgressMeta}>
+                <span>Tiến độ HSK {data.level === 7 ? "7–9" : data.level}</span>
+                <strong>{Math.round(pct)}%</strong>
+              </div>
+              <ProgressBar value={pct} label="Tiến độ cấp HSK" />
             </div>
           </div>
         </section>
       )}
 
-      <LearningJourney />
-
-      <section aria-labelledby="hsk-lessons-heading" className={styles.course}>
-        <SectionHeading
-          id="hsk-lessons-heading"
-          icon="route"
-          title="Lộ trình theo cấp độ"
-          description="Hoàn thành từng bài để mở bước tiếp theo."
-        >
+      <section aria-labelledby="hsk-lessons-heading" className={styles.pathBoard}>
+        <div className={styles.pathHeader}>
+          <div>
+            <p className={styles.pathEyebrow}>
+              <Icon name="route" size={14} /> LỘ TRÌNH CỦA BẠN
+            </p>
+            <h2 id="hsk-lessons-heading">
+              {activeLevel
+                ? `HSK ${activeLevel === 7 ? "7–9" : activeLevel}`
+                : "Chọn cấp độ để bắt đầu"}
+            </h2>
+            <p>Hoàn thành từng bài để mở bước tiếp theo.</p>
+          </div>
           {!!data?.levels.length && (
             <SelectionGroup
               label="Chọn cấp độ HSK"
@@ -178,7 +192,36 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
               ))}
             </SelectionGroup>
           )}
-        </SectionHeading>
+        </div>
+
+        <div className={styles.flowSteps} aria-label="Cách học với Hanni">
+          <div className={styles.flowStep} data-active="true">
+            <span>01</span>
+            <div>
+              <strong>Chọn cấp HSK</strong>
+              <small>Bắt đầu vừa sức</small>
+            </div>
+          </div>
+          <span className={styles.flowConnector} aria-hidden="true" />
+          <div className={styles.flowStep}>
+            <span>02</span>
+            <div>
+              <strong>Học từng bài</strong>
+              <small>Học từ mới theo chủ đề</small>
+            </div>
+          </div>
+          <span className={styles.flowConnector} aria-hidden="true" />
+          <div className={styles.flowStep}>
+            <span>03</span>
+            <div>
+              <strong>Ôn để nhớ lâu</strong>
+              <small>Ôn lại đúng lúc</small>
+            </div>
+          </div>
+        </div>
+
+        <LearningJourney embedded />
+        <div className={styles.boardDivider} />
 
         {error ? (
           <Card className="space-y-4">
@@ -215,17 +258,20 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
               data-loading={switchingLevel || undefined}
               inert={switchingLevel}
             >
-              <div className="min-w-0 space-y-4">
+              <div className={styles.lessonColumn}>
                 <div className={styles.lessonHeading}>
-                  <span>
-                    <Icon name="book" size={16} /> {data.levelName}
-                  </span>
+                  <div>
+                    <p>CHẶNG HIỆN TẠI</p>
+                    <h3>
+                      <Icon name="book" size={16} /> {data.levelName}
+                    </h3>
+                  </div>
                   <span>{data.totalLessons} bài học</span>
                 </div>
                 <LessonPath lessons={data.lessons} />
               </div>
               <aside className={styles.sidebar}>
-                <Card>
+                <div className={styles.progressCard}>
                   <p className={styles.asideLabel}>
                     <Icon name="chart" size={16} /> TIẾN ĐỘ CỦA BẠN
                   </p>
@@ -246,20 +292,20 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
                   <LinkButton
                     href="/progress"
                     variant="ghost"
-                    className="mt-3 -ml-4"
+                    className={styles.progressLink}
                   >
                     Xem tiến độ <Icon name="arrow" size={15} />
                   </LinkButton>
-                </Card>
+                </div>
                 <div className={styles.tip}>
                   <span className="icon-tile shrink-0">
                     <Icon name="spark" size={20} />
                   </span>
                   <div>
-                    <h3>Một chút mỗi ngày</h3>
+                    <h3>Mẹo cho người mới</h3>
                     <p>
-                      Nghe phát âm, đọc ví dụ rồi thử nhớ nghĩa. Ôn lại các từ
-                      đến hạn để nhớ lâu hơn.
+                      Học xong một bài, nghe lại vài từ và ôn khi Hanni nhắc.
+                      Không cần học thật nhanh — chỉ cần giữ nhịp.
                     </p>
                   </div>
                 </div>
