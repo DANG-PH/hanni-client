@@ -21,7 +21,15 @@ app/
 ├── auth/callback        nhận redirect sau Google OAuth
 ├── auth/verify-email
 ├── dashboard            streak, mục tiêu ngày, tiến độ theo cấp — hero + thứ tự mảng luyện
-│                        tập đổi theo `OnboardingProfile.goal` (GOAL_PERSONA), xem "Trạng thái"
+│                        tập đổi theo `OnboardingProfile.goal` (GOAL_PERSONA), xem "Trạng thái".
+│                        CTA "Tiếp tục/Bắt đầu bài học" (2 chỗ: HeroBanner + thẻ "Tiếp tục học")
+│                        từ 2026-09-18 trỏ vào `/learn/[lessonId]` (trang chi tiết, có ngữ pháp
+│                        liên quan + nút luyện nghe/phát âm riêng bài) khi bài CHƯA bắt đầu
+│                        (`startedWords === 0`), chỉ trỏ thẳng `/study?lesson=` (flashcard) khi
+│                        ĐÃ học dở — trước đó CẢ 2 trường hợp đều nhảy thẳng flashcard, khiến
+│                        các tính năng mới ở trang chi tiết bài học hoàn toàn không ai thấy được
+│                        (user chỉ vào được trang đó nếu tự bấm từ danh sách bài học, không phải
+│                        qua luồng "tiếp tục học" chính)
 ├── study               buổi ôn flashcard (SM-2) + quiz cuối buổi
 ├── vocabulary          duyệt/tìm từ theo cấp HSK
 ├── progress            bucket đã thuộc / đang học / sắp quên theo cấp; có lịch hoạt động 30
@@ -94,7 +102,9 @@ còn lại là danh sách từ vựng theo từ loại nên giữ dạng rút g�
 xem/tô/kiểm tra nét bằng `hanzi-writer`, chuyển chữ trước/sau + hiện số nét), kiểm tra HSK
 (`/exams` — câu hỏi nghe + đọc, tính giờ từng câu, có lịch sử), thẻ "Từ vựng hôm nay" ở dashboard
 (`components/word-of-the-day.tsx`, `GET /words/of-the-day` — im lặng ẩn đi nếu lỗi/chưa tải, chỉ
-là nội dung phụ), bảng xếp hạng (5 tab tiêu chí — 4 tab học tập + tab **"Đấu 1v1 (ELO)"**
+là nội dung phụ; từ 2026-09-18 hiện thêm ảnh minh hoạ nếu `data.imageUrl` có — xem
+`hanni-server/CLAUDE.md` mục ảnh minh hoạ từ vựng, ảnh chỉ có với 1 số danh từ + cần
+`PEXELS_API_KEY` mới bật), bảng xếp hạng (5 tab tiêu chí — 4 tab học tập + tab **"Đấu 1v1 (ELO)"**
 (`LEADERBOARD_METRICS` trong `components/leaderboard.tsx`) hiện huy hiệu rank `RankEmblem`
 (`components/rank-emblem.tsx` — tách riêng để dùng chung với `/minigame`) ngay cạnh tên ở cả
 podium top-3 lẫn bảng đầy đủ, có nút "Theo dõi"

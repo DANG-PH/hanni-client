@@ -485,6 +485,14 @@ export default function WatchDetailPage() {
                 HSK {wordPopup.word.hskLevel}
               </span>
             </div>
+            {wordPopup.word.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element -- ảnh Pexels ngoài miền, chưa cần next/image cho tính năng còn đang thử nghiệm
+              <img
+                src={wordPopup.word.imageUrl}
+                alt={wordPopup.word.meaningVi ?? wordPopup.text}
+                className="mt-3 h-32 w-full rounded-xl object-cover"
+              />
+            )}
             <p className="mt-3 text-sm leading-6">
               {wordPopup.word.meaningVi ?? "Nghĩa đang được cập nhật."}
             </p>

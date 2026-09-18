@@ -51,6 +51,7 @@ export interface Word {
   meaningEn: string | null;
   translationStatus: string;
   audioUrl: string | null;
+  imageUrl?: string | null;
   lessonId?: string | null;
   lessonOrder?: number | null;
   examples?: WordExample[];
@@ -251,6 +252,7 @@ export interface WordMatch {
   pinyin: string;
   meaningVi: string | null;
   hskLevel: number;
+  imageUrl: string | null;
 }
 
 export interface LineToken {

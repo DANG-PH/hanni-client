@@ -40,6 +40,14 @@ export function WordOfTheDayCard() {
           </p>
           <p className={styles.meaning}>{data.meaningVi}</p>
         </div>
+        {data.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element -- ảnh Pexels ngoài miền, chưa cần next/image cho tính năng còn đang thử nghiệm
+          <img
+            src={data.imageUrl}
+            alt={data.meaningVi ?? data.simplified}
+            className="ml-auto h-16 w-16 shrink-0 rounded-xl object-cover"
+          />
+        )}
       </div>
       <Link
         href={`/vocabulary?level=${data.hskLevel}`}
