@@ -122,7 +122,6 @@ export function Flashcard({
       </div>
 
       <div className={styles.deck} data-flipped={revealed}>
-        <div className={styles.underCard} aria-hidden="true" />
         <div className={styles.inner}>
           {/* Hai mặt dùng chung một ô lưới để ví dụ dài không bị cắt. */}
           <div
