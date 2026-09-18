@@ -30,13 +30,29 @@ function normalizeSearch(text: string) {
     .replace(/đ/g, "d");
 }
 
+/**
+ * Đọc query param lúc mount, cho phép link thẳng từ trang khác (vd. bài học)
+ * tới 1 điểm ngữ pháp cụ thể qua ?level=&open= — chỉ đọc trong lazy initializer
+ * (không phải useEffect) để tránh cảnh báo set-state-in-effect, và an toàn SSR
+ * vì window chỉ được truy cập lúc initializer thật sự chạy trên client.
+ */
+function initialQueryParam(key: string): string | null {
+  if (typeof window === "undefined") return null;
+  return new URLSearchParams(window.location.search).get(key);
+}
+
 export default function GrammarPage() {
   const { user, loading } = useRequireAuth();
   const levels = useGrammarLevels();
-  const [level, setLevel] = useState<number | null>(null);
+  const [level, setLevel] = useState<number | null>(() => {
+    const fromUrl = Number(initialQueryParam("level"));
+    return fromUrl > 0 ? fromUrl : null;
+  });
   const active = level ?? levels.data?.[0]?.level;
   const list = useGrammar(active);
-  const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const [openSlug, setOpenSlug] = useState<string | null>(() =>
+    initialQueryParam("open"),
+  );
   const [query, setQuery] = useState("");
   const grouped = useMemo(() => {
     const term = normalizeSearch(query.trim());

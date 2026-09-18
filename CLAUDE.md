@@ -45,7 +45,14 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
 ## Convention
 - Mọi request qua `lib/api.ts` (`api.get/post/patch`) — `credentials: "include"`, tự refresh 401 một lần.
 - Trang cần đăng nhập: gọi `useRequireAuth()` ở đầu component.
-- Component dùng `useSearchParams()` phải bọc trong `<Suspense>` (yêu cầu của Next 16).
+- Component dùng `useSearchParams()` phải bọc trong `<Suspense>` (yêu cầu của Next 16). Đọc
+  query param 1 lần lúc mount mà không muốn bọc `<Suspense>` → đọc thẳng
+  `window.location.search`: nếu chỉ cần ĐỌC (không set state ngay) thì trong `useEffect` (vd.
+  `/account` đọc `?topup=`); nếu cần SET STATE NGAY (giá trị ban đầu của 1 `useState`) thì đọc
+  trong **lazy initializer** của `useState(() => ...)` (có guard `typeof window === "undefined"`
+  cho SSR), KHÔNG đọc trong `useEffect` rồi gọi `setState` — dính cảnh báo ESLint
+  `react-hooks/set-state-in-effect` (vd. `/grammar` đọc `?level=&open=` từ link của
+  `/learn/[lessonId]`).
 - Biến môi trường client: prefix `NEXT_PUBLIC_`. API base: `NEXT_PUBLIC_API_URL`.
 - Màu qua token Tailwind (`bg-surface`, `text-muted`, `bg-primary`…), không hardcode hex.
 - Next.js 16: đọc `node_modules/next/dist/docs/` khi cần — `params`/`searchParams`/`cookies()` là async.
