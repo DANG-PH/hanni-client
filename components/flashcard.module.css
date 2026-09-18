@@ -30,14 +30,6 @@
   perspective: 1600px;
   margin-bottom: 24px;
 }
-.underCard {
-  position: absolute;
-  inset: 12px 12px -8px;
-  border: 1px solid color-mix(in srgb, var(--primary) 16%, var(--border));
-  border-radius: 23px;
-  background: color-mix(in srgb, var(--primary) 5%, var(--surface));
-  transform: rotate(1.3deg);
-}
 .inner {
   display: grid;
   transform-style: preserve-3d;
