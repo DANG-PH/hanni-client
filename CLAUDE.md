@@ -119,7 +119,11 @@ cũ giờ chỉ còn là redirect sang `/messages?tab=connect` để link/bookma
     rồi ĐIỀN LẠI vào ô nhập (không tự gửi luôn) để xem/sửa trước khi bấm Gửi bình thường; hướng
     dịch tự nhận theo `HAS_HAN.test(text)` (có chữ Hán → dịch sang Việt, không có → dịch sang
     Trung), gọi `POST /messages/translate-compose` (`translateForCompose()` trong
-    `lib/messages.ts`).
+    `lib/messages.ts`). **Đã sửa 2026-09-18**: race condition thật — trước đây chỉ nút "Dịch" bị
+    disable lúc `translating`, ô nhập + nút Gửi vẫn bấm được bình thường, nên bấm Gửi giữa lúc
+    đang dịch sẽ gửi bản CHƯA dịch rồi bản dịch trả về SAU đó ghi đè vào ô nhập đã bị xoá — giờ
+    ô nhập + nút Gửi đều `disabled={sending || translating}`, và `send()`/`translateInput()` đều
+    tự chặn lẫn nhau (kiểm tra cả 2 cờ ở đầu hàm) thay vì chỉ chặn chính nó.
   - Tab **"Kết nối"** (`components/connections-panel.tsx`, dùng chung cho cả tab này lẫn trang
     redirect cũ): ô tìm theo tên HOẶC mã người dùng (UID) qua `GET /users/search` — có tìm kiếm
     thì THAY THẾ hẳn phần dưới bằng kết quả tìm (không hiện chung với sub-tab, giống hầu hết app

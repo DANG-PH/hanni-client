@@ -266,9 +266,10 @@ function ChatThread({ conversationId }: { conversationId: string }) {
    * Hướng dịch tự nhận theo chữ Hán có trong nội dung, không cần chọn tay. */
   async function translateInput() {
     const text = input.trim();
-    if (!text || translating) return;
+    if (!text || translating || sending) return;
     setTranslating(true);
     setTranslateError("");
+    setSendError("");
     try {
       const targetLang = HAS_HAN.test(text) ? "vi" : "zh";
       const { translated } = await translateForCompose(text, targetLang);
@@ -282,9 +283,10 @@ function ChatThread({ conversationId }: { conversationId: string }) {
 
   async function send() {
     const content = input.trim();
-    if (!content || sending) return;
+    if (!content || sending || translating) return;
     setInput("");
     setSendError("");
+    setTranslateError("");
     setSending(true);
     try {
       const message = await sendDirectMessage(conversationId, content);
@@ -416,7 +418,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
             }
           }}
           placeholder="Nhắn gì đó… (gõ tiếng Việt hoặc tiếng Trung đều được)"
-          disabled={sending}
+          disabled={sending || translating}
           className={`field ${styles.composeInput}`}
         />
         <button
@@ -430,7 +432,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
         </button>
         <button
           type="submit"
-          disabled={!input.trim() || sending}
+          disabled={!input.trim() || sending || translating}
           aria-label="Gửi"
           className={styles.sendButton}
         >
