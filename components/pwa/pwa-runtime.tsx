@@ -3,6 +3,26 @@
 import { useEffect } from "react";
 import { updatePwaState, type InstallPromptEvent } from "@/lib/pwa/store";
 
+const INSTALLED_KEY = "hanni-pwa-installed";
+
+/** Đọc cờ "đã từng cài" lưu ở lần trước — best-effort, có thể sai trên iOS vì
+ * ứng dụng Thêm-vào-MHC dùng vùng nhớ RIÊNG với tab Safari thường (không đọc
+ * lại được cờ đã lưu lúc chạy trong app), chấp nhận đánh đổi này. */
+function readInstalledFlag(): boolean {
+  try {
+    return localStorage.getItem(INSTALLED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+function persistInstalledFlag() {
+  try {
+    localStorage.setItem(INSTALLED_KEY, "1");
+  } catch {
+    /* trình duyệt có thể chặn bộ nhớ cục bộ */
+  }
+}
+
 /** Giữ install prompt trong phiên; chỉ đăng ký worker ở production qua HTTPS/localhost. */
 export function PwaRuntime() {
   useEffect(() => {
@@ -12,13 +32,26 @@ export function PwaRuntime() {
     const standalone = () =>
       displayMode.matches ||
       (navigator as Navigator & { standalone?: boolean }).standalone === true;
-    const syncDisplay = () => updatePwaState({ standalone: standalone() });
+    // `installed` khác `standalone` (đang CHẠY ở chế độ app ngay lúc này) —
+    // true cả khi đã cài nhưng đang xem ở tab trình duyệt thường, để không
+    // hiện lại lời mời cài cho người ĐÃ cài (xem ghi chú kiểu ở store.ts).
+    const markInstalled = () => {
+      persistInstalledFlag();
+      updatePwaState({ installed: true });
+    };
+    const syncDisplay = () => {
+      const isStandalone = standalone();
+      updatePwaState({ standalone: isStandalone });
+      if (isStandalone) markInstalled();
+    };
     const onInstallPrompt = (event: Event) => {
       event.preventDefault();
       updatePwaState({ installPrompt: event as InstallPromptEvent });
     };
-    const onInstalled = () =>
+    const onInstalled = () => {
       updatePwaState({ standalone: true, installPrompt: null });
+      markInstalled();
+    };
     const onOnline = () => updatePwaState({ online: true });
     const onOffline = () => updatePwaState({ online: false });
     window.addEventListener("beforeinstallprompt", onInstallPrompt);
@@ -26,14 +59,34 @@ export function PwaRuntime() {
     window.addEventListener("online", onOnline);
     window.addEventListener("offline", onOffline);
     displayMode.addEventListener("change", syncDisplay);
+    const isStandaloneNow = standalone();
     updatePwaState({
       initialized: true,
-      standalone: standalone(),
+      standalone: isStandaloneNow,
+      installed: isStandaloneNow || readInstalledFlag(),
       ios:
         /iPad|iPhone|iPod/.test(navigator.userAgent) ||
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1),
       online: navigator.onLine,
     });
+    if (isStandaloneNow) persistInstalledFlag();
+
+    // Chrome/Edge: tín hiệu ĐÁNG TIN CẬY hơn cờ tự lưu ở trên, không cần đợi
+    // từng thấy `standalone`/`appinstalled` trên ĐÚNG trình duyệt này trước
+    // đó — cần khai `related_applications` tự tham chiếu trong manifest.ts.
+    const relatedApps = (
+      navigator as Navigator & {
+        getInstalledRelatedApps?: () => Promise<unknown[]>;
+      }
+    ).getInstalledRelatedApps;
+    if (relatedApps) {
+      void relatedApps
+        .call(navigator)
+        .then((apps) => {
+          if (!disposed && apps.length > 0) markInstalled();
+        })
+        .catch(() => undefined);
+    }
 
     if (process.env.NODE_ENV !== "production")
       updatePwaState({ workerStatus: "development" });

@@ -319,6 +319,25 @@ luận) — component viết chung, thêm trang khác chỉ cần khai mảng `T
 **PWA** (`docs/pwa.md`): manifest + service worker (chỉ cache màn mất mạng), trang `/install`,
 thẻ cài trong `/settings`, popup mời cài nổi góc phải dưới (`components/pwa/`). Test: `npm run test:pwa`.
 Lời mời cài thật chỉ chạy ở bản production/HTTPS, không đăng ký worker ở `npm run dev`.
+**Nhận diện ĐÃ CÀI hay chưa** (`lib/pwa/store.ts`'s `installed`, từ 2026-09-19) — trước đây chỉ
+có `standalone` (đang CHẠY ở chế độ app ngay lúc này), nên ai đã cài PWA nhưng đang xem lại ở
+tab trình duyệt thường vẫn bị coi như CHƯA cài (`beforeinstallprompt`/`appinstalled` không bắn
+lại một khi đã cài, nên `installPrompt` mãi là `null`) — popup nổi + `/install` cứ hiện lại
+hướng dẫn "Cài từ menu trình duyệt" dù máy đã có app rồi, y hệt lỗi user báo cáo. `installed`
+suy ra từ 3 nguồn (OR): (1) `standalone === true` hiện tại, (2) cờ `hanni-pwa-installed` tự lưu
+`localStorage` mỗi khi thấy `standalone`/`appinstalled` từng đúng ít nhất 1 lần trên trình
+duyệt này (persist qua session), (3) `navigator.getInstalledRelatedApps()` (Chrome/Edge) — cần
+`manifest.ts` tự khai `related_applications: [{platform:"webapp", url: "<site>/manifest.
+webmanifest"}]` tham chiếu CHÍNH MÌNH mới dùng được API này, đáng tin hơn cờ tự lưu vì không cần
+JS của Hanni từng chạy lúc cài. **Giới hạn đã biết (best-effort)**: iOS Home Screen web app dùng
+vùng nhớ RIÊNG với tab Safari thường nên cờ `localStorage` không bắc cầu được — lần đầu mở app
+đã cài qua Safari tab vẫn có thể bị coi là chưa cài cho tới khi `getInstalledRelatedApps` (nếu
+Safari hỗ trợ) hoặc user tự mở app từ màn hình chính ít nhất 1 lần (lúc đó `standalone` đúng và
+KHÔNG cần đọc lại cờ cũ). Khi `installed && !standalone`: `InstallCard` (`/install`, `/settings`
+gián tiếp) đổi hẳn nút "Cài ứng dụng Hanni" thành "Đã cài ✓" + nút "Mở ứng dụng" (link `LinkButton`
+sang `/dashboard`, không có API JS nào ép mở lại ĐÚNG cửa sổ app chuẩn đã cài — chấp nhận đây
+là hành động hợp lý nhất có thể làm được, không cố ép); popup nổi (`InstallPrompt`) thì
+NGƯNG hiện hẳn (không nag mở app — đã có icon sẵn trên máy, không cần popup nhắc).
 **Thông báo đẩy**: `components/pwa/notification-card.tsx` (`/settings`) + `lib/pwa/push.ts` (subscribe/
 unsubscribe/gửi thử) + handler `push`/`notificationclick` trong `public/sw.js`. Dùng VAPID key lấy từ
 backend (`GET /push/public-key`). Khi đã bật thông báo trên thiết bị, `NotificationCard` hiện thêm

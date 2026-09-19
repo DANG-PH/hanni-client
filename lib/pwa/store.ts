@@ -10,6 +10,12 @@ export type InstallPromptEvent = Event & {
 type PwaState = {
   initialized: boolean;
   standalone: boolean;
+  /** Đã cài trên thiết bị này hay chưa — KHÁC `standalone` (đang chạy Ở CHẾ
+   * ĐỘ app ngay lúc này). `installed` còn tính cả trường hợp đã cài nhưng
+   * đang xem ở tab trình duyệt thường (`standalone === false`), suy ra từ cờ
+   * đã lưu (`appinstalled` từng bắn, hoặc từng thấy `standalone === true`)
+   * hoặc `navigator.getInstalledRelatedApps()` — xem `pwa-runtime.tsx`. */
+  installed: boolean;
   ios: boolean;
   online: boolean;
   installPrompt: InstallPromptEvent | null;
@@ -24,6 +30,7 @@ type PwaState = {
 const initialState: PwaState = {
   initialized: false,
   standalone: false,
+  installed: false,
   ios: false,
   online: true,
   installPrompt: null,

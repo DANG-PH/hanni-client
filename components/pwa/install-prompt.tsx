@@ -38,8 +38,15 @@ function remember() {
  *   (không phải localhost/LAN IP từ máy khác).
  */
 export function InstallPrompt() {
-  const { initialized, standalone, ios, online, installPrompt, workerStatus } =
-    usePwaState();
+  const {
+    initialized,
+    standalone,
+    installed,
+    ios,
+    online,
+    installPrompt,
+    workerStatus,
+  } = usePwaState();
   const pathname = usePathname();
   const [hidden, setHidden] = useState(
     () => typeof window === "undefined" || snoozed(),
@@ -80,6 +87,7 @@ export function InstallPrompt() {
     initialized &&
     online &&
     !standalone &&
+    !installed &&
     !hidden &&
     pathname !== "/install" &&
     (Boolean(installPrompt) || iosHint || genericHint);

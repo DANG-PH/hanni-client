@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Button, Card, ErrorNote } from "@/components/ui";
+import { Button, Card, ErrorNote, LinkButton } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { getPwaState, updatePwaState, usePwaState } from "@/lib/pwa/store";
 
@@ -112,6 +112,20 @@ export function InstallCard() {
             <Icon name="check" size={18} />
             Hanni đã được mở hoặc cài như ứng dụng trên thiết bị này.
           </p>
+        ) : state.installed ? (
+          <div className="space-y-3">
+            <p
+              role="status"
+              className="flex items-center gap-2 text-sm font-semibold text-good"
+            >
+              <Icon name="check" size={18} />
+              Hanni đã được cài trên thiết bị này.
+            </p>
+            <LinkButton href="/dashboard">
+              <Icon name="home" size={17} />
+              Mở ứng dụng
+            </LinkButton>
+          </div>
         ) : state.workerStatus === "unsupported" ? (
           <p className="text-sm leading-7 text-muted">
             Chưa thể cài ứng dụng từ trình duyệt hoặc địa chỉ hiện tại. Hãy mở
