@@ -18,6 +18,7 @@ import type {
   GrammarListItem,
   HskLevel,
   LearnPath,
+  LeechWord,
   LessonDetail,
   OnboardingProfile,
   Paginated,
@@ -51,6 +52,12 @@ export function useProgress() {
 
 export function useStreak() {
   return useSWR<StreakInfo>("/streak", fetcher);
+}
+
+/** "Từ khó nhớ" (leech) — từ đã sai đủ nhiều lần trong SRS (xem
+ * hanni-server/CLAUDE.md mục Leech). */
+export function useLeeches() {
+  return useSWR<LeechWord[]>("/study/leeches", fetcher);
 }
 
 export function useStreakHistory(days = 30) {

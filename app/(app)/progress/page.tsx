@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ActivityCalendar } from "@/components/activity-calendar";
+import { AudioButton } from "@/components/audio-button";
 import {
   Card,
   EmptyState,
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { useRequireAuth } from "@/lib/auth";
-import { useProgress, useRecentQuizzes } from "@/lib/hooks";
+import { useLeeches, useProgress, useRecentQuizzes } from "@/lib/hooks";
 
 const BAND_VI: Record<string, string> = {
   ELEMENTARY: "Sơ cấp",
@@ -27,6 +28,7 @@ export default function ProgressPage() {
   const { user, loading } = useRequireAuth();
   const { data, isLoading, error, mutate } = useProgress();
   const quizzes = useRecentQuizzes();
+  const leeches = useLeeches();
   if (loading || !user) return <Spinner />;
   const completion = data?.totals.totalWords
     ? Math.round((data.totals.learned / data.totals.totalWords) * 100)
@@ -166,6 +168,41 @@ export default function ProgressPage() {
                 <ActivityCalendar days={30} />
               </Card>
             </section>
+            {!!leeches.data?.length && (
+              <section>
+                <SectionHeading
+                  icon="target"
+                  tone="accent"
+                  title="Từ khó nhớ"
+                  description="Những từ bạn hay quên nhất — chú ý hơn khi gặp lại trong lượt ôn."
+                  className="mb-5"
+                />
+                <Card className="divide-y divide-border p-0!">
+                  {leeches.data.map((l) => (
+                    <div
+                      key={l.word.id}
+                      className="flex items-center justify-between gap-3 px-5 py-3.5"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <AudioButton src={l.word.audioUrl} size={16} />
+                        <span className="hanzi text-lg shrink-0">
+                          {l.word.simplified}
+                        </span>
+                        <span className="text-xs text-muted shrink-0">
+                          {l.word.pinyin}
+                        </span>
+                        <span className="truncate text-sm text-muted">
+                          {l.word.meaningVi}
+                        </span>
+                      </div>
+                      <span className="shrink-0 rounded-full bg-danger/10 px-2.5 py-1 text-xs font-semibold text-danger">
+                        Sai {l.lapses} lần
+                      </span>
+                    </div>
+                  ))}
+                </Card>
+              </section>
+            )}
             {!!quizzes.data?.length && (
               <section>
                 <SectionHeading

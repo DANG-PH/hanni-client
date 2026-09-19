@@ -335,6 +335,13 @@ roleplay.ts`, `POST /roleplay/sessions/:id/hint`), bấm "Dùng câu này" đi�
 xem/sửa trước khi gửi (không tự gửi luôn, giống nút "Dịch" ở `/messages`) — không lưu vào lịch
 sử hội thoại. **Chưa làm**: chấm điểm/phản hồi lỗi sau khi kết thúc hội thoại.
 
+**"Từ khó nhớ"** (`/progress`, từ 2026-09-19) — section mới ngay sau lịch hoạt động 30 ngày,
+CHỈ hiện khi có ít nhất 1 từ (`useLeeches()` ở `lib/hooks.ts`, `GET /study/leeches`) — danh sách
+từ đã sai đủ 8 lần trong SRS, sắp theo số lần sai giảm dần, mỗi dòng có nút nghe phát âm
+(`AudioButton`) + badge "Sai N lần". Field `isLeech` đã có sẵn từ rất lâu ở server nhưng chưa
+từng có UI nào đọc — xem `hanni-server/CLAUDE.md` mục "Từ khó nhớ" cho chi tiết + giới hạn đã
+biết (chưa có cơ chế tự gỡ đánh dấu khi cuối cùng nhớ được).
+
 **Quiz** (`components/quiz-runner.tsx`): mỗi câu có `mode: "reading" | "listening"` từ server.
 Câu nghe ẩn Hán tự/pinyin, tự phát `audioUrl` khi vào câu, chỉ hiện lại sau khi chọn đáp án.
 Prop `timed` (chỉ bật ở `/exams`, không bật ở quiz cuối buổi `/study`) đếm ngược mỗi câu theo

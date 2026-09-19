@@ -186,6 +186,19 @@ export interface ProgressOverview {
   totals: Omit<LevelBucket, "level" | "band" | "nameVi">;
 }
 
+export interface LeechWord {
+  word: {
+    id: string;
+    simplified: string;
+    pinyin: string;
+    meaningVi: string | null;
+    hskLevel: number;
+    audioUrl: string | null;
+  };
+  lapses: number;
+  dueAt: string;
+}
+
 export interface Achievement {
   id: string;
   code: string;
