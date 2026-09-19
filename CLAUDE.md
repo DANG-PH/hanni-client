@@ -323,8 +323,11 @@ rồi rollback nếu lỗi). Nút "Kết thúc" xoá hẳn `RoleplaySession` (kh
 như trợ lý hỏi-đáp — đây là bài tập luyện, không phải kiến thức cần tra lại). Cùng hạn mức
 15 lượt/ngày cho free + Premium không giới hạn như trợ lý hỏi-đáp (xem `hanni-server/CLAUDE.md`
 mục Roleplay). Thêm mục "Luyện nói với AI" vào `components/sidebar.tsx` (nhóm "LUYỆN TẬP MỖI
-NGÀY", giữa "Luyện viết Hán tự" và "Kiểm tra HSK"). **Chưa làm**: chấm điểm/phản hồi lỗi sau khi
-kết thúc hội thoại, gợi ý câu trả lời khi bí từ.
+NGÀY", giữa "Luyện viết Hán tự" và "Kiểm tra HSK"). Nút "Gợi ý" (icon `spark`) cạnh ô nhập —
+bấm ra 1 ô nhỏ hiện câu tiếng Trung gợi ý + nghĩa tiếng Việt (`hintRoleplay()` ở `lib/
+roleplay.ts`, `POST /roleplay/sessions/:id/hint`), bấm "Dùng câu này" điền vào ô nhập để tự
+xem/sửa trước khi gửi (không tự gửi luôn, giống nút "Dịch" ở `/messages`) — không lưu vào lịch
+sử hội thoại. **Chưa làm**: chấm điểm/phản hồi lỗi sau khi kết thúc hội thoại.
 
 **Quiz** (`components/quiz-runner.tsx`): mỗi câu có `mode: "reading" | "listening"` từ server.
 Câu nghe ẩn Hán tự/pinyin, tự phát `audioUrl` khi vào câu, chỉ hiện lại sau khi chọn đáp án.

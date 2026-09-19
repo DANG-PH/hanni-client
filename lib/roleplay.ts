@@ -39,6 +39,12 @@ export function replyRoleplay(sessionId: string, message: string) {
   );
 }
 
+export function hintRoleplay(sessionId: string) {
+  return api.post<{ suggestionZh: string; meaningVi: string }>(
+    `/roleplay/sessions/${sessionId}/hint`,
+  );
+}
+
 export function deleteRoleplaySession(sessionId: string) {
   return api.del<{ ok: true }>(`/roleplay/sessions/${sessionId}`);
 }

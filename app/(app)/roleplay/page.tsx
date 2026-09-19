@@ -7,6 +7,7 @@ import { ApiError } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import {
   deleteRoleplaySession,
+  hintRoleplay,
   replyRoleplay,
   startRoleplaySession,
   useRoleplayMessages,
@@ -138,11 +139,37 @@ function ChatView({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [ending, setEnding] = useState(false);
+  const [hinting, setHinting] = useState(false);
+  const [hint, setHint] = useState<{ suggestionZh: string; meaningVi: string } | null>(
+    null,
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
+
+  async function getHint() {
+    if (hinting) return;
+    setHinting(true);
+    setError("");
+    try {
+      const res = await hintRoleplay(sessionId);
+      setHint(res);
+    } catch (err) {
+      setError(
+        err instanceof ApiError ? err.message : "Chưa gợi ý được, thử lại nhé.",
+      );
+    } finally {
+      setHinting(false);
+    }
+  }
+
+  function useHint() {
+    if (!hint) return;
+    setInput(hint.suggestionZh);
+    setHint(null);
+  }
 
   async function send() {
     const text = input.trim();
@@ -150,6 +177,7 @@ function ChatView({
     setSending(true);
     setError("");
     setInput("");
+    setHint(null);
     const optimistic: RoleplayMessage = {
       id: `optimistic-${Date.now()}`,
       role: "USER",
@@ -232,6 +260,33 @@ function ChatView({
         )}
       </div>
 
+      {hint && (
+        <div className="mx-4 mb-2 flex items-start gap-3 rounded-xl border border-accent/20 bg-accent/5 px-3.5 py-2.5">
+          <Icon name="spark" size={16} className="mt-0.5 shrink-0 text-accent" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium">{hint.suggestionZh}</p>
+            {hint.meaningVi && (
+              <p className="mt-0.5 text-xs text-muted">{hint.meaningVi}</p>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={useHint}
+            className="shrink-0 text-xs font-semibold text-accent hover:underline"
+          >
+            Dùng câu này
+          </button>
+          <button
+            type="button"
+            onClick={() => setHint(null)}
+            aria-label="Đóng gợi ý"
+            className="shrink-0 text-muted hover:text-foreground"
+          >
+            <Icon name="close" size={14} />
+          </button>
+        </div>
+      )}
+
       {error && (
         <div className="px-4 pb-2">
           <ErrorNote>{error}</ErrorNote>
@@ -245,6 +300,15 @@ function ChatView({
           void send();
         }}
       >
+        <button
+          type="button"
+          onClick={() => void getHint()}
+          disabled={hinting || sending}
+          title="Gợi ý câu trả lời"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-accent disabled:opacity-50"
+        >
+          <Icon name="spark" size={18} />
+        </button>
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
