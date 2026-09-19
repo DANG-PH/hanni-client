@@ -482,12 +482,26 @@ export interface AvatarFrame {
   name: string;
   price: number;
   colors: [string, string];
+  premiumOnly: boolean;
   owned: boolean;
   equipped: boolean;
 }
 
 export interface ShopCatalog {
   frames: AvatarFrame[];
+  balance: number;
+}
+
+export interface Title {
+  key: string;
+  label: string;
+  price: number;
+  owned: boolean;
+  equipped: boolean;
+}
+
+export interface TitleShopCatalog {
+  titles: Title[];
   balance: number;
 }
 
@@ -513,6 +527,7 @@ export interface PublicProfile {
   avatarUrl: string | null;
   isPremium: boolean;
   equippedFrame: EquippedFrame | null;
+  equippedTitle: string | null;
   joinedAt: string;
   currentStreak: number;
   longestStreak: number;

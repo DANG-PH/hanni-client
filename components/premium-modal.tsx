@@ -12,6 +12,7 @@ import type { PremiumPlan } from "@/lib/types";
  * từng dòng. Dòng cuối nhắc lại rõ KHÔNG khoá nội dung học, tránh hiểu lầm
  * "mua Premium mới học được HSK cao" như một số app tham khảo khác. */
 const BENEFITS = [
+  "Nhận GẤP ĐÔI xu từ minigame và nhiệm vụ hàng ngày — mua khung/danh hiệu nhanh hơn nhiều",
   "Trợ lý AI Hanni hỏi không giới hạn lượt/ngày (bản miễn phí giới hạn 15 lượt/ngày)",
   "Khung avatar “Phượng Hoàng” độc quyền, không mua được bằng xu",
   "Huy hiệu Premium hiện cạnh tên trên hồ sơ công khai",

@@ -249,9 +249,15 @@ thanh toán/QR — dựng nhẹ theo đúng tinh thần "để FE khác chỉnh 
 1 khối nhỏ), gọi `getTopUpStatus()` hiện kết quả rồi dọn query param khỏi URL, thẻ "Cửa hàng
 trang trí" (`components/frame-shop.tsx`, ngay dưới Ví xu, từ 2026-09-19) — mở khoá/dùng khung
 avatar bằng xu (`GET /shop/frames`, `buyFrame()`/`equipFrame()` ở `lib/shop.ts`), mỗi ô hiện
-`<Avatar frameColors={...}>` xem trước trực tiếp; khung ĐANG DÙNG hiện trên hồ sơ công khai
-`/u/[id]` (xem `hanni-server/CLAUDE.md` mục "Cửa hàng trang trí" cho lý do không dùng cơ chế
-rương/random reward), thẻ **"Premium"** (`components/premium-section.tsx`, ngay TRÊN Ví xu, từ
+`<Avatar frameColors={...}>` xem trước trực tiếp; khung `premiumOnly` (Phượng Hoàng) ẩn hẳn nút
+mua, chỉ hiện dòng chữ "Chỉ dành cho Premium" thay vì hiện nút "Mở khoá — 0 xu" gây hiểu nhầm
+(lỗi thật đã phát hiện: field `premiumOnly` có sẵn ở server nhưng lúc đầu quên thread sang
+client type/UI); khung ĐANG DÙNG hiện trên hồ sơ công khai `/u/[id]` (xem `hanni-server/
+CLAUDE.md` mục "Cửa hàng trang trí" cho lý do không dùng cơ chế rương/random reward). Thẻ
+**"Danh hiệu"** (`components/title-shop.tsx`, ngay dưới Cửa hàng trang trí, từ 2026-09-19) —
+cùng cấu trúc UI với khung avatar nhưng KHÔNG có preview hình ảnh (chỉ tên danh hiệu), hiện
+dạng chữ cạnh tên trên hồ sơ công khai (`p.equippedTitle`, badge màu `good` để phân biệt với
+badge PREMIUM màu `accent`). Thẻ **"Premium"** (`components/premium-section.tsx`, ngay TRÊN Ví xu, từ
 2026-09-19) — đang Premium thì hiện hạn dùng ("Còn hiệu lực đến..." hoặc "Gói trọn đời"), chưa
 thì hiện lời mời + nút "Nâng cấp ngay" mở `components/premium-modal.tsx` (popup, tham khảo bố
 cục app học ngoại ngữ đối thủ + trang giá ChatGPT — cột trái chọn gói kiểu radio card có badge

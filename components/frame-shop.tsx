@@ -79,6 +79,10 @@ export function FrameShop() {
                   <p className="text-xs font-medium text-good">Đang dùng</p>
                 ) : frame.owned ? (
                   <p className="text-xs text-muted">Đã sở hữu</p>
+                ) : frame.premiumOnly ? (
+                  <p className="text-xs font-medium text-accent">
+                    Chỉ dành cho Premium
+                  </p>
                 ) : (
                   <p className="flex items-center gap-1 text-xs font-medium text-accent">
                     <Icon name="spark" size={12} />
@@ -102,7 +106,7 @@ export function FrameShop() {
                 >
                   Dùng
                 </Button>
-              ) : (
+              ) : frame.premiumOnly ? null : (
                 <Button
                   variant="secondary"
                   disabled={busy || (data?.balance ?? 0) < frame.price}
