@@ -310,8 +310,21 @@ bật" tự nhiên như 1 tin nhắn bình thường nếu server chưa cấu h�
 gọi tool điều hướng (`navigate_to_page`/`open_video`) — khi có, event `done` của SSE mang thêm
 field `action: {type:'navigate', path, label}`, widget hiện nút "Mở: <tên>" ngay dưới tin nhắn
 model để người dùng TỰ bấm mở trang/video, trợ lý không tự chuyển trang thay và không được nói
-là đã mở giúp). Chưa làm
-(roadmap): minigame.
+là đã mở giúp).
+
+**Luyện nói với AI theo tình huống** (`/roleplay`, từ 2026-09-19) — KHÁC HẲN trợ lý AI ở trên
+(đó là hỏi-đáp/điều hướng, đây là bài tập PHẢN XẠ đóng vai): chọn 1 trong 6 kịch bản đời thường
+(`GET /roleplay/scenarios`, xếp theo HSK1→HSK4), AI giữ vai xuyên suốt bằng tiếng Trung, câu trả
+lời hiện kèm pinyin ngay dưới (sinh sẵn server-side, không cần bấm dịch riêng như tin nhắn
+thường). `app/(app)/roleplay/page.tsx` có 2 màn: chọn tình huống (lưới thẻ theo cấp HSK + danh
+sách hội thoại gần đây để tiếp tục) và chat (bong bóng tin nhắn kiểu `assistant-widget.tsx`
+nhưng KHÔNG streaming — gửi 1 lượt, đợi phản hồi, cập nhật optimistic qua `mutate()` của SWR
+rồi rollback nếu lỗi). Nút "Kết thúc" xoá hẳn `RoleplaySession` (không có ý nghĩa lưu để xem lại
+như trợ lý hỏi-đáp — đây là bài tập luyện, không phải kiến thức cần tra lại). Cùng hạn mức
+15 lượt/ngày cho free + Premium không giới hạn như trợ lý hỏi-đáp (xem `hanni-server/CLAUDE.md`
+mục Roleplay). Thêm mục "Luyện nói với AI" vào `components/sidebar.tsx` (nhóm "LUYỆN TẬP MỖI
+NGÀY", giữa "Luyện viết Hán tự" và "Kiểm tra HSK"). **Chưa làm**: chấm điểm/phản hồi lỗi sau khi
+kết thúc hội thoại, gợi ý câu trả lời khi bí từ.
 
 **Quiz** (`components/quiz-runner.tsx`): mỗi câu có `mode: "reading" | "listening"` từ server.
 Câu nghe ẩn Hán tự/pinyin, tự phát `audioUrl` khi vào câu, chỉ hiện lại sau khi chọn đáp án.

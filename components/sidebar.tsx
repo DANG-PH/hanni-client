@@ -29,6 +29,7 @@ export const NAV_GROUPS: {
       { href: "/listening", label: "Luyện nghe", icon: "headphones" },
       { href: "/pronunciation", label: "Luyện phát âm", icon: "mic" },
       { href: "/writing", label: "Luyện viết Hán tự", icon: "pencil" },
+      { href: "/roleplay", label: "Luyện nói với AI", icon: "message" },
       { href: "/exams", label: "Kiểm tra HSK", icon: "target" },
       { href: "/minigame", label: "Minigame", icon: "spark" },
     ],

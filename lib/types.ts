@@ -589,6 +589,30 @@ export interface AssistantSession {
   updatedAt: string;
 }
 
+export interface RoleplayScenario {
+  key: string;
+  titleVi: string;
+  persona: string;
+  hskLevel: number;
+}
+
+export interface RoleplaySessionSummary {
+  id: string;
+  scenarioKey: string;
+  titleVi: string;
+  persona: string;
+  updatedAt: string;
+  lastMessage: string | null;
+}
+
+export interface RoleplayMessage {
+  id: string;
+  role: ChatRole;
+  text: string;
+  pinyin: string | null;
+  createdAt: string;
+}
+
 export interface DirectMessage {
   id: string;
   conversationId: string;
