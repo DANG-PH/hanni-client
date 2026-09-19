@@ -52,6 +52,7 @@ const paths = {
     "M4 7h16M9 7V4h6v3m-9 0 1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13",
   share:
     "M18 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM6 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM18 16a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM8.59 13.51 15.42 17.49M15.41 6.51 8.59 10.49",
+  crown: "M4 18h16M4 18 3 8l5 4 4-6 4 6 5-4-1 10",
 } as const;
 
 export type IconName = keyof typeof paths;

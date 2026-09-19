@@ -19,3 +19,9 @@ export function createTopUp(amountVnd: number) {
 export function getTopUpStatus(orderCode: number) {
   return apiFetch<TopUpOrder>(`/payments/topup/${orderCode}`);
 }
+
+/** Cùng luồng payOS/checkout với `createTopUp()`, khác `kind` đơn hàng —
+ * xem `hanni-server/CLAUDE.md` mục Premium. */
+export function createPremiumCheckout(planKey: string) {
+  return api.post<TopUpResponse>("/payments/premium-checkout", { planKey });
+}

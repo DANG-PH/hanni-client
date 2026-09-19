@@ -8,6 +8,7 @@ export interface Me {
   role: string;
   emailVerifiedAt: string | null;
   hasPassword: boolean;
+  premiumUntil: string | null;
   settings?: UserSettings | null;
   streak?: { currentStreak: number; longestStreak: number } | null;
 }
@@ -490,10 +491,27 @@ export interface ShopCatalog {
   balance: number;
 }
 
+export interface PremiumPlan {
+  key: string;
+  name: string;
+  months: number | null;
+  priceVnd: number;
+  originalPriceVnd?: number;
+  badge?: string;
+}
+
+export interface PremiumStatus {
+  active: boolean;
+  lifetime: boolean;
+  until: string | null;
+  plans: PremiumPlan[];
+}
+
 export interface PublicProfile {
   id: string;
   displayName: string;
   avatarUrl: string | null;
+  isPremium: boolean;
   equippedFrame: EquippedFrame | null;
   joinedAt: string;
   currentStreak: number;
@@ -671,6 +689,8 @@ export interface TopUpOrder {
   orderCode: number;
   amountVnd: number;
   xuAmount: number;
+  kind?: "TOPUP" | "PREMIUM";
+  premiumPlanKey?: string | null;
   status: PaymentOrderStatus;
 }
 

@@ -88,7 +88,18 @@ export default function PublicProfilePage() {
           <div className="flex items-center gap-4">
             <Avatar user={p} size={64} frameColors={p.equippedFrame?.colors ?? null} />
             <div>
-              <h1 className="text-lg font-bold">{p.displayName}</h1>
+              <h1 className="flex items-center gap-1.5 text-lg font-bold">
+                {p.displayName}
+                {p.isPremium && (
+                  <span
+                    title="Hanni Premium"
+                    className="flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold text-accent"
+                  >
+                    <Icon name="crown" size={11} />
+                    PREMIUM
+                  </span>
+                )}
+              </h1>
               <p className="text-xs text-muted">
                 Tham gia từ {joinedLabel(p.joinedAt)}
               </p>

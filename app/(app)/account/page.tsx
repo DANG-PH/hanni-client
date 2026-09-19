@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { AvatarEditor } from "@/components/avatar-editor";
 import { FrameShop } from "@/components/frame-shop";
 import { Icon } from "@/components/icon";
+import { PremiumSection } from "@/components/premium-section";
 import { ShareButton } from "@/components/share-button";
 import {
   Button,
@@ -180,6 +181,7 @@ export default function AccountPage() {
               Điều chỉnh mục tiêu <Icon name="arrow" size={16} />
             </Link>
           </Card>
+          <PremiumSection />
           <WalletCard />
           <FrameShop />
           <Card>

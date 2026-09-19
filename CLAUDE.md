@@ -251,7 +251,17 @@ trang trí" (`components/frame-shop.tsx`, ngay dưới Ví xu, từ 2026-09-19) 
 avatar bằng xu (`GET /shop/frames`, `buyFrame()`/`equipFrame()` ở `lib/shop.ts`), mỗi ô hiện
 `<Avatar frameColors={...}>` xem trước trực tiếp; khung ĐANG DÙNG hiện trên hồ sơ công khai
 `/u/[id]` (xem `hanni-server/CLAUDE.md` mục "Cửa hàng trang trí" cho lý do không dùng cơ chế
-rương/random reward), thẻ "Mời bạn bè
+rương/random reward), thẻ **"Premium"** (`components/premium-section.tsx`, ngay TRÊN Ví xu, từ
+2026-09-19) — đang Premium thì hiện hạn dùng ("Còn hiệu lực đến..." hoặc "Gói trọn đời"), chưa
+thì hiện lời mời + nút "Nâng cấp ngay" mở `components/premium-modal.tsx` (popup, tham khảo bố
+cục app học ngoại ngữ đối thủ + trang giá ChatGPT — cột trái chọn gói kiểu radio card có badge
+"Phổ biến nhất"/"Tiết kiệm nhất", cột phải liệt kê quyền lợi kèm dấu tick xanh). Popup gọi
+`createPremiumCheckout(planKey)` (`lib/payments.ts`) rồi redirect sang `checkoutUrl` payOS y hệt
+luồng nạp xu, quay về `/account?premium=<orderCode>` đọc bằng `window.location.search` giống
+hệt cách `?topup=` đã làm. **Quyền lợi liệt kê trong popup CHỈ đúng những gì server thật sự đã
+cài** (không hứa suông) — xem `hanni-server/CLAUDE.md` mục Premium cho danh sách đầy đủ + lý do
+tại sao không khoá nội dung học. Huy hiệu "PREMIUM" (icon `crown` mới thêm ở `components/
+icon.tsx`) hiện cạnh tên ở hồ sơ công khai `/u/[id]` khi `isPremium` true. Thẻ "Mời bạn bè
 cùng học" — link `/register?ref=<userId>` qua `ShareButton`, số liệu từ `GET /referrals/me`, và
 "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ "XÓA" + mật khẩu nếu có đặt mới bấm được nút xoá
 vĩnh viễn, gọi `DELETE /users/me`),
