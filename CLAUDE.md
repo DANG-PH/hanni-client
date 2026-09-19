@@ -246,7 +246,12 @@ mức tiền (nút nhanh 10k/20k/50k/100k hoặc gõ tay), bấm "Nạp qua payO
 thanh toán/QR — dựng nhẹ theo đúng tinh thần "để FE khác chỉnh sau"). payOS trả người dùng về
 `/account?topup=<orderCode>` sau khi thanh toán — đọc thẳng `window.location.search` trong
 `useEffect` (KHÔNG dùng `useSearchParams()` để khỏi phải bọc cả trang trong `<Suspense>` chỉ vì
-1 khối nhỏ), gọi `getTopUpStatus()` hiện kết quả rồi dọn query param khỏi URL, thẻ "Mời bạn bè
+1 khối nhỏ), gọi `getTopUpStatus()` hiện kết quả rồi dọn query param khỏi URL, thẻ "Cửa hàng
+trang trí" (`components/frame-shop.tsx`, ngay dưới Ví xu, từ 2026-09-19) — mở khoá/dùng khung
+avatar bằng xu (`GET /shop/frames`, `buyFrame()`/`equipFrame()` ở `lib/shop.ts`), mỗi ô hiện
+`<Avatar frameColors={...}>` xem trước trực tiếp; khung ĐANG DÙNG hiện trên hồ sơ công khai
+`/u/[id]` (xem `hanni-server/CLAUDE.md` mục "Cửa hàng trang trí" cho lý do không dùng cơ chế
+rương/random reward), thẻ "Mời bạn bè
 cùng học" — link `/register?ref=<userId>` qua `ShareButton`, số liệu từ `GET /referrals/me`, và
 "Vùng nguy hiểm" — xoá tài khoản: gõ đúng chữ "XÓA" + mật khẩu nếu có đặt mới bấm được nút xoá
 vĩnh viễn, gọi `DELETE /users/me`),

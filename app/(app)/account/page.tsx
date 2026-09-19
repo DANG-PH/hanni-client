@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AvatarEditor } from "@/components/avatar-editor";
+import { FrameShop } from "@/components/frame-shop";
 import { Icon } from "@/components/icon";
 import { ShareButton } from "@/components/share-button";
 import {
@@ -180,6 +181,7 @@ export default function AccountPage() {
             </Link>
           </Card>
           <WalletCard />
+          <FrameShop />
           <Card>
             <SectionHeading
               icon="route"

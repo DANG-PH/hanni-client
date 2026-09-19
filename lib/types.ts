@@ -21,6 +21,7 @@ export interface UserSettings {
   targetRetention: number;
   reminderHour: number | null;
   weeklyDigestEnabled: boolean;
+  equippedFrame: string | null;
 }
 
 export interface HskLevel {
@@ -470,10 +471,30 @@ export interface PublicProfileUser {
   avatarUrl: string | null;
 }
 
+export interface EquippedFrame {
+  key: string;
+  colors: [string, string];
+}
+
+export interface AvatarFrame {
+  key: string;
+  name: string;
+  price: number;
+  colors: [string, string];
+  owned: boolean;
+  equipped: boolean;
+}
+
+export interface ShopCatalog {
+  frames: AvatarFrame[];
+  balance: number;
+}
+
 export interface PublicProfile {
   id: string;
   displayName: string;
   avatarUrl: string | null;
+  equippedFrame: EquippedFrame | null;
   joinedAt: string;
   currentStreak: number;
   longestStreak: number;
