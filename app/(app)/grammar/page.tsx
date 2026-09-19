@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 import { Icon } from "@/components/icon";
+import { ProgressiveList } from "@/components/progressive-list";
 import {
   LearningHeader,
   LearningTip,
@@ -53,6 +54,15 @@ function GrammarView({
       ).includes(term),
     );
   }, [list.data, query]);
+  const detailedPoints = grouped.filter((point) => !point.flat);
+  const flatPoints = grouped.filter((point) => point.flat);
+  const hasSearch = Boolean(query.trim());
+  const openedDetailedIndex = detailedPoints.findIndex(
+    (point) => point.slug === openSlug,
+  );
+  const detailedInitialCount = hasSearch
+    ? detailedPoints.length
+    : Math.max(8, openedDetailedIndex + 1);
 
   if (loading || !user) return <Spinner />;
 
@@ -167,24 +177,37 @@ function GrammarView({
                 </EmptyState>
               ) : (
                 <div className={styles.grammarList}>
-                  {grouped
-                    .filter((point) => !point.flat)
-                    .map((point) => (
-                      <GrammarRow
-                        key={point.slug}
-                        point={point}
-                        open={openSlug === point.slug}
-                        onToggle={() =>
-                          setOpenSlug((current) =>
-                            current === point.slug ? null : point.slug,
-                          )
-                        }
-                      />
-                    ))}
-                  {grouped.some((point) => point.flat) && (
+                  {detailedPoints.length > 0 && (
+                    <ProgressiveList
+                      items={detailedPoints}
+                      initialCount={detailedInitialCount}
+                      step={8}
+                      itemLabel="cấu trúc"
+                      resetKey={`${active ?? ""}:${query}:${detailedPoints.map((point) => point.slug).join(",")}`}
+                      renderItems={(visiblePoints) => (
+                        <div className={styles.grammarList}>
+                          {visiblePoints.map((point) => (
+                            <GrammarRow
+                              key={point.slug}
+                              point={point}
+                              open={openSlug === point.slug}
+                              onToggle={() =>
+                                setOpenSlug((current) =>
+                                  current === point.slug ? null : point.slug,
+                                )
+                              }
+                            />
+                          ))}
+                        </div>
+                      )}
+                    />
+                  )}
+                  {flatPoints.length > 0 && (
                     <details
                       open={
-                        grouped.every((point) => point.flat) || !!query.trim()
+                        detailedPoints.length === 0 ||
+                        hasSearch ||
+                        flatPoints.some((point) => point.slug === openSlug)
                       }
                       className={styles.grammarRow}
                     >
@@ -195,34 +218,43 @@ function GrammarView({
                           className="mr-2 inline text-primary"
                         />
                         Đại cương HSK {active === 7 ? "7–9" : active} ·{" "}
-                        {grouped.filter((point) => point.flat).length} mục
+                        {flatPoints.length} mục
                       </summary>
-                      <ul className="divide-y divide-border border-t border-border">
-                        {grouped
-                          .filter((point) => point.flat)
-                          .map((point) => (
-                            <li
-                              key={point.slug}
-                              className="flex items-start gap-3 px-5 py-4"
-                            >
-                              <span
-                                lang="zh"
-                                className={`hanzi ${styles.grammarCharacter}`}
-                                data-long={Array.from(point.titleZh).length > 2}
+                      <ProgressiveList
+                        items={flatPoints}
+                        initialCount={hasSearch ? flatPoints.length : 12}
+                        step={12}
+                        itemLabel="mục"
+                        resetKey={`${active ?? ""}:${query}:${flatPoints.map((point) => point.slug).join(",")}`}
+                        renderItems={(visiblePoints) => (
+                          <ul className="divide-y divide-border border-t border-border">
+                            {visiblePoints.map((point) => (
+                              <li
+                                key={point.slug}
+                                className="flex items-start gap-3 px-5 py-4"
                               >
-                                {point.titleZh}
-                              </span>
-                              <span className="min-w-0">
-                                <span className={styles.grammarTitle}>
-                                  {point.titleVi}
+                                <span
+                                  lang="zh"
+                                  className={`hanzi ${styles.grammarCharacter}`}
+                                  data-long={
+                                    Array.from(point.titleZh).length > 2
+                                  }
+                                >
+                                  {point.titleZh}
                                 </span>
-                                <span className={styles.grammarSummary}>
-                                  {point.summaryVi}
+                                <span className="min-w-0">
+                                  <span className={styles.grammarTitle}>
+                                    {point.titleVi}
+                                  </span>
+                                  <span className={styles.grammarSummary}>
+                                    {point.summaryVi}
+                                  </span>
                                 </span>
-                              </span>
-                            </li>
-                          ))}
-                      </ul>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      />
                     </details>
                   )}
                 </div>

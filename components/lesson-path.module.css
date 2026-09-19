@@ -6,6 +6,51 @@
   list-style: none;
 }
 
+.window {
+  display: grid;
+  gap: 10px;
+}
+
+.windowControl,
+.windowFooter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px 12px;
+  margin-left: 54px;
+}
+
+.windowControlBefore {
+  margin-bottom: 2px;
+}
+
+.windowControl > span,
+.windowStatus {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.windowFooter {
+  justify-content: space-between;
+  margin-top: 2px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.windowStatus strong {
+  color: var(--foreground);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.windowActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .item {
   position: relative;
   min-width: 0;
@@ -154,6 +199,18 @@
   box-shadow: none;
 }
 
+.card[data-current="true"] {
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border));
+  background: linear-gradient(110deg, var(--surface), color-mix(in srgb, var(--primary) 5%, var(--surface)));
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--primary) 12%, var(--border)), 0 16px 24px -24px color-mix(in srgb, var(--primary) 48%, transparent);
+}
+
+.card[data-current="true"] .number {
+  border-color: color-mix(in srgb, var(--primary) 30%, var(--border));
+  background: var(--primary);
+  color: var(--primary-fg);
+}
+
 .link:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 4px;
@@ -174,6 +231,25 @@
 }
 
 @media (max-width: 560px) {
+  .windowControl,
+  .windowFooter {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-left: 45px;
+  }
+
+  .windowFooter {
+    gap: 10px;
+  }
+
+  .windowActions {
+    width: 100%;
+  }
+
+  .windowActions > * {
+    flex: 1 1 auto;
+  }
+
   .item {
     padding-left: 45px;
   }

@@ -268,7 +268,10 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
                   </div>
                   <span>{data.totalLessons} bài học</span>
                 </div>
-                <LessonPath lessons={data.lessons} />
+                <LessonPath
+                  lessons={data.lessons}
+                  currentLessonId={data.currentLessonId}
+                />
               </div>
               <aside className={styles.sidebar}>
                 <div className={styles.progressCard}>

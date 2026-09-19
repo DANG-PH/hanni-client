@@ -5,6 +5,7 @@ import { useState } from "react";
 import { VideoCard } from "@/components/video-card";
 import { Icon } from "@/components/icon";
 import { LevelFilter } from "@/components/learning-library";
+import { ProgressiveList } from "@/components/progressive-list";
 import { SelectionGroup } from "@/components/selection-group";
 import {
   Button,
@@ -199,11 +200,20 @@ export default function WatchPage() {
               ))}
             </div>
           ) : error && !data ? null : danhSach.length ? (
-            <div className={styles.grid}>
-              {danhSach.map((video, index) => (
-                <VideoCard key={video.id} video={video} index={index} />
-              ))}
-            </div>
+            <ProgressiveList
+              items={danhSach}
+              initialCount={6}
+              step={6}
+              itemLabel="video"
+              resetKey={`${kind}:${level ?? ""}:${tuKhoa}:${danhSach.map((video) => video.id).join(",")}`}
+              renderItems={(visibleVideos) => (
+                <div className={styles.grid}>
+                  {visibleVideos.map((video, index) => (
+                    <VideoCard key={video.id} video={video} index={index} />
+                  ))}
+                </div>
+              )}
+            />
           ) : dangCapNhat ? (
             <div className={styles.pendingEmpty} role="status">
               <Icon name="search" size={24} />
