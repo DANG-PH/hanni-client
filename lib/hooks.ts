@@ -33,6 +33,7 @@ import type {
   VideoCard,
   VideoComment,
   VideoDetail,
+  WeeklyLeague,
   Word,
 } from "./types";
 
@@ -207,6 +208,11 @@ export function useLeaderboard(
     `/leaderboard?metric=${metric}&scope=${scope}`,
     fetcher,
   );
+}
+
+/** Giải đấu học tập theo tuần — khác ELO đấu 1v1, xem hanni-server/CLAUDE.md. */
+export function useWeeklyLeague() {
+  return useSWR<WeeklyLeague>("/leaderboard/league", fetcher);
 }
 
 export function usePracticeStats(skill: PracticeSkill) {

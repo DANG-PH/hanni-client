@@ -9,6 +9,7 @@ import { HeroBanner } from "@/components/hero-banner";
 import { Icon, type IconName } from "@/components/icon";
 import { LessonPath } from "@/components/lesson-path";
 import { VideoShelf } from "@/components/video-shelf";
+import { WeeklyLeagueCard } from "@/components/weekly-league-card";
 import { WordOfTheDayCard } from "@/components/word-of-the-day";
 import {
   Card,
@@ -449,6 +450,8 @@ export default function DashboardPage() {
           tone="text-good bg-good/10"
         />
       </div>
+
+      <WeeklyLeagueCard />
 
       <div className={styles.dailyGrid}>
         <WordOfTheDayCard />

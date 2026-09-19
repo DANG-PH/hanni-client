@@ -416,6 +416,30 @@ export interface Leaderboard {
   me: { rank: number | null; value: number; totalRanked: number };
 }
 
+export interface LeagueTierInfo {
+  name: string;
+  color: string;
+}
+
+export interface LeagueRow {
+  rank: number;
+  userId: string;
+  displayName: string;
+  avatarUrl: string | null;
+  points: number;
+  isMe: boolean;
+  zone: "promote" | "demote" | "safe";
+}
+
+export interface WeeklyLeague {
+  tier: LeagueTierInfo;
+  tierIndex: number;
+  tiers: LeagueTierInfo[];
+  rows: LeagueRow[];
+  endsAt: string;
+  daysRemaining: number;
+}
+
 export interface PublicProfileAchievement {
   code: string;
   nameVi: string;
