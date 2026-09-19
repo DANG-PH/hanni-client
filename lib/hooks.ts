@@ -1,6 +1,7 @@
 "use client";
 
-import useSWR from "swr";
+import { useEffect } from "react";
+import useSWR, { mutate } from "swr";
 import { api, apiFetch, API_BASE } from "./api";
 import type {
   Achievement,
@@ -29,6 +30,7 @@ import type {
   ReferralStats,
   StudyStats,
   SubmitOnboardingInput,
+  TodayQuests,
   UserSearchResult,
   VideoCard,
   VideoComment,
@@ -213,6 +215,19 @@ export function useLeaderboard(
 /** Giải đấu học tập theo tuần — khác ELO đấu 1v1, xem hanni-server/CLAUDE.md. */
 export function useWeeklyLeague() {
   return useSWR<WeeklyLeague>("/leaderboard/league", fetcher);
+}
+
+/** Nhiệm vụ hàng ngày — server tự cộng xu ngay khi phát hiện nhiệm vụ vừa
+ * hoàn thành (xem `QuestsService.getToday()`), field `justClaimedXu` chỉ
+ * khác 0 ở ĐÚNG lần gọi phát hiện ra điều đó — client dùng để hiện toast
+ * rồi làm mới số dư ví (`/wallet/me`) vì 2 thẻ này không cùng 1 component. */
+export function useTodayQuests() {
+  const result = useSWR<TodayQuests>("/quests/today", fetcher);
+  const justClaimedXu = result.data?.justClaimedXu ?? 0;
+  useEffect(() => {
+    if (justClaimedXu > 0) void mutate("/wallet/me");
+  }, [justClaimedXu]);
+  return result;
 }
 
 export function usePracticeStats(skill: PracticeSkill) {

@@ -108,7 +108,16 @@ key, chỉ có với 1 số danh từ cụ thể + đã được xem qua ít nh�
 (`components/weekly-league-card.tsx`, `GET /leaderboard/league`, từ 2026-09-19 — TÁI DÙNG
 `friends-leaderboard.module.css` vì layout gần giống hệt, không tạo CSS module riêng; đặt ở
 dashboard làm section riêng — KHÔNG nhét vào `.dailyGrid` 2-cột có sẵn để khỏi phải sửa CSS
-grid dùng chung đang được dev FE khác chỉnh), bảng xếp hạng (5 tab tiêu chí — 4 tab học tập + tab **"Đấu 1v1 (ELO)"**
+grid dùng chung đang được dev FE khác chỉnh) cạnh thẻ "Nhiệm vụ hàng ngày"
+(`components/daily-quest-card.tsx`, `GET /quests/today`, cùng ngày 2026-09-19 — 3 nhiệm vụ/ngày
+mỗi cái đo 1 tính năng khác nhau — ôn từ, quiz, luyện nghe, luyện phát âm, học từ mới, xem
+`hanni-server/CLAUDE.md` mục "Nhiệm vụ hàng ngày" — server tự cộng xu ngay khi phát hiện hoàn
+thành nên thẻ này KHÔNG có nút "Nhận thưởng" riêng, chỉ hiển thị `ProgressBar` có sẵn ở
+`components/ui.tsx` cho từng nhiệm vụ; `useTodayQuests()` trong `lib/hooks.ts` tự
+`mutate("/wallet/me")` qua `useEffect` khi thấy `justClaimedXu > 0` để số dư ví ở `/account` (dù
+khác trang) không bị cũ nếu user vừa nhận thưởng — cả 2 thẻ đặt trong 1 lưới Tailwind 2 cột
+RIÊNG khai thẳng trong `page.tsx` (`grid md:grid-cols-2`), không dùng lại `.dailyGrid` cùng lý
+do tránh sửa CSS grid dùng chung), bảng xếp hạng (5 tab tiêu chí — 4 tab học tập + tab **"Đấu 1v1 (ELO)"**
 (`LEADERBOARD_METRICS` trong `components/leaderboard.tsx`) hiện huy hiệu rank `RankEmblem`
 (`components/rank-emblem.tsx` — tách riêng để dùng chung với `/minigame`) ngay cạnh tên ở cả
 podium top-3 lẫn bảng đầy đủ, có nút "Theo dõi"

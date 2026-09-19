@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Avatar } from "@/components/avatar";
+import { DailyQuestCard } from "@/components/daily-quest-card";
 import { FeatureTour, type TourStep } from "@/components/feature-tour";
 import { FriendsLeaderboard } from "@/components/friends-leaderboard";
 import { HeroBanner } from "@/components/hero-banner";
@@ -451,7 +452,10 @@ export default function DashboardPage() {
         />
       </div>
 
-      <WeeklyLeagueCard />
+      <div className="grid items-start gap-4 md:grid-cols-2">
+        <DailyQuestCard />
+        <WeeklyLeagueCard />
+      </div>
 
       <div className={styles.dailyGrid}>
         <WordOfTheDayCard />

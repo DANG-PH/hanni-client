@@ -440,6 +440,23 @@ export interface WeeklyLeague {
   daysRemaining: number;
 }
 
+export interface DailyQuest {
+  key: string;
+  title: string;
+  progress: number;
+  target: number;
+  xu: number;
+  claimed: boolean;
+}
+
+export interface TodayQuests {
+  quests: DailyQuest[];
+  allDone: boolean;
+  allDoneBonusXu: number;
+  allDoneClaimed: boolean;
+  justClaimedXu: number;
+}
+
 export interface PublicProfileAchievement {
   code: string;
   nameVi: string;
