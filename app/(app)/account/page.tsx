@@ -54,11 +54,16 @@ export default function AccountPage() {
       </PageHeading>
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
         <div className="space-y-5">
-          <Card className="overflow-hidden p-0!">
-            <div className="relative flex h-28 items-end justify-end overflow-hidden border-b border-primary/10 bg-primary/5 px-7">
+          <Card className="overflow-hidden p-0! border-primary/20 shadow-md">
+            <div className="relative flex h-32 items-end justify-between overflow-hidden border-b border-primary/15 bg-gradient-to-r from-primary/15 via-primary/8 to-accent/10 px-7 py-3">
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-surface/80 px-3 py-1 text-[11px] font-bold text-primary shadow-2xs">
+                  HSK Student
+                </span>
+              </div>
               <span
                 aria-hidden="true"
-                className="hanzi -mb-6 text-9xl text-primary/8"
+                className="hanzi -mb-6 text-9xl font-bold text-primary/12 select-none"
               >
                 你好
               </span>

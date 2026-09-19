@@ -122,20 +122,27 @@ const GAMES: GameDef[] = [
 
 function GameHub({ onSelect }: { onSelect: (game: GameDef) => void }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-4.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {GAMES.map((g) => (
         <button
           key={g.mode}
           type="button"
           onClick={() => onSelect(g)}
-          className="motion-button hover-card reveal panel p-5 text-left"
+          className="motion-button hover-card reveal panel relative overflow-hidden p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
         >
-          <span className={`icon-tile mb-4 ${g.tileClass}`}>
-            <Icon name={g.icon} size={22} />
-          </span>
-          <h3 className="mb-1.5 font-semibold">{g.title}</h3>
-          <p className="mb-4 text-sm leading-6 text-muted">{g.tagline}</p>
-          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+          <div className="flex items-center justify-between mb-4">
+            <span className={`icon-tile ${g.tileClass} shadow-2xs`}>
+              <Icon name={g.icon} size={22} />
+            </span>
+            {g.supportsDuel && (
+              <span className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-[10px] font-bold text-primary">
+                Đấu 1v1
+              </span>
+            )}
+          </div>
+          <h3 className="mb-2 text-base font-bold text-foreground">{g.title}</h3>
+          <p className="mb-5 text-xs leading-relaxed text-muted">{g.tagline}</p>
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-primary">
             Xem chi tiết <Icon name="arrow" size={15} />
           </span>
         </button>

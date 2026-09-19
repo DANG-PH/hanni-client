@@ -87,7 +87,7 @@ export default function AchievementsPage() {
           )}
           {data?.length ? (
             <>
-              <div className="flex flex-wrap gap-2" aria-label="Lọc huy hiệu">
+              <div className="flex flex-wrap gap-2.5" aria-label="Lọc huy hiệu">
                 {(
                   [
                     { value: "all", label: "Tất cả", count: data.length },
@@ -104,41 +104,53 @@ export default function AchievementsPage() {
                     type="button"
                     aria-pressed={filter === option.value}
                     onClick={() => setFilter(option.value)}
-                    className={`motion-button inline-flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-medium ${filter === option.value ? "border-primary/25 bg-primary/5 text-primary" : "border-border bg-surface text-muted hover:bg-surface-2"}`}
+                    className={`motion-button inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all ${
+                      filter === option.value
+                        ? "border-primary/30 bg-primary/10 text-primary shadow-xs"
+                        : "border-border/80 bg-surface text-muted hover:bg-surface-2 hover:text-foreground"
+                    }`}
                   >
                     {option.label}
-                    <span className="rounded-md bg-surface-2 px-1.5 py-0.5 text-[11px]">
+                    <span className="rounded-md bg-surface-2/90 px-1.5 py-0.5 text-[11px] font-bold">
                       {option.count}
                     </span>
                   </button>
                 ))}
               </div>
               {visible.length ? (
-                <div className="reveal-group grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="reveal-group grid gap-4.5 sm:grid-cols-2 lg:grid-cols-3">
                   {visible.map((a) => (
                     <div
                       key={a.id}
-                      className={`reveal hover-card panel p-6 ${a.unlocked ? "border-primary/25" : ""}`}
+                      className={`reveal hover-card panel relative overflow-hidden p-6 transition-all duration-300 ${
+                        a.unlocked
+                          ? "border-accent/30 bg-gradient-to-b from-accent/5 via-surface to-surface shadow-md shadow-accent/5"
+                          : "opacity-80"
+                      }`}
                     >
                       <div className="flex items-start justify-between">
                         <span
-                          className={`flex h-14 w-14 items-center justify-center rounded-2xl ${a.unlocked ? "bg-primary/8 text-primary" : "bg-surface-2 text-muted"}`}
+                          className={`flex h-14 w-14 items-center justify-center rounded-2xl border shadow-2xs transition-transform hover:scale-105 ${
+                            a.unlocked
+                              ? "border-accent/30 bg-accent/12 text-accent"
+                              : "border-border/60 bg-surface-2 text-muted"
+                          }`}
                         >
                           <Icon
                             name={a.unlocked ? "trophy" : "lock"}
                             size={27}
                           />
                         </span>
-                        <span className="rounded-lg bg-surface-2 px-2 py-1 text-[11px] text-muted">
+                        <span className="rounded-lg border border-border/60 bg-surface-2/80 px-2.5 py-1 text-[11px] font-medium text-muted">
                           {CAT_VI[a.category] ?? a.category}
                         </span>
                       </div>
-                      <h2 className="mt-5 font-semibold">{a.nameVi}</h2>
-                      <p className="mt-2 text-sm leading-6 text-muted">
+                      <h2 className="mt-5 text-base font-bold text-foreground">{a.nameVi}</h2>
+                      <p className="mt-2 text-sm leading-relaxed text-muted">
                         {a.descriptionVi}
                       </p>
                       {!a.unlocked && a.progressTarget > 0 && (
-                        <div className="mt-4">
+                        <div className="mt-4 space-y-1.5">
                           <ProgressBar
                             value={
                               (Math.min(a.progressCurrent, a.progressTarget) /
@@ -147,16 +159,17 @@ export default function AchievementsPage() {
                             }
                             label={a.nameVi}
                           />
-                          <p className="mt-1.5 text-xs text-muted">
-                            {Math.min(a.progressCurrent, a.progressTarget)}/
-                            {a.progressTarget}
+                          <p className="text-xs text-muted font-medium text-right">
+                            {Math.min(a.progressCurrent, a.progressTarget)} / {a.progressTarget}
                           </p>
                         </div>
                       )}
                       <div
-                        className={`mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-xs ${a.unlocked ? "text-good" : "text-muted"}`}
+                        className={`mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-border/70 pt-4 text-xs font-medium ${
+                          a.unlocked ? "text-good" : "text-muted"
+                        }`}
                       >
-                        <span className="inline-flex items-center gap-1.5">
+                        <span className="inline-flex items-center gap-1.5 font-bold">
                           <Icon
                             name={a.unlocked ? "check" : "lock"}
                             size={14}
@@ -167,7 +180,7 @@ export default function AchievementsPage() {
                           Number.isFinite(Date.parse(a.unlockedAt)) && (
                             <time
                               dateTime={a.unlockedAt}
-                              className="text-muted"
+                              className="text-muted text-[11px]"
                             >
                               {new Date(a.unlockedAt).toLocaleDateString(
                                 "vi-VN",

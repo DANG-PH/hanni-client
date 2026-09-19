@@ -188,37 +188,37 @@ export function QuizRunner({
         </div>
       </div>
       <ProgressBar value={(idx / total) * 100} label="Tiến độ bài kiểm tra" />
-      <div className="rounded-2xl bg-surface-2/60 px-5 py-9 text-center">
+      <div className="rounded-2xl border border-border/60 bg-gradient-to-b from-surface-2/70 to-surface-2/30 px-5 py-9 text-center shadow-xs">
         {listening ? (
           <>
-            <p className="mb-5 text-xs text-muted">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted">
               Nghe rồi chọn nghĩa đúng
             </p>
             <div className="flex justify-center">
-              <AudioButton src={q.audioUrl} size={40} />
+              <AudioButton src={q.audioUrl} size={44} />
             </div>
             <p
-              className={`mt-5 transition-opacity ${revealed ? "opacity-100" : "opacity-0"}`}
+              className={`mt-5 transition-opacity duration-300 ${revealed ? "opacity-100" : "opacity-0"}`}
               aria-hidden={!revealed}
             >
-              <span lang="zh" className="hanzi break-all text-4xl leading-tight">
+              <span lang="zh" className="hanzi break-all text-4xl leading-tight font-bold">
                 {revealed ? q.prompt : "　"}
               </span>
-              <span className="mt-2 block text-base text-primary">
+              <span className="mt-2 block text-base font-semibold text-primary">
                 {revealed ? q.pinyin : ""}
               </span>
             </p>
           </>
         ) : (
           <>
-            <p className="mb-5 text-xs text-muted">Từ này có nghĩa là gì?</p>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted">Từ này có nghĩa là gì?</p>
             <h2
               lang="zh"
-              className="hanzi break-all text-5xl leading-tight sm:text-6xl"
+              className="hanzi break-all text-5xl leading-tight font-bold sm:text-6xl text-foreground"
             >
               {q.prompt}
             </h2>
-            <p className="mt-4 text-lg text-primary">{q.pinyin}</p>
+            <p className="mt-3 text-lg font-semibold text-primary">{q.pinyin}</p>
           </>
         )}
       </div>
@@ -232,10 +232,16 @@ export function QuizRunner({
               aria-pressed={isPicked}
               disabled={busy}
               onClick={() => setPicked(opt)}
-              className={`motion-button flex min-h-14 w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition-colors disabled:opacity-60 ${isPicked ? "border-primary bg-primary/6" : "border-border hover:border-primary/30 hover:bg-surface-2"}`}
+              className={`motion-button flex min-h-14 w-full items-center gap-3.5 rounded-xl border px-4.5 py-3.5 text-left text-sm font-medium transition-all disabled:opacity-60 ${
+                isPicked
+                  ? "border-primary bg-primary/10 text-foreground shadow-md shadow-primary/10 font-semibold"
+                  : "border-border/80 bg-surface hover:border-primary/40 hover:bg-surface-2/80"
+              }`}
             >
               <span
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-semibold ${isPicked ? "bg-primary text-primary-fg" : "bg-surface-2 text-muted"}`}
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold transition-colors ${
+                  isPicked ? "bg-primary text-primary-fg shadow-xs" : "bg-surface-2 text-muted"
+                }`}
               >
                 {String.fromCharCode(65 + optionIndex)}
               </span>

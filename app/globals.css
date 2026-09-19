@@ -154,24 +154,44 @@
     pointer-events: auto;
   }
   .panel {
-    @apply rounded-2xl border border-border bg-surface;
-    box-shadow: 0 3px 16px -12px
-      color-mix(in srgb, var(--foreground) 22%, transparent);
+    @apply rounded-2xl border border-border/80 bg-surface;
+    box-shadow: 0 4px 20px -12px color-mix(in srgb, var(--foreground) 16%, transparent),
+      0 1px 3px -1px color-mix(in srgb, var(--foreground) 8%, transparent);
+    transition: transform 220ms var(--motion-ease), border-color 220ms ease, box-shadow 220ms ease;
+  }
+  .glass-card {
+    @apply rounded-2xl border border-border/70 bg-surface/80 backdrop-blur-md;
+    box-shadow: 0 8px 30px -15px color-mix(in srgb, var(--foreground) 14%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--surface) 90%, transparent);
+  }
+  .glow-card {
+    @apply relative overflow-hidden rounded-2xl border border-primary/20 bg-surface;
+    box-shadow: 0 10px 35px -15px color-mix(in srgb, var(--primary) 22%, transparent);
+  }
+  .glow-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
   }
   .eyebrow {
     @apply text-xs font-semibold uppercase tracking-[0.16em] text-primary;
   }
   .field {
-    @apply w-full rounded-xl border border-border bg-surface px-3.5 py-3 text-sm transition-colors focus:border-primary;
+    @apply w-full rounded-xl border border-border/80 bg-surface/80 px-3.5 py-3 text-sm transition-all focus:border-primary focus:bg-surface focus:outline-none;
   }
   .icon-tile {
-    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary;
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-primary/15 bg-primary/10 text-primary shadow-xs;
+    transition: transform 200ms ease, box-shadow 200ms ease;
   }
   .hero {
-    background: linear-gradient(115deg, var(--hero-from), var(--hero-to));
+    background: linear-gradient(135deg, var(--hero-from), var(--hero-to));
   }
   .section-label {
-    @apply inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-[10px] font-semibold tracking-wider text-primary;
+    @apply inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-[10px] font-semibold tracking-wider text-primary shadow-2xs;
   }
   .hanzi {
     font-family: "Kaiti SC", "KaiTi", "Noto Serif CJK SC", "Songti SC", serif;
@@ -179,20 +199,20 @@
   }
   /* item điều hướng trong sidebar */
   .nav-item {
-    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-foreground;
+    @apply flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-muted transition-all hover:bg-surface-2/80 hover:text-foreground;
     position: relative;
-    transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+    transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 200ms var(--motion-ease);
   }
   .nav-item > svg {
     flex-shrink: 0;
-    transition: transform 220ms var(--motion-ease);
+    transition: transform 220ms var(--motion-ease), color 220ms ease;
   }
   .nav-item[aria-current="page"] {
-    @apply bg-primary/10 text-primary;
-    box-shadow: inset 3px 0 0 var(--primary);
+    @apply bg-primary/12 text-primary font-semibold;
+    box-shadow: inset 3px 0 0 var(--primary), 0 4px 12px -6px color-mix(in srgb, var(--primary) 35%, transparent);
   }
   .nav-item[aria-current="page"] > svg {
-    transform: scale(1.08);
+    transform: scale(1.1);
   }
 }
 

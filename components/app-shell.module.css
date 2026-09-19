@@ -51,33 +51,53 @@
 
 .topbar {
   height: 72px;
-  border-color: color-mix(in srgb, var(--border) 80%, transparent);
-  background: color-mix(in srgb, var(--surface) 86%, transparent);
-  box-shadow: 0 4px 24px -20px color-mix(in srgb, var(--foreground) 18%, transparent);
+  border-color: color-mix(in srgb, var(--border) 70%, transparent);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 20px -16px color-mix(in srgb, var(--foreground) 15%, transparent);
 }
 
 .topbar button,
 .account {
-  transition: background-color 200ms ease, box-shadow 220ms ease, transform 220ms var(--motion-ease);
+  transition: background-color 200ms ease, border-color 200ms ease, box-shadow 220ms ease, transform 220ms var(--motion-ease);
 }
 
 .breadcrumb > span:last-child {
-  padding: 7px 11px;
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--border));
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+  color: var(--foreground);
+  font-weight: 600;
 }
 
 .streak {
   min-height: 40px;
-  border: 1px solid color-mix(in srgb, var(--primary) 12%, transparent);
-  background: linear-gradient(130deg, color-mix(in srgb, var(--primary) 10%, var(--surface)), color-mix(in srgb, var(--accent) 7%, var(--surface)));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--surface) 75%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, var(--surface)), color-mix(in srgb, var(--accent) 10%, var(--surface)));
+  box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--primary) 30%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 80%, transparent);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.streak:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--primary) 40%, transparent);
 }
 
 .account {
-  padding: 4px 9px 4px 4px;
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface) 65%, transparent);
+  padding: 4px 10px 4px 4px;
+  border: 1px solid color-mix(in srgb, var(--border) 90%, var(--primary));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  box-shadow: 0 2px 8px -4px color-mix(in srgb, var(--foreground) 10%, transparent);
+}
+
+.account:hover {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+  background: var(--surface);
+  transform: translateY(-1px);
 }
 
 .workspace :global(.panel) {

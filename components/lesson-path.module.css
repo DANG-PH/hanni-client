@@ -94,15 +94,17 @@
   left: -54px;
   display: grid;
   place-items: center;
-  width: 43px;
-  height: 43px;
-  border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--border));
+  width: 44px;
+  height: 44px;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
   border-radius: 14px;
-  background: color-mix(in srgb, var(--primary) 7%, var(--surface));
+  background: color-mix(in srgb, var(--primary) 10%, var(--surface));
   color: var(--primary);
-  font-size: 13px;
-  font-weight: 750;
-  box-shadow: 0 3px 0 color-mix(in srgb, var(--primary) 8%, var(--border));
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--primary) 30%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 80%, transparent);
+  transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
 .copy {
@@ -113,7 +115,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 8px;
   min-width: 0;
 }
 
@@ -121,7 +123,7 @@
   min-width: 0;
   overflow: hidden;
   color: var(--foreground);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1.4;
   text-overflow: ellipsis;
@@ -131,30 +133,32 @@
 .status {
   display: inline-flex;
   align-items: center;
-  min-height: 20px;
-  border-radius: 6px;
-  padding: 3px 7px;
+  min-height: 22px;
+  border-radius: 8px;
+  padding: 3px 9px;
   font-size: 10px;
-  font-weight: 650;
+  font-weight: 700;
   line-height: 1;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
 .completed {
-  border-color: color-mix(in srgb, var(--good) 15%, var(--border));
-  background: color-mix(in srgb, var(--good) 11%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--good) 25%, transparent);
+  background: color-mix(in srgb, var(--good) 12%, var(--surface));
   color: var(--good);
 }
 
 .inProgress {
-  border-color: color-mix(in srgb, var(--primary) 15%, var(--border));
-  background: color-mix(in srgb, var(--primary) 11%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
+  background: color-mix(in srgb, var(--primary) 14%, var(--surface));
   color: var(--primary);
+  box-shadow: 0 0 12px -3px color-mix(in srgb, var(--primary) 35%, transparent);
 }
 
 .available {
-  border-color: color-mix(in srgb, var(--accent) 14%, var(--border));
-  background: color-mix(in srgb, var(--accent) 11%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
   color: var(--accent);
 }
 

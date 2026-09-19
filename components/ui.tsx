@@ -10,15 +10,15 @@ import loaderStyles from "./study-loader.module.css";
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 const VARIANTS: Record<Variant, string> = {
   primary:
-    "border border-primary bg-primary text-primary-fg hover:bg-primary/90 shadow-sm",
+    "border border-primary/90 bg-gradient-to-b from-primary to-primary/90 text-primary-fg hover:brightness-110 shadow-md shadow-primary/25 active:translate-y-0.5",
   secondary:
-    "border border-border bg-surface text-foreground hover:bg-surface-2",
+    "border border-border/80 bg-surface/90 text-foreground hover:bg-surface-2 hover:border-primary/30 shadow-xs active:translate-y-0.5",
   ghost:
-    "border border-transparent text-muted hover:bg-surface-2 hover:text-foreground",
-  danger: "border border-danger/20 bg-danger/8 text-danger hover:bg-danger/15",
+    "border border-transparent text-muted hover:bg-surface-2 hover:text-foreground active:translate-y-0.5",
+  danger: "border border-danger/30 bg-danger/10 text-danger hover:bg-danger/20 shadow-xs active:translate-y-0.5",
 };
 const buttonClass =
-  "motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50 disabled:pointer-events-none";
+  "motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4.5 py-2.5 text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none";
 export function Button({
   variant = "primary",
   className = "",
@@ -83,10 +83,10 @@ export function ProgressBar({
       aria-valuenow={Math.round(safeValue)}
       aria-valuemin={0}
       aria-valuemax={100}
-      className="h-2 w-full overflow-hidden rounded-full bg-surface-2"
+      className="h-2.5 w-full overflow-hidden rounded-full bg-surface-2/90 p-0.5 shadow-inner"
     >
       <div
-        className={`h-full rounded-full transition-all ${color}`}
+        className={`h-full rounded-full transition-all duration-500 ease-out ${color} shadow-xs`}
         style={{ width: `${safeValue}%` }}
       />
     </div>
@@ -113,7 +113,7 @@ export function Stat({
   value,
   hint,
   icon = "chart",
-  tone = "text-primary bg-primary/8",
+  tone = "text-primary bg-primary/10 border-primary/20",
 }: {
   label: string;
   value: ReactNode;
@@ -122,17 +122,17 @@ export function Stat({
   tone?: string;
 }) {
   return (
-    <div className="reveal hover-card panel p-5">
-      <div className="mb-4 flex items-center justify-between gap-2">
-        <span className="text-sm text-muted">{label}</span>
+    <div className="reveal hover-card panel relative overflow-hidden p-5 sm:p-6">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <span className="text-xs font-medium tracking-wide text-muted uppercase">{label}</span>
         <span
-          className={`flex h-9 w-9 items-center justify-center rounded-xl ${tone}`}
+          className={`flex h-10 w-10 items-center justify-center rounded-xl border ${tone} shadow-2xs`}
         >
           <Icon name={icon} size={18} />
         </span>
       </div>
-      <div className="text-3xl font-semibold tracking-tight">{value}</div>
-      {hint && <p className="mt-2 text-xs text-muted">{hint}</p>}
+      <div className="text-3xl font-extrabold tracking-tight">{value}</div>
+      {hint && <p className="mt-2 text-xs text-muted leading-relaxed">{hint}</p>}
     </div>
   );
 }

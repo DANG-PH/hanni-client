@@ -93,13 +93,13 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       >
         <Brand />
       </Link>
-      <nav aria-label="Điều hướng học tập" className="space-y-5">
+      <nav aria-label="Điều hướng học tập" className="space-y-6">
         {NAV_GROUPS.map((group) => (
           <div key={group.title}>
-            <p className="mb-2 px-3 text-[9px] font-semibold tracking-[.12em] text-muted">
+            <p className="mb-2 px-3 text-[10px] font-bold tracking-[.14em] text-muted/80 uppercase">
               {group.title}
             </p>
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               {group.links.map((link) => (
                 <Link
                   key={link.href}
@@ -114,11 +114,11 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                   className="nav-item text-[13px]!"
                 >
                   <Icon name={link.icon} size={18} />
-                  {link.label}
+                  <span>{link.label}</span>
                   {link.href === "/messages" &&
                     !!unread?.count &&
                     unread.count > 0 && (
-                      <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-bold text-primary-fg">
+                      <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-fg shadow-2xs">
                         {unread.count > 9 ? "9+" : unread.count}
                       </span>
                     )}
@@ -129,15 +129,15 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
       <div className="mt-auto pt-6">
-        <div className="mb-4 rounded-xl border border-primary/10 bg-primary/4 px-3 py-3">
-          <p className="flex items-center gap-2 text-xs font-semibold text-primary">
-            <Icon name="spark" size={15} /> Một chút mỗi ngày
+        <div className="mb-4 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/8 to-accent/5 px-3.5 py-3.5 shadow-2xs">
+          <p className="flex items-center gap-2 text-xs font-bold text-primary">
+            <Icon name="spark" size={15} /> Mỗi ngày một chút
           </p>
-          <p className="mt-1.5 text-[11px] leading-5 text-muted">
-            Mỗi từ bạn nhớ là một bước tiến.
+          <p className="mt-1 text-[11px] leading-relaxed text-muted">
+            Mỗi từ bạn nhớ là một bước tiến xa hơn.
           </p>
         </div>
-        <div className="border-t border-border pt-3">
+        <div className="border-t border-border/70 pt-3">
           <button
             disabled={busy}
             onClick={async () => {
@@ -146,7 +146,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               onNavigate?.();
               setBusy(false);
             }}
-            className="nav-item w-full text-left text-xs! disabled:opacity-50"
+            className="nav-item w-full text-left text-xs! hover:text-danger hover:bg-danger/8 disabled:opacity-50"
           >
             <Icon name="logout" size={16} />
             {busy ? "Đang đăng xuất…" : "Đăng xuất"}
