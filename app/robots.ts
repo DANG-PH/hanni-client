@@ -7,12 +7,25 @@ const siteUrl =
     : "http://localhost:3000");
 
 /** Chỉ cho index các trang công khai — mọi thứ dưới (app) cần đăng nhập,
- * không có giá trị SEO và không nên bị crawl. */
+ * không có giá trị SEO và không nên bị crawl.
+ *
+ * `/tu-dien` là NGOẠI LỆ quan trọng: đây là bản công khai (không cần đăng
+ * nhập) của kho từ vựng, cố tình mở cho Google index. Trước đây toàn bộ nội
+ * dung nằm sau đăng nhập nên sitemap chỉ có 6 URL toàn trang chức năng —
+ * gần như không có cửa nào để người học tìm thấy Hanni qua tìm kiếm. */
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: ["/", "/login", "/register", "/onboarding", "/nguon-du-lieu", "/install"],
+      allow: [
+        "/",
+        "/tu-dien",
+        "/login",
+        "/register",
+        "/onboarding",
+        "/nguon-du-lieu",
+        "/install",
+      ],
       disallow: [
         "/dashboard",
         "/learn",

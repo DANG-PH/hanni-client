@@ -206,6 +206,15 @@ export default function Home() {
               nhanh hơn.
             </p>
           )}
+          <p className="reveal mt-4 text-center text-sm">
+            <Link
+              href="/tu-dien"
+              className="font-medium text-primary hover:underline"
+            >
+              Tra từ điển Hán Việt miễn phí — không cần đăng nhập
+              <Icon name="arrow" size={14} className="ml-1 inline" />
+            </Link>
+          </p>
         </div>
       </section>
       <div className="page-wrap space-y-10 py-8! sm:space-y-12 sm:py-10!">

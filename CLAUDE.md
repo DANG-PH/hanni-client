@@ -39,7 +39,17 @@ app/
 ├── (app)/u/[id]         hồ sơ công khai — streak, huy hiệu, follow, "Nhắn tin"
 ├── (app)/messages       hộp thư nhắn tin 1-1 realtime (2 cột, mobile chỉ hiện 1 bên)
 ├── settings            mục tiêu ngày, thuật toán SRS, múi giờ
-└── nguon-du-lieu       trang ghi công nguồn dữ liệu (bắt buộc theo license)
+├── nguon-du-lieu       trang ghi công nguồn dữ liệu (bắt buộc theo license)
+└── tu-dien             TỪ ĐIỂN CÔNG KHAI (SEO) — `/tu-dien` + `/tu-dien/[slug]`.
+                        **Server Component, KHÔNG "use client"** — nội dung phải nằm sẵn
+                        trong HTML thì Google mới index được (đây là toàn bộ mục đích của
+                        2 trang này). Lý do tồn tại: sitemap trước đó chỉ có 6 URL toàn
+                        trang chức năng, 10.9k từ đều nằm sau đăng nhập nên vô hình với
+                        công cụ tìm kiếm — xem `hanni-server/CLAUDE.md` mục "Từ điển CÔNG
+                        KHAI cho SEO". Fetch qua `API_BASE` trực tiếp (không qua `lib/api.ts`
+                        vì không cần cookie/refresh), `revalidate = 86400`, và PHẢI bọc
+                        try/catch: khi API không phản hồi được thì `fetch` THROW chứ không
+                        trả `!res.ok`, không bắt là sập cả build.
 components/  ui.tsx · nav.tsx · flashcard.tsx · quiz-runner.tsx · comment-section.tsx
              · video-like-button.tsx · notification-bell.tsx · follow-button.tsx
              · activity-calendar.tsx (lịch hoạt động 30 ngày)
@@ -84,7 +94,12 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 sau hiện thêm badge **"Hán Việt: ..."** nếu `word.hanViet` có dữ liệu, xem `hanni-server/
 CLAUDE.md` mục Âm Hán Việt cho lý do đây là điểm khác biệt cốt lõi của Hanni) + quiz,
 duyệt từ vựng (có ghi chú giải thích chuẩn HSK 3.0 9 cấp khác chuẩn cũ 6 cấp, mỗi thẻ từ cũng
-hiện âm Hán Việt nếu có), tiến độ, huy
+hiện âm Hán Việt nếu có; ô tìm kiếm cũng tìm được theo âm Hán Việt, vd gõ "học hiệu" ra 学校),
+**trang chủ `/` (chưa đăng nhập)** có thêm 1 section ngay sau hero — "Bạn đã biết trước hàng
+nghìn từ tiếng Trung" — 3 ví dụ (`HANVIET_EXAMPLES` trong `app/(site)/page.tsx`) + số liệu thật
+qua `useWordStats()` (`GET /words/stats`, public) — mục đích THU HÚT user MỚI ngay từ trang chủ
+bằng lợi thế không app quốc tế nào có, không đợi tới lúc vào app mới thấy; tự ẩn dòng số liệu
+nếu `withHanViet === 0` (chưa backfill xong ở server thì không hiện số sai), tiến độ, huy
 hiệu, cài đặt, học qua video (`/watch/[id]` dán video dưới topbar khi cuộn trên mobile để xem
 cùng bản chép, có bình luận 1 cấp trả lời + nút thích video; **từ 2026-09-18: bấm vào 1 từ
 trong bản chép (cả chế độ có pinyin lẫn không) hiện popup nghĩa + pinyin + nút "Lưu để ôn tập"**
