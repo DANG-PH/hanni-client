@@ -46,6 +46,15 @@ export function useLevels() {
   return useSWR<HskLevel[]>("/levels", fetcher);
 }
 
+/** Thống kê công khai (không cần đăng nhập) — số từ có âm Hán Việt, dùng
+ * cho phần giới thiệu ở trang chủ. */
+export function useWordStats() {
+  return useSWR<{ total: number; withHanViet: number }>(
+    "/words/stats",
+    fetcher,
+  );
+}
+
 export function useProgress() {
   return useSWR<ProgressOverview>("/progress/overview", fetcher);
 }

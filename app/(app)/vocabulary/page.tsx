@@ -86,10 +86,10 @@ function VocabularyContent() {
               size={19}
             />
             <input
-              aria-label="Tìm từ vựng theo Hán tự, pinyin hoặc nghĩa"
+              aria-label="Tìm từ vựng theo Hán tự, pinyin, nghĩa hoặc âm Hán Việt"
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Tìm Hán tự, pinyin hoặc nghĩa…"
+              placeholder="Tìm Hán tự, pinyin, nghĩa hoặc âm Hán Việt…"
               className="field pl-11!"
             />
           </div>

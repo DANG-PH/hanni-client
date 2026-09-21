@@ -7,7 +7,21 @@ import { LearningJourney } from "@/components/learning-journey";
 import { LinkButton } from "@/components/ui";
 import { StudyArtwork } from "@/components/study-artwork";
 import { useAuth } from "@/lib/auth";
-import { useLevels } from "@/lib/hooks";
+import { useLevels, useWordStats } from "@/lib/hooks";
+
+// Vài ví dụ âm Hán Việt trùng khớp gần như nguyên vẹn với nghĩa tiếng Việt
+// hiện đại — minh hoạ cụ thể cho lợi thế chỉ người Việt mới có (xem
+// hanni-server/CLAUDE.md mục "Âm Hán Việt").
+const HANVIET_EXAMPLES: {
+  zh: string;
+  pinyin: string;
+  hanViet: string;
+  meaning: string;
+}[] = [
+  { zh: "学生", pinyin: "xué shēng", hanViet: "học sinh", meaning: "học sinh" },
+  { zh: "时间", pinyin: "shí jiān", hanViet: "thời gian", meaning: "thời gian" },
+  { zh: "国家", pinyin: "guó jiā", hanViet: "quốc gia", meaning: "quốc gia" },
+];
 
 // Nội dung giới thiệu tính năng; số liệu học liệu luôn lấy từ API.
 const SKILLS: {
@@ -81,6 +95,7 @@ const FAQ = [
 export default function Home() {
   const { user } = useAuth();
   const levels = useLevels();
+  const wordStats = useWordStats();
   const totalWords = levels.data?.reduce(
     (sum, level) => sum + level.wordsInDb,
     0,
@@ -141,6 +156,56 @@ export default function Home() {
             </ul>
           </div>
           <StudyArtwork />
+        </div>
+      </section>
+      <section className="border-b border-border bg-surface">
+        <div className="page-wrap py-10! sm:py-12!">
+          <div className="reveal mx-auto max-w-2xl text-center">
+            <span className="section-label">
+              <Icon name="spark" size={14} /> LỢI THẾ CHỈ NGƯỜI VIỆT MỚI CÓ
+            </span>
+            <h2 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">
+              Bạn đã biết trước hàng nghìn từ tiếng Trung
+              <br className="hidden sm:block" /> — chỉ là chưa nhận ra
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-muted">
+              Hơn 60% từ vựng tiếng Việt vay mượn từ tiếng Hán và giữ nguyên
+              âm đọc — &quot;âm Hán Việt&quot;. Hanni hiện âm Hán Việt cạnh
+              mỗi từ để bạn liên tưởng ngay, thay vì học thuộc lòng từ đầu.
+            </p>
+          </div>
+          <div className="reveal-group mt-7 grid gap-3 sm:grid-cols-3">
+            {HANVIET_EXAMPLES.map((ex) => (
+              <div
+                key={ex.zh}
+                className="reveal panel p-5 text-center"
+              >
+                <p lang="zh" className="hanzi text-4xl text-primary">
+                  {ex.zh}
+                </p>
+                <p className="mt-1.5 text-xs text-muted">{ex.pinyin}</p>
+                <p className="mt-3 text-sm">
+                  Hán Việt:{" "}
+                  <span className="font-bold text-primary">
+                    {ex.hanViet}
+                  </span>
+                </p>
+                <p className="mt-1 text-[11px] text-muted">
+                  Trùng khớp nghĩa tiếng Việt: &quot;{ex.meaning}&quot;
+                </p>
+              </div>
+            ))}
+          </div>
+          {wordStats.data && wordStats.data.withHanViet > 0 && (
+            <p className="reveal mt-6 text-center text-xs text-muted">
+              <span className="font-semibold text-primary">
+                {wordStats.data.withHanViet.toLocaleString("vi-VN")}/
+                {wordStats.data.total.toLocaleString("vi-VN")}
+              </span>{" "}
+              từ vựng trong Hanni đã có sẵn âm Hán Việt giúp bạn ghi nhớ
+              nhanh hơn.
+            </p>
+          )}
         </div>
       </section>
       <div className="page-wrap space-y-10 py-8! sm:space-y-12 sm:py-10!">
