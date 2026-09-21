@@ -204,6 +204,17 @@
   color: var(--muted);
   font-size: 10px;
 }
+.hanViet {
+  display: inline-block;
+  margin-top: 9px;
+  margin-left: 6px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--primary) 12%, var(--surface-2));
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 600;
+}
 .example {
   align-self: stretch;
   margin-top: 20px;

@@ -77,6 +77,19 @@ export default function NguonDuLieuPage() {
           bằng mô hình AI, có rà soát một phần bằng tay — vẫn có thể còn sai
           sót, mọi góp ý đều được hoan nghênh.
         </SourceCard>
+
+        <SourceCard
+          name="Unihan Database"
+          url="https://www.unicode.org/charts/unihan.html"
+          license="Unicode License V3"
+        >
+          Tác giả: Unicode Consortium. Cung cấp âm Hán Việt tra theo từng ký
+          tự (field kVietnamese) — dùng để hiện thêm âm đọc Hán Việt bên cạnh
+          từ vựng (vd. 学生 đọc Hán Việt là &quot;học sinh&quot;), giúp người
+          Việt liên tưởng nhanh hơn nhờ từ vựng tiếng Việt vay mượn gốc Hán.
+          Hanni bù thêm một số ký tự thông dụng còn thiếu và sửa vài âm đọc
+          hiếm gặp, soạn tay dựa trên cách dùng tiếng Việt hiện đại.
+        </SourceCard>
       </div>
 
       <div className="panel p-6">

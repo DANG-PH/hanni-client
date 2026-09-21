@@ -191,6 +191,9 @@ export function Flashcard({
                   {word.pos.join(" · ")}
                 </span>
               )}
+              {word.hanViet && (
+                <span className={styles.hanViet}>Hán Việt: {word.hanViet}</span>
+              )}
             </div>
             {example && (
               <div className={styles.example}>

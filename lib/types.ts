@@ -51,6 +51,7 @@ export interface Word {
   frequencyRank: number | null;
   meaningVi: string | null;
   meaningEn: string | null;
+  hanViet: string | null;
   translationStatus: string;
   audioUrl: string | null;
   imageUrl?: string | null;

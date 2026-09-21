@@ -80,8 +80,11 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 ```
 
 ## Trạng thái hiện tại
-Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard (lật 3D, chạm cả thẻ) + quiz,
-duyệt từ vựng (có ghi chú giải thích chuẩn HSK 3.0 9 cấp khác chuẩn cũ 6 cấp), tiến độ, huy
+Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard (lật 3D, chạm cả thẻ — mặt
+sau hiện thêm badge **"Hán Việt: ..."** nếu `word.hanViet` có dữ liệu, xem `hanni-server/
+CLAUDE.md` mục Âm Hán Việt cho lý do đây là điểm khác biệt cốt lõi của Hanni) + quiz,
+duyệt từ vựng (có ghi chú giải thích chuẩn HSK 3.0 9 cấp khác chuẩn cũ 6 cấp, mỗi thẻ từ cũng
+hiện âm Hán Việt nếu có), tiến độ, huy
 hiệu, cài đặt, học qua video (`/watch/[id]` dán video dưới topbar khi cuộn trên mobile để xem
 cùng bản chép, có bình luận 1 cấp trả lời + nút thích video; **từ 2026-09-18: bấm vào 1 từ
 trong bản chép (cả chế độ có pinyin lẫn không) hiện popup nghĩa + pinyin + nút "Lưu để ôn tập"**

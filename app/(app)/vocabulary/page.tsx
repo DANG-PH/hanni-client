@@ -199,6 +199,7 @@ function VocabularyContent() {
                     )}
                   </p>
                   {!w.meaningVi && w.meaningEn && <span>Nghĩa tiếng Anh</span>}
+                  {w.hanViet && <span>Hán Việt: {w.hanViet}</span>}
                 </div>
               </article>
             ))}
