@@ -210,11 +210,15 @@ export default function Home() {
           )}
           <p className="reveal mt-4 text-center text-sm">
             <Link
-              href="/tu-dien"
+              href="/tu-da-biet"
               className="font-medium text-primary hover:underline"
             >
-              Tra từ điển Hán Việt miễn phí — không cần đăng nhập
+              Xem những từ tiếng Trung bạn đã biết sẵn
               <Icon name="arrow" size={14} className="ml-1 inline" />
+            </Link>
+            <span className="mx-2 text-muted">·</span>
+            <Link href="/tu-dien" className="text-muted hover:text-primary">
+              Tra từ điển
             </Link>
           </p>
         </div>

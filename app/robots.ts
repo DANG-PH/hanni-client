@@ -19,6 +19,7 @@ export default function robots(): MetadataRoute.Robots {
         "/",
         "/tu-dien",
         "/hoc-thu",
+        "/tu-da-biet",
         "/ngu-phap",
         "/login",
         "/register",
