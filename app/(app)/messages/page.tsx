@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureTour, type TourStep } from "@/components/feature-tour";
 import Link from "next/link";
 import styles from "./messages.module.css";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -188,9 +189,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
   const [otherTyping, setOtherTyping] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const otherTypingTimeout = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+  const otherTypingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingEmit = useRef(0);
   const lastMessageId = data?.items.at(-1)?.id;
 
@@ -314,14 +313,17 @@ function ChatThread({ conversationId }: { conversationId: string }) {
             <Avatar user={conversation.otherUser} size={36} />
           </span>
           <div className={styles.threadIdentity}>
-            <p className={styles.threadName}>{conversation.otherUser.displayName}</p>
-            {otherTyping && (
-              <p className={styles.threadStatus}>Đang nhập…</p>
-            )}
+            <p className={styles.threadName}>
+              {conversation.otherUser.displayName}
+            </p>
+            {otherTyping && <p className={styles.threadStatus}>Đang nhập…</p>}
           </div>
         </div>
       )}
-      <div ref={listRef} className={`space-y-2.5 overflow-y-auto p-4 ${styles.messageList}`}>
+      <div
+        ref={listRef}
+        className={`space-y-2.5 overflow-y-auto p-4 ${styles.messageList}`}
+      >
         {!data ? (
           <Spinner />
         ) : (
@@ -445,6 +447,27 @@ function ChatThread({ conversationId }: { conversationId: string }) {
 
 type Tab = "chats" | "connect";
 
+const MESSAGES_TOUR_STEPS: TourStep[] = [
+  {
+    icon: "user",
+    title: "Phải theo dõi nhau trước",
+    description:
+      'Hanni chỉ cho mở hội thoại MỚI khi hai người đã theo dõi nhau (một trong hai chiều là đủ) — để không ai bị người lạ nhắn tin. Sang tab "Kết nối" để tìm người theo tên hoặc mã người dùng.',
+  },
+  {
+    icon: "book",
+    title: "Tin nhắn tiếng Trung dịch được ngay",
+    description:
+      'Tin nào có chữ Hán sẽ hiện nút "Dịch" để xem pinyin và nghĩa tiếng Việt — nhắn tin cho nhau cũng là lúc luyện đọc.',
+  },
+  {
+    icon: "message",
+    title: "Dịch trước khi gửi",
+    description:
+      'Nút "Dịch" cạnh ô nhập chuyển nội dung bạn đang gõ sang ngôn ngữ còn lại rồi điền lại vào ô — xem và sửa trước khi bấm Gửi, không tự gửi hộ.',
+  },
+];
+
 function MessagesHero({ onConnect }: { onConnect: () => void }) {
   return (
     <section className={styles.hero} aria-labelledby="messages-title">
@@ -488,7 +511,11 @@ function MessagesWelcome({ onConnect }: { onConnect: () => void }) {
         Chọn người học ở bên trái để tiếp tục, hoặc tìm một người bạn mới để
         cùng luyện tiếng Trung.
       </p>
-      <button type="button" onClick={onConnect} className={styles.welcomeAction}>
+      <button
+        type="button"
+        onClick={onConnect}
+        className={styles.welcomeAction}
+      >
         <Icon name="search" size={15} />
         Tìm bạn học
         <Icon name="arrow" size={15} />
@@ -509,7 +536,11 @@ function MessagesInner() {
   const activeId = params.get("c");
   // Đang mở 1 hội thoại thì luôn ưu tiên hiện tab "chats" — chọn người ở
   // tab "connect" xong sẽ tự nhảy về đây (xem select()).
-  const tab: Tab = activeId ? "chats" : params.get("tab") === "connect" ? "connect" : "chats";
+  const tab: Tab = activeId
+    ? "chats"
+    : params.get("tab") === "connect"
+      ? "connect"
+      : "chats";
   useMessagesSocket(activeId);
 
   if (loading || !user) return <Spinner />;
@@ -524,6 +555,7 @@ function MessagesInner() {
 
   return (
     <div className={`page-wrap ${styles.page}`}>
+      <FeatureTour tourKey="messages" steps={MESSAGES_TOUR_STEPS} />
       <MessagesHero onConnect={() => switchTab("connect")} />
       <nav className={styles.tabs} aria-label="Khu vực tin nhắn">
         {(

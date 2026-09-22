@@ -21,7 +21,11 @@ import {
 import { api, ApiError } from "@/lib/api";
 import { useAuth, useRequireAuth } from "@/lib/auth";
 import { useReferralStats } from "@/lib/hooks";
-import { createTopUp, getTopUpStatus, useTopUpConfigured } from "@/lib/payments";
+import {
+  createTopUp,
+  getTopUpStatus,
+  useTopUpConfigured,
+} from "@/lib/payments";
 import { TIMEZONES } from "@/lib/timezones";
 import { buyStreakFreeze, useWallet } from "@/lib/wallet";
 
@@ -71,11 +75,7 @@ export default function AccountPage() {
             </div>
             <div className="relative px-6 pb-6 sm:px-7">
               <div className="-mt-9 mb-5 flex flex-wrap items-end justify-between gap-4">
-                <AvatarEditor
-                  user={user}
-                  size={80}
-                  onChange={refresh}
-                />
+                <AvatarEditor user={user} size={80} onChange={refresh} />
                 <span className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1.5 text-xs text-muted">
                   <Icon
                     name={user.emailVerifiedAt ? "check" : "info"}
@@ -385,9 +385,7 @@ function WalletCard() {
       setMessage(`Đã mua thêm 1 lá chắn streak với ${res.price} xu!`);
     } catch (err) {
       setError(
-        err instanceof ApiError
-          ? err.message
-          : "Chưa mua được, thử lại nhé.",
+        err instanceof ApiError ? err.message : "Chưa mua được, thử lại nhé.",
       );
     } finally {
       setBuying(false);
@@ -403,7 +401,9 @@ function WalletCard() {
       window.location.href = res.checkoutUrl;
     } catch (err) {
       setTopupNote(
-        err instanceof ApiError ? err.message : "Chưa tạo được link nạp, thử lại nhé.",
+        err instanceof ApiError
+          ? err.message
+          : "Chưa tạo được link nạp, thử lại nhé.",
       );
       setToppingUp(false);
     }
@@ -413,16 +413,22 @@ function WalletCard() {
   // window.location thay vì useSearchParams() để khỏi phải bọc cả trang
   // trong <Suspense> chỉ vì 1 khối nhỏ này.
   useEffect(() => {
-    const code = Number(new URLSearchParams(window.location.search).get("topup"));
+    const code = Number(
+      new URLSearchParams(window.location.search).get("topup"),
+    );
     if (!Number.isFinite(code) || code <= 0) return;
     window.history.replaceState({}, "", window.location.pathname);
     void getTopUpStatus(code)
       .then((order) => {
         if (order.status === "PAID") {
-          setTopupNote(`Nạp thành công! +${order.xuAmount.toLocaleString("vi-VN")} xu.`);
+          setTopupNote(
+            `Nạp thành công! +${order.xuAmount.toLocaleString("vi-VN")} xu.`,
+          );
           void mutate();
         } else if (order.status === "PENDING") {
-          setTopupNote("Đang chờ xác nhận thanh toán — thử tải lại trang sau ít phút.");
+          setTopupNote(
+            "Đang chờ xác nhận thanh toán — thử tải lại trang sau ít phút.",
+          );
         } else {
           setTopupNote("Giao dịch đã huỷ hoặc hết hạn.");
         }
@@ -439,8 +445,12 @@ function WalletCard() {
         </span>
         <div>
           <h2 className="font-semibold">Ví xu</h2>
+          {/* Nói RÕ xu từ đâu ra và tiêu vào đâu — trước đó chỉ nhắc đúng 1
+           * minigame (giờ có 4) nên người dùng không biết mình kiếm xu bằng
+           * cách nào khác, cũng không biết tiêu để làm gì. */}
           <p className="mt-1 text-sm text-muted">
-            Kiếm xu qua minigame &quot;Dịch tốc độ&quot; và học đều mỗi ngày.
+            Kiếm xu khi chơi minigame, xong nhiệm vụ hàng ngày và học đều mỗi
+            ngày. Tiêu vào lá chắn streak, khung avatar và danh hiệu.
           </p>
         </div>
       </div>
@@ -449,13 +459,20 @@ function WalletCard() {
         <span className="ml-2 text-sm font-normal text-muted">xu</span>
       </p>
       <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-4">
-        <Button variant="secondary" onClick={() => void buy()} disabled={buying}>
+        <Button
+          variant="secondary"
+          onClick={() => void buy()}
+          disabled={buying}
+        >
           {buying ? "Đang mua…" : "Mua lá chắn streak (300 xu)"}
         </Button>
         <LinkButton href="/minigame" variant="ghost">
-          Chơi ngay <Icon name="arrow" size={16} />
+          Kiếm xu ở minigame <Icon name="arrow" size={16} />
         </LinkButton>
       </div>
+      <p className="mt-2 text-xs text-muted">
+        Lá chắn giữ nguyên chuỗi ngày học nếu bạn lỡ nghỉ đúng 1 ngày.
+      </p>
       {message && <p className="mt-3 text-sm text-good">{message}</p>}
       {error && <ErrorNote>{error}</ErrorNote>}
 
@@ -512,8 +529,8 @@ function ReferralCard({ userId }: { userId: string }) {
         <div>
           <h2 className="font-semibold">Mời bạn bè cùng học</h2>
           <p className="mt-1 text-sm leading-6 text-muted">
-            Khi bạn mời hoàn thành ngày học đầu tiên, cả hai đều nhận thêm 1
-            🧊 lá chắn giữ chuỗi ngày học.
+            Khi bạn mời hoàn thành ngày học đầu tiên, cả hai đều nhận thêm 1 🧊
+            lá chắn giữ chuỗi ngày học.
           </p>
         </div>
       </div>
@@ -577,8 +594,8 @@ function DangerZone({ hasPassword }: { hasPassword: boolean }) {
         <div>
           <h2 className="font-semibold text-danger">Vùng nguy hiểm</h2>
           <p className="mt-1 text-sm leading-6 text-muted">
-            Xoá tài khoản sẽ xoá vĩnh viễn toàn bộ tiến độ học, tin nhắn, và
-            dữ liệu cá nhân — không thể khôi phục.
+            Xoá tài khoản sẽ xoá vĩnh viễn toàn bộ tiến độ học, tin nhắn, và dữ
+            liệu cá nhân — không thể khôi phục.
           </p>
         </div>
       </div>
