@@ -142,6 +142,18 @@ export default function LessonDetailPage() {
                       <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-xs font-semibold text-muted">
                         {String(index + 1).padStart(2, "0")}
                       </span>
+                      {/* Ảnh minh hoạ nếu có — bài theo chủ đề cụ thể (Đồ ăn,
+                       * Gia đình, Đồ vật) phủ gần kín, biến trang bài học từ
+                       * một bức tường chữ thành thứ nhìn được. */}
+                      {word.imageUrl && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={word.imageUrl}
+                          alt=""
+                          loading="lazy"
+                          className="mt-0.5 h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20"
+                        />
+                      )}
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-3">
                           <h2 lang="zh" className="hanzi break-all text-3xl">

@@ -186,6 +186,17 @@
   font-size: 16px;
   color: var(--primary);
 }
+.illustration {
+  width: 100%;
+  max-width: 260px;
+  height: 104px;
+  margin-top: 14px;
+  border-radius: 14px;
+  object-fit: cover;
+  /* Ảnh lấy từ nguồn ngoài, tỉ lệ rất khác nhau — cắt cố định để thẻ không
+   * nhảy chiều cao giữa các từ. */
+}
+
 .meaning {
   margin-top: 15px;
 }

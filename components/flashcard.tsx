@@ -192,6 +192,22 @@ export function Flashcard({
                 <AudioButton src={word.audioUrl} />
               </span>
             </div>
+            {/* Ảnh minh hoạ (Wikipedia/Commons, xem hanni-server/CLAUDE.md).
+             * 1.653 từ đã có ảnh — gần như toàn bộ danh từ cụ thể, nên các
+             * bài theo chủ đề phủ gần kín (Đồ ăn 16/16, Gia đình 12/12).
+             * Trước đây ảnh CHỈ hiện ở từ điển công khai, popup trong video
+             * và thẻ "Từ vựng hôm nay"; đúng chỗ người học ngồi lâu nhất là
+             * flashcard thì không có gì — nên user tưởng chưa cào được ảnh.
+             * Ảnh + chữ nhớ tốt hơn hẳn chữ trơ trọi. */}
+            {word.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={word.imageUrl}
+                alt=""
+                loading="lazy"
+                className={styles.illustration}
+              />
+            )}
             <div className={styles.meaning}>
               <p>
                 {word.meaningVi ?? word.meaningEn ?? "Nghĩa đang được cập nhật"}
