@@ -40,8 +40,17 @@ async function fetchTrialWords(): Promise<Word[]> {
     const res = await fetch(`${API_BASE}/words/trial`, {
       next: { revalidate },
     });
-    if (!res.ok) return [];
-    return (await res.json()) as Word[];
+    if (res.ok) return (await res.json()) as Word[];
+
+    // DỰ PHÒNG khi `/words/trial` chưa có (client lên trước server): trang
+    // này prerender rồi cache 24h, nên một lần build trúng lúc endpoint chưa
+    // tồn tại là đóng băng màn "chưa tải được từ vựng" cả ngày trên đúng
+    // trang đích của phễu SEO. Thà hiện 8 từ thông dụng còn hơn trang trống.
+    const fallback = await fetch(`${API_BASE}/words?level=1&pageSize=8`, {
+      next: { revalidate },
+    });
+    if (!fallback.ok) return [];
+    return ((await fallback.json()) as { items: Word[] }).items;
   } catch {
     return [];
   }
