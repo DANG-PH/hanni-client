@@ -224,10 +224,14 @@ export default function LessonDetailPage() {
             <span className="icon-tile mb-4 h-12! w-12!">
               <Icon name="book" size={23} />
             </span>
-            <h2 className="text-lg font-semibold">Sẵn sàng vào bài?</h2>
+            {/* Thẻ này TRƯỚC ĐÂY lặp lại đúng nút "Bắt đầu học" đã có ở tiêu
+             * đề trang — 2 nút giống hệt nhau cùng hiện trên một màn hình.
+             * Giữ nút chính ở tiêu đề, thẻ này chỉ còn phần KHÁC: luyện nghe
+             * và luyện phát âm đúng từ vựng của bài. */}
+            <h2 className="text-lg font-semibold">Luyện thêm với bài này</h2>
             <p className="mt-2 text-sm leading-6 text-muted">
-              Đọc trước từ vựng rồi luyện ghi nhớ bằng flashcard theo nhịp độ
-              của bạn.
+              Học xong từ vựng thì nghe lại và đọc to — cùng bộ từ của bài,
+              không phải từ ngẫu nhiên.
             </p>
             <dl className="mt-5 space-y-3 border-y border-border py-4 text-sm">
               <div className="flex justify-between">
@@ -263,12 +267,6 @@ export default function LessonDetailPage() {
             </dl>
             {words.length > 0 && (
               <div className="mt-5 space-y-2.5">
-                <LinkButton
-                  href={`/study?lesson=${lesson.id}`}
-                  className="w-full"
-                >
-                  <Icon name="cards" size={17} /> {startLabel} với flashcard
-                </LinkButton>
                 <div className="grid grid-cols-2 gap-2.5">
                   <LinkButton
                     href={`/listening?lesson=${lesson.id}`}

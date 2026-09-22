@@ -163,7 +163,7 @@ function GameHub({ onSelect }: { onSelect: (game: GameDef) => void }) {
           </h3>
           <p className="mb-5 text-xs leading-relaxed text-muted">{g.tagline}</p>
           <span className="inline-flex items-center gap-1.5 text-xs font-bold text-primary">
-            Xem chi tiết <Icon name="arrow" size={15} />
+            Xem luật &amp; chơi <Icon name="arrow" size={15} />
           </span>
         </button>
       ))}

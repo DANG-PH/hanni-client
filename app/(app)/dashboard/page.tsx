@@ -179,6 +179,7 @@ export default function DashboardPage() {
   // nghĩa vừa làm họ không biết bắt đầu từ đâu. Đo production: 102 tài khoản
   // nhưng chỉ 5 người từng ôn 1 từ. Với họ chỉ giữ ĐÚNG một việc cần làm.
   const isNewLearner = !!stats.data && stats.data.inProgress === 0;
+  const dueNow = stats.data?.dueNow ?? 0;
   const current = path.data?.lessons.find(
     (l) => l.id === path.data?.currentLessonId,
   );
@@ -223,19 +224,30 @@ export default function DashboardPage() {
         </div>
       </div>
       <div className={styles.welcome}>
+        {/* Nút ở hero và nút trong thẻ "Tiếp tục học" ngay bên dưới TRƯỚC ĐÂY
+         * trỏ cùng một chỗ với cùng ý nghĩa — 2 nút chính giống hệt nhau trên
+         * cùng một màn hình. Giờ chia việc: có từ đến hạn thì hero là "ôn tập"
+         * (việc cần làm trước theo SRS), thẻ bên dưới vẫn là "học bài mới".
+         * Không có gì để ôn thì hero mới quay lại dẫn vào bài học. */}
         <HeroBanner
           title="Học mỗi ngày,"
           highlight="tiến bộ không ngừng!"
           subtitle={heroSubtitle}
           ctaLabel={
-            current?.startedWords ? "Tiếp tục bài học" : "Bắt đầu học ngay"
+            dueNow > 0
+              ? `Ôn ${dueNow} từ đến hạn`
+              : current?.startedWords
+                ? "Tiếp tục bài học"
+                : "Bắt đầu học ngay"
           }
           ctaHref={
-            current
-              ? current.startedWords
-                ? `/study?lesson=${current.id}`
-                : `/learn/${current.id}`
-              : "/learn"
+            dueNow > 0
+              ? "/study"
+              : current
+                ? current.startedWords
+                  ? `/study?lesson=${current.id}`
+                  : `/learn/${current.id}`
+                : "/learn"
           }
         />
 
