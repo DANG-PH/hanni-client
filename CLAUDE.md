@@ -63,6 +63,16 @@ app/
                         vì không cần cookie/refresh), `revalidate = 86400`, và PHẢI bọc
                         try/catch: khi API không phản hồi được thì `fetch` THROW chứ không
                         trả `!res.ok`, không bắt là sập cả build.
+                        Trang từ hiện thêm **phân tích từng chữ** (电脑 = 电 điện + 脑 não)
+                        và **từ cùng chữ** — khai thác sâu nhất lợi thế Hán Việt, đồng thời
+                        làm trang dày hơn cho SEO. Xem `hanni-server/CLAUDE.md`.
+├── ngu-phap            NGỮ PHÁP CÔNG KHAI (SEO) — `/ngu-phap` + `/ngu-phap/[slug]`, cùng
+                        khuôn Server Component với `tu-dien`. **Đã GỘP `/grammar`** (trang
+                        trong app) vào đây 2026-09-22, cùng lý do gộp `/vocabulary`; link
+                        từ `/learn/[lessonId]` trỏ thẳng `/ngu-phap/[slug]` thay vì
+                        `/grammar?level=&open=slug`, `/grammar` redirect 308 ở
+                        `next.config.ts`. Chỉ hiện mục CÓ giải thích thật (`flat !== true`)
+                        — mục đại cương rút gọn mở ra là ngõ cụt.
 components/  ui.tsx · nav.tsx · flashcard.tsx · quiz-runner.tsx · comment-section.tsx
              · sidebar.tsx (`NAV_GROUPS` — điều hướng xếp theo CHU TRÌNH HỌC: học mỗi ngày
                → tra cứu → luyện kỹ năng → của bạn. Rút 16 → 12 mục 2026-09-22 vì người mới
