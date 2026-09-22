@@ -93,22 +93,33 @@ trước đó CHỈ khác màu (`data-current`), giờ có nhãn CHỮ "Bắt đ
 là dạy sai luật chơi — đã sửa 3 chỗ ("Hoàn thành từng bài để mở bước tiếp theo", "học bài đang
 mở", bước 3 của `FeatureTour`).
 
-**Trang công khai + `revalidate` = lỗi tạm thời bị ĐÓNG BĂNG 24h (sửa 2026-09-22)** — đo thật
-production: 3/30 trang từ điển (学生, 电脑, 苹果) trả HTTP 200 với thân trang RỖNG (chỉ nav +
-footer). `revalidate = 86400` cache KẾT QUẢ render, mà mỗi trang lại `try/catch` coi MỌI lỗi
-fetch là "không có dữ liệu" → `notFound()`/danh sách rỗng; API chớp tắt vài giây lúc pm2 restart
-là đủ để đóng băng trang hỏng cả ngày. Google thấy 200 nên KHÔNG thử lại — tệ hơn hẳn lỗi 500.
-Hai thay đổi đi cùng nhau:
-- `lib/public-fetch.ts` — chỉ **404 của API** mới là "không có mục này" (trả `null` → `notFound()`),
-  lỗi khác NÉM RA để Next không cache gì. Trang prerender lúc build (`/hoc-thu`, `/hsk`,
-  `/tu-da-biet`, sitemap) VẪN phải tự nuốt lỗi, nếu không API chưa chạy là sập cả bản build.
-- **Đã xoá `app/(site)/loading.tsx`** — `loading.tsx` tạo Suspense boundary nên Next đẩy phần
-  khung đi TRƯỚC khi trang resolve, khiến `notFound()`/lỗi xảy ra SAU đó không đổi được HTTP
-  status (luôn 200, thân trang là boundary lỗi `$RX`). Bỏ đi thì slug không tồn tại trả đúng 404,
-  API chết trả 500 (verify bằng cách trỏ `NEXT_PUBLIC_API_URL` sang cổng chết rồi build+start).
-  Đánh đổi: mất skeleton lúc chuyển trang — chấp nhận, vì nhóm `(site)` tồn tại để Google đọc
-  được. `components/page-skeleton.tsx` hết chỗ dùng nên xoá luôn; `app/(app)/loading.tsx` (dùng
-  `StudyLoader`) GIỮ NGUYÊN — trang trong app không cần status code đúng cho bot.
+**`revalidate = 86400` ở trang công khai = code phải đọc được CẢ hình dạng dữ liệu CŨ
+(2026-09-22)** — lỗi thật, mất 2 lần đoán sai mới ra. Triệu chứng: 3 trang từ điển (学生, 电脑,
+苹果) trả 500 trong khi 27 từ khác bình thường, gọi thẳng API vẫn 200, chạy local vẫn đúng, và
+`<title>` của trang lỗi lại ĐÚNG dữ liệu thật. Nguyên nhân: `next: { revalidate }` cache phản
+hồi API 24h, nên sau khi server thêm field `videos` thì các URL ĐÃ nằm trong cache vẫn trả hình
+dạng CŨ — `data.videos.length` ném TypeError. `generateMetadata` chỉ đọc `words[0]` nên vẫn
+chạy, vì thế trang có tiêu đề đúng mà thân trang rỗng, rất khó nhận ra.
+- **Quy tắc**: mọi mảng trong payload trang công khai khai báo TUỲ CHỌN + đọc qua `?? []`. Sau
+  mỗi lần API thêm field, client phải sống được với cả 2 hình dạng trong đúng `revalidate` giờ.
+- **Cách chẩn đoán đã hiệu quả** (lặp lại nếu gặp lỗi chỉ tái hiện trên Vercel): dựng 1 route
+  API tạm gọi CÙNG url 2 lần — một lần `next: {revalidate}`, một lần `cache: "no-store"` — rồi
+  so ĐỘ DÀI body. Lệch đúng bằng phần field mới là lộ ngay. **Thư mục bắt đầu bằng `_` là
+  private, Next KHÔNG định tuyến** — đặt tên `app/api/_diag/` thì route 404 mà không báo gì.
+- Header `x-hanni-commit` (`next.config.ts`, `VERCEL_GIT_COMMIT_SHA`) cho biết commit nào đang
+  chạy thật — trước đó phải đoán "bản vừa push đã lên chưa" qua hành vi trang.
+- `lib/public-fetch.ts` — chỉ **404 của API** mới là "không có mục này" (trả `null` →
+  `notFound()`), lỗi khác thử lại 1 lần với `no-store` rồi mới ném. Trang prerender lúc build
+  (`/hoc-thu`, `/hsk`, `/tu-da-biet`, sitemap) VẪN phải tự nuốt lỗi, nếu không API chưa chạy là
+  sập cả bản build.
+- **Đã xoá `app/(site)/loading.tsx`** — nó tạo Suspense boundary nên Next đẩy khung đi TRƯỚC khi
+  trang resolve, khiến `notFound()`/lỗi xảy ra sau đó không đổi được HTTP status (luôn 200, thân
+  trang là boundary lỗi `$RX`). Bỏ đi thì slug không tồn tại trả đúng 404, API chết trả 500 (đã
+  verify bằng cách trỏ `NEXT_PUBLIC_API_URL` sang cổng chết). `components/page-skeleton.tsx` hết
+  chỗ dùng nên xoá luôn; `app/(app)/loading.tsx` GIỮ NGUYÊN.
+- `generateStaticParams()` trả mảng rỗng ở 2 trang chi tiết → route đổi từ dynamic sang **ISR**:
+  không prerender trang nào lúc build (10.9k trang thì build cả tiếng) nhưng trang đã dựng được
+  phục vụ lại 24h, thay vì mỗi lượt bot bò là một lần render + một lần gọi API tới VPS.
 
 **Hệ quả kéo theo khi bỏ khoá — đã xử lý cùng đợt**: (1) `components/lesson-path.tsx` có Ô TÌM
 BÀI THEO CHỦ ĐỀ — cửa sổ 6 bài/lần (`PATH_WINDOW_SIZE`) chỉ hợp lý khi đi tuần tự, chọn tự do
