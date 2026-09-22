@@ -69,6 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/tu-dien`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${siteUrl}/hoc-thu`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${siteUrl}/tu-da-biet`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${siteUrl}/hsk`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${siteUrl}/ngu-phap`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${siteUrl}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${siteUrl}/register`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
