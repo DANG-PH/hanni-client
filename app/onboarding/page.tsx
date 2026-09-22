@@ -7,7 +7,11 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/icon";
 import { Button, ErrorNote, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
-import { submitOnboarding, useOnboarding } from "@/lib/hooks";
+import {
+  previewOnboarding,
+  submitOnboarding,
+  useOnboarding,
+} from "@/lib/hooks";
 import type {
   OnboardingGoal,
   OnboardingProfile,
@@ -81,6 +85,10 @@ export default function OnboardingPage() {
   const { user, loading: authLoading } = useAuth();
   const onboarding = useOnboarding(Boolean(user));
   const [result, setResult] = useState<OnboardingProfile | null>(null);
+  const [preview, setPreview] = useState<{
+    recommendedLevel: number;
+    recommendationVi: string;
+  } | null>(null);
   const [redo, setRedo] = useState(false);
   const [autoSubmitting, setAutoSubmitting] = useState(false);
   const [autoSubmitError, setAutoSubmitError] = useState<string | null>(null);
@@ -141,12 +149,25 @@ export default function OnboardingPage() {
             setRedo(true);
           }}
         />
+      ) : preview ? (
+        <ResultScreen
+          profile={preview}
+          guest
+          onRedo={() => {
+            setPreview(null);
+            setRedo(true);
+          }}
+        />
       ) : (
         <OnboardingWizard
           authenticated={Boolean(user)}
           errorBanner={autoSubmitError}
           onDone={(profile) => {
             setResult(profile);
+            setRedo(false);
+          }}
+          onPreview={(p) => {
+            setPreview(p);
             setRedo(false);
           }}
         />
@@ -167,7 +188,11 @@ function OnboardingShell({
     <div className={styles.shell}>
       <header className={styles.topbar}>
         <div className={styles.topbarInner}>
-          <Link href="/" className={styles.brand} aria-label="Về trang chủ Hanni">
+          <Link
+            href="/"
+            className={styles.brand}
+            aria-label="Về trang chủ Hanni"
+          >
             <Image
               src="/brand/hanni.png"
               alt=""
@@ -193,7 +218,10 @@ function OnboardingShell({
       </header>
       <main className={styles.main}>
         <div className={styles.layout}>
-          <aside className={styles.introPanel} aria-label="Giới thiệu lộ trình Hanni">
+          <aside
+            className={styles.introPanel}
+            aria-label="Giới thiệu lộ trình Hanni"
+          >
             <div className={styles.introContent}>
               <p className={styles.introKicker}>
                 <span className={styles.introKickerDot} aria-hidden="true" />
@@ -254,12 +282,17 @@ function OnboardingWizard({
   authenticated,
   errorBanner,
   onDone,
+  onPreview,
 }: {
   authenticated: boolean;
   errorBanner: string | null;
   onDone: (profile: OnboardingProfile) => void;
+  /** Khách chưa đăng nhập: chỉ có kết quả tính thử, chưa lưu gì. */
+  onPreview: (preview: {
+    recommendedLevel: number;
+    recommendationVi: string;
+  }) => void;
 }) {
-  const router = useRouter();
   const [step, setStep] = useState<Step>(1);
   const [hasStudiedBefore, setHasStudiedBefore] = useState<boolean | null>(
     null,
@@ -268,17 +301,14 @@ function OnboardingWizard({
     null,
   );
   const [goal, setGoal] = useState<OnboardingGoal | null>(null);
-  const [plansToTakeExam, setPlansToTakeExam] = useState<boolean | null>(
-    null,
-  );
+  const [plansToTakeExam, setPlansToTakeExam] = useState<boolean | null>(null);
   const [targetLevel, setTargetLevel] = useState<number | null>(null);
   const [targetDate, setTargetDate] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function submit() {
-    if (hasStudiedBefore === null || !goal || plansToTakeExam === null)
-      return;
+    if (hasStudiedBefore === null || !goal || plansToTakeExam === null) return;
     const input: SubmitOnboardingInput = {
       hasStudiedBefore,
       selfAssessedLevel: hasStudiedBefore
@@ -296,10 +326,19 @@ function OnboardingWizard({
         const profile = await submitOnboarding(input);
         onDone(profile);
       } else {
-        // Chưa có tài khoản: lưu tạm rồi qua đăng ký, đăng ký xong quay lại
-        // trang này (xem effect tự nộp trong OnboardingPage) mới thật sự lưu.
-        sessionStorage.setItem(PENDING_KEY, JSON.stringify(input));
-        router.push("/register");
+        // Chưa có tài khoản: TÍNH và HIỆN kết quả ngay, chỉ lưu tạm câu trả
+        // lời để đăng ký xong thì tự nộp (xem effect trong OnboardingPage).
+        //
+        // Trước đây bước này đẩy thẳng sang /register — trả lời xong 3 câu mà
+        // chưa nhận lại gì, đúng chỗ dễ rời đi nhất trong cả luồng. Giờ xem
+        // lộ trình trước, rồi mới mời tạo tài khoản để LƯU nó.
+        const preview = await previewOnboarding(input);
+        try {
+          sessionStorage.setItem(PENDING_KEY, JSON.stringify(input));
+        } catch {
+          /* trình duyệt có thể chặn sessionStorage — vẫn xem được kết quả */
+        }
+        onPreview(preview);
       }
     } catch {
       setError("Chưa lưu được khảo sát. Bạn thử lại nhé.");
@@ -308,7 +347,8 @@ function OnboardingWizard({
   }
 
   const progress = Math.round((step / 3) * 100);
-  const progressHint = step === 1 ? "Còn 2 bước" : step === 2 ? "Còn 1 bước" : "Sắp hoàn tất";
+  const progressHint =
+    step === 1 ? "Còn 2 bước" : step === 2 ? "Còn 1 bước" : "Sắp hoàn tất";
 
   return (
     <div className={styles.wizardColumn}>
@@ -327,7 +367,10 @@ function OnboardingWizard({
             aria-valuemin={0}
             aria-valuemax={100}
           >
-            <span className={styles.progressValue} style={{ width: `${progress}%` }} />
+            <span
+              className={styles.progressValue}
+              style={{ width: `${progress}%` }}
+            />
           </div>
         </div>
 
@@ -370,7 +413,10 @@ function OnboardingWizard({
                   <p className={styles.subQuestion}>
                     Bạn tự đánh giá đã học tới khoảng cấp nào?
                   </p>
-                  <LevelGrid value={selfAssessedLevel} onChange={setSelfAssessedLevel} />
+                  <LevelGrid
+                    value={selfAssessedLevel}
+                    onChange={setSelfAssessedLevel}
+                  />
                 </div>
               )}
               <div className={styles.wizardFooter}>
@@ -466,8 +512,12 @@ function OnboardingWizard({
                   <p className={styles.subQuestion}>Bạn muốn thi cấp nào?</p>
                   <LevelGrid value={targetLevel} onChange={setTargetLevel} />
                   <div className="mt-5">
-                    <label htmlFor="onboarding-target-date" className={styles.fieldLabel}>
-                      Hạn thi dự kiến <span className="font-normal">(không bắt buộc)</span>
+                    <label
+                      htmlFor="onboarding-target-date"
+                      className={styles.fieldLabel}
+                    >
+                      Hạn thi dự kiến{" "}
+                      <span className="font-normal">(không bắt buộc)</span>
                     </label>
                     <input
                       id="onboarding-target-date"
@@ -585,7 +635,9 @@ function LevelGrid({
           className={`${styles.levelButton} ${value === lv ? styles.levelActive : ""}`}
         >
           <span className={styles.levelNumber}>HSK {lv}</span>
-          <span className={styles.levelDescription}>{LEVEL_DESCRIPTIONS[lv - 1]}</span>
+          <span className={styles.levelDescription}>
+            {LEVEL_DESCRIPTIONS[lv - 1]}
+          </span>
         </button>
       ))}
     </div>
@@ -594,9 +646,13 @@ function LevelGrid({
 
 function ResultScreen({
   profile,
+  guest = false,
   onRedo,
 }: {
-  profile: OnboardingProfile;
+  /** Chỉ cần 2 field này — khách chưa đăng nhập không có hồ sơ đầy đủ. */
+  profile: { recommendedLevel: number; recommendationVi: string };
+  /** true = kết quả tính thử, CHƯA lưu (chưa có tài khoản). */
+  guest?: boolean;
   onRedo: () => void;
 }) {
   const router = useRouter();
@@ -611,25 +667,45 @@ function ResultScreen({
           Bắt đầu từ <strong>HSK {profile.recommendedLevel}</strong>
         </h2>
         <p className={styles.resultDescription}>
-          Hanni đã ghép câu trả lời của bạn thành một điểm bắt đầu vừa sức.
-          Bạn có thể làm lại khảo sát bất cứ lúc nào.
+          {guest
+            ? "Đây là điểm bắt đầu vừa sức với câu trả lời của bạn. Tạo tài khoản để Hanni lưu lộ trình này và theo dõi tiến độ mỗi ngày."
+            : "Hanni đã ghép câu trả lời của bạn thành một điểm bắt đầu vừa sức. Bạn có thể làm lại khảo sát bất cứ lúc nào."}
         </p>
         <p className={styles.recommendation}>{profile.recommendationVi}</p>
         <div className={styles.resultActions}>
-          <Button
-            onClick={() =>
-              router.push(`/learn?level=${profile.recommendedLevel}`)
-            }
-          >
-            Bắt đầu học HSK {profile.recommendedLevel}
-            <Icon name="arrow" size={16} />
-          </Button>
-          <Link
-            href="/dashboard"
-            className="motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-surface-2"
-          >
-            Vào trang chủ
-          </Link>
+          {guest ? (
+            <>
+              <Button onClick={() => router.push("/register")}>
+                Tạo tài khoản để lưu lộ trình
+                <Icon name="arrow" size={16} />
+              </Button>
+              {/* Vẫn cho xem thử trước khi đăng ký — ép đăng ký ngay là chỗ
+               * rời đi nhiều nhất. */}
+              <Link
+                href="/hoc-thu"
+                className="motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-surface-2"
+              >
+                Học thử 8 từ, chưa cần tài khoản
+              </Link>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={() =>
+                  router.push(`/learn?level=${profile.recommendedLevel}`)
+                }
+              >
+                Bắt đầu học HSK {profile.recommendedLevel}
+                <Icon name="arrow" size={16} />
+              </Button>
+              <Link
+                href="/dashboard"
+                className="motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-surface-2"
+              >
+                Vào trang chủ
+              </Link>
+            </>
+          )}
           <Button variant="ghost" onClick={onRedo}>
             Làm lại khảo sát
           </Button>

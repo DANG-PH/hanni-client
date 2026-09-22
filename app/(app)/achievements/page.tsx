@@ -29,12 +29,28 @@ export default function AchievementsPage() {
   const [filter, setFilter] = useState<"all" | "unlocked" | "locked">("all");
   if (loading || !user) return <Spinner />;
   const unlocked = data?.filter((a) => a.unlocked).length ?? 0;
-  const visible =
+  // Xếp huy hiệu GẦN ĐẠT NHẤT lên trước (trong nhóm chưa mở khoá): "còn 2
+  // lượt ôn nữa là xong" thúc đẩy mạnh hơn hẳn một danh sách theo thứ tự
+  // catalog, nơi mốc xa nhất có thể nằm ngay đầu trang và trông vô vọng.
+  // Huy hiệu ĐÃ mở khoá xuống dưới — chúng là phần thưởng để ngắm, không
+  // phải việc cần làm.
+  const ratio = (a: { progressCurrent: number; progressTarget: number }) =>
+    a.progressTarget > 0
+      ? Math.min(a.progressCurrent, a.progressTarget) / a.progressTarget
+      : 0;
+  const visible = (
     data?.filter(
       (achievement) =>
         filter === "all" ||
         (filter === "unlocked" ? achievement.unlocked : !achievement.unlocked),
-    ) ?? [];
+    ) ?? []
+  )
+    .slice()
+    .sort((a, b) => {
+      if (a.unlocked !== b.unlocked) return a.unlocked ? 1 : -1;
+      if (a.unlocked) return 0;
+      return ratio(b) - ratio(a);
+    });
   return (
     <div className="page-wrap space-y-7">
       <PageHeading
@@ -145,7 +161,9 @@ export default function AchievementsPage() {
                           {CAT_VI[a.category] ?? a.category}
                         </span>
                       </div>
-                      <h2 className="mt-5 text-base font-bold text-foreground">{a.nameVi}</h2>
+                      <h2 className="mt-5 text-base font-bold text-foreground">
+                        {a.nameVi}
+                      </h2>
                       <p className="mt-2 text-sm leading-relaxed text-muted">
                         {a.descriptionVi}
                       </p>
@@ -160,7 +178,8 @@ export default function AchievementsPage() {
                             label={a.nameVi}
                           />
                           <p className="text-xs text-muted font-medium text-right">
-                            {Math.min(a.progressCurrent, a.progressTarget)} / {a.progressTarget}
+                            {Math.min(a.progressCurrent, a.progressTarget)} /{" "}
+                            {a.progressTarget}
                           </p>
                         </div>
                       )}

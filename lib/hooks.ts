@@ -300,6 +300,16 @@ export function submitOnboarding(input: SubmitOnboardingInput) {
   return api.post<OnboardingProfile>("/onboarding", input);
 }
 
+/** Tính lộ trình đề xuất mà KHÔNG lưu, KHÔNG cần tài khoản — để người làm
+ * khảo sát ẩn danh xem kết quả NGAY rồi mới quyết định có đăng ký hay không.
+ * Xem `OnboardingService.preview` ở server cho lý do đầy đủ. */
+export function previewOnboarding(input: SubmitOnboardingInput) {
+  return api.post<{ recommendedLevel: number; recommendationVi: string }>(
+    "/onboarding/preview",
+    input,
+  );
+}
+
 /** Chỉ tải khi widget đang mở — tránh gọi API này trên mọi trang cho mọi user. */
 export function useAssistantSessions(enabled: boolean) {
   return useSWR<AssistantSession[]>(
