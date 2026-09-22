@@ -130,7 +130,13 @@ tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ
 đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
 màn trống.
 
-**Refresh token: gộp chung 1 lượt (sửa 2026-09-22)** — `lib/api.ts` trước đây để MỖI request
+**Không hứa suông khi hạ tầng chưa bật (2026-09-22)** — `/settings` hiện ghi chú ngay trong thẻ
+"Email tổng kết tuần" khi `GET /mail/configured` trả `false`: đo production thấy `MAIL_HOST`
+trống mà 101/102 tài khoản đang bật mục này, tức là bày ra một nút "Bật" không dẫn tới đâu.
+Cùng khuôn với phần nạp xu tự ẩn khi chưa có payOS. Thẻ bật thông báo cũng nói rõ "từ giờ sẽ
+được nhắc mỗi ngày" vì server đặt sẵn giờ nhắc mặc định khi bật (xem `hanni-server/CLAUDE.md`).
+
+**Refresh token: gộp chung 1 lượt (sửa 2026-09-22)****Refresh token: gộp chung 1 lượt (sửa 2026-09-22)** — `lib/api.ts` trước đây để MỖI request
 401 tự gọi `/auth/refresh`. Dashboard bắn cả chục request SWR song song nên access token hết
 hạn là cả chục lượt refresh cùng lúc với cùng 1 cookie; server xoay token cho lượt đầu rồi coi
 những lượt sau là token bị đánh cắp và huỷ cả phiên — đo log production: **661 lần**, tức 661
