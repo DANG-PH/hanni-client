@@ -5,7 +5,11 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CommentSection } from "@/components/comment-section";
 import { NextStep } from "@/components/next-step";
-import { FeatureTour, type TourStep } from "@/components/feature-tour";
+import {
+  FeatureTour,
+  TourButton,
+  type TourStep,
+} from "@/components/feature-tour";
 import { Icon } from "@/components/icon";
 import { MobileVideoTranscript } from "@/components/mobile-video-transcript";
 import { TranscriptLine } from "@/components/transcript-line";
@@ -98,10 +102,7 @@ export default function WatchDetailPage() {
   const [offset, setOffset] = useState(0);
   const [frame, setFrame] = useState({ top: 0, height: 72 });
 
-  const times = useMemo(
-    () => (data ? computeTimes(data.lines) : []),
-    [data],
-  );
+  const times = useMemo(() => (data ? computeTimes(data.lines) : []), [data]);
 
   // Đổi tiêu đề tab trình duyệt theo tên video đang xem.
   useEffect(() => {
@@ -155,9 +156,7 @@ export default function WatchDetailPage() {
   useEffect(() => {
     const track = trackRef.current;
     if (!track || !vpH) return;
-    const el = track.querySelector<HTMLElement>(
-      `[data-idx="${active ?? 1}"]`,
-    );
+    const el = track.querySelector<HTMLElement>(`[data-idx="${active ?? 1}"]`);
     if (!el) return;
     const center = el.offsetTop + el.offsetHeight / 2;
     setOffset(Math.max(0, center - vpH / 2));
@@ -256,12 +255,17 @@ export default function WatchDetailPage() {
     <div className="page-wrap max-w-none! space-y-3 max-lg:px-3 max-lg:py-3 lg:space-y-5">
       <FeatureTour tourKey="watch-detail" steps={WATCH_TOUR_STEPS} />
       <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
-        <Link href="/watch" className="inline-flex min-h-11 items-center gap-2 hover:text-primary lg:min-h-0">
+        <Link
+          href="/watch"
+          className="inline-flex min-h-11 items-center gap-2 hover:text-primary lg:min-h-0"
+        >
           <Icon name="back" size={16} className="lg:hidden" />
           Học qua video
         </Link>
         <Icon name="chevron" size={14} className="hidden lg:block" />
-        <span className="hidden font-medium text-foreground lg:inline">{data.title}</span>
+        <span className="hidden font-medium text-foreground lg:inline">
+          {data.title}
+        </span>
         {data.isOwner && (
           <button
             onClick={() => void del()}
@@ -282,14 +286,23 @@ export default function WatchDetailPage() {
               </span>
             )}
           </h1>
-          <VideoLikeButton
-            videoId={id}
-            liked={data.likedByMe}
-            count={data.likeCount}
-            onChange={(likedByMe, likeCount) =>
-              void mutate({ ...data, likedByMe, likeCount }, { revalidate: false })
-            }
-          />
+          <div className="flex shrink-0 items-center gap-2">
+            {/* Trang này có khá nhiều thứ ẩn/hiện (pinyin, dịch, phụ đề đè,
+             * bấm từ trong bản chép) — cho mở lại hướng dẫn thay vì chỉ hiện
+             * đúng một lần rồi thôi. */}
+            <TourButton tourKey="watch-detail" />
+            <VideoLikeButton
+              videoId={id}
+              liked={data.likedByMe}
+              count={data.likeCount}
+              onChange={(likedByMe, likeCount) =>
+                void mutate(
+                  { ...data, likedByMe, likeCount },
+                  { revalidate: false },
+                )
+              }
+            />
+          </div>
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted">
           {data.hskLevel && (
@@ -302,16 +315,16 @@ export default function WatchDetailPage() {
             </span>
           )}
           <span>{data.sentenceCount} câu</span>
-          {data.author && <span className="hidden lg:inline">· {data.author}</span>}
+          {data.author && (
+            <span className="hidden lg:inline">· {data.author}</span>
+          )}
           <span className="hidden items-center gap-1 lg:flex">
             <Icon name="message" size={13} />
             {data.commentCount} bình luận
           </span>
           <span
             className={`rounded-md px-2 py-0.5 text-xs ${
-              realSync
-                ? "bg-good/10 text-good"
-                : "bg-surface-2 text-muted"
+              realSync ? "bg-good/10 text-good" : "bg-surface-2 text-muted"
             }`}
           >
             {realSync ? "Đồng bộ theo lời nói" : "Thời gian ước lượng"}
@@ -319,7 +332,10 @@ export default function WatchDetailPage() {
         </div>
       </div>
 
-      <div ref={workspaceRef} className={`${styles.workspace} grid lg:grid-cols-[1.3fr_1fr] lg:gap-5`}>
+      <div
+        ref={workspaceRef}
+        className={`${styles.workspace} grid lg:grid-cols-[1.3fr_1fr] lg:gap-5`}
+      >
         <div className="max-lg:contents lg:space-y-3">
           {/* On mobile, display:contents lets the player stay sticky across the
               whole learning area instead of stopping at the description. */}
@@ -337,14 +353,18 @@ export default function WatchDetailPage() {
                     {activeLine.zh}
                   </p>
                   {showTrans && activeLine.vi && (
-                    <p className="mt-0.5 text-xs text-white/80">{activeLine.vi}</p>
+                    <p className="mt-0.5 text-xs text-white/80">
+                      {activeLine.vi}
+                    </p>
                   )}
                 </div>
               )}
             </div>
           </div>
           {data.description && (
-            <p className="hidden text-sm leading-6 text-muted lg:block">{data.description}</p>
+            <p className="hidden text-sm leading-6 text-muted lg:block">
+              {data.description}
+            </p>
           )}
         </div>
 
@@ -403,7 +423,11 @@ export default function WatchDetailPage() {
                     onClick={() => selectLine(resumeAt)}
                     className="motion-button rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-fg shadow-lg"
                   >
-                    <Icon name="play" size={13} className="-ml-0.5 mr-1 inline" />
+                    <Icon
+                      name="play"
+                      size={13}
+                      className="-ml-0.5 mr-1 inline"
+                    />
                     Tiếp tục từ câu {resumeAt}
                   </button>
                 </div>
@@ -444,9 +468,15 @@ export default function WatchDetailPage() {
         <details className="group rounded-xl border border-border bg-surface px-4 lg:hidden">
           <summary className="flex min-h-12 items-center justify-between gap-3 text-sm font-semibold">
             Giới thiệu video
-            <Icon name="chevron" size={16} className="rotate-90 transition-transform group-open:rotate-270" />
+            <Icon
+              name="chevron"
+              size={16}
+              className="rotate-90 transition-transform group-open:rotate-270"
+            />
           </summary>
-          <p className="whitespace-pre-line break-words pb-4 text-sm leading-6 text-muted">{data.description}</p>
+          <p className="whitespace-pre-line break-words pb-4 text-sm leading-6 text-muted">
+            {data.description}
+          </p>
         </details>
       )}
 
