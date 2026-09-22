@@ -45,11 +45,14 @@ export function Flashcard({
   word,
   isNew,
   onRate,
+  onKnown,
   busy = false,
 }: {
   word: Word;
   isNew: boolean;
   onRate: (rating: Rating, durationMs: number) => void;
+  /** "Tôi biết từ này rồi" — ẩn hẳn khỏi hàng đợi, KHÔNG ghi nhận lượt ôn. */
+  onKnown?: () => void;
   busy?: boolean;
 }) {
   const [revealed, setRevealed] = useState(false);
@@ -243,6 +246,21 @@ export function Flashcard({
           ))}
         </div>
       </div>
+      {/* Người Việt gặp rất nhiều từ đã biết sẵn qua âm Hán Việt (xem trang
+       * /tu-da-biet). Bắt ôn đi ôn lại những từ đó là lý do bỏ app rất thật,
+       * nên cho tự ẩn — chỉ hiện sau khi lật thẻ để không ai bấm khi còn chưa
+       * nhìn thấy nghĩa. */}
+      {onKnown && revealed && (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={onKnown}
+          className={styles.knownButton}
+        >
+          <Icon name="check" size={14} />
+          Tôi đã biết từ này — đừng hỏi lại
+        </button>
+      )}
       <p role="status" className={styles.saveStatus}>
         {busy ? "Đang lưu kết quả…" : ""}
       </p>

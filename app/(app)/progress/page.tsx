@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   FeatureTour,
   TourButton,
@@ -9,6 +10,7 @@ import Link from "next/link";
 import { ActivityCalendar } from "@/components/activity-calendar";
 import { AudioButton } from "@/components/audio-button";
 import {
+  Button,
   Card,
   EmptyState,
   ErrorNote,
@@ -21,7 +23,13 @@ import {
 } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { useRequireAuth } from "@/lib/auth";
-import { useLeeches, useProgress, useRecentQuizzes } from "@/lib/hooks";
+import {
+  suspendWord,
+  useLeeches,
+  useProgress,
+  useRecentQuizzes,
+  useSuspendedWords,
+} from "@/lib/hooks";
 
 const BAND_VI: Record<string, string> = {
   ELEMENTARY: "Sơ cấp",
@@ -55,6 +63,19 @@ export default function ProgressPage() {
   const { data, isLoading, error, mutate } = useProgress();
   const quizzes = useRecentQuizzes();
   const leeches = useLeeches();
+  const suspended = useSuspendedWords();
+  const [unhiding, setUnhiding] = useState<string | null>(null);
+
+  async function unhide(wordId: string) {
+    if (unhiding) return;
+    setUnhiding(wordId);
+    try {
+      await suspendWord(wordId, false);
+      await Promise.all([suspended.mutate(), mutate()]);
+    } finally {
+      setUnhiding(null);
+    }
+  }
   if (loading || !user) return <Spinner />;
   const completion = data?.totals.totalWords
     ? Math.round((data.totals.learned / data.totals.totalWords) * 100)
@@ -236,6 +257,47 @@ export default function ProgressPage() {
                       <span className="shrink-0 rounded-full bg-danger/10 px-2.5 py-1 text-xs font-semibold text-danger">
                         Sai {l.lapses} lần
                       </span>
+                    </div>
+                  ))}
+                </Card>
+              </section>
+            )}
+            {/* Bỏ ẩn được thì người dùng mới dám ẩn. Chỉ hiện khi thật sự
+             * có từ đang ẩn — không bày một mục rỗng khó hiểu. */}
+            {!!suspended.data?.length && (
+              <section>
+                <SectionHeading
+                  icon="eye"
+                  tone="lavender"
+                  title="Từ đã ẩn"
+                  description="Những từ bạn đánh dấu là đã biết — không xuất hiện trong lượt ôn nữa. Đổi ý thì cho học lại bất cứ lúc nào."
+                  className="mb-5"
+                />
+                <Card className="divide-y divide-border p-0!">
+                  {suspended.data.map((item) => (
+                    <div
+                      key={item.word.id}
+                      className="flex items-center justify-between gap-3 px-5 py-3.5"
+                    >
+                      <div className="flex min-w-0 items-center gap-2">
+                        <AudioButton src={item.word.audioUrl} size={16} />
+                        <span className="hanzi shrink-0 text-lg">
+                          {item.word.simplified}
+                        </span>
+                        <span className="shrink-0 text-xs text-muted">
+                          {item.word.pinyin}
+                        </span>
+                        <span className="truncate text-sm text-muted">
+                          {item.word.meaningVi}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        disabled={unhiding === item.word.id}
+                        onClick={() => void unhide(item.word.id)}
+                      >
+                        {unhiding === item.word.id ? "Đang mở…" : "Học lại"}
+                      </Button>
                     </div>
                   ))}
                 </Card>

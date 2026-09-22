@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Icon } from "@/components/icon";
 import { Button, Card, ErrorNote } from "@/components/ui";
 import { buyTitle, equipTitle, useTitleShop } from "@/lib/shop";
@@ -11,7 +11,10 @@ import type { Title } from "@/lib/types";
  * khung avatar), hiện dạng chữ cạnh tên trên hồ sơ công khai. Cùng nguyên
  * tắc với `FrameShop`: mua đứt bằng xu, không dùng cơ chế rương/random.
  */
-export function TitleShop() {
+export function TitleShop({ bare = false }: { bare?: boolean } = {}) {
+  // `bare`: nhúng vào thẻ "Ví & cửa hàng" gộp (không tự dựng Card/tiêu đề
+  // riêng nữa) — xem components/cosmetic-shop.tsx.
+  const Wrapper = bare ? Fragment : Card;
   const { data, mutate, isLoading } = useTitleShop();
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -24,7 +27,9 @@ export function TitleShop() {
       await buyTitle(title.key);
       await mutate();
     } catch {
-      setError("Chưa mở khoá được danh hiệu này. Kiểm tra lại số dư rồi thử lại.");
+      setError(
+        "Chưa mở khoá được danh hiệu này. Kiểm tra lại số dư rồi thử lại.",
+      );
     } finally {
       setBusyKey(null);
     }
@@ -47,20 +52,8 @@ export function TitleShop() {
   if (isLoading) return null;
 
   return (
-    <Card>
-      <div className="flex items-center gap-3">
-        <span className="icon-tile bg-good/10 text-good">
-          <Icon name="trophy" />
-        </span>
-        <div>
-          <h2 className="font-semibold">Danh hiệu</h2>
-          <p className="mt-1 text-sm text-muted">
-            Mở khoá bằng xu — hiện cạnh tên trên hồ sơ công khai của bạn.
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+    <Wrapper>
+      <div className="grid gap-3 sm:grid-cols-2">
         {data?.titles.map((title) => {
           const busy = busyKey === title.key || busyKey === "none";
           return (
@@ -116,6 +109,6 @@ export function TitleShop() {
           <ErrorNote>{error}</ErrorNote>
         </div>
       )}
-    </Card>
+    </Wrapper>
   );
 }

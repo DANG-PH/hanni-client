@@ -312,6 +312,32 @@
   font-size: 9px;
   opacity: 0.8;
 }
+.knownButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  align-self: center;
+  min-height: 36px;
+  margin-top: 10px;
+  padding-inline: 12px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  transition: color 160ms, border-color 160ms;
+}
+
+.knownButton:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--good) 45%, var(--border));
+  color: var(--good);
+}
+
+.knownButton:disabled {
+  opacity: 0.5;
+}
+
 .saveStatus {
   min-height: 20px;
   margin-top: 8px;

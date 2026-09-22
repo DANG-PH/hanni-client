@@ -16,6 +16,7 @@ import { Icon } from "@/components/icon";
 import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import {
+  suspendWord,
   useCurrentLesson,
   useLearnPath,
   useLesson,
@@ -114,6 +115,37 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
     },
     [items, pos],
   );
+
+  /** "Tôi biết từ này rồi": ẩn hẳn từ khỏi hàng đợi và bỏ thẻ khỏi buổi học
+   * — KHÔNG ghi một lượt ôn, vì người dùng không thật sự ôn nó. Bỏ thẻ ra
+   * khỏi mảng (thay vì nhảy qua) để thống kê cuối buổi vẫn đúng mẫu số. */
+  const onKnown = useCallback(async () => {
+    const item = items[pos];
+    if (!item || ratingLock.current) return;
+    ratingLock.current = true;
+    setBusy(true);
+    setError(null);
+    try {
+      await suspendWord(item.word.id, true);
+    } catch {
+      setError("Chưa ẩn được từ này. Thử lại nhé.");
+      ratingLock.current = false;
+      setBusy(false);
+      return;
+    }
+    const rest = items.filter((_, i) => i !== pos);
+    setItems(rest);
+    if (pos >= rest.length) {
+      if (sessionId.current) {
+        await api
+          .post(`/study/session/${sessionId.current}/end`)
+          .catch(() => undefined);
+      }
+      setPhase("review-done");
+    }
+    ratingLock.current = false;
+    setBusy(false);
+  }, [items, pos]);
 
   async function startQuiz() {
     if (busy) return;
@@ -324,6 +356,7 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
               isNew={items[pos].isNew}
               busy={busy}
               onRate={(r, d) => void onRate(r, d)}
+              onKnown={() => void onKnown()}
             />
           </div>
           <aside

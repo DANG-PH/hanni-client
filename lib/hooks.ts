@@ -20,6 +20,7 @@ import type {
   HskLevel,
   LearnPath,
   LeechWord,
+  SuspendedWord,
   LessonDetail,
   OnboardingProfile,
   Paginated,
@@ -68,6 +69,19 @@ export function useStreak() {
  * hanni-server/CLAUDE.md mục Leech). */
 export function useLeeches() {
   return useSWR<LeechWord[]>("/study/leeches", fetcher);
+}
+
+/** Từ đang ẩn khỏi hàng đợi ôn — xem/bỏ ẩn ở `/progress`. */
+export function useSuspendedWords() {
+  return useSWR<SuspendedWord[]>("/study/suspended", fetcher);
+}
+
+/** "Tôi biết từ này rồi" / bỏ ẩn. Xem lý do ở `ReviewService.setSuspended`. */
+export function suspendWord(wordId: string, suspended: boolean) {
+  return api.post<{ wordId: string; suspended: boolean }>(
+    `/study/words/${wordId}/suspend`,
+    { suspended },
+  );
 }
 
 export function useStreakHistory(days = 30) {

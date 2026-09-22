@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { Icon } from "@/components/icon";
 import { Button, Card, ErrorNote } from "@/components/ui";
@@ -14,7 +14,10 @@ import type { AvatarFrame } from "@/lib/types";
  * cơ chế rương/random reward ở `hanni-server/CLAUDE.md` mục "Cửa hàng
  * trang trí". Khung đang dùng hiện luôn trên hồ sơ công khai `/u/[id]`.
  */
-export function FrameShop() {
+export function FrameShop({ bare = false }: { bare?: boolean } = {}) {
+  // `bare`: nhúng vào thẻ "Ví & cửa hàng" gộp (không tự dựng Card/tiêu đề
+  // riêng nữa) — xem components/cosmetic-shop.tsx.
+  const Wrapper = bare ? Fragment : Card;
   const { user } = useAuth();
   const { data, mutate, isLoading } = useFrameShop();
   const [busyKey, setBusyKey] = useState<string | null>(null);
@@ -51,20 +54,8 @@ export function FrameShop() {
   if (isLoading || !user) return null;
 
   return (
-    <Card>
-      <div className="flex items-center gap-3">
-        <span className="icon-tile bg-lavender/10 text-lavender">
-          <Icon name="spark" />
-        </span>
-        <div>
-          <h2 className="font-semibold">Cửa hàng trang trí</h2>
-          <p className="mt-1 text-sm text-muted">
-            Mở khoá khung avatar bằng xu — hiện trên hồ sơ công khai của bạn.
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+    <Wrapper>
+      <div className="grid gap-3 sm:grid-cols-2">
         {data?.frames.map((frame) => {
           const busy = busyKey === frame.key || busyKey === "none";
           return (
@@ -125,6 +116,6 @@ export function FrameShop() {
           <ErrorNote>{error}</ErrorNote>
         </div>
       )}
-    </Card>
+    </Wrapper>
   );
 }

@@ -151,6 +151,9 @@ export interface StudyStats {
   reviewsDoneToday: number;
   newDoneToday: number;
   newRemaining: number;
+  leechCount: number;
+  /** số từ người dùng đã tự ẩn khỏi hàng đợi ôn */
+  suspendedCount: number;
 }
 
 export type Rating = "AGAIN" | "HARD" | "GOOD" | "EASY";
@@ -199,6 +202,20 @@ export interface LevelBucket {
 export interface ProgressOverview {
   levels: LevelBucket[];
   totals: Omit<LevelBucket, "level" | "band" | "nameVi">;
+}
+
+/** Từ người dùng tự ẩn khỏi hàng đợi ôn ("tôi biết từ này rồi"). */
+export interface SuspendedWord {
+  word: {
+    id: string;
+    simplified: string;
+    pinyin: string;
+    meaningVi: string | null;
+    hanViet: string | null;
+    hskLevel: number;
+    audioUrl: string | null;
+  };
+  hiddenAt: string;
 }
 
 export interface LeechWord {

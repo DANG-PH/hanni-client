@@ -1,11 +1,10 @@
 "use client";
 
+import { CosmeticShop } from "@/components/cosmetic-shop";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AvatarEditor } from "@/components/avatar-editor";
-import { FrameShop } from "@/components/frame-shop";
-import { TitleShop } from "@/components/title-shop";
 import { Icon } from "@/components/icon";
 import { PremiumSection } from "@/components/premium-section";
 import { ShareButton } from "@/components/share-button";
@@ -189,8 +188,7 @@ export default function AccountPage() {
           </Card>
           <PremiumSection />
           <WalletCard />
-          <FrameShop />
-          <TitleShop />
+          <CosmeticShop />
           <Card>
             <SectionHeading
               icon="route"
