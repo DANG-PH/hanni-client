@@ -14,7 +14,6 @@ const STATUS_META: Record<
   COMPLETED: { label: "Đã xong", tone: styles.completed },
   IN_PROGRESS: { label: "Đang học", tone: styles.inProgress },
   AVAILABLE: { label: "Sẵn sàng", tone: styles.available },
-  LOCKED: { label: "Chưa mở", tone: styles.locked },
 };
 
 const PATH_WINDOW_SIZE = 6;
@@ -77,10 +76,9 @@ function LessonItems({
         const pct = lesson.wordCount
           ? (lesson.learnedWords / lesson.wordCount) * 100
           : 0;
-        const locked = lesson.status === "LOCKED";
         const card = (
           <div
-            className={`${styles.card} ${locked ? styles.cardLocked : ""}`}
+            className={styles.card}
             data-status={lesson.status}
             data-current={
               lesson.id === currentLessonId ? "true" : undefined
@@ -89,8 +87,6 @@ function LessonItems({
             <span className={`${styles.number} ${meta.tone}`}>
               {lesson.status === "COMPLETED" ? (
                 <Icon name="check" size={18} />
-              ) : lesson.status === "LOCKED" ? (
-                <Icon name="lock" size={15} />
               ) : (
                 lesson.orderIndex
               )}
@@ -99,8 +95,21 @@ function LessonItems({
             <div className={styles.copy}>
               <div className={styles.titleRow}>
                 <span className={styles.title}>{lesson.title}</span>
-                <span className={`${styles.status} ${meta.tone}`}>
-                  {meta.label}
+                {/* Bỏ khoá bài (2026-09-22) nên mọi bài đều mở — người mới
+                 * nhìn 27 bài "Sẵn sàng" giống nhau lại không biết vào đâu.
+                 * Nhãn chữ rõ ràng cho bài nên học tiếp: gợi ý thay vì cấm. */}
+                <span
+                  className={`${styles.status} ${
+                    lesson.id === currentLessonId
+                      ? styles.inProgress
+                      : meta.tone
+                  }`}
+                >
+                  {lesson.id === currentLessonId
+                    ? lesson.startedWords > 0
+                      ? "Học tiếp"
+                      : "Bắt đầu từ đây"
+                    : meta.label}
                 </span>
               </div>
               <p className={`hanzi ${styles.preview}`}>
@@ -115,14 +124,12 @@ function LessonItems({
               </div>
             </div>
 
-            {!locked && (
-              <Icon
-                name="arrow"
-                size={18}
-                className={styles.arrow}
-                data-icon="arrow"
-              />
-            )}
+            <Icon
+              name="arrow"
+              size={18}
+              className={styles.arrow}
+              data-icon="arrow"
+            />
           </div>
         );
 
@@ -132,17 +139,13 @@ function LessonItems({
             className={styles.item}
             data-status={lesson.status}
           >
-            {locked ? (
-              card
-            ) : (
-              <Link
-                href={`/learn/${lesson.id}`}
-                className={styles.link}
-                aria-label={`Xem ${lesson.title}`}
-              >
-                {card}
-              </Link>
-            )}
+            <Link
+              href={`/learn/${lesson.id}`}
+              className={styles.link}
+              aria-label={`Xem ${lesson.title}`}
+            >
+              {card}
+            </Link>
           </li>
         );
       })}

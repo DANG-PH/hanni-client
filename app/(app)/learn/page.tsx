@@ -37,7 +37,7 @@ const LEARN_TOUR_STEPS: TourStep[] = [
     icon: "cards",
     title: "Bài học theo chủ đề",
     description:
-      "Mỗi cấp chia thành nhiều bài theo chủ đề thực tế. Hoàn thành bài này để mở bài tiếp theo, hoặc bấm Ôn tập hôm nay để ôn flashcard.",
+      "Mỗi cấp chia thành nhiều bài theo chủ đề thực tế. Bài nào cũng học được ngay — Hanni gợi ý bài tiếp theo, còn bạn muốn học chủ đề nào trước cũng được.",
   },
 ];
 
@@ -56,10 +56,7 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
       )
     : 0;
   const currentLesson =
-    data?.lessons.find(
-      (lesson) =>
-        lesson.id === data.currentLessonId && lesson.status !== "LOCKED",
-    ) ??
+    data?.lessons.find((lesson) => lesson.id === data.currentLessonId) ??
     data?.lessons.find(
       (lesson) =>
         lesson.status === "IN_PROGRESS" || lesson.status === "AVAILABLE",
@@ -81,8 +78,8 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
           </p>
           <h1 id="learn-page-title">Mỗi ngày một bước, bạn sẽ tiến xa hơn</h1>
           <p>
-            Đi theo đúng thứ tự: chọn cấp HSK, học bài đang mở, rồi ôn lại để
-            nhớ lâu hơn. Bạn không cần học hết mọi thứ trong một lần.
+            Chọn cấp HSK, học một bài, rồi ôn lại để nhớ lâu hơn. Không bài
+            nào bị khoá — cứ chọn chủ đề bạn thấy cần nhất.
           </p>
         </div>
         <div className={styles.introActions}>
@@ -171,7 +168,9 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
                 ? `HSK ${activeLevel === 7 ? "7–9" : activeLevel}`
                 : "Chọn cấp độ để bắt đầu"}
             </h2>
-            <p>Hoàn thành từng bài để mở bước tiếp theo.</p>
+            <p>
+              Chọn bài bất kỳ để học. Hanni đánh dấu sẵn bài nên học tiếp.
+            </p>
           </div>
           {!!data?.levels.length && (
             <SelectionGroup

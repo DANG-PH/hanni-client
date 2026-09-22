@@ -69,7 +69,7 @@ export interface LessonNode {
   learnedWords: number;
   startedWords: number;
   dueWords: number;
-  status: "COMPLETED" | "IN_PROGRESS" | "AVAILABLE" | "LOCKED";
+  status: "COMPLETED" | "IN_PROGRESS" | "AVAILABLE";
   previewWords: string[];
 }
 

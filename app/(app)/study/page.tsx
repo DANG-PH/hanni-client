@@ -155,9 +155,7 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
     !path.error &&
     path.data.level === lesson.data.lesson.hskLevel
       ? path.data.lessons.find(
-          (l) =>
-            l.orderIndex === lesson.data!.lesson.orderIndex + 1 &&
-            l.status !== "LOCKED",
+          (l) => l.orderIndex === lesson.data!.lesson.orderIndex + 1,
         )
       : undefined;
 

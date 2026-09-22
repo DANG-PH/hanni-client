@@ -162,12 +162,6 @@
   color: var(--accent);
 }
 
-.locked {
-  border-color: var(--border);
-  background: var(--surface-2);
-  color: var(--muted);
-}
-
 .preview {
   margin-top: 3px;
   overflow: hidden;
@@ -196,11 +190,6 @@
   flex-shrink: 0;
   color: var(--muted);
   transition: color 180ms ease, transform 180ms var(--motion-ease);
-}
-
-.cardLocked {
-  opacity: 0.58;
-  box-shadow: none;
 }
 
 .card[data-current="true"] {
