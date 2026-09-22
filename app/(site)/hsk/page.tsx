@@ -56,11 +56,12 @@ export default async function HskPage() {
           HSK 3.0 cần bao nhiêu từ vựng?
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-muted">
-          HSK 3.0 là khung đánh giá tiếng Trung mới, ban hành 11/2025 và có
-          hiệu lực từ <strong className="text-foreground">tháng 7/2026</strong>.
-          Khác bản cũ ở chỗ chia <strong className="text-foreground">9 cấp
-          thay vì 6</strong>, và yêu cầu từ vựng tăng mạnh — HSK 6 cũ khoảng
-          5.000 từ, còn cấp 7–9 mới lên tới ~11.000 từ.
+          HSK 3.0 là khung đánh giá tiếng Trung mới, ban hành 11/2025 và có hiệu
+          lực từ <strong className="text-foreground">tháng 7/2026</strong>. Khác
+          bản cũ ở chỗ chia{" "}
+          <strong className="text-foreground">9 cấp thay vì 6</strong>, và yêu
+          cầu từ vựng tăng mạnh — HSK 6 cũ khoảng 5.000 từ, còn cấp 7–9 mới lên
+          tới ~11.000 từ.
         </p>
       </section>
 
@@ -78,12 +79,20 @@ export default async function HskPage() {
                 <th className="px-4 py-3 font-medium">Từ mới</th>
                 <th className="px-4 py-3 font-medium">Tích luỹ</th>
                 <th className="px-4 py-3 font-medium">Chữ đọc</th>
+                {/* HSK 3.0 tách riêng số chữ phải ĐỌC được và số chữ phải
+                 * VIẾT được — đây là thứ người học hay nhầm nhất khi so với
+                 * chuẩn cũ. Dữ liệu `writingChars` có sẵn trong DB từ lâu
+                 * nhưng chưa trang nào hiện. */}
+                <th className="px-4 py-3 font-medium">Chữ viết</th>
                 <th className="px-4 py-3 font-medium">Xem</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((l) => (
-                <tr key={l.level} className="border-b border-border/60 last:border-0">
+                <tr
+                  key={l.level}
+                  className="border-b border-border/60 last:border-0"
+                >
                   <td className="px-4 py-3 font-semibold">
                     HSK {l.level === 7 ? "7–9" : l.level}
                   </td>
@@ -98,6 +107,9 @@ export default async function HskPage() {
                   </td>
                   <td className="px-4 py-3 text-muted">
                     {l.readingChars?.toLocaleString("vi-VN") ?? "—"}
+                  </td>
+                  <td className="px-4 py-3 text-muted">
+                    {l.writingChars?.toLocaleString("vi-VN") ?? "—"}
                   </td>
                   <td className="px-4 py-3">
                     <Link
@@ -126,16 +138,18 @@ export default async function HskPage() {
         <div className="mt-3 space-y-2 text-sm leading-7 text-muted">
           <p>
             <strong className="text-foreground">Chưa học bao giờ</strong> — bắt
-            đầu HSK 1 (300 từ). Đây là mức đủ để chào hỏi, nói về gia đình,
-            thời gian, đồ ăn.
+            đầu HSK 1 (300 từ). Đây là mức đủ để chào hỏi, nói về gia đình, thời
+            gian, đồ ăn.
           </p>
           <p>
-            <strong className="text-foreground">Đã học HSK cũ</strong> — số
-            cấp đổi nhưng từ vựng nền không mất đi. HSK 4 cũ tương đương
-            khoảng HSK 4–5 mới.
+            <strong className="text-foreground">Đã học HSK cũ</strong> — số cấp
+            đổi nhưng từ vựng nền không mất đi. HSK 4 cũ tương đương khoảng HSK
+            4–5 mới.
           </p>
           <p>
-            <strong className="text-foreground">Người Việt có lợi thế riêng</strong>{" "}
+            <strong className="text-foreground">
+              Người Việt có lợi thế riêng
+            </strong>{" "}
             — hơn 60% từ vựng tiếng Việt gốc Hán, nên nhiều từ bạn{" "}
             <Link href="/tu-da-biet" className="text-primary hover:underline">
               đã biết sẵn mà không hay biết

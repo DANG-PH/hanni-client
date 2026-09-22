@@ -219,14 +219,7 @@ export interface SuspendedWord {
 }
 
 export interface LeechWord {
-  word: {
-    id: string;
-    simplified: string;
-    pinyin: string;
-    meaningVi: string | null;
-    hskLevel: number;
-    audioUrl: string | null;
-  };
+  word: Word;
   lapses: number;
   dueAt: string;
 }

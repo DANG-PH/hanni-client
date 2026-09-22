@@ -22,7 +22,7 @@ import {
   useLesson,
   useStreak,
 } from "@/lib/hooks";
-import type { Quiz, Rating, StudyQueue } from "@/lib/types";
+import type { LeechWord, Quiz, Rating, StudyQueue } from "@/lib/types";
 import styles from "./study.module.css";
 
 type Phase = "loading" | "intro" | "review" | "review-done" | "quiz" | "done";
@@ -31,7 +31,18 @@ interface Item {
   isNew: boolean;
 }
 
-function StudyInner({ lessonId }: { lessonId: string | null }) {
+function StudyInner({
+  lessonId,
+  leechMode = false,
+}: {
+  lessonId: string | null;
+  /** Ôn RIÊNG những từ hay sai (`/study?leeches=1`) — trước đó `/progress`
+   * liệt kê "Từ khó nhớ" nhưng không làm gì được với chúng, xem xong là cụt
+   * đường. Vẫn ghi nhận lượt ôn bình thường qua `/study/review`: ôn sớm một
+   * từ hay quên là đúng việc cần làm, SM-2 tự tính lại chu kỳ theo số ngày
+   * đã trôi qua nên không phá lịch. */
+  leechMode?: boolean;
+}) {
   const { user, loading } = useRequireAuth();
   const lesson = useLesson(lessonId);
   // Bài đang học dở — để phiên ôn tự do vẫn hiện được chủ đề hiện tại.
@@ -65,18 +76,24 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
         .catch(() => null);
       sessionId.current = session?.id ?? null;
 
-      const q = lessonId
-        ? `/study/queue?limit=40&lessonId=${lessonId}`
-        : "/study/queue?limit=40";
-      const queue = await api.get<StudyQueue>(q);
-      const list: Item[] = [
-        ...queue.due.map((d) => ({ word: d.word, isNew: false })),
-        ...queue.newCards.map((n) => ({ word: n.word, isNew: true })),
-      ];
+      let list: Item[];
+      if (leechMode) {
+        const leeches = await api.get<LeechWord[]>("/study/leeches");
+        list = leeches.map((l) => ({ word: l.word, isNew: false }));
+      } else {
+        const q = lessonId
+          ? `/study/queue?limit=40&lessonId=${lessonId}`
+          : "/study/queue?limit=40";
+        const queue = await api.get<StudyQueue>(q);
+        list = [
+          ...queue.due.map((d) => ({ word: d.word, isNew: false })),
+          ...queue.newCards.map((n) => ({ word: n.word, isNew: true })),
+        ];
+      }
       setItems(list);
       setPhase(list.length ? "intro" : "review-done");
     })().catch(() => setError("Chưa tải được buổi học. Vui lòng thử lại."));
-  }, [loading, user, lessonId]);
+  }, [loading, user, lessonId, leechMode]);
 
   const onRate = useCallback(
     async (rating: Rating, durationMs: number) => {
@@ -177,7 +194,9 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
       <Spinner />
     );
 
-  const title = lesson.data?.lesson.title ?? "Ôn tập flashcard";
+  const title = leechMode
+    ? "Từ khó nhớ"
+    : (lesson.data?.lesson.title ?? "Ôn tập flashcard");
   const newCount = items.filter((item) => item.isNew).length;
   const previewWord = items[0]?.word;
   const nextLesson =
@@ -194,20 +213,25 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
   return (
     <div className={styles.page}>
       <div className={styles.navigation}>
-        <LinkButton href={lessonId ? "/learn" : "/dashboard"} variant="ghost">
+        <LinkButton
+          href={leechMode ? "/progress" : lessonId ? "/learn" : "/dashboard"}
+          variant="ghost"
+        >
           <Icon name="back" size={17} />
-          {lessonId ? "Lộ trình" : "Tổng quan"}
+          {leechMode ? "Tiến độ" : lessonId ? "Lộ trình" : "Tổng quan"}
         </LinkButton>
         <span className={styles.location}>
           <Icon name={lessonId ? "route" : "cards"} size={18} />
           {/* Ôn tự do (không có ?lesson=) vẫn cho biết mình đang ở CHỦ ĐỀ nào
            * trong lộ trình — trước đó chỉ ghi "Góc ôn tập", người học không
            * biết những từ này thuộc bài gì nên thấy rời rạc. */}
-          {lessonId
-            ? title
-            : current.data
-              ? `Góc ôn tập · đang học: ${current.data.title}`
-              : "Góc ôn tập"}
+          {leechMode
+            ? "Ôn riêng những từ bạn hay quên"
+            : lessonId
+              ? title
+              : current.data
+                ? `Góc ôn tập · đang học: ${current.data.title}`
+                : "Góc ôn tập"}
         </span>
       </div>
 
@@ -226,8 +250,9 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
               </p>
               <h1 id="study-title">{title}</h1>
               <p className={styles.description}>
-                Lật một tấm thẻ, nhớ thêm một từ. Cùng dành vài phút cho những
-                điều bạn đã học nhé.
+                {leechMode
+                  ? "Đây là những từ bạn sai nhiều nhất. Gặp lại thêm vài lần là nhớ được thôi."
+                  : "Lật một tấm thẻ, nhớ thêm một từ. Cùng dành vài phút cho những điều bạn đã học nhé."}
               </p>
               <div className={styles.sessionStats}>
                 <div>
@@ -537,8 +562,16 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
 }
 
 function StudySession() {
-  const lessonId = useSearchParams().get("lesson");
-  return <StudyInner key={lessonId ?? "review"} lessonId={lessonId} />;
+  const params = useSearchParams();
+  const lessonId = params.get("lesson");
+  const leechMode = params.get("leeches") === "1";
+  return (
+    <StudyInner
+      key={leechMode ? "leeches" : (lessonId ?? "review")}
+      lessonId={lessonId}
+      leechMode={leechMode}
+    />
+  );
 }
 
 export default function StudyPage() {

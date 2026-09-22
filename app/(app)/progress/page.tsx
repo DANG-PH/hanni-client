@@ -233,9 +233,16 @@ export default function ProgressPage() {
                   icon="target"
                   tone="accent"
                   title="Từ khó nhớ"
-                  description="Những từ bạn hay quên nhất — chú ý hơn khi gặp lại trong lượt ôn."
+                  description="Những từ bạn hay quên nhất. Ôn riêng vài phút thường hiệu quả hơn là đợi tới lượt ôn thường."
                   className="mb-5"
-                />
+                >
+                  {/* Trước đó mục này chỉ LIỆT KÊ — xem xong không làm gì
+                   * được, đúng kiểu ngõ cụt. */}
+                  <LinkButton href="/study?leeches=1">
+                    <Icon name="cards" size={16} /> Ôn riêng{" "}
+                    {leeches.data.length} từ này
+                  </LinkButton>
+                </SectionHeading>
                 <Card className="divide-y divide-border p-0!">
                   {leeches.data.map((l) => (
                     <div
