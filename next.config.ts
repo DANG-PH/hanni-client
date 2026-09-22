@@ -19,6 +19,20 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        /** Mã commit đang chạy thật trên Vercel, để verify được "bản vừa
+         * push đã lên chưa" chỉ bằng `curl -I`. Trước đó không có cách nào
+         * biết, phải đoán qua hành vi trang — mất thời gian mỗi lần sửa lỗi
+         * chỉ tái hiện trên production. Vercel tự đặt VERCEL_GIT_COMMIT_SHA
+         * lúc build; chạy local thì là "dev". */
+        source: "/:path*",
+        headers: [
+          {
+            key: "x-hanni-commit",
+            value: (process.env.VERCEL_GIT_COMMIT_SHA ?? "dev").slice(0, 7),
+          },
+        ],
+      },
+      {
         source: "/sw.js",
         headers: [
           {

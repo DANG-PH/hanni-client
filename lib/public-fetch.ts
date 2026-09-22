@@ -26,15 +26,32 @@ export async function fetchPublic<T>(
   revalidate: number,
 ): Promise<T | null> {
   const url = `${API_BASE}${path}`;
-  let res = await fetch(url, { next: { revalidate } });
-  // Thử lại ĐÚNG 1 lần bỏ qua cache trước khi kết luận là lỗi: chính Data
-  // Cache có thể đang giữ một phản hồi lỗi cũ từ lúc API chớp tắt (đo thật
-  // trên production: 3 từ kẹt ở trạng thái này trong khi gọi thẳng API vẫn
-  // 200). 404 thì không thử lại — đó là câu trả lời thật, không phải sự cố.
-  if (!res.ok && res.status !== 404) {
-    res = await fetch(url, { cache: "no-store" });
+  try {
+    return await read<T>(url, { next: { revalidate } });
+  } catch (err) {
+    if (err instanceof NotFoundError) return null;
+    // Thử lại ĐÚNG 1 lần, bỏ qua cache: chính Data Cache có thể đang giữ một
+    // phản hồi hỏng từ lúc API chớp tắt (đo thật trên production — 3 từ kẹt
+    // lỗi liên tục trong khi gọi thẳng API vẫn 200, và 27 từ chưa ai mở bao
+    // giờ thì bình thường). Lần 2 lỗi nữa thì để ném ra thật.
+    try {
+      return await read<T>(url, { cache: "no-store" });
+    } catch (retryErr) {
+      if (retryErr instanceof NotFoundError) return null;
+      throw retryErr;
+    }
   }
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`API ${path} trả về ${res.status}`);
+}
+
+/** 404 của API = "không có mục này", khác hẳn lỗi tạm thời — dùng lỗi riêng
+ * để phân biệt mà vẫn đi chung một đường thử lại. */
+class NotFoundError extends Error {}
+
+async function read<T>(url: string, init: RequestInit): Promise<T> {
+  const res = await fetch(url, init);
+  if (res.status === 404) throw new NotFoundError(url);
+  if (!res.ok) throw new Error(`API ${url} trả về ${res.status}`);
+  // res.json() cũng có thể ném (body rỗng/hỏng) — nằm trong try ở trên nên
+  // cũng được thử lại.
   return (await res.json()) as T;
 }
