@@ -93,6 +93,23 @@ trước đó CHỈ khác màu (`data-current`), giờ có nhãn CHỮ "Bắt đ
 là dạy sai luật chơi — đã sửa 3 chỗ ("Hoàn thành từng bài để mở bước tiếp theo", "học bài đang
 mở", bước 3 của `FeatureTour`).
 
+**Trang công khai + `revalidate` = lỗi tạm thời bị ĐÓNG BĂNG 24h (sửa 2026-09-22)** — đo thật
+production: 3/30 trang từ điển (学生, 电脑, 苹果) trả HTTP 200 với thân trang RỖNG (chỉ nav +
+footer). `revalidate = 86400` cache KẾT QUẢ render, mà mỗi trang lại `try/catch` coi MỌI lỗi
+fetch là "không có dữ liệu" → `notFound()`/danh sách rỗng; API chớp tắt vài giây lúc pm2 restart
+là đủ để đóng băng trang hỏng cả ngày. Google thấy 200 nên KHÔNG thử lại — tệ hơn hẳn lỗi 500.
+Hai thay đổi đi cùng nhau:
+- `lib/public-fetch.ts` — chỉ **404 của API** mới là "không có mục này" (trả `null` → `notFound()`),
+  lỗi khác NÉM RA để Next không cache gì. Trang prerender lúc build (`/hoc-thu`, `/hsk`,
+  `/tu-da-biet`, sitemap) VẪN phải tự nuốt lỗi, nếu không API chưa chạy là sập cả bản build.
+- **Đã xoá `app/(site)/loading.tsx`** — `loading.tsx` tạo Suspense boundary nên Next đẩy phần
+  khung đi TRƯỚC khi trang resolve, khiến `notFound()`/lỗi xảy ra SAU đó không đổi được HTTP
+  status (luôn 200, thân trang là boundary lỗi `$RX`). Bỏ đi thì slug không tồn tại trả đúng 404,
+  API chết trả 500 (verify bằng cách trỏ `NEXT_PUBLIC_API_URL` sang cổng chết rồi build+start).
+  Đánh đổi: mất skeleton lúc chuyển trang — chấp nhận, vì nhóm `(site)` tồn tại để Google đọc
+  được. `components/page-skeleton.tsx` hết chỗ dùng nên xoá luôn; `app/(app)/loading.tsx` (dùng
+  `StudyLoader`) GIỮ NGUYÊN — trang trong app không cần status code đúng cho bot.
+
 **Hệ quả kéo theo khi bỏ khoá — đã xử lý cùng đợt**: (1) `components/lesson-path.tsx` có Ô TÌM
 BÀI THEO CHỦ ĐỀ — cửa sổ 6 bài/lần (`PATH_WINDOW_SIZE`) chỉ hợp lý khi đi tuần tự, chọn tự do
 mà HSK 7-9 có 357 bài thì lật từng trang 6 bài để tìm "Thành ngữ" là không thực tế; lọc theo
