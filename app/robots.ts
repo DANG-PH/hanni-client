@@ -18,6 +18,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: [
         "/",
         "/tu-dien",
+        "/hoc-thu",
         "/login",
         "/register",
         "/onboarding",
