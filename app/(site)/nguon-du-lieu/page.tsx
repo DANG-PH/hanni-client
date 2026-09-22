@@ -108,7 +108,14 @@ export default function NguonDuLieuPage() {
         <Link href="/" className="text-primary hover:underline">
           trang chủ
         </Link>{" "}
-        để liên hệ với Hanni.
+        để liên hệ với Hanni. Hoặc dùng thử ngay:{" "}
+        <Link href="/tu-dien" className="text-primary hover:underline">
+          tra từ điển
+        </Link>{" "}
+        ·{" "}
+        <Link href="/hoc-thu" className="text-primary hover:underline">
+          học thử 8 từ
+        </Link>
       </p>
     </div>
   );
