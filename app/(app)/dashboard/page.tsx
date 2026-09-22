@@ -10,6 +10,7 @@ import { HeroBanner } from "@/components/hero-banner";
 import { Icon, type IconName } from "@/components/icon";
 import { LessonPath } from "@/components/lesson-path";
 import { VideoShelf } from "@/components/video-shelf";
+import { NotificationNudge } from "@/components/pwa/notification-nudge";
 import { WeeklyLeagueCard } from "@/components/weekly-league-card";
 import { WordOfTheDayCard } from "@/components/word-of-the-day";
 import {
@@ -451,6 +452,11 @@ export default function DashboardPage() {
           tone="text-good bg-good/10"
         />
       </div>
+
+      {/* Mời bật thông báo — tự ẩn nếu đã bật/bị từ chối/đã tắt dải này.
+       * Đo production: 0 người từng bật, mà chỗ bật lại nằm sâu trong
+       * /settings (giờ còn không có trong sidebar). */}
+      <NotificationNudge />
 
       <div className="grid items-start gap-4 md:grid-cols-2">
         <DailyQuestCard />

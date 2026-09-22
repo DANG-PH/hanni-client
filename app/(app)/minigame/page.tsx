@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { AudioButton } from "@/components/audio-button";
 import { Icon, type IconName } from "@/components/icon";
+import { NextStep } from "@/components/next-step";
 import { RankEmblem } from "@/components/rank-emblem";
 import { Button, Card, PageHeading, SectionHeading, Spinner } from "@/components/ui";
 import { mediaUrl } from "@/lib/api";
@@ -1249,7 +1250,24 @@ export default function MinigamePage() {
         description="Chọn 1 trò chơi để luyện phản xạ từ vựng — 1 mình hoặc đấu trực tiếp với người khác."
       />
       {view.stage === "hub" && (
-        <GameHub onSelect={(game) => setView({ stage: "intro", game })} />
+        <>
+          <GameHub onSelect={(game) => setView({ stage: "intro", game })} />
+          {/* Trang này trước đó KHÔNG dẫn đi đâu — chơi xong là cụt đường.
+           * Minigame chỉ luyện phản xạ trên vốn từ ĐÃ có, nên bước tiếp theo
+           * tự nhiên là mở rộng vốn từ đó ra. */}
+          <NextStep
+            title="Chơi để phản xạ nhanh hơn — nhưng vốn từ mới là gốc"
+            description="Minigame luyện tốc độ trên những từ bạn đã gặp. Học thêm từ mới rồi quay lại sẽ thấy khác hẳn."
+            actions={[
+              {
+                href: "/study",
+                label: "Ôn tập flashcard",
+                icon: "cards" as const,
+              },
+              { href: "/learn", label: "Lộ trình HSK", icon: "route" as const },
+            ]}
+          />
+        </>
       )}
       {view.stage === "intro" && (
         <GameIntro

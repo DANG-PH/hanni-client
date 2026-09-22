@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/icon";
+import { NextStep } from "@/components/next-step";
 import { Button, Card, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { ApiError } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
@@ -123,6 +124,21 @@ function ScenarioPicker({ onStart }: { onStart: (sessionId: string) => void }) {
           </div>
         </div>
       )}
+
+      {/* Trang này trước đó KHÔNG dẫn đi đâu — luyện nói xong là cụt đường.
+       * Bước tiếp theo tự nhiên: luyện phát âm chuẩn, hoặc ôn lại từ vựng. */}
+      <NextStep
+        title="Luyện nói xong, củng cố thêm nhé"
+        description="Phản xạ hội thoại tốt nhất khi phát âm chuẩn và vốn từ đủ dùng."
+        actions={[
+          {
+            href: "/pronunciation",
+            label: "Luyện phát âm",
+            icon: "mic" as const,
+          },
+          { href: "/study", label: "Ôn tập flashcard", icon: "cards" as const },
+        ]}
+      />
     </div>
   );
 }

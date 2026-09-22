@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Card, EmptyState, PageHeading, Spinner } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { HanziWriterCanvas } from "@/components/hanzi-writer-canvas";
+import { NextStep } from "@/components/next-step";
 import { useRequireAuth } from "@/lib/auth";
 
 interface HanziEntry {
@@ -212,6 +213,30 @@ export default function WritingPage() {
           )}
         </Card>
       </div>
+
+      {/* Trang này trước đó KHÔNG dẫn đi đâu — viết xong là cụt đường. Gợi ý
+       * bước tiếp theo tự nhiên: tra nghĩa chính chữ vừa viết, rồi ôn lại. */}
+      <NextStep
+        title="Viết xong rồi, nhớ nghĩa chưa?"
+        description={
+          activeEntry
+            ? `Xem nghĩa và âm Hán Việt của ${activeEntry.c}, hoặc ôn lại những từ đã học.`
+            : "Tra nghĩa các chữ vừa viết, hoặc ôn lại những từ đã học."
+        }
+        actions={[
+          ...(activeEntry
+            ? [
+                {
+                  href: `/tu-dien/${encodeURIComponent(activeEntry.c)}`,
+                  label: `Nghĩa của ${activeEntry.c}`,
+                  icon: "book" as const,
+                },
+              ]
+            : []),
+          { href: "/study", label: "Ôn tập flashcard", icon: "cards" as const },
+          { href: "/learn", label: "Lộ trình HSK", icon: "route" as const },
+        ]}
+      />
     </div>
   );
 }

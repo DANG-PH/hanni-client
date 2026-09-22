@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CommentSection } from "@/components/comment-section";
+import { NextStep } from "@/components/next-step";
 import { FeatureTour, type TourStep } from "@/components/feature-tour";
 import { Icon } from "@/components/icon";
 import { MobileVideoTranscript } from "@/components/mobile-video-transcript";
@@ -448,6 +449,18 @@ export default function WatchDetailPage() {
           <p className="whitespace-pre-line break-words pb-4 text-sm leading-6 text-muted">{data.description}</p>
         </details>
       )}
+
+      {/* Xem video xong trước đó chỉ quay lại được danh sách. Người học bấm
+       * từ trong bản chép để "Lưu để ôn tập" — nên bước tiếp theo tự nhiên
+       * là đi ôn đúng những từ vừa lưu đó. */}
+      <NextStep
+        title="Xem xong rồi, ôn lại từ vừa lưu nhé"
+        description="Những từ bạn bấm lưu trong bản chép đã nằm trong hàng đợi ôn tập — gặp lại đúng lúc sắp quên thì mới nhớ được."
+        actions={[
+          { href: "/study", label: "Ôn tập flashcard", icon: "cards" as const },
+          { href: "/watch", label: "Xem video khác", icon: "play" as const },
+        ]}
+      />
 
       <CommentSection
         videoId={id}
