@@ -35,19 +35,48 @@ async function raw(path: string, opts: RequestOptions = {}): Promise<Response> {
   });
 }
 
+/**
+ * Gọi `/auth/refresh` DÙNG CHUNG cho mọi request đang chờ, thay vì mỗi
+ * request tự gọi một lần.
+ *
+ * Đo production 2026-09-22: 661 lần server báo "phát hiện dùng lại refresh
+ * token" với chỉ 6 người dùng thật — mỗi lần là một lần ĐĂNG XUẤT OAN. Một
+ * trang như dashboard bắn cả chục request SWR song song; access token hết
+ * hạn thì tất cả cùng 401 rồi cùng gọi /auth/refresh với CÙNG một cookie.
+ * Request đầu xoay token thành công, những request sau mang token vừa bị
+ * revoke tới nên bị coi là bị đánh cắp.
+ *
+ * Giữ 1 promise dùng chung: request nào tới sau thì ĐỢI kết quả của lượt
+ * refresh đang chạy. (Server cũng đã thêm cửa sổ ân hạn cho trường hợp
+ * nhiều tab/thiết bị mà client không kiểm soát được — xem TokenService.)
+ */
+let refreshInFlight: Promise<boolean> | null = null;
+
+function refreshSession(): Promise<boolean> {
+  if (refreshInFlight) return refreshInFlight;
+  const started = (async () => {
+    try {
+      const r = await raw("/auth/refresh", { method: "POST" });
+      return r.ok;
+    } catch {
+      return false;
+    }
+  })();
+  refreshInFlight = started;
+  void started.finally(() => {
+    if (refreshInFlight === started) refreshInFlight = null;
+  });
+  return started;
+}
+
 export async function apiFetch<T = unknown>(
   path: string,
   opts: RequestOptions = {},
 ): Promise<T> {
   let res = await raw(path, opts);
 
-  if (
-    res.status === 401 &&
-    !opts._retried &&
-    !path.startsWith("/auth/")
-  ) {
-    const refresh = await raw("/auth/refresh", { method: "POST" });
-    if (refresh.ok) {
+  if (res.status === 401 && !opts._retried && !path.startsWith("/auth/")) {
+    if (await refreshSession()) {
       res = await raw(path, { ...opts, _retried: true });
     }
   }
@@ -95,17 +124,12 @@ async function apiUpload<T = unknown>(
     credentials: "include",
     body: form,
   });
-  if (res.status === 401) {
-    const r = await fetch(`${API_BASE}/auth/refresh`, {
+  if (res.status === 401 && (await refreshSession())) {
+    res = await fetch(`${API_BASE}${path}`, {
       method: "POST",
       credentials: "include",
+      body: form,
     });
-    if (r.ok)
-      res = await fetch(`${API_BASE}${path}`, {
-        method: "POST",
-        credentials: "include",
-        body: form,
-      });
   }
   const text = await res.text();
   const data = text ? safeJson(text) : null;
