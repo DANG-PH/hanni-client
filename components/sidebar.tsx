@@ -8,12 +8,21 @@ import { useAuth } from "@/lib/auth";
 import { useMessagesSocket, useUnreadMessageCount } from "@/lib/messages";
 import { Icon, type IconName } from "./icon";
 
+/** Điều hướng xếp theo CHU TRÌNH HỌC (học bài mới → ôn lại → luyện kỹ năng),
+ * không phải theo loại tính năng. Rút từ 16 mục xuống 12 (2026-09-22) vì
+ * người mới mở app ra thấy 16 lựa chọn thì không biết bấm gì trước:
+ * - `/vocabulary` BỎ HẲN — đã gộp vào `/tu-dien` (trước đó 2 trang hiển thị
+ *   cùng dữ liệu, chỉ khác chỗ một cái cần đăng nhập).
+ * - Huy hiệu + Bảng xếp hạng bỏ khỏi nav, vào từ trong `/progress` — cả 3 đều
+ *   trả lời cùng 1 câu hỏi "mình đang ở đâu", tách 3 mục là thừa.
+ * - Cài đặt vào từ trong `/account` (cùng là thiết lập cá nhân).
+ * Các trang đó vẫn tồn tại và có link trỏ tới, chỉ không chiếm chỗ ở nav. */
 export const NAV_GROUPS: {
   title: string;
   links: { href: string; label: string; icon: IconName }[];
 }[] = [
   {
-    title: "KHÔNG GIAN HỌC TẬP",
+    title: "HỌC MỖI NGÀY",
     links: [
       { href: "/dashboard", label: "Tổng quan", icon: "home" },
       { href: "/learn", label: "Lộ trình HSK", icon: "route" },
@@ -22,27 +31,28 @@ export const NAV_GROUPS: {
     ],
   },
   {
-    title: "LUYỆN TẬP MỖI NGÀY",
+    title: "TRA CỨU",
     links: [
-      { href: "/vocabulary", label: "Từ vựng", icon: "book" },
+      { href: "/tu-dien", label: "Từ điển", icon: "book" },
       { href: "/grammar", label: "Ngữ pháp & mẫu câu", icon: "cards" },
+    ],
+  },
+  {
+    title: "LUYỆN KỸ NĂNG",
+    links: [
       { href: "/listening", label: "Luyện nghe", icon: "headphones" },
       { href: "/pronunciation", label: "Luyện phát âm", icon: "mic" },
       { href: "/writing", label: "Luyện viết Hán tự", icon: "pencil" },
       { href: "/roleplay", label: "Luyện nói với AI", icon: "message" },
       { href: "/exams", label: "Kiểm tra HSK", icon: "target" },
-      { href: "/minigame", label: "Minigame", icon: "spark" },
     ],
   },
   {
-    title: "HÀNH TRÌNH CỦA BẠN",
+    title: "CỦA BẠN",
     links: [
-      { href: "/progress", label: "Tiến độ học tập", icon: "chart" },
-      { href: "/achievements", label: "Huy hiệu", icon: "trophy" },
-      { href: "/leaderboard", label: "Bảng xếp hạng", icon: "flame" },
+      { href: "/progress", label: "Tiến độ", icon: "chart" },
       { href: "/messages", label: "Tin nhắn", icon: "message" },
       { href: "/account", label: "Tài khoản", icon: "user" },
-      { href: "/settings", label: "Cài đặt", icon: "settings" },
     ],
   },
 ];

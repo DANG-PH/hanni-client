@@ -13,6 +13,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Icon } from "@/components/icon";
+import { SaveWordButton } from "@/components/save-word-button";
 import { LinkButton } from "@/components/ui";
 import { API_BASE } from "@/lib/api";
 import type { Word } from "@/lib/types";
@@ -146,6 +147,10 @@ export default async function TuDienPage({
               Trình duyệt của bạn không hỗ trợ phát audio.
             </audio>
           )}
+
+          <div className="mt-5">
+            <SaveWordButton wordId={w.id} simplified={w.simplified} />
+          </div>
 
           {w.examples && w.examples.length > 0 && (
             <div className="mt-6 border-t border-border pt-5">
