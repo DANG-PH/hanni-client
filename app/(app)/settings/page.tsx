@@ -42,6 +42,7 @@ export default function SettingsPage() {
       <AvatarCard user={user} onChange={() => void refresh()} />
       <InstallCard />
       <NotificationCard
+        onSubscribed={() => void mutate()}
         reminderHour={data?.reminderHour ?? null}
         onChangeReminderHour={async (hour) => {
           const next = await api.patch<UserSettings>("/users/me/settings", {

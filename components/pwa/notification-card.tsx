@@ -22,9 +22,13 @@ function reminderLabel(h: number) {
 export function NotificationCard({
   reminderHour,
   onChangeReminderHour,
+  onSubscribed,
 }: {
   reminderHour: number | null;
   onChangeReminderHour: (hour: number | null) => Promise<void>;
+  /** Bật thông báo xong, server tự đặt giờ nhắc mặc định nếu chưa có — tải
+   * lại cài đặt để ô chọn giờ hiện đúng thứ vừa được đặt. */
+  onSubscribed?: () => void | Promise<void>;
 }) {
   const state = usePwaState();
   const [subscribed, setSubscribed] = useState<boolean | null>(null);
@@ -63,7 +67,10 @@ export function NotificationCard({
     try {
       await subscribeToPush();
       setSubscribed(true);
-      setMessage("Đã bật thông báo cho Hanni trên thiết bị này.");
+      await onSubscribed?.();
+      setMessage(
+        "Đã bật thông báo trên thiết bị này. Hanni sẽ nhắc bạn học mỗi ngày — đổi giờ hoặc tắt nhắc ở ngay bên dưới.",
+      );
     } catch (err) {
       setError(
         err instanceof Error
@@ -164,10 +171,7 @@ export function NotificationCard({
       </div>
       {subscribed && (
         <div className="rounded-2xl border border-border bg-surface-2/50 p-5">
-          <label
-            htmlFor="reminder-hour"
-            className="block text-sm font-medium"
-          >
+          <label htmlFor="reminder-hour" className="block text-sm font-medium">
             Giờ nhắc học mỗi ngày
           </label>
           <p className="mt-1 text-xs leading-5 text-muted">
