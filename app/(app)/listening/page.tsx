@@ -7,6 +7,7 @@ import {
   Button,
   Card,
   ErrorNote,
+  LinkButton,
   ProgressBar,
   SectionHeading,
   Spinner,
@@ -136,6 +137,27 @@ function ListeningSession({ words }: { words: Word[] }) {
             <span className="text-muted">Trả lời đúng</span>
             <span className="font-semibold text-good">{correct}</span>
           </div>
+          {/* Luyện hết nhóm từ mà không có gì báo thì hụt hẫng — người học
+           * cần biết mình vừa xong một việc, và làm gì tiếp. */}
+          {completed === words.length && words.length > 0 && (
+            <div className="mt-5 border-t border-border pt-4 text-center">
+              <p className="text-sm font-semibold text-good">
+                Xong nhóm từ này!
+              </p>
+              <p className="mt-1 text-xs leading-5 text-muted">
+                Nghe đúng {correct}/{words.length} từ. Luyện nói lại chính
+                những từ vừa nghe sẽ nhớ chắc hơn.
+              </p>
+              <LinkButton
+                href="/pronunciation"
+                variant="secondary"
+                className="mt-3"
+              >
+                <Icon name="mic" size={16} />
+                Luyện phát âm
+              </LinkButton>
+            </div>
+          )}
         </Card>
         {stats.data && stats.data.totalAttempts > 0 && (
           <Card>
