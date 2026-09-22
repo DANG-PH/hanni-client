@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Flashcard } from "@/components/flashcard";
@@ -208,14 +209,32 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
                   </span>
                 </div>
               </div>
+              {/* Nói RÕ sắp học gì trước khi bắt đầu. Trước đó vào /study là
+               * nhảy thẳng vào thẻ đầu tiên, người dùng không biết mình đang
+               * học bài nào và cũng không đổi được — bị ép học cái không
+               * chọn. */}
+              {!lessonId && newCount > 0 && current.data && (
+                <p className={styles.sessionNote}>
+                  Từ mới lấy từ bài{" "}
+                  <strong>
+                    {current.data.orderIndex}. {current.data.title}
+                  </strong>
+                </p>
+              )}
               <Button
                 className={styles.startButton}
                 onClick={() => setPhase("review")}
               >
-                Bắt đầu ôn tập <Icon name="arrow" size={18} />
+                {items.length - newCount > 0
+                  ? "Bắt đầu ôn tập"
+                  : "Bắt đầu học từ mới"}{" "}
+                <Icon name="arrow" size={18} />
               </Button>
               <p className={styles.sessionNote}>
-                {items.length} thẻ sẵn sàng · Học theo nhịp của bạn
+                {items.length} thẻ sẵn sàng ·{" "}
+                <Link href="/learn" className={styles.switchLink}>
+                  Chọn bài khác
+                </Link>
               </p>
             </div>
             <div className={styles.deckScene} aria-hidden="true">

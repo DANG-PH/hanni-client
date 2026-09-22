@@ -698,3 +698,12 @@
     transition: none;
   }
 }
+
+/* Link "Chọn bài khác" ở màn intro — người dùng phải đổi được bài chứ không
+   bị ép học đúng cái hệ thống chọn sẵn. */
+.switchLink {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
