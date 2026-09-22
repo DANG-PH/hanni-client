@@ -33,7 +33,14 @@ export default function WritingPage() {
     if (!words?.length) return null;
     return new Set(words.flatMap((w) => Array.from(w.simplified)));
   }, [lessonDetail.data]);
-  const lessonScope = byLesson && !!lessonChars;
+  // Phòng thủ: bài toàn chữ KHÔNG có dữ liệu nét (hanzi-strokes chỉ có 3.088
+  // chữ) thì lọc ra rỗng -> trang trắng. Chỉ bật chế độ bài học khi thật sự
+  // có chữ luyện được.
+  const lessonWritableCount = useMemo(() => {
+    if (!index || !lessonChars) return 0;
+    return index.filter((e) => lessonChars.has(e.c)).length;
+  }, [index, lessonChars]);
+  const lessonScope = byLesson && lessonWritableCount > 0;
   const [active, setActive] = useState<string | null>(null);
   const [strokeCount, setStrokeCount] = useState<number | null>(null);
 
@@ -188,7 +195,7 @@ export default function WritingPage() {
           {/* Cho thấy RÕ đang luyện chữ của bài nào, và đổi được sang cả cấp.
            * Trước đó trang chỉ đổ ra toàn bộ chữ của 1 cấp, không dính gì tới
            * bài đang học. */}
-          {lessonChars && (
+          {lessonWritableCount > 0 && (
             <div className="flex flex-wrap items-center gap-2 rounded-xl bg-surface-2 p-2.5 text-xs">
               <button
                 onClick={() => setByLesson(true)}
