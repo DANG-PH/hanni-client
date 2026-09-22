@@ -130,6 +130,17 @@ tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ
 đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
 màn trống.
 
+**Khách xem lộ trình TRƯỚC khi đăng ký (2026-09-22)** — `/onboarding` làm xong 3 bước thì gọi
+`previewOnboarding()` (`POST /onboarding/preview`, public) và hiện thẳng `ResultScreen` với cờ
+`guest`: cùng nội dung đề xuất, nhưng nút chính đổi thành "Tạo tài khoản để lưu lộ trình" + lối
+"Học thử 8 từ, chưa cần tài khoản". Trước đó bước cuối đẩy thẳng sang `/register` — trả lời
+xong 3 câu mà chưa nhận lại gì. Câu trả lời VẪN lưu `sessionStorage` như cũ nên đăng ký xong tự
+nộp, không phải làm lại.
+
+**`/achievements` xếp theo mức GẦN ĐẠT** (2026-09-22): huy hiệu chưa mở khoá sắp theo
+`progressCurrent/progressTarget` giảm dần, đã mở khoá xuống dưới. "Còn 2 lượt ôn nữa là xong"
+thúc đẩy mạnh hơn hẳn thứ tự catalog, nơi mốc xa nhất có thể nằm ngay đầu trang và trông vô vọng.
+
 **Phần thưởng/ngữ cảnh bị bỏ quên — rà 2026-09-22**: 3 chỗ dữ liệu đã có sẵn mà UI không dùng.
 (1) `streakFreezeCount` nằm trong `GET /streak` từ lâu nhưng KHÔNG hiện ở đâu — người dùng kiếm
 được lá chắn (mốc 7 ngày, mời bạn) hoặc mua 300 xu mà không thấy gì, phần thưởng vô hình thì
