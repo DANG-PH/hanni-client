@@ -130,6 +130,12 @@ tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ
 đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
 màn trống.
 
+**`/roleplay` — kết quả buổi luyện (2026-09-22)**: bấm "Kết thúc" giờ gọi `feedbackRoleplay()`
+và hiện màn nhận xét (render bằng `MarkdownLite` có sẵn) TRƯỚC khi xoá gì; người học chọn "Đóng
+buổi luyện" (mới thật sự xoá) hoặc "Nói tiếp". AI lỗi/bận thì vẫn hiện màn đó kèm lời nhắn ngắn
+— không được chặn đường thoát chỉ vì nhận xét không lấy được. Xem `hanni-server/CLAUDE.md` cho
+khuôn nhận xét và lý do không lưu DB.
+
 **Khách xem lộ trình TRƯỚC khi đăng ký (2026-09-22)** — `/onboarding` làm xong 3 bước thì gọi
 `previewOnboarding()` (`POST /onboarding/preview`, public) và hiện thẳng `ResultScreen` với cờ
 `guest`: cùng nội dung đề xuất, nhưng nút chính đổi thành "Tạo tài khoản để lưu lộ trình" + lối
