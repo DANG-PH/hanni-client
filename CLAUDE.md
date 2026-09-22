@@ -481,6 +481,22 @@ UI nổi bật: `components/hero-banner.tsx` (dùng `StudyArtwork`), `learning-j
 `hsk-coverflow.tsx` (băng chuyền 3D 7 cấp HSK, ở trang chủ `/`). Nền tô nhẹ theo token:
 class `.tint-primary/.tint-good/.tint-hero` trong globals.css (tự đổi sáng/tối).
 
+**Điều hướng — bài học từ lần rút gọn hỏng (2026-09-22)**: rút `NAV_GROUPS` 16 → 12 mục đã bỏ
+NHẦM `/minigame` và `/leaderboard`. Huy hiệu/Cài đặt bỏ đi thì hợp lý (vào từ `/progress`,
+`/account` — cùng trả lời một câu hỏi), nhưng minigame và bảng xếp hạng là 2 thứ GIỮ CHÂN mạnh
+nhất mà lại không còn lối vào nào ngoài 1 link lẻ ở `/account` — người dùng phản ánh ngay
+("bị lược bỏ à?"). Giờ có nhóm riêng "CHƠI & THI ĐUA". **Quy tắc**: bỏ một mục khỏi nav chỉ được
+phép khi còn MỘT LỐI VÀO KHÁC mà người dùng đoán ra được, không phải khi "vẫn còn link ở đâu đó".
+
+**Hai nút chính trỏ cùng một chỗ = rối** (rà 2026-09-22, user phản ánh "viết tận 2 nút để xem
+lại chữ"): script rà nhanh là đếm `href` trùng trong cùng 1 file page. Đã sửa 3 chỗ —
+(1) `components/hanzi-writer-canvas.tsx`: nút "Chạy lại" trùng hệt nút chế độ "Xem" ngay phía
+trên; giờ 3 chế độ đánh số thành 3 BƯỚC (1. Xem → 2. Tô lại → 3. Tự viết) và nút dưới khung đổi
+nhãn theo bước đang đứng. (2) `/learn/[lessonId]`: nút ở tiêu đề và nút trong thẻ bên phải cùng
+là "học bằng flashcard"; thẻ bên phải giờ chỉ giữ phần khác (luyện nghe/phát âm của đúng bài).
+(3) `/dashboard`: nút hero và nút thẻ "Tiếp tục học" cùng dẫn vào bài đang học; hero giờ là
+"Ôn N từ đến hạn" khi có từ đến hạn (đúng nhịp SRS: ôn trước, học mới sau).
+
 **Hướng dẫn từng bước lần đầu** (`components/feature-tour.tsx`): popup giới thiệu tác dụng các
 tính năng chính (icon + tiêu đề + mô tả, nút Tiếp theo/Bỏ qua + chấm tiến trình) — chỉ hiện 1
 LẦN mỗi `tourKey` (đánh dấu qua `localStorage`, cùng cách `install-prompt.tsx` nhớ đã tắt). Đang
@@ -489,6 +505,15 @@ qua video, so với bạn bè, trợ lý AI), `/learn` (`tourKey="learn"`, chọ
 đề) và `/watch/[id]` (`tourKey="watch-detail"`, bản chép chạy đồng bộ/dán video mobile/bình
 luận) — component viết chung, thêm trang khác chỉ cần khai mảng `TourStep[]` mới rồi render
 `<FeatureTour tourKey="..." steps={...} />`.
+**Mở rộng 2026-09-22** (user: "cũng k hướng dẫn tính năng để cho user hiểu"): thêm cho
+`/writing`, `/exams`, `/leaderboard`, `/progress`, `/roleplay`, `/minigame`, `/messages` — mỗi
+trang 2-3 bước, ưu tiên nói đúng thứ KHÔNG đoán được khi nhìn giao diện (vd `/messages`: phải
+theo dõi nhau mới mở được hội thoại mới; `/leaderboard`: "từ đã thuộc" cần ~21 ngày nên tăng
+chậm; `/exams`: chưa phải đề HSK đầy đủ). Kèm **`TourButton`** đặt ở tiêu đề trang để MỞ LẠI —
+trước đó bấm "Đã hiểu" một lần là mất vĩnh viễn, không có đường xem lại; tín hiệu đi qua
+`lib/tour.ts` (module-level store, cùng kiểu `lib/pwa/store.ts`, không dựng Context cho 1 popup).
+Đặt tour ở màn TRƯỚC khi bắt đầu, đừng đặt ở màn đang làm bài (`/exams` lúc đầu gắn nhầm vào
+màn đang làm bài — popup chắn ngang giữa lúc đồng hồ đang chạy).
 
 **PWA** (`docs/pwa.md`): manifest + service worker (chỉ cache màn mất mạng), trang `/install`,
 thẻ cài trong `/settings`, popup mời cài nổi góc phải dưới (`components/pwa/`). Test: `npm run test:pwa`.
