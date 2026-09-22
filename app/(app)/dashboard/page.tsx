@@ -429,7 +429,11 @@ export default function DashboardPage() {
         <Stat
           label="Cần ôn tập"
           value={stats.data?.dueNow ?? "—"}
-          hint="Từ đã đến lịch ôn"
+          hint={
+            stats.data?.atRisk
+              ? `${stats.data.atRisk} từ sắp quên trong hôm nay`
+              : "Từ đã đến lịch ôn"
+          }
           icon="cards"
           tone="text-primary bg-primary/10"
         />
@@ -445,9 +449,13 @@ export default function DashboardPage() {
           tone="text-lavender bg-lavender/12"
         />
         <Stat
-          label="Từ đã thuộc"
-          value={stats.data?.learnedTotal ?? "—"}
-          hint="Vốn từ của bạn"
+          label="Vốn từ"
+          value={stats.data?.inProgress ?? "—"}
+          hint={
+            stats.data?.learnedTotal
+              ? `${stats.data.learnedTotal} từ đã thuộc lòng`
+              : "Từ bạn đã bắt đầu học"
+          }
           icon="book"
           tone="text-good bg-good/10"
         />

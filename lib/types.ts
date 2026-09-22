@@ -144,6 +144,8 @@ export interface StudyQueue {
 
 export interface StudyStats {
   dueNow: number;
+  /** đến hạn trong 24h tới — dùng cho thông điệp "sắp quên" */
+  atRisk: number;
   learnedTotal: number;
   inProgress: number;
   reviewsDoneToday: number;
