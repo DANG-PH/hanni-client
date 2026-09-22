@@ -299,14 +299,16 @@ function ChatView({
         >
           <Icon name="back" size={16} /> Chọn tình huống khác
         </button>
-        <Button
-          variant="ghost"
-          disabled={ending}
-          onClick={() => void endSession()}
-        >
-          <Icon name="trash" size={15} />
-          Kết thúc
-        </Button>
+        {feedback === null && (
+          <Button
+            variant="ghost"
+            disabled={ending}
+            onClick={() => void endSession()}
+          >
+            <Icon name="check" size={15} />
+            {ending ? "Đang tổng kết…" : "Kết thúc"}
+          </Button>
+        )}
       </div>
 
       {feedback !== null ? (
