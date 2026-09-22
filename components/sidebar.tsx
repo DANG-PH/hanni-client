@@ -34,7 +34,7 @@ export const NAV_GROUPS: {
     title: "TRA CỨU",
     links: [
       { href: "/tu-dien", label: "Từ điển", icon: "book" },
-      { href: "/grammar", label: "Ngữ pháp & mẫu câu", icon: "cards" },
+      { href: "/ngu-phap", label: "Ngữ pháp & mẫu câu", icon: "cards" },
     ],
   },
   {

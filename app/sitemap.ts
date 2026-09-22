@@ -37,17 +37,47 @@ async function dictionaryEntries(): Promise<MetadataRoute.Sitemap> {
   }
 }
 
+interface GrammarRow {
+  slug: string;
+  flat?: boolean;
+}
+
+/** Điểm ngữ pháp CÓ giải thích thật — mục đại cương rút gọn (`flat`) mở ra là
+ * ngõ cụt nên không mời Google index. */
+async function grammarEntries(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const res = await fetch(`${API_BASE}/grammar`, { next: { revalidate } });
+    if (!res.ok) return [];
+    const rows = (await res.json()) as GrammarRow[];
+    return rows
+      .filter((g) => g.flat !== true)
+      .map((g) => ({
+        url: `${siteUrl}/ngu-phap/${encodeURIComponent(g.slug)}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      }));
+  } catch {
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const staticPages: MetadataRoute.Sitemap = [
     { url: siteUrl, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${siteUrl}/tu-dien`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${siteUrl}/hoc-thu`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${siteUrl}/ngu-phap`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${siteUrl}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${siteUrl}/register`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${siteUrl}/onboarding`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${siteUrl}/nguon-du-lieu`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${siteUrl}/install`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
   ];
-  return [...staticPages, ...(await dictionaryEntries())];
+  const [dict, grammar] = await Promise.all([
+    dictionaryEntries(),
+    grammarEntries(),
+  ]);
+  return [...staticPages, ...grammar, ...dict];
 }

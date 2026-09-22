@@ -41,7 +41,7 @@ const SKILLS: {
     tag: "Từ vựng",
   },
   {
-    href: "/grammar",
+    href: "/ngu-phap",
     icon: "cards",
     title: "Hiểu câu, nhớ cách dùng",
     description: "Khám phá từ qua câu ví dụ",

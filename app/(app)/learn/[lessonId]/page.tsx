@@ -284,7 +284,7 @@ export default function LessonDetailPage() {
                 {relatedGrammar.map((point) => (
                   <li key={point.slug}>
                     <Link
-                      href={`/grammar?level=${lesson.hskLevel}&open=${point.slug}`}
+                      href={`/ngu-phap/${point.slug}`}
                       className="motion-button flex items-center gap-3 rounded-xl border border-border px-3 py-2.5 hover:bg-surface-2"
                     >
                       <span lang="zh" className="hanzi text-lg text-primary">

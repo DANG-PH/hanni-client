@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/vocabulary", destination: "/tu-dien", permanent: true },
+      // `/grammar` gộp vào `/ngu-phap` cùng lý do: 2 trang cùng dữ liệu,
+      // chỉ khác chỗ một cái cần đăng nhập nên Google không đọc được.
+      { source: "/grammar", destination: "/ngu-phap", permanent: true },
     ];
   },
 

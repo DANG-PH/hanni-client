@@ -19,6 +19,7 @@ export default function robots(): MetadataRoute.Robots {
         "/",
         "/tu-dien",
         "/hoc-thu",
+        "/ngu-phap",
         "/login",
         "/register",
         "/onboarding",
@@ -28,7 +29,6 @@ export default function robots(): MetadataRoute.Robots {
       disallow: [
         "/dashboard",
         "/learn",
-        "/grammar",
         "/listening",
         "/pronunciation",
         "/writing",

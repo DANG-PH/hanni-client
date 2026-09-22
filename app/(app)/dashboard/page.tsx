@@ -37,32 +37,32 @@ const GOAL_PERSONA: Record<
   EXAM: {
     subtitle: (name) =>
       `Chào ${name}! Giữ nhịp ôn luyện đều đặn để tự tin bước vào kỳ thi HSK.`,
-    order: ["/tu-dien", "/grammar", "/listening", "/pronunciation"],
+    order: ["/tu-dien", "/ngu-phap", "/listening", "/pronunciation"],
   },
   TRAVEL: {
     subtitle: (name) =>
       `Chào ${name}! Luyện nghe và phản xạ giao tiếp để tự tin hơn khi đi du lịch.`,
-    order: ["/listening", "/pronunciation", "/tu-dien", "/grammar"],
+    order: ["/listening", "/pronunciation", "/tu-dien", "/ngu-phap"],
   },
   WORK: {
     subtitle: (name) =>
       `Chào ${name}! Mở rộng vốn từ và ngữ pháp để dùng tiếng Trung tự tin hơn trong công việc.`,
-    order: ["/tu-dien", "/listening", "/grammar", "/pronunciation"],
+    order: ["/tu-dien", "/listening", "/ngu-phap", "/pronunciation"],
   },
   ACADEMIC: {
     subtitle: (name) =>
       `Chào ${name}! Nắm chắc ngữ pháp và luyện viết để chuẩn bị tốt cho hành trình du học.`,
-    order: ["/grammar", "/tu-dien", "/pronunciation", "/listening"],
+    order: ["/ngu-phap", "/tu-dien", "/pronunciation", "/listening"],
   },
   INTEREST: {
     subtitle: (name) =>
       `Chào ${name}! Khám phá tiếng Trung mỗi ngày qua từ vựng, video và câu chuyện thú vị.`,
-    order: ["/tu-dien", "/listening", "/grammar", "/pronunciation"],
+    order: ["/tu-dien", "/listening", "/ngu-phap", "/pronunciation"],
   },
   OTHER: {
     subtitle: (name) =>
       `Chào ${name}! Tiếp tục hành trình tiếng Trung của bạn, từ những từ vựng đầu tiên đến từng cột mốc HSK.`,
-    order: ["/tu-dien", "/grammar", "/listening", "/pronunciation"],
+    order: ["/tu-dien", "/ngu-phap", "/listening", "/pronunciation"],
   },
 };
 
@@ -85,7 +85,7 @@ const PRACTICE_AREAS: {
     hanzi: "text-primary/12",
   },
   {
-    href: "/grammar",
+    href: "/ngu-phap",
     title: "Ngữ pháp",
     description: "Hiểu cấu trúc qua ví dụ",
     icon: "book",

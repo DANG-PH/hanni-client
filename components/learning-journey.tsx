@@ -63,7 +63,7 @@ const STAGES: Stage[] = [
     label: "Ngữ pháp",
     title: "Ghép từ thành câu của riêng bạn",
     desc: "Nắm trật tự câu và cách dùng 了, 的, 吗. Từ các mẫu câu đơn giản, tập diễn đạt những điều quen thuộc.",
-    href: "/grammar",
+    href: "/ngu-phap",
     action: "Khám phá mẫu câu",
     accent: "red",
   },

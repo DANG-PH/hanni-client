@@ -24,9 +24,23 @@ interface RelatedWord {
   meaningVi: string | null;
 }
 
+/** Một chữ trong từ ghép, kèm âm Hán Việt và nghĩa riêng của chữ đó. */
+interface CharBreakdown {
+  char: string;
+  hanViet: string | null;
+  pinyin: string | null;
+  meaningVi: string | null;
+}
+
+interface CompoundWord extends RelatedWord {
+  hanViet: string | null;
+}
+
 interface LookupResult {
   words: Word[];
   related: RelatedWord[];
+  characters: CharBreakdown[];
+  compounds: CompoundWord[];
 }
 
 /** Trang tĩnh hoá lại mỗi 24h — nội dung từ điển gần như không đổi, không cần
@@ -195,6 +209,90 @@ export default async function TuDienPage({
           )}
         </article>
       ))}
+
+      {/* Phân tích từng chữ — chỗ khai thác sâu nhất lợi thế Hán Việt: đọc
+       * "điện + não" là người Việt đoán ra 电脑 = máy tính, không cần học
+       * thuộc. Cũng làm trang dày hơn hẳn cho SEO. */}
+      {data.characters.length > 0 && (
+        <section className="panel p-6">
+          <h2 className="text-sm font-semibold">
+            Phân tích từng chữ
+            {main.hanViet && (
+              <span className="ml-2 font-normal text-muted">
+                — {main.simplified} đọc là &quot;{main.hanViet}&quot;
+              </span>
+            )}
+          </h2>
+          <ul className="mt-4 space-y-3">
+            {data.characters.map((c, i) => (
+              <li
+                key={`${c.char}-${i}`}
+                className="flex items-start gap-4 border-b border-border pb-3 last:border-0 last:pb-0"
+              >
+                <Link
+                  href={`/tu-dien/${encodeURIComponent(c.char)}`}
+                  lang="zh"
+                  className="hanzi shrink-0 text-3xl text-primary hover:underline"
+                >
+                  {c.char}
+                </Link>
+                <div className="min-w-0 text-sm">
+                  {c.hanViet && (
+                    <p className="font-semibold text-primary">{c.hanViet}</p>
+                  )}
+                  {c.pinyin && (
+                    <p className="text-xs text-muted">{c.pinyin}</p>
+                  )}
+                  <p className="mt-0.5">
+                    {c.meaningVi ?? (
+                      <span className="text-muted">
+                        (chữ này không đứng riêng thành từ)
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {data.compounds.length > 0 && (
+        <section>
+          <h2 className="text-sm font-semibold">
+            Từ khác chứa chữ{" "}
+            <span lang="zh" className="hanzi text-primary">
+              {Array.from(main.simplified)[0]}
+            </span>
+          </h2>
+          <p className="mt-1 text-xs text-muted">
+            Gặp lại cùng một chữ trong nhiều từ là cách nhớ chắc nhất — và
+            đoán được nghĩa của từ mới.
+          </p>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {data.compounds.map((c) => (
+              <li key={c.simplified}>
+                <Link
+                  href={`/tu-dien/${encodeURIComponent(c.simplified)}`}
+                  className="panel hover-card flex items-center gap-3 px-4 py-3 text-sm"
+                >
+                  <span lang="zh" className="hanzi text-xl text-primary">
+                    {c.simplified}
+                  </span>
+                  <span className="min-w-0">
+                    {c.hanViet && (
+                      <span className="block text-xs font-semibold text-primary">
+                        {c.hanViet}
+                      </span>
+                    )}
+                    <span className="block truncate">{c.meaningVi}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="panel tint-primary p-6 text-center">
         <h2 className="text-lg font-bold tracking-tight">
