@@ -36,11 +36,22 @@ interface CompoundWord extends RelatedWord {
   hanViet: string | null;
 }
 
+/** Video có lời thoại chứa từ này — chỉ tên + số lần, KHÔNG trích câu thoại
+ * (phụ đề dịch máy, xem ghi chú ở WordsService.videosUsingWord). */
+interface VideoUsage {
+  id: string;
+  title: string;
+  thumbnailUrl: string | null;
+  hskLevel: number | null;
+  lineCount: number;
+}
+
 interface LookupResult {
   words: Word[];
   related: RelatedWord[];
   characters: CharBreakdown[];
   compounds: CompoundWord[];
+  videos: VideoUsage[];
 }
 
 /** Trang tĩnh hoá lại mỗi 24h — nội dung từ điển gần như không đổi, không cần
@@ -286,6 +297,47 @@ export default async function TuDienPage({
                       </span>
                     )}
                     <span className="block truncate">{c.meaningVi}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Nghe từ trong ngữ cảnh thật. Cố tình KHÔNG trích câu thoại ra làm
+       * ví dụ — phụ đề là dịch máy từ phim tu tiên, trích ra sẽ dạy sai. */}
+      {data.videos.length > 0 && (
+        <section>
+          <h2 className="text-sm font-semibold">
+            Nghe {main.simplified} trong video
+          </h2>
+          <p className="mt-1 text-xs text-muted">
+            Gặp từ trong câu thoại thật, có giọng bản ngữ và phụ đề chạy theo.
+          </p>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-3">
+            {data.videos.map((v) => (
+              <li key={v.id}>
+                <Link
+                  href={`/watch/${v.id}`}
+                  className="panel hover-card block overflow-hidden"
+                >
+                  {v.thumbnailUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={v.thumbnailUrl}
+                      alt=""
+                      loading="lazy"
+                      className="h-24 w-full object-cover"
+                    />
+                  )}
+                  <span className="block p-3">
+                    <span className="line-clamp-2 text-xs font-medium">
+                      {v.title}
+                    </span>
+                    <span className="mt-1 block text-[11px] text-muted">
+                      {v.lineCount} câu có từ này
+                    </span>
                   </span>
                 </Link>
               </li>
