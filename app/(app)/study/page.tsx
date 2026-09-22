@@ -15,7 +15,12 @@ import {
 import { Icon } from "@/components/icon";
 import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
-import { useCurrentLesson, useLearnPath, useLesson } from "@/lib/hooks";
+import {
+  useCurrentLesson,
+  useLearnPath,
+  useLesson,
+  useStreak,
+} from "@/lib/hooks";
 import type { Quiz, Rating, StudyQueue } from "@/lib/types";
 import styles from "./study.module.css";
 
@@ -30,6 +35,9 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
   const lesson = useLesson(lessonId);
   // Bài đang học dở — để phiên ôn tự do vẫn hiện được chủ đề hiện tại.
   const current = useCurrentLesson(!lessonId);
+  // Khoe chuỗi ngày NGAY ở màn kết quả — phần thưởng đúng lúc cảm xúc cao
+  // nhất. Trước đó streak chỉ thấy khi quay về dashboard nên dễ bỏ lỡ.
+  const streak = useStreak();
   const path = useLearnPath(lesson.data?.lesson.hskLevel);
 
   const [phase, setPhase] = useState<Phase>("loading");
@@ -386,6 +394,15 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
               ? `Bạn nhớ được ${correct}/${items.length} thẻ. Mỗi lần ôn là một lần nhớ lâu hơn.`
               : "Hiện chưa có thẻ. Bạn có thể mở bài khác trong lộ trình hoặc quay lại sau."}
           </p>
+          {items.length > 0 && !!streak.data?.currentStreak && (
+            <p className={styles.streakNote}>
+              <Icon name="flame" size={16} />
+              Chuỗi {streak.data.currentStreak} ngày
+              {streak.data.goal?.met
+                ? " · đã đạt mục tiêu hôm nay"
+                : " · học tiếp để giữ chuỗi nhé"}
+            </p>
+          )}
           {items.length > 0 && (
             <div className={styles.results}>
               <div>

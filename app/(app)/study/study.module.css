@@ -707,3 +707,18 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+/* Chuỗi ngày hiện ngay ở màn kết quả buổi học — phần thưởng đúng lúc người
+   học vừa hoàn thành, thay vì phải quay về dashboard mới thấy. */
+.streakNote {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warn) 12%, var(--surface));
+  color: var(--warn);
+  font-size: 13px;
+  font-weight: 600;
+}
