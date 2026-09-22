@@ -60,6 +60,14 @@ interface LookupResult {
  * gọi API mỗi lượt truy cập (quan trọng khi bot quét hàng nghìn trang). */
 export const revalidate = 86400;
 
+/** Danh sách rỗng + `dynamicParams` mặc định = KHÔNG prerender trang nào lúc
+ * build (10.9k trang thì build cả tiếng), nhưng trang đã dựng được giữ lại và
+ * phục vụ lại trong 24h. Không có dòng này thì route là "dynamic": mỗi lượt
+ * bot bò là một lần render + một lần gọi API tới VPS. */
+export function generateStaticParams() {
+  return [];
+}
+
 const lookup = cache(async (slug: string) => {
   // Lỗi TẠM THỜI của API phải ném ra, không được biến thành 404 — xem
   // lib/public-fetch.ts (trang hỏng từng bị cache nguyên 24h kèm HTTP 200).
