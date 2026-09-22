@@ -369,6 +369,12 @@
     min-height: 310px;
     padding: 26px 20px;
   }
+  /* Thẻ tự cao thêm theo ảnh (2 mặt dùng chung 1 ô lưới), trên điện thoại
+   * cao quá thì 4 nút đánh giá bị đẩy xuống dưới màn hình — thu ảnh lại. */
+  .illustration {
+    height: 78px;
+    margin-top: 10px;
+  }
   .character {
     font-size: 58px;
   }
