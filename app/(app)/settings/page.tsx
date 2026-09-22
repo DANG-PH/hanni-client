@@ -114,8 +114,7 @@ function SettingsForm({
       !Number.isInteger(form.newCardsPerDay) ||
       form.newCardsPerDay < 0 ||
       (form.maxReviewsPerDay != null &&
-        (!Number.isInteger(form.maxReviewsPerDay) ||
-          form.maxReviewsPerDay < 0))
+        (!Number.isInteger(form.maxReviewsPerDay) || form.maxReviewsPerDay < 0))
     ) {
       setSaveError(
         "Mục tiêu cần là số nguyên lớn hơn 0; số từ mới/giới hạn lượt ôn không được âm.",
@@ -252,7 +251,9 @@ function SettingsForm({
               <div>
                 <h2 className="font-semibold">Cách sắp lịch ôn</h2>
                 <p className="mt-1 text-sm text-muted">
-                  Gặp lại từ vựng vào thời điểm phù hợp.
+                  Gặp lại từ vựng vào thời điểm phù hợp. Không chắc chọn gì thì
+                  cứ để &quot;Tiêu chuẩn&quot; — đổi lúc nào cũng được, tiến độ
+                  đã học không mất.
                 </p>
               </div>
             </div>
@@ -401,10 +402,7 @@ function SettingsForm({
                   onClick={() => update("weeklyDigestEnabled", option.value)}
                   className={`motion-button flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium ${form.weeklyDigestEnabled === option.value ? "border-primary/35 bg-primary/5 text-primary" : "border-border bg-surface text-muted hover:bg-surface-2"}`}
                 >
-                  <Icon
-                    name={option.value ? "check" : "close"}
-                    size={16}
-                  />
+                  <Icon name={option.value ? "check" : "close"} size={16} />
                   {option.label}
                 </button>
               ))}
@@ -455,13 +453,7 @@ function SettingsForm({
   );
 }
 
-function AvatarCard({
-  user,
-  onChange,
-}: {
-  user: Me;
-  onChange: () => void;
-}) {
+function AvatarCard({ user, onChange }: { user: Me; onChange: () => void }) {
   return (
     <Card className="flex flex-wrap items-center gap-5">
       <AvatarEditor user={user} size={80} onChange={onChange} />
