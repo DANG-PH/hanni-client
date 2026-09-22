@@ -1,5 +1,6 @@
 "use client";
 
+import { savePendingWords } from "@/lib/pending-words";
 import Link from "next/link";
 import { useState } from "react";
 import { AudioButton } from "@/components/audio-button";
@@ -37,7 +38,12 @@ export function TrialDeck({ words }: { words: Word[] }) {
           xong rồi rơi rụng.
         </p>
         <div className="mt-5 flex flex-wrap justify-center gap-3">
-          <LinkButton href="/register">
+          {/* Ghi lại đúng N từ vừa học TRƯỚC khi sang đăng ký — nếu không
+           * thì nút này hứa suông, đăng ký xong chẳng có từ nào được lưu. */}
+          <LinkButton
+            href="/register"
+            onClick={() => savePendingWords(words.map((w) => w.id))}
+          >
             Lưu {words.length} từ này vào tài khoản
             <Icon name="arrow" size={16} />
           </LinkButton>

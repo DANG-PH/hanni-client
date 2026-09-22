@@ -15,7 +15,8 @@ const VARIANTS: Record<Variant, string> = {
     "border border-border/80 bg-surface/90 text-foreground hover:bg-surface-2 hover:border-primary/30 shadow-xs active:translate-y-0.5",
   ghost:
     "border border-transparent text-muted hover:bg-surface-2 hover:text-foreground active:translate-y-0.5",
-  danger: "border border-danger/30 bg-danger/10 text-danger hover:bg-danger/20 shadow-xs active:translate-y-0.5",
+  danger:
+    "border border-danger/30 bg-danger/10 text-danger hover:bg-danger/20 shadow-xs active:translate-y-0.5",
 };
 const buttonClass =
   "motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4.5 py-2.5 text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none";
@@ -37,16 +38,21 @@ export function LinkButton({
   href,
   variant = "primary",
   className = "",
+  onClick,
   children,
 }: {
   href: string;
   variant?: Variant;
   className?: string;
+  /** Chạy kèm lúc bấm (vẫn điều hướng như thường) — vd ghi tạm dữ liệu vào
+   * sessionStorage trước khi rời trang. */
+  onClick?: () => void;
   children: ReactNode;
 }) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={`${buttonClass} ${VARIANTS[variant]} ${className}`}
     >
       {children}
@@ -124,7 +130,9 @@ export function Stat({
   return (
     <div className="reveal hover-card panel relative overflow-hidden p-5 sm:p-6">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <span className="text-xs font-medium tracking-wide text-muted uppercase">{label}</span>
+        <span className="text-xs font-medium tracking-wide text-muted uppercase">
+          {label}
+        </span>
         <span
           className={`flex h-10 w-10 items-center justify-center rounded-xl border ${tone} shadow-2xs`}
         >
@@ -132,7 +140,9 @@ export function Stat({
         </span>
       </div>
       <div className="text-3xl font-extrabold tracking-tight">{value}</div>
-      {hint && <p className="mt-2 text-xs text-muted leading-relaxed">{hint}</p>}
+      {hint && (
+        <p className="mt-2 text-xs text-muted leading-relaxed">{hint}</p>
+      )}
     </div>
   );
 }
@@ -167,9 +177,7 @@ export function PageHeading({
         <span className={headingStyles.pageIcon}>
           <Icon name={icon} size={28} />
         </span>
-        {eyebrow && (
-          <p className={headingStyles.eyebrow}>{eyebrow}</p>
-        )}
+        {eyebrow && <p className={headingStyles.eyebrow}>{eyebrow}</p>}
         <h1 className={headingStyles.pageTitle}>{title}</h1>
         <p className={headingStyles.pageDescription}>{description}</p>
       </div>
@@ -212,11 +220,15 @@ export function SectionHeading({
             {title}
           </h2>
           {description && (
-            <div className={headingStyles.sectionDescription}>{description}</div>
+            <div className={headingStyles.sectionDescription}>
+              {description}
+            </div>
           )}
         </div>
       </div>
-      {children && <div className={headingStyles.sectionActions}>{children}</div>}
+      {children && (
+        <div className={headingStyles.sectionActions}>{children}</div>
+      )}
     </div>
   );
 }

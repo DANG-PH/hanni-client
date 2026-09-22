@@ -9,6 +9,8 @@ import { GoogleButton } from "@/components/google-button";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { safeNextPath } from "@/lib/auth-redirect";
+import { addWordToSrs } from "@/lib/hooks";
+import { drainPendingWords } from "@/lib/pending-words";
 
 export function AuthFormCard({
   initialMode,
@@ -64,6 +66,7 @@ export function AuthFormCard({
     async (isNewUser: boolean) => {
       manualRedirect.current = true;
       await refresh();
+      if (isNewUser) await saveTrialWords();
       if (mode === "register") {
         router.replace(
           next !== "/dashboard"
@@ -78,6 +81,20 @@ export function AuthFormCard({
     },
     [refresh, router, next, mode],
   );
+
+  /** Đưa các từ vừa học ở `/hoc-thu` vào hàng đợi ôn của tài khoản mới.
+   *
+   * Màn kết học thử có nút "Lưu N từ này vào tài khoản" — trước 2026-09-22
+   * đăng ký xong CHẲNG có gì được lưu, N từ đó biến mất. Chạy song song và
+   * nuốt lỗi từng từ: không được để việc phụ này chặn đường vào app ngay
+   * sau khi người ta vừa quyết định đăng ký. `addWordToSrs` vốn idempotent
+   * nên gọi trùng cũng vô hại.
+   */
+  async function saveTrialWords() {
+    const ids = drainPendingWords();
+    if (ids.length === 0) return;
+    await Promise.allSettled(ids.map((id) => addWordToSrs(id)));
+  }
 
   async function onLoginSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -120,6 +137,7 @@ export function AuthFormCard({
       });
       manualRedirect.current = true;
       await refresh();
+      await saveTrialWords();
       router.replace(next !== "/dashboard" ? next : "/onboarding");
     } catch (err) {
       setError(
