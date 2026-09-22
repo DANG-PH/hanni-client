@@ -6,6 +6,7 @@ import { Icon } from "@/components/icon";
 import { HanziWriterCanvas } from "@/components/hanzi-writer-canvas";
 import { NextStep } from "@/components/next-step";
 import { useRequireAuth } from "@/lib/auth";
+import { useCurrentLesson, useLesson } from "@/lib/hooks";
 
 interface HanziEntry {
   c: string;
@@ -21,6 +22,18 @@ export default function WritingPage() {
   const [indexError, setIndexError] = useState(false);
   const [level, setLevel] = useState<number | undefined>(1);
   const [q, setQ] = useState("");
+  // Mặc định luyện viết ĐÚNG các chữ trong bài đang học, thay vì đổ ra cả
+  // 3.088 chữ của một cấp — trang này vốn là chỗ "loạn" nhất vì đọc file
+  // tĩnh theo cấp, không có khái niệm bài học/chủ đề nào.
+  const current = useCurrentLesson();
+  const lessonDetail = useLesson(current.data?.id ?? null);
+  const [byLesson, setByLesson] = useState(true);
+  const lessonChars = useMemo(() => {
+    const words = lessonDetail.data?.words;
+    if (!words?.length) return null;
+    return new Set(words.flatMap((w) => Array.from(w.simplified)));
+  }, [lessonDetail.data]);
+  const lessonScope = byLesson && !!lessonChars;
   const [active, setActive] = useState<string | null>(null);
   const [strokeCount, setStrokeCount] = useState<number | null>(null);
 
@@ -45,13 +58,18 @@ export default function WritingPage() {
     if (!index) return [];
     const term = q.trim();
     return index.filter((entry) => {
-      if (level && entry.level !== level) return false;
+      if (lessonScope) {
+        if (!lessonChars!.has(entry.c)) return false;
+      } else if (level && entry.level !== level) return false;
       if (!term) return true;
       return entry.c.includes(term) || entry.pinyin.toLowerCase().includes(term.toLowerCase());
     });
-  }, [index, level, q]);
+  }, [index, level, q, lessonScope, lessonChars]);
 
-  const activeEntry = index?.find((e) => e.c === active) ?? null;
+  // Luôn lấy trong danh sách ĐANG LỌC: đổi sang "chữ trong bài" mà vẫn giữ
+  // chữ cũ không thuộc bài thì hiển thị lệch với danh sách bên dưới.
+  const activeEntry =
+    filtered.find((e) => e.c === active) ?? filtered[0] ?? null;
   const activeIdx = activeEntry
     ? filtered.findIndex((e) => e.c === activeEntry.c)
     : -1;
@@ -167,10 +185,37 @@ export default function WritingPage() {
               className="field pl-10!"
             />
           </div>
+          {/* Cho thấy RÕ đang luyện chữ của bài nào, và đổi được sang cả cấp.
+           * Trước đó trang chỉ đổ ra toàn bộ chữ của 1 cấp, không dính gì tới
+           * bài đang học. */}
+          {lessonChars && (
+            <div className="flex flex-wrap items-center gap-2 rounded-xl bg-surface-2 p-2.5 text-xs">
+              <button
+                onClick={() => setByLesson(true)}
+                aria-pressed={byLesson}
+                className={`motion-button min-h-8 rounded-lg px-2.5 py-1 font-medium ${byLesson ? "bg-primary text-primary-fg" : "text-muted hover:text-primary"}`}
+              >
+                Chữ trong bài đang học
+              </button>
+              <button
+                onClick={() => setByLesson(false)}
+                aria-pressed={!byLesson}
+                className={`motion-button min-h-8 rounded-lg px-2.5 py-1 font-medium ${!byLesson ? "bg-primary text-primary-fg" : "text-muted hover:text-primary"}`}
+              >
+                Toàn bộ cấp HSK
+              </button>
+              {byLesson && current.data && (
+                <span className="w-full text-[11px] text-muted">
+                  Bài {current.data.orderIndex}: {current.data.title}
+                </span>
+              )}
+            </div>
+          )}
           <div
             className="flex flex-wrap gap-1.5"
             role="group"
             aria-label="Lọc theo cấp HSK"
+            hidden={lessonScope}
           >
             {LEVELS.map((l) => (
               <button
