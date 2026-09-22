@@ -130,6 +130,18 @@ tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ
 đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
 màn trống.
 
+**Ẩn từ đã biết (2026-09-22)** — `components/flashcard.tsx` có nút "Tôi đã biết từ này" ở mặt
+SAU (chỉ hiện sau khi lật, để không ai bấm lúc chưa thấy nghĩa). `/study` xử lý bằng cách BỎ thẻ
+khỏi mảng `items` chứ không nhảy qua — mẫu số thống kê cuối buổi mới đúng — và KHÔNG gọi
+`/study/review` (người dùng có ôn đâu mà ghi lượt ôn). Mục "Từ đã ẩn" + nút "Học lại" ở
+`/progress`. Xem `hanni-server/CLAUDE.md` cho lý do không đánh dấu "đã thuộc".
+
+**`/account` — gộp cửa hàng (2026-09-22)**: `components/cosmetic-shop.tsx` gộp `FrameShop` +
+`TitleShop` vào MỘT thẻ có tab (2 component cũ nhận prop `bare` để bỏ Card/tiêu đề riêng). Trước
+đó cột phải 320px xếp chồng 4 thẻ thương mại (Premium, Ví xu, Khung, Danh hiệu) cuộn dài mà
+không thấy được quan hệ giữa chúng. Số dư xu hiện ngay đầu thẻ thay vì phải cuộn lên. **Chỉ gộp
+ở tầng hiển thị** — `ShopService`/`TitleService` phía server vẫn tách riêng có chủ đích.
+
 **Rà trang cụt**: script rà phải bắt cả `href="/x"`, `href: "/x"` (trong mảng `actions` của
 NextStep), `push("/x")`, VÀ cả component import tương đối (`./trial-deck`) lẫn tuyệt đối
 (`@/components/...`). Bỏ sót bất kỳ dạng nào là báo nhầm trang đã có link thành cụt — đã mắc
