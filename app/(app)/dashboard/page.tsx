@@ -37,32 +37,32 @@ const GOAL_PERSONA: Record<
   EXAM: {
     subtitle: (name) =>
       `Chào ${name}! Giữ nhịp ôn luyện đều đặn để tự tin bước vào kỳ thi HSK.`,
-    order: ["/vocabulary", "/grammar", "/listening", "/pronunciation"],
+    order: ["/tu-dien", "/grammar", "/listening", "/pronunciation"],
   },
   TRAVEL: {
     subtitle: (name) =>
       `Chào ${name}! Luyện nghe và phản xạ giao tiếp để tự tin hơn khi đi du lịch.`,
-    order: ["/listening", "/pronunciation", "/vocabulary", "/grammar"],
+    order: ["/listening", "/pronunciation", "/tu-dien", "/grammar"],
   },
   WORK: {
     subtitle: (name) =>
       `Chào ${name}! Mở rộng vốn từ và ngữ pháp để dùng tiếng Trung tự tin hơn trong công việc.`,
-    order: ["/vocabulary", "/listening", "/grammar", "/pronunciation"],
+    order: ["/tu-dien", "/listening", "/grammar", "/pronunciation"],
   },
   ACADEMIC: {
     subtitle: (name) =>
       `Chào ${name}! Nắm chắc ngữ pháp và luyện viết để chuẩn bị tốt cho hành trình du học.`,
-    order: ["/grammar", "/vocabulary", "/pronunciation", "/listening"],
+    order: ["/grammar", "/tu-dien", "/pronunciation", "/listening"],
   },
   INTEREST: {
     subtitle: (name) =>
       `Chào ${name}! Khám phá tiếng Trung mỗi ngày qua từ vựng, video và câu chuyện thú vị.`,
-    order: ["/vocabulary", "/listening", "/grammar", "/pronunciation"],
+    order: ["/tu-dien", "/listening", "/grammar", "/pronunciation"],
   },
   OTHER: {
     subtitle: (name) =>
       `Chào ${name}! Tiếp tục hành trình tiếng Trung của bạn, từ những từ vựng đầu tiên đến từng cột mốc HSK.`,
-    order: ["/vocabulary", "/grammar", "/listening", "/pronunciation"],
+    order: ["/tu-dien", "/grammar", "/listening", "/pronunciation"],
   },
 };
 
@@ -76,7 +76,7 @@ const PRACTICE_AREAS: {
   hanzi: string;
 }[] = [
   {
-    href: "/vocabulary",
+    href: "/tu-dien",
     title: "Từ vựng",
     description: "Ghi nhớ từ mới, ôn đúng lúc",
     icon: "cards",

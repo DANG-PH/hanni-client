@@ -1,6 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /** `/vocabulary` đã gộp vào `/tu-dien` (2 trang trước đó hiển thị cùng dữ
+   * liệu). Khai ở đây thay vì dùng `redirect()` trong page component: page
+   * nằm trong nhóm `(app)` nên request trực tiếp trả 200 kèm HTML app-shell
+   * rồi mới chuyển hướng phía client — kiểm chứng bằng curl thấy status 200,
+   * không có Location. Redirect cấp cấu hình trả 308 thật, đúng cho cả bot,
+   * trình duyệt lẫn link cũ. */
+  async redirects() {
+    return [
+      { source: "/vocabulary", destination: "/tu-dien", permanent: true },
+    ];
+  },
+
   async headers() {
     return [
       {

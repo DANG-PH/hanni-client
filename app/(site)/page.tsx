@@ -33,7 +33,7 @@ const SKILLS: {
   tag: string;
 }[] = [
   {
-    href: "/vocabulary",
+    href: "/tu-dien",
     icon: "book",
     title: "Từ vựng theo cấp độ",
     description: "Hán tự, pinyin và nghĩa dễ hiểu",
@@ -339,7 +339,7 @@ export default function Home() {
                 </p>
               )}
               <Link
-                href="/vocabulary"
+                href="/tu-dien"
                 className="flex items-center justify-between px-4 py-3.5 text-xs font-medium text-muted transition-colors hover:bg-primary/5 hover:text-primary"
               >
                 Khám phá thư viện từ vựng

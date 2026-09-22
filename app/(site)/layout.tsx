@@ -27,7 +27,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
               title: "KHÁM PHÁ HANNI",
               links: [
                 ["Lộ trình HSK", "/learn"],
-                ["Thư viện từ vựng", "/vocabulary"],
+                ["Thư viện từ vựng", "/tu-dien"],
                 ["Luyện nghe", "/listening"],
                 ["Luyện phát âm", "/pronunciation"],
               ],

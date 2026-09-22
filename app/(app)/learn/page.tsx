@@ -242,7 +242,7 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
             title="Bài học đang được chuẩn bị"
             description="Cấp độ này chưa có bài học. Bạn có thể chọn cấp độ khác hoặc khám phá thư viện từ vựng."
           >
-            <LinkButton href="/vocabulary">
+            <LinkButton href="/tu-dien">
               Khám phá từ vựng <Icon name="arrow" size={16} />
             </LinkButton>
           </EmptyState>

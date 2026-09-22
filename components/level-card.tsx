@@ -6,7 +6,7 @@ import type { LevelBucket } from "@/lib/types";
 export function LevelCard({ level }: { level: LevelBucket }) {
   return (
     <Link
-      href={`/vocabulary?level=${level.level}`}
+      href={`/tu-dien?level=${level.level}`}
       className="reveal hover-card panel group block p-5 transition-colors hover:border-primary/40"
     >
       <div className="flex items-start justify-between">

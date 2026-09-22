@@ -74,7 +74,7 @@ function GrammarView({
         title="Ngữ pháp & mẫu câu"
         description="Hiểu cấu trúc, nghe ví dụ và tập diễn đạt điều bạn muốn nói."
       >
-        <LinkButton href="/vocabulary" variant="secondary">
+        <LinkButton href="/tu-dien" variant="secondary">
           <Icon name="book" size={16} /> Khám phá từ vựng
         </LinkButton>
       </LearningHeader>
@@ -294,7 +294,7 @@ function GrammarView({
               <LearningTip title="Từ vựng và ngữ pháp đi cùng nhau">
                 Một cấu trúc quen sẽ dễ nhớ hơn khi dùng với những từ bạn vừa
                 học.
-                <Link href="/vocabulary">
+                <Link href="/tu-dien">
                   Mở thư viện từ vựng <Icon name="arrow" size={14} />
                 </Link>
               </LearningTip>

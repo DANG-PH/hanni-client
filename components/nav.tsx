@@ -10,7 +10,7 @@ import { ThemeToggle } from "./theme-toggle";
 
 const LINKS = [
   { href: "/#lo-trinh", label: "Lộ trình HSK" },
-  { href: "/vocabulary", label: "Từ vựng" },
+  { href: "/tu-dien", label: "Từ vựng" },
   { href: "/listening", label: "Luyện tập" },
   { href: "/exams", label: "Kiểm tra" },
 ];

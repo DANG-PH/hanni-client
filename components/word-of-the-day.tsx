@@ -50,7 +50,7 @@ export function WordOfTheDayCard() {
         )}
       </div>
       <Link
-        href={`/vocabulary?level=${data.hskLevel}`}
+        href={`/tu-dien?level=${data.hskLevel}`}
         className={styles.action}
       >
         Khám phá thêm <span><Icon name="arrow" size={15} /></span>

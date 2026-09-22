@@ -337,7 +337,7 @@ export default function ProgressPage() {
                               : "Bắt đầu với những từ đầu tiên"}
                         </span>
                         <Link
-                          href={`/vocabulary?level=${l.level}`}
+                          href={`/tu-dien?level=${l.level}`}
                           className="inline-flex items-center gap-1.5 font-semibold text-primary"
                         >
                           Khám phá từ vựng <Icon name="arrow" size={14} />

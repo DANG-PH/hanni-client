@@ -1,11 +1,9 @@
 import type { MetadataRoute } from "next";
-
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : "http://localhost:3000");
-
 /** Chỉ cho index các trang công khai — mọi thứ dưới (app) cần đăng nhập,
  * không có giá trị SEO và không nên bị crawl.
  *
@@ -29,7 +27,6 @@ export default function robots(): MetadataRoute.Robots {
       disallow: [
         "/dashboard",
         "/learn",
-        "/vocabulary",
         "/grammar",
         "/listening",
         "/pronunciation",
