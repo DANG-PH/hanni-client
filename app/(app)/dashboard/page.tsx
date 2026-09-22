@@ -48,32 +48,74 @@ const GOAL_PERSONA: Record<
   EXAM: {
     subtitle: (name) =>
       `Chào ${name}! Giữ nhịp ôn luyện đều đặn để tự tin bước vào kỳ thi HSK.`,
-    order: ["/tu-dien", "/ngu-phap", "/listening", "/pronunciation"],
+    order: [
+      "/tu-dien",
+      "/ngu-phap",
+      "/listening",
+      "/writing",
+      "/pronunciation",
+      "/roleplay",
+    ],
   },
   TRAVEL: {
     subtitle: (name) =>
       `Chào ${name}! Luyện nghe và phản xạ giao tiếp để tự tin hơn khi đi du lịch.`,
-    order: ["/listening", "/pronunciation", "/tu-dien", "/ngu-phap"],
+    order: [
+      "/listening",
+      "/roleplay",
+      "/pronunciation",
+      "/tu-dien",
+      "/ngu-phap",
+      "/writing",
+    ],
   },
   WORK: {
     subtitle: (name) =>
       `Chào ${name}! Mở rộng vốn từ và ngữ pháp để dùng tiếng Trung tự tin hơn trong công việc.`,
-    order: ["/tu-dien", "/listening", "/ngu-phap", "/pronunciation"],
+    order: [
+      "/tu-dien",
+      "/listening",
+      "/roleplay",
+      "/ngu-phap",
+      "/pronunciation",
+      "/writing",
+    ],
   },
   ACADEMIC: {
     subtitle: (name) =>
       `Chào ${name}! Nắm chắc ngữ pháp và luyện viết để chuẩn bị tốt cho hành trình du học.`,
-    order: ["/ngu-phap", "/tu-dien", "/pronunciation", "/listening"],
+    order: [
+      "/ngu-phap",
+      "/writing",
+      "/tu-dien",
+      "/listening",
+      "/pronunciation",
+      "/roleplay",
+    ],
   },
   INTEREST: {
     subtitle: (name) =>
       `Chào ${name}! Khám phá tiếng Trung mỗi ngày qua từ vựng, video và câu chuyện thú vị.`,
-    order: ["/tu-dien", "/listening", "/ngu-phap", "/pronunciation"],
+    order: [
+      "/tu-dien",
+      "/listening",
+      "/roleplay",
+      "/ngu-phap",
+      "/writing",
+      "/pronunciation",
+    ],
   },
   OTHER: {
     subtitle: (name) =>
       `Chào ${name}! Tiếp tục hành trình tiếng Trung của bạn, từ những từ vựng đầu tiên đến từng cột mốc HSK.`,
-    order: ["/tu-dien", "/ngu-phap", "/listening", "/pronunciation"],
+    order: [
+      "/tu-dien",
+      "/ngu-phap",
+      "/listening",
+      "/pronunciation",
+      "/roleplay",
+      "/writing",
+    ],
   },
 };
 
@@ -121,6 +163,28 @@ const PRACTICE_AREAS: {
     character: "说",
     tile: "bg-good/12 text-good",
     hanzi: "text-good/15",
+  },
+  // 2 mảng dưới TRƯỚC ĐÂY BỊ THIẾU khỏi lưới này dù cả 2 đều đã có trang
+  // riêng: luyện nói với AI (`/roleplay`) gần như không ai dùng vì chỉ vào
+  // được từ sidebar, còn luyện viết thì chính lời chào của persona "du học"
+  // đã hứa ("nắm chắc ngữ pháp và luyện viết") mà lưới lại không có.
+  {
+    href: "/roleplay",
+    title: "Luyện nói với AI",
+    description: "Đóng vai tình huống thật",
+    icon: "message",
+    character: "话",
+    tile: "bg-accent/12 text-accent",
+    hanzi: "text-accent/15",
+  },
+  {
+    href: "/writing",
+    title: "Luyện viết",
+    description: "Đúng thứ tự từng nét",
+    icon: "pencil",
+    character: "写",
+    tile: "bg-primary/12 text-primary",
+    hanzi: "text-primary/15",
   },
 ];
 
