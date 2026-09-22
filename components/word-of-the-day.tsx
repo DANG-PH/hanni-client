@@ -22,7 +22,9 @@ export function WordOfTheDayCard() {
   return (
     <Card className={styles.card}>
       <div className={styles.topline}>
-        <span className={styles.label}><Icon name="spark" size={14} /> Từ vựng hôm nay</span>
+        <span className={styles.label}>
+          <Icon name="spark" size={14} /> Từ vựng hôm nay
+        </span>
         <span className={styles.level}>HSK {data.hskLevel}</span>
       </div>
       <div className={styles.word}>
@@ -49,11 +51,17 @@ export function WordOfTheDayCard() {
           />
         )}
       </div>
+      {/* Thẻ đang khoe MỘT từ cụ thể thì lối đi tiếp phải là trang của CHÍNH
+       * từ đó (âm Hán Việt, phân tích từng chữ, từ cùng chữ, video có từ
+       * này) — trước đó lại dẫn ra danh sách cả cấp HSK, mất hẳn ngữ cảnh. */}
       <Link
-        href={`/tu-dien?level=${data.hskLevel}`}
+        href={`/tu-dien/${encodeURIComponent(data.simplified)}`}
         className={styles.action}
       >
-        Khám phá thêm <span><Icon name="arrow" size={15} /></span>
+        Tìm hiểu {data.simplified}{" "}
+        <span>
+          <Icon name="arrow" size={15} />
+        </span>
       </Link>
     </Card>
   );

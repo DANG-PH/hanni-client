@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { addWordToSrs } from "@/lib/hooks";
+import { addWordToSrs, suspendWord } from "@/lib/hooks";
 import { Icon } from "./icon";
 import { Button, LinkButton } from "./ui";
 
@@ -24,9 +24,9 @@ export function SaveWordButton({
   simplified: string;
 }) {
   const { user, loading } = useAuth();
-  const [state, setState] = useState<"idle" | "saving" | "saved" | "error">(
-    "idle",
-  );
+  const [state, setState] = useState<
+    "idle" | "saving" | "saved" | "hiding" | "hidden" | "error"
+  >("idle");
 
   if (loading) return null;
 
@@ -48,6 +48,15 @@ export function SaveWordButton({
     );
   }
 
+  if (state === "hidden") {
+    return (
+      <span className="inline-flex items-center gap-2 text-sm font-medium text-good">
+        <Icon name="check" size={16} />
+        Đã ẩn khỏi lượt ôn — bỏ ẩn được ở trang Tiến độ
+      </span>
+    );
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Button
@@ -61,6 +70,22 @@ export function SaveWordButton({
       >
         <Icon name="cards" size={16} />
         {state === "saving" ? "Đang lưu…" : "Lưu để ôn tập"}
+      </Button>
+      {/* Tra từ điển là lúc hay gặp từ mình đã biết sẵn (rất phổ biến với
+       * người Việt nhờ âm Hán Việt). Cho đánh dấu ngay tại đây thay vì phải
+       * đợi gặp lại nó trong lượt ôn rồi mới ẩn được. */}
+      <Button
+        variant="ghost"
+        disabled={state === "hiding"}
+        onClick={() => {
+          setState("hiding");
+          suspendWord(wordId, true)
+            .then(() => setState("hidden"))
+            .catch(() => setState("error"));
+        }}
+      >
+        <Icon name="check" size={16} />
+        {state === "hiding" ? "Đang ẩn…" : "Tôi đã biết từ này"}
       </Button>
       {state === "error" && (
         <span className="text-sm text-muted">
