@@ -130,7 +130,18 @@ tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ
 đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
 màn trống.
 
-**Không hứa suông khi hạ tầng chưa bật (2026-09-22)** — `/settings` hiện ghi chú ngay trong thẻ
+**Ảnh minh hoạ: dữ liệu có sẵn nhưng luồng học không render (sửa 2026-09-22)** — user hỏi
+"chưa thấy ảnh trên production, nó ở đâu". Đo: 1.652 từ ĐÃ có ảnh, nhưng chỉ render ở từ điển
+công khai, popup bấm từ trong video, thẻ "Từ vựng hôm nay" và bộ thẻ học thử — đúng 2 chỗ người
+học ngồi lâu nhất (`components/flashcard.tsx`, `/learn/[lessonId]`) thì không có gì. Thêm 2 chỗ
+đó + thumbnail ở danh sách `/tu-dien`. **Lưu ý khi thêm ảnh vào flashcard**: 2 mặt thẻ dùng
+chung 1 ô lưới nên thẻ tự cao thêm theo ảnh — phải thu ảnh lại ở `@media (max-width: 540px)`,
+nếu không 4 nút đánh giá bị đẩy xuống dưới tầm nhìn trên điện thoại.
+**Vì sao hàng đợi mặc định hầu như không có ảnh**: ảnh chỉ có cho DANH TỪ CỤ THỂ, mà hàng đợi
+tự do xếp theo tần suất nên toàn hư từ (的/我/你/是). Học THEO BÀI chủ đề thì ngược lại — "Đồ ăn
+& thức uống" 16/16 thẻ có ảnh. Trần HSK5, xem `hanni-server/CLAUDE.md`.
+
+**Không hứa suông khi hạ tầng chưa bật (2026-09-22)****Không hứa suông khi hạ tầng chưa bật (2026-09-22)** — `/settings` hiện ghi chú ngay trong thẻ
 "Email tổng kết tuần" khi `GET /mail/configured` trả `false`: đo production thấy `MAIL_HOST`
 trống mà 101/102 tài khoản đang bật mục này, tức là bày ra một nút "Bật" không dẫn tới đâu.
 Cùng khuôn với phần nạp xu tự ẩn khi chưa có payOS. Thẻ bật thông báo cũng nói rõ "từ giờ sẽ
