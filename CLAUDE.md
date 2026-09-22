@@ -31,7 +31,6 @@ app/
 │                        (user chỉ vào được trang đó nếu tự bấm từ danh sách bài học, không phải
 │                        qua luồng "tiếp tục học" chính)
 ├── study               buổi ôn flashcard (SM-2) + quiz cuối buổi
-├── vocabulary          duyệt/tìm từ theo cấp HSK
 ├── progress            bucket đã thuộc / đang học / sắp quên theo cấp; có lịch hoạt động 30
 │                        ngày (`components/activity-calendar.tsx`, dùng GET /streak/history) +
 │                        lịch sử quiz gần đây (GET /quiz/recent)
@@ -46,8 +45,11 @@ app/
                         render bằng JS nên Google không đọc được; để song song là trùng
                         lặp. `/tu-dien` giờ làm cả duyệt (lọc cấp + tìm + phân trang qua
                         `searchParams`, nên `?level=2` cũng là 1 URL index được) lẫn tra
-                        chi tiết; `app/(app)/vocabulary/page.tsx` chỉ còn `redirect()`
-                        phía server, giữ `?level=` cho link cũ. Nút "Lưu để ôn tập"
+                        chi tiết; `/vocabulary` XOÁ HẲN, chuyển hướng 308 khai ở
+                        `next.config.ts` (redirect trong page component nằm
+                        trong nhóm (app) chỉ trả 200 + HTML app-shell rồi mới
+                        nhảy phía client — kiểm chứng bằng curl), Next tự giữ
+                        query nên `?level=` vẫn về đúng cấp. Nút "Lưu để ôn tập"
                         (`components/save-word-button.tsx`) là client component NHỎ nhúng
                         trong trang server-rendered — nội dung vẫn nằm sẵn trong HTML cho
                         Google, chỉ hành động cá nhân mới cần JS; đây là chỗ NỐI tra cứu
@@ -225,8 +227,8 @@ pinyin thường thấy ở TRANSLATE vì đó chính là đáp án đang cho ch
 đồng hồ đếm ngược 60s tự chạy bằng `setInterval` so với `startTimeRef` (không cộng dồn sai số),
 chọn đáp án xong tự chuyển câu hoặc tự nộp bài khi hết giờ/hết câu, bảng xếp hạng ngày/tuần
 RIÊNG theo mode (`useMinigameLeaderboard(period, mode)`). `GameWorkspace` build mảng `tabs` động
-theo `game.supportsDuel`/`game.supportsTeamDuel` (hiện chỉ Dịch tốc độ có cả 2 — các mode còn
-lại chưa có đấu 1v1/2v2, tránh chia nhỏ hàng chờ ghép trận khi lượng người chơi còn ít).
+theo `game.supportsDuel` (hiện chỉ Dịch tốc độ có — các mode còn
+lại chưa có đấu 1v1, tránh chia nhỏ hàng chờ ghép trận khi lượng người chơi còn ít; đấu đôi 2v2 đã XOÁ 2026-09-22 vì chính lý do đó).
   - **Ghép cặp** (`MatchMinigame`, `MATCH`) — engine RIÊNG hẳn (không dùng chung `SoloMinigame`
     vì cơ chế khác hoàn toàn trắc nghiệm): lưới 16 thẻ (`MATCH_PAIRS`=8 cặp, `MatchCard[]` từ
     `POST /minigame/start`), lật 2 thẻ/lượt qua `flipCard()` — khớp `wordId` thì giữ nguyên (thêm
@@ -265,15 +267,6 @@ lại chưa có đấu 1v1/2v2, tránh chia nhỏ hàng chờ ghép trận khi l
     `useDuelSocket()` (`lib/duel.ts`) dùng ref cho handlers để không bắt component gọi phải tự
     `useCallback` — effect chỉ đăng ký socket theo `user`, không theo từng lần đổi state trong
     ván đấu.
-  - **Đấu đôi 2v2** (`TeamDuelMinigame`, `lib/team-duel.ts`, Giai đoạn 4) — cấu trúc SONG SONG
-    với `DuelMinigame` (queue → màn "VS" đếm ngược → round → finished), khác ở chỗ mọi state theo
-    NHÓM thay vì 1 đối thủ: `myTeammates: DuelOpponent[]` (đúng 1 người) + `opponentTeam:
-    DuelOpponent[]` (đúng 2 người), điểm đội tự cộng ở client từ `scores` (theo từng người) +
-    danh sách đồng đội/đối thủ — KHÔNG dựa vào `teamScores` server gửi kèm (thứ tự đội 0/1 không
-    khớp trực tiếp với "đội của tôi") để tránh nhầm thứ tự. Màn "VS" hiện 2 avatar đội mình cạnh
-    nhau rồi "VS" rồi 2 avatar đội đối thủ. Dùng CHUNG `EloLeaderboardSection` (tách từ
-    `DuelMinigame` thành 1 component riêng vì giờ dùng ở CẢ 2 nơi) — 2v2 không có bảng xếp hạng
-    riêng, ELO/tier/mùa giải là 1 hệ chung với đấu 1v1.
 `/account` (đổi mật khẩu, thẻ "Ví xu" (`useWallet()`) hiện số dư + nút mua thêm lá chắn streak
 (300 xu, `buyStreakFreeze()`) + khối "Nạp thêm xu" (CHỈ hiện nếu `useTopUpConfigured()` trả
 `configured: true` — server chưa cấu hình payOS thì tự ẩn gọn, không hiện nút vào báo lỗi): chọn
