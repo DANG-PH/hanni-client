@@ -52,6 +52,13 @@ export default function LessonDetailPage() {
       word: word.simplified,
     })),
   );
+  // Bỏ khoá bài (2026-09-22) nghĩa là người học nhảy vào bài bất kỳ, nên
+  // trang bài học phải tự nói được "mình đang ở đâu trong bài này" — trước
+  // đó nút luôn ghi "Bắt đầu học" kể cả khi đã học dở nửa bài.
+  const startedWords = words.filter(
+    (word) => word.progressState && word.progressState !== "NEW",
+  ).length;
+  const startLabel = startedWords > 0 ? "Học tiếp" : "Bắt đầu học";
 
   return (
     <div className="page-wrap space-y-6">
@@ -68,7 +75,7 @@ export default function LessonDetailPage() {
       >
         {words.length > 0 && (
           <LinkButton href={`/study?lesson=${lesson.id}`}>
-            <Icon name="play" size={16} /> Bắt đầu học
+            <Icon name="play" size={16} /> {startLabel}
           </LinkButton>
         )}
       </PageHeading>
@@ -91,19 +98,21 @@ export default function LessonDetailPage() {
                 Từ vựng{" "}
                 <span className="ml-1 text-xs opacity-70">{words.length}</span>
               </button>
-              <button
-                id="lesson-examples-tab"
-                role="tab"
-                aria-selected={tab === "examples"}
-                aria-controls="lesson-content"
-                onClick={() => setTab("examples")}
-                className={`motion-button rounded-xl px-4 py-2.5 text-sm font-semibold ${tab === "examples" ? "bg-primary/8 text-primary" : "text-muted hover:bg-surface-2"}`}
-              >
-                Ví dụ{" "}
-                <span className="ml-1 text-xs opacity-70">
-                  {examples.length}
-                </span>
-              </button>
+              {examples.length > 0 && (
+                <button
+                  id="lesson-examples-tab"
+                  role="tab"
+                  aria-selected={tab === "examples"}
+                  aria-controls="lesson-content"
+                  onClick={() => setTab("examples")}
+                  className={`motion-button rounded-xl px-4 py-2.5 text-sm font-semibold ${tab === "examples" ? "bg-primary/8 text-primary" : "text-muted hover:bg-surface-2"}`}
+                >
+                  Ví dụ{" "}
+                  <span className="ml-1 text-xs opacity-70">
+                    {examples.length}
+                  </span>
+                </button>
+              )}
             </div>
             <Button
               variant="ghost"
@@ -186,33 +195,27 @@ export default function LessonDetailPage() {
                 />
               ))}
             {tab === "examples" &&
-              (examples.length ? (
-                examples.map((example) => (
-                  <Card key={example.id} className="space-y-3">
-                    <span
-                      lang="zh"
-                      className="hanzi inline-flex rounded-lg bg-primary/8 px-2.5 py-1 text-sm text-primary"
-                    >
-                      {example.word}
-                    </span>
-                    <p lang="zh" className="hanzi text-2xl leading-relaxed">
-                      {example.zh}
+              examples.length > 0 &&
+              examples.map((example) => (
+                <Card key={example.id} className="space-y-3">
+                  <span
+                    lang="zh"
+                    className="hanzi inline-flex rounded-lg bg-primary/8 px-2.5 py-1 text-sm text-primary"
+                  >
+                    {example.word}
+                  </span>
+                  <p lang="zh" className="hanzi text-2xl leading-relaxed">
+                    {example.zh}
+                  </p>
+                  {example.pinyin && (
+                    <p className="text-sm text-primary">{example.pinyin}</p>
+                  )}
+                  {showMeanings && (example.vi || example.en) && (
+                    <p className="text-sm leading-6 text-muted">
+                      {example.vi ?? example.en}
                     </p>
-                    {example.pinyin && (
-                      <p className="text-sm text-primary">{example.pinyin}</p>
-                    )}
-                    {showMeanings && (example.vi || example.en) && (
-                      <p className="text-sm leading-6 text-muted">
-                        {example.vi ?? example.en}
-                      </p>
-                    )}
-                  </Card>
-                ))
-              ) : (
-                <EmptyState
-                  title="Ví dụ đang được bổ sung"
-                  description="Bạn vẫn có thể nghe phát âm và học các từ vựng có sẵn trong bài."
-                />
+                  )}
+                </Card>
               ))}
           </div>
         </section>
@@ -237,10 +240,20 @@ export default function LessonDetailPage() {
                 <dt className="text-muted">Từ vựng</dt>
                 <dd className="font-semibold">{words.length} từ</dd>
               </div>
-              <div className="flex justify-between">
-                <dt className="text-muted">Ví dụ</dt>
-                <dd className="font-semibold">{examples.length} câu</dd>
-              </div>
+              {examples.length > 0 && (
+                <div className="flex justify-between">
+                  <dt className="text-muted">Ví dụ</dt>
+                  <dd className="font-semibold">{examples.length} câu</dd>
+                </div>
+              )}
+              {words.length > 0 && (
+                <div className="flex justify-between">
+                  <dt className="text-muted">Đã học</dt>
+                  <dd className="font-semibold">
+                    {startedWords}/{words.length} từ
+                  </dd>
+                </div>
+              )}
               {relatedGrammar.length > 0 && (
                 <div className="flex justify-between">
                   <dt className="text-muted">Ngữ pháp liên quan</dt>
@@ -250,8 +263,11 @@ export default function LessonDetailPage() {
             </dl>
             {words.length > 0 && (
               <div className="mt-5 space-y-2.5">
-                <LinkButton href={`/study?lesson=${lesson.id}`} className="w-full">
-                  <Icon name="cards" size={17} /> Học với flashcard
+                <LinkButton
+                  href={`/study?lesson=${lesson.id}`}
+                  className="w-full"
+                >
+                  <Icon name="cards" size={17} /> {startLabel} với flashcard
                 </LinkButton>
                 <div className="grid grid-cols-2 gap-2.5">
                   <LinkButton
