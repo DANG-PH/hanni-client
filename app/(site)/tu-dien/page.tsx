@@ -155,6 +155,19 @@ export default async function TuDienPage({
                       HSK {w.hskLevel}
                     </span>
                   </div>
+                  {/* Ảnh minh hoạ nếu có (danh từ cụ thể HSK1-5) — vừa dễ
+                   * lướt hơn một lưới toàn chữ, vừa làm trang dày hơn cho
+                   * SEO. Trang này render phía server nên ảnh nằm sẵn trong
+                   * HTML, không cần JS. */}
+                  {w.imageUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={w.imageUrl}
+                      alt=""
+                      loading="lazy"
+                      className="h-24 w-full rounded-lg object-cover"
+                    />
+                  )}
                   <span className="text-xs text-muted">{w.pinyin}</span>
                   {w.hanViet && (
                     <span className="text-xs font-semibold text-primary">
