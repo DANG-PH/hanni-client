@@ -17,6 +17,7 @@ import {
   Card,
   EmptyState,
   ErrorNote,
+  LinkButton,
   ProgressBar,
   SectionHeading,
   Spinner,
@@ -164,6 +165,11 @@ export default function DashboardPage() {
   const goal = streak.data?.goal;
   const goalPct =
     goal && goal.value > 0 ? (goal.progress / goal.value) * 100 : 0;
+  // Người MỚI (chưa ôn từ nào): dashboard đầy đủ có 9+ khối, hầu hết hiện
+  // số 0 (streak 0, cần ôn 0, bài xong 0/27, chưa có bạn bè...) — vừa vô
+  // nghĩa vừa làm họ không biết bắt đầu từ đâu. Đo production: 102 tài khoản
+  // nhưng chỉ 5 người từng ôn 1 từ. Với họ chỉ giữ ĐÚNG một việc cần làm.
+  const isNewLearner = !!stats.data && stats.data.inProgress === 0;
   const current = path.data?.lessons.find(
     (l) => l.id === path.data?.currentLessonId,
   );
@@ -408,8 +414,49 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <VideoShelf />
+      {/* Thay vì 9 khối toàn số 0, người mới thấy đúng 3 bước cần làm. */}
+      {isNewLearner && (
+        <Card className="border-primary/15 bg-primary/5!">
+          <h2 className="text-base font-bold">Bắt đầu thế nào?</h2>
+          <ol className="mt-3 space-y-2.5 text-sm">
+            {[
+              [
+                "Học bài đầu tiên",
+                "Mỗi bài khoảng 10–15 từ theo một chủ đề (Chào hỏi, Gia đình, Đồ ăn…).",
+              ],
+              [
+                "Ôn lại khi Hanni nhắc",
+                "Hanni tính sẵn lúc bạn sắp quên từng từ và nhắc đúng lúc đó.",
+              ],
+              [
+                "Giữ chuỗi ngày học",
+                "Vài phút mỗi ngày hiệu quả hơn nhiều so với học dồn cuối tuần.",
+              ],
+            ].map(([title, desc], i) => (
+              <li key={title} className="flex gap-3">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/12 text-[11px] font-bold text-primary">
+                  {i + 1}
+                </span>
+                <span>
+                  <strong className="block">{title}</strong>
+                  <span className="text-xs leading-5 text-muted">{desc}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+          <LinkButton
+            href={current ? `/learn/${current.id}` : "/learn"}
+            className="mt-4"
+          >
+            Học bài đầu tiên
+            <Icon name="arrow" size={16} />
+          </LinkButton>
+        </Card>
+      )}
 
+      {!isNewLearner && <VideoShelf />}
+
+      {!isNewLearner && (
       <div className={styles.statsGrid}>
         <Stat
           label="Chuỗi ngày học"
@@ -460,20 +507,23 @@ export default function DashboardPage() {
           tone="text-good bg-good/10"
         />
       </div>
+      )}
 
       {/* Mời bật thông báo — tự ẩn nếu đã bật/bị từ chối/đã tắt dải này.
        * Đo production: 0 người từng bật, mà chỗ bật lại nằm sâu trong
        * /settings (giờ còn không có trong sidebar). */}
       <NotificationNudge />
 
-      <div className="grid items-start gap-4 md:grid-cols-2">
-        <DailyQuestCard />
-        <WeeklyLeagueCard />
-      </div>
+      {!isNewLearner && (
+        <div className="grid items-start gap-4 md:grid-cols-2">
+          <DailyQuestCard />
+          <WeeklyLeagueCard />
+        </div>
+      )}
 
       <div className={styles.dailyGrid}>
         <WordOfTheDayCard />
-        <FriendsLeaderboard />
+        {!isNewLearner && <FriendsLeaderboard />}
       </div>
 
       <section className={styles.skillsSection}>
