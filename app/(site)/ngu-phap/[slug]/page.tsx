@@ -29,11 +29,19 @@ interface GrammarPoint {
   titleZh: string;
   summaryVi: string;
   explanationVi: string;
-  patterns: string[];
-  examples: GrammarExample[];
+  // Tuỳ chọn vì phản hồi được cache 24h: sau khi API thêm field, trang đã
+  // cache vẫn trả hình dạng CŨ — xem ghi chú dài ở tu-dien/[slug]/page.tsx.
+  patterns?: string[];
+  examples?: GrammarExample[];
 }
 
 export const revalidate = 86400;
+
+/** Không prerender lúc build, nhưng trang đã dựng được giữ lại 24h — giống
+ * `/tu-dien/[slug]`, tránh mỗi lượt bot bò là một lần gọi API tới VPS. */
+export function generateStaticParams() {
+  return [];
+}
 
 const fetchPoint = cache(async (slug: string) => {
   // Lỗi tạm thời ném ra thay vì hoá thành 404 — xem lib/public-fetch.ts.
@@ -67,6 +75,9 @@ export default async function NguPhapPage({
   const p = await fetchPoint(slug);
   if (!p || !p.explanationVi) notFound();
 
+  const patterns = p.patterns ?? [];
+  const examples = p.examples ?? [];
+
   return (
     <div className="page-wrap max-w-3xl! space-y-6 py-10!">
       <nav className="text-xs text-muted">
@@ -95,11 +106,11 @@ export default async function NguPhapPage({
 
         <p className="mt-5 text-sm leading-7 text-muted">{p.summaryVi}</p>
 
-        {p.patterns.length > 0 && (
+        {patterns.length > 0 && (
           <div className="mt-6">
             <h2 className="text-sm font-semibold">Mẫu câu</h2>
             <ul className="mt-3 space-y-2">
-              {p.patterns.map((pt) => (
+              {patterns.map((pt) => (
                 <li
                   key={pt}
                   className="rounded-xl bg-surface-2 px-4 py-2.5 text-sm"
@@ -125,11 +136,11 @@ export default async function NguPhapPage({
           </div>
         </div>
 
-        {p.examples.length > 0 && (
+        {examples.length > 0 && (
           <div className="mt-6 border-t border-border pt-5">
             <h2 className="text-sm font-semibold">Ví dụ</h2>
             <ul className="mt-3 space-y-4">
-              {p.examples.map((ex, i) => (
+              {examples.map((ex, i) => (
                 <li key={i}>
                   <p lang="zh" className="hanzi text-base">
                     {ex.zh}

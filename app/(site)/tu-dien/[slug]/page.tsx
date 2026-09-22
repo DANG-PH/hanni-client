@@ -48,12 +48,25 @@ interface VideoUsage {
   lineCount: number;
 }
 
+/**
+ * MỌI mảng đều TUỲ CHỌN — không phải vì API có lúc không trả, mà vì phản hồi
+ * được cache 24h (`revalidate`): sau khi API thêm field mới, các trang đã nằm
+ * trong cache vẫn trả về hình dạng CŨ cho tới khi cache hết hạn. Đo thật
+ * 2026-09-22: 3 trang (学生, 电脑, 苹果) trả 500 suốt vì payload cache còn
+ * thiếu `videos` (2917 ký tự so với 3577 hiện tại — khớp chính xác phần
+ * `videos` bị thiếu), `data.videos.length` ném TypeError. `generateMetadata`
+ * chỉ đọc `words[0]` nên vẫn chạy, khiến trang có tiêu đề đúng mà thân trang
+ * rỗng — rất khó nhận ra.
+ *
+ * Nguyên tắc rút ra: code client phải đọc được CẢ hình dạng cũ lẫn mới trong
+ * khoảng thời gian bằng `revalidate`, không chỉ hình dạng mới nhất.
+ */
 interface LookupResult {
-  words: Word[];
-  related: RelatedWord[];
-  characters: CharBreakdown[];
-  compounds: CompoundWord[];
-  videos: VideoUsage[];
+  words?: Word[];
+  related?: RelatedWord[];
+  characters?: CharBreakdown[];
+  compounds?: CompoundWord[];
+  videos?: VideoUsage[];
 }
 
 /** Trang tĩnh hoá lại mỗi 24h — nội dung từ điển gần như không đổi, không cần
@@ -84,7 +97,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const data = await lookup(decodeURIComponent(slug));
-  const w = data?.words[0];
+  const w = data?.words?.[0];
   if (!w) return { title: "Không tìm thấy từ — Hanni" };
 
   const hanViet = w.hanViet ? ` (Hán Việt: ${w.hanViet})` : "";
@@ -110,9 +123,14 @@ export default async function TuDienPage({
 }) {
   const { slug } = await params;
   const data = await lookup(decodeURIComponent(slug));
-  if (!data || data.words.length === 0) notFound();
+  const words = data?.words ?? [];
+  if (words.length === 0) notFound();
 
-  const main = data.words[0];
+  const main = words[0];
+  const characters = data?.characters ?? [];
+  const compounds = data?.compounds ?? [];
+  const videos = data?.videos ?? [];
+  const related = data?.related ?? [];
 
   return (
     <div className="page-wrap max-w-3xl! space-y-6 py-10!">
@@ -127,7 +145,7 @@ export default async function TuDienPage({
         › <span className="text-foreground">{main.simplified}</span>
       </nav>
 
-      {data.words.map((w) => (
+      {words.map((w) => (
         <article key={w.id} className="panel p-6 sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -228,7 +246,7 @@ export default async function TuDienPage({
       {/* Phân tích từng chữ — chỗ khai thác sâu nhất lợi thế Hán Việt: đọc
        * "điện + não" là người Việt đoán ra 电脑 = máy tính, không cần học
        * thuộc. Cũng làm trang dày hơn hẳn cho SEO. */}
-      {data.characters.length > 0 && (
+      {characters.length > 0 && (
         <section className="panel p-6">
           <h2 className="text-sm font-semibold">
             Phân tích từng chữ
@@ -239,7 +257,7 @@ export default async function TuDienPage({
             )}
           </h2>
           <ul className="mt-4 space-y-3">
-            {data.characters.map((c, i) => (
+            {characters.map((c, i) => (
               <li
                 key={`${c.char}-${i}`}
                 className="flex items-start gap-4 border-b border-border pb-3 last:border-0 last:pb-0"
@@ -270,7 +288,7 @@ export default async function TuDienPage({
         </section>
       )}
 
-      {data.compounds.length > 0 && (
+      {compounds.length > 0 && (
         <section>
           <h2 className="text-sm font-semibold">
             Từ khác chứa chữ{" "}
@@ -283,7 +301,7 @@ export default async function TuDienPage({
             được nghĩa của từ mới.
           </p>
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {data.compounds.map((c) => (
+            {compounds.map((c) => (
               <li key={c.simplified}>
                 <Link
                   href={`/tu-dien/${encodeURIComponent(c.simplified)}`}
@@ -309,7 +327,7 @@ export default async function TuDienPage({
 
       {/* Nghe từ trong ngữ cảnh thật. Cố tình KHÔNG trích câu thoại ra làm
        * ví dụ — phụ đề là dịch máy từ phim tu tiên, trích ra sẽ dạy sai. */}
-      {data.videos.length > 0 && (
+      {videos.length > 0 && (
         <section>
           <h2 className="text-sm font-semibold">
             Nghe {main.simplified} trong video
@@ -318,7 +336,7 @@ export default async function TuDienPage({
             Gặp từ trong câu thoại thật, có giọng bản ngữ và phụ đề chạy theo.
           </p>
           <ul className="mt-3 grid gap-2 sm:grid-cols-3">
-            {data.videos.map((v) => (
+            {videos.map((v) => (
               <li key={v.id}>
                 <Link
                   href={`/watch/${v.id}`}
@@ -366,13 +384,13 @@ export default async function TuDienPage({
         </LinkButton>
       </section>
 
-      {data.related.length > 0 && (
+      {related.length > 0 && (
         <section>
           <h2 className="text-sm font-semibold">
             Từ vựng HSK {main.hskLevel} khác
           </h2>
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {data.related.map((r) => (
+            {related.map((r) => (
               <li key={r.simplified}>
                 <Link
                   href={`/tu-dien/${encodeURIComponent(r.simplified)}`}
