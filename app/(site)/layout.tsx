@@ -2,8 +2,18 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Nav } from "@/components/nav";
 import { Brand } from "@/components/sidebar";
+import { SiteShell } from "@/components/site-shell";
 
+/** Trang công khai: khách thấy khung giới thiệu (Nav + footer), người ĐÃ
+ * đăng nhập thấy khung app có sidebar — xem components/site-shell.tsx cho
+ * lý do (bấm "Từ điển" trong sidebar mà mất luôn sidebar là lạc đường). */
 export default function SiteLayout({ children }: { children: ReactNode }) {
+  return (
+    <SiteShell guest={<GuestFrame>{children}</GuestFrame>}>{children}</SiteShell>
+  );
+}
+
+function GuestFrame({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <Nav />

@@ -7,29 +7,36 @@ import { mediaUrl } from "@/lib/api";
 import type { Rating, Word } from "@/lib/types";
 import styles from "./flashcard.module.css";
 
+/** Nhãn nói KẾT QUẢ của lựa chọn, không chỉ mô tả cảm giác.
+ *
+ * Trước đây hint là "Cần học lại" / "Cần gợi ý" / "Nhớ được từ" / "Nhớ chắc
+ * chắn" — người học không biết chọn cái nào dẫn tới điều gì, nên phân vân
+ * giữa "Hơi khó" và "Đã nhớ" mà không có cơ sở nào để quyết. Nói thẳng "gặp
+ * lại khi nào" thì lựa chọn trở nên rõ ràng: đây chính là thứ người dùng
+ * đang thật sự quyết định. */
 const RATINGS: { key: Rating; label: string; hint: string; cls: string }[] = [
   {
     key: "AGAIN",
     label: "Chưa nhớ",
-    hint: "Cần học lại",
+    hint: "Gặp lại ngay",
     cls: styles.again,
   },
   {
     key: "HARD",
     label: "Hơi khó",
-    hint: "Cần gợi ý",
+    hint: "Gặp lại sớm",
     cls: styles.hard,
   },
   {
     key: "GOOD",
     label: "Đã nhớ",
-    hint: "Nhớ được từ",
+    hint: "Gặp lại sau vài ngày",
     cls: styles.good,
   },
   {
     key: "EASY",
     label: "Rất dễ",
-    hint: "Nhớ chắc chắn",
+    hint: "Gặp lại lâu hơn nữa",
     cls: styles.easy,
   },
 ];
@@ -215,10 +222,12 @@ export function Flashcard({
       <div className={styles.ratingPanel}>
         <p className={styles.ratingPrompt} aria-live="polite">
           {revealed
-            ? "Bạn nhớ từ này đến đâu?"
+            ? "Bạn nhớ từ này đến đâu? Hanni dựa vào đây để xếp lịch ôn."
             : "Thử nhớ nghĩa, rồi lật thẻ để tự đánh giá"}
         </p>
-        <div className={styles.ratings}>
+        {/* Chưa lật thì ẩn hẳn 4 nút: trước đó chúng hiện ra dạng xám mờ,
+         * người mới nhìn vào không biết là gì và có bấm được không. */}
+        <div className={styles.ratings} hidden={!revealed}>
           {RATINGS.map((r, i) => (
             <button
               key={r.key}
