@@ -73,6 +73,21 @@ app/
                         `/grammar?level=&open=slug`, `/grammar` redirect 308 ở
                         `next.config.ts`. Chỉ hiện mục CÓ giải thích thật (`flat !== true`)
                         — mục đại cương rút gọn mở ra là ngõ cụt.
+**Bám CHỦ ĐỀ đang học (2026-09-22)** — user phản ánh "không phân theo lộ trình, chưa phân chủ
+đề, loạn". Dữ liệu thực ra chia chủ đề rất tốt (HSK1: "Chào hỏi & giao tiếp", "Gia đình & con
+người", "Đồ ăn & thức uống"...), nhưng UI không phản ánh: `/listening`+`/pronunciation` mặc
+định rơi về HSK1 trang 1, `/study` chỉ ghi "Góc ôn tập", `/writing` đổ ra cả 3.088 chữ của một
+cấp. Giờ cả 3 hỏi `useCurrentLesson()` (`GET /learn/current`) để mặc định bám đúng bài đang
+học và HIỆN RÕ tên chủ đề; vẫn đổi sang luyện tự do theo cấp được. Ở `PracticeLibrary` dùng cờ
+`freeMode` (state) chứ không điều hướng khi người dùng chủ động chọn cấp — tránh mất chỗ đang
+đứng. `/writing` phải lấy chữ đang chọn TỪ DANH SÁCH ĐÃ LỌC, không phải index đầy đủ, nếu
+không đổi chế độ sẽ hiện lệch với danh sách bên dưới.
+
+**Rà trang cụt**: script rà phải bắt cả `href="/x"`, `href: "/x"` (trong mảng `actions` của
+NextStep), `push("/x")`, VÀ cả component import tương đối (`./trial-deck`) lẫn tuyệt đối
+(`@/components/...`). Bỏ sót bất kỳ dạng nào là báo nhầm trang đã có link thành cụt — đã mắc
+2 lần. Hiện 36/36 trang đều có đường đi tiếp (trừ `/connections` vốn chỉ là redirect).
+
 components/  next-step.tsx (khối "bước tiếp theo" cuối các trang hoạt động — rà liên kết
              chéo 2026-09-22 thấy `/writing`, `/roleplay`, `/minigame` KHÔNG dẫn đi đâu cả và
              `/watch/[id]` chỉ quay lại danh sách, người học làm xong là cụt đường. Khi thêm
