@@ -93,6 +93,15 @@ trước đó CHỈ khác màu (`data-current`), giờ có nhãn CHỮ "Bắt đ
 là dạy sai luật chơi — đã sửa 3 chỗ ("Hoàn thành từng bài để mở bước tiếp theo", "học bài đang
 mở", bước 3 của `FeatureTour`).
 
+**Hệ quả kéo theo khi bỏ khoá — đã xử lý cùng đợt**: (1) `components/lesson-path.tsx` có Ô TÌM
+BÀI THEO CHỦ ĐỀ — cửa sổ 6 bài/lần (`PATH_WINDOW_SIZE`) chỉ hợp lý khi đi tuần tự, chọn tự do
+mà HSK 7-9 có 357 bài thì lật từng trang 6 bài để tìm "Thành ngữ" là không thực tế; lọc theo
+tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ ăn & thức uống"). (2)
+`/learn/[lessonId]` hiện "Đã học X/Y từ" (đếm `word.progressState !== "NEW"`) và nhãn nút đổi
+"Bắt đầu học" ↔ "Học tiếp" — nhảy vào bài bất kỳ thì trang bài phải tự nói được mình đang ở
+đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
+màn trống.
+
 **Rà trang cụt**: script rà phải bắt cả `href="/x"`, `href: "/x"` (trong mảng `actions` của
 NextStep), `push("/x")`, VÀ cả component import tương đối (`./trial-deck`) lẫn tuyệt đối
 (`@/components/...`). Bỏ sót bất kỳ dạng nào là báo nhầm trang đã có link thành cụt — đã mắc
