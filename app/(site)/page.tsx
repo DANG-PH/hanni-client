@@ -19,7 +19,12 @@ const HANVIET_EXAMPLES: {
   meaning: string;
 }[] = [
   { zh: "学生", pinyin: "xué shēng", hanViet: "học sinh", meaning: "học sinh" },
-  { zh: "时间", pinyin: "shí jiān", hanViet: "thời gian", meaning: "thời gian" },
+  {
+    zh: "时间",
+    pinyin: "shí jiān",
+    hanViet: "thời gian",
+    meaning: "thời gian",
+  },
   { zh: "国家", pinyin: "guó jiā", hanViet: "quốc gia", meaning: "quốc gia" },
 ];
 
@@ -114,17 +119,16 @@ export default function Home() {
               <br />
               <span className="text-primary">Tự tin thêm một chút.</span>
             </h1>
+            {/* Nói NGAY điểm khác biệt: phần lớn khách vào trang chủ không
+             * cuộn xuống tới mục "Bạn đã biết trước hàng nghìn từ" bên dưới. */}
             <p className="mt-5 max-w-md text-sm leading-7 text-muted sm:text-base">
-              Từ những lời chào đầu tiên đến hành trình chinh phục HSK. Hanni
-              cùng bạn học, luyện tập và nhìn thấy mình tiến bộ.
+              Học theo chuẩn HSK 3.0, có âm Hán Việt cạnh từng từ — thứ giúp
+              người Việt đoán ra nghĩa ngay thay vì học thuộc lòng từ đầu.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               {/* Khách chưa đăng nhập: mời HỌC THỬ (chạm được giá trị ngay)
                * thay vì đẩy vào khảo sát rồi đăng ký — xem app/(site)/hoc-thu. */}
-              <LinkButton
-                href={user ? "/learn" : "/hoc-thu"}
-                className="px-6!"
-              >
+              <LinkButton href={user ? "/learn" : "/hoc-thu"} className="px-6!">
                 {user ? "Tiếp tục hành trình" : "Học thử ngay — miễn phí"}
                 <Icon name="arrow" size={17} />
               </LinkButton>
@@ -139,7 +143,9 @@ export default function Home() {
             <ul className="reveal mt-6 flex flex-wrap gap-2.5">
               {[
                 {
-                  n: totalWords ? `${totalWords.toLocaleString("vi-VN")}+` : "10.900+",
+                  n: totalWords
+                    ? `${totalWords.toLocaleString("vi-VN")}+`
+                    : "10.900+",
                   t: "từ vựng có audio",
                 },
                 { n: "9 cấp", t: "HSK 3.0 · 731 bài" },
@@ -171,26 +177,21 @@ export default function Home() {
               <br className="hidden sm:block" /> — chỉ là chưa nhận ra
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-muted">
-              Hơn 60% từ vựng tiếng Việt vay mượn từ tiếng Hán và giữ nguyên
-              âm đọc — &quot;âm Hán Việt&quot;. Hanni hiện âm Hán Việt cạnh
-              mỗi từ để bạn liên tưởng ngay, thay vì học thuộc lòng từ đầu.
+              Hơn 60% từ vựng tiếng Việt vay mượn từ tiếng Hán và giữ nguyên âm
+              đọc — &quot;âm Hán Việt&quot;. Hanni hiện âm Hán Việt cạnh mỗi từ
+              để bạn liên tưởng ngay, thay vì học thuộc lòng từ đầu.
             </p>
           </div>
           <div className="reveal-group mt-7 grid gap-3 sm:grid-cols-3">
             {HANVIET_EXAMPLES.map((ex) => (
-              <div
-                key={ex.zh}
-                className="reveal panel p-5 text-center"
-              >
+              <div key={ex.zh} className="reveal panel p-5 text-center">
                 <p lang="zh" className="hanzi text-4xl text-primary">
                   {ex.zh}
                 </p>
                 <p className="mt-1.5 text-xs text-muted">{ex.pinyin}</p>
                 <p className="mt-3 text-sm">
                   Hán Việt:{" "}
-                  <span className="font-bold text-primary">
-                    {ex.hanViet}
-                  </span>
+                  <span className="font-bold text-primary">{ex.hanViet}</span>
                 </p>
                 <p className="mt-1 text-[11px] text-muted">
                   Trùng khớp nghĩa tiếng Việt: &quot;{ex.meaning}&quot;
@@ -204,8 +205,8 @@ export default function Home() {
                 {wordStats.data.withHanViet.toLocaleString("vi-VN")}/
                 {wordStats.data.total.toLocaleString("vi-VN")}
               </span>{" "}
-              từ vựng trong Hanni đã có sẵn âm Hán Việt giúp bạn ghi nhớ
-              nhanh hơn.
+              từ vựng trong Hanni đã có sẵn âm Hán Việt giúp bạn ghi nhớ nhanh
+              hơn.
             </p>
           )}
           <p className="reveal mt-4 text-center text-sm">

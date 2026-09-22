@@ -12,8 +12,11 @@ const geistMono = Geist_Mono({
 });
 
 const title = "Hanni — Học tiếng Trung theo HSK 3.0";
+// Mô tả này là đoạn chữ Google hiện dưới tiêu đề ở trang kết quả tìm kiếm —
+// phải nói ngay thứ KHÁC BIỆT (âm Hán Việt) chứ không chỉ liệt kê tính năng
+// mà app học tiếng Trung nào cũng có.
 const description =
-  "Học từ vựng tiếng Trung theo chuẩn HSK 3.0 (9 cấp) với lộ trình theo bài, flashcard lặp lại ngắt quãng, theo dõi tiến độ và streak.";
+  "Học tiếng Trung theo chuẩn HSK 3.0 (9 cấp) với âm Hán Việt cạnh từng từ — người Việt đoán được nghĩa ngay thay vì học thuộc lòng. Kèm lộ trình theo chủ đề, flashcard lặp lại ngắt quãng và theo dõi tiến độ.";
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
