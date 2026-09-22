@@ -83,6 +83,16 @@ học và HIỆN RÕ tên chủ đề; vẫn đổi sang luyện tự do theo c�
 đứng. `/writing` phải lấy chữ đang chọn TỪ DANH SÁCH ĐÃ LỌC, không phải index đầy đủ, nếu
 không đổi chế độ sẽ hiện lệch với danh sách bên dưới.
 
+**Bỏ ổ KHOÁ ở lộ trình `/learn` (2026-09-22)** — user phản ánh "mấy phần khóa khóa cũng hơi
+khó hiểu cho user mới". Server không còn trả `LOCKED` (xem `hanni-server/CLAUDE.md`), client gỡ
+hết nhánh đã chết trong `components/lesson-path.tsx` (icon ổ khoá, thẻ mờ không bấm được) +
+2 chỗ lọc `status !== "LOCKED"` ở `/learn`, `/study`. **Rủi ro NGƯỢC phải xử lý cùng lúc**: 27
+bài đều hiện "Sẵn sàng" giống hệt nhau thì người mới lại mất phương hướng — thẻ bài đang học
+trước đó CHỈ khác màu (`data-current`), giờ có nhãn CHỮ "Bắt đầu từ đây" (chưa học từ nào) /
+"Học tiếp" (`startedWords > 0`). Bỏ khoá còn phải sửa cả COPY đang mô tả cơ chế cũ, nếu không
+là dạy sai luật chơi — đã sửa 3 chỗ ("Hoàn thành từng bài để mở bước tiếp theo", "học bài đang
+mở", bước 3 của `FeatureTour`).
+
 **Rà trang cụt**: script rà phải bắt cả `href="/x"`, `href: "/x"` (trong mảng `actions` của
 NextStep), `push("/x")`, VÀ cả component import tương đối (`./trial-deck`) lẫn tuyệt đối
 (`@/components/...`). Bỏ sót bất kỳ dạng nào là báo nhầm trang đã có link thành cụt — đã mắc
@@ -98,7 +108,17 @@ components/  next-step.tsx (khối "bước tiếp theo" cuối các trang hoạ
              0 người từng bật, chỗ bật duy nhất lại nằm trong `/settings`. CỐ Ý không tự gọi
              `Notification.requestPermission()` khi vào trang: trình duyệt nhớ vĩnh viễn, bị
              từ chối 1 lần là mất luôn cơ hội)
-components/  ui.tsx · nav.tsx · flashcard.tsx · quiz-runner.tsx · comment-section.tsx
+components/  site-shell.tsx (khung trang `(site)`: đã đăng nhập thì bọc `AppShell` để GIỮ
+             sidebar, khách thì khung site tối giản — sửa 2026-09-22 sau khi user báo "phần từ
+             điển mất luôn cả thanh taskbar". Gộp `/vocabulary` vào `/tu-dien` khiến người đang
+             đăng nhập bấm mục sidebar là rơi sang layout `(site)`, mất sạch đường quay lại.
+             `children` vẫn là Server Component nên HTML cho Google không đổi)
+components/  ui.tsx · nav.tsx · flashcard.tsx (4 nút đánh giá: hint nói KẾT QUẢ — "Gặp lại
+             ngay/sớm/sau vài ngày/lâu hơn nữa" — chứ không mô tả cảm giác như cũ ("Cần học
+             lại"/"Nhớ được từ"), vì thứ người học thật sự đang quyết định là LỊCH gặp lại; cả
+             4 nút ẩn hẳn (`hidden`) khi chưa lật thẻ thay vì hiện xám mờ khó hiểu — sửa
+             2026-09-22 theo phản ánh "ui ux flashcard vẫn đang rất khó hiểu")
+             · quiz-runner.tsx · comment-section.tsx
              · sidebar.tsx (`NAV_GROUPS` — điều hướng xếp theo CHU TRÌNH HỌC: học mỗi ngày
                → tra cứu → luyện kỹ năng → của bạn. Rút 16 → 12 mục 2026-09-22 vì người mới
                mở app thấy 16 lựa chọn thì không biết bấm gì; Huy hiệu/Bảng xếp hạng vào từ
