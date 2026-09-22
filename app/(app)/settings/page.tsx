@@ -90,6 +90,10 @@ function SettingsForm({
   onSaved: (settings: UserSettings) => Promise<void>;
   refreshUser: () => Promise<void>;
 }) {
+  const mail = useSWR<{ configured: boolean }>(
+    "/mail/configured",
+    (path: string) => apiFetch<{ configured: boolean }>(path),
+  );
   const [form, setForm] = useState(initialSettings);
   const [timezone, setTimezone] = useState(user.timezone);
   const [saving, setSaving] = useState(false);
@@ -387,6 +391,17 @@ function SettingsForm({
                   Mỗi thứ Hai, Hanni gửi email tóm tắt số ngày đã học, từ đã
                   ôn/đã thuộc và chuỗi ngày hiện tại của bạn.
                 </p>
+                {/* Chưa cấu hình SMTP thì email KHÔNG bao giờ tới nơi (đo
+                 * production 2026-09-22: MAIL_HOST trống, 101 tài khoản đang
+                 * bật mục này). Nói thật thay vì để ô "Bật" trông như đang
+                 * chạy — cùng cách phần nạp xu tự ẩn khi chưa có payOS. */}
+                {mail.data && !mail.data.configured && (
+                  <p className="mt-2 rounded-lg bg-warn/8 px-3 py-2 text-xs leading-5 text-warn">
+                    Máy chủ gửi email chưa được cấu hình nên email tổng kết chưa
+                    gửi đi được. Lựa chọn của bạn vẫn được lưu và sẽ có hiệu lực
+                    ngay khi bật.
+                  </p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
