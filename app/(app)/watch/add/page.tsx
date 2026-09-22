@@ -13,6 +13,7 @@ import {
 import { ApiError, api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import type { VideoDetail, VideoKind } from "@/lib/types";
+import { NextStep } from "@/components/next-step";
 
 const KINDS: { value: VideoKind; label: string }[] = [
   { value: "STORY", label: "Truyện ngắn" },
@@ -165,6 +166,15 @@ export default function AddVideoPage() {
           </p>
         </form>
       </Card>
+
+      <NextStep
+        title="Chưa muốn thêm video?"
+        description="Kho video có sẵn đã có phụ đề chạy đồng bộ và bấm từ để lưu vào ôn tập."
+        actions={[
+          { href: "/watch", label: "Xem kho video", icon: "play" as const },
+          { href: "/learn", label: "Lộ trình HSK", icon: "route" as const },
+        ]}
+      />
     </div>
   );
 }

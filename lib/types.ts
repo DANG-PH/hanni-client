@@ -84,6 +84,18 @@ export interface LearnPath {
   levels: number[];
 }
 
+/** Bài đang học dở — để các trang luyện tập mặc định theo đúng chủ đề người
+ * dùng đang theo, thay vì mỗi trang tự lấy ngẫu nhiên theo cấp HSK. */
+export interface CurrentLesson {
+  id: string;
+  title: string;
+  orderIndex: number;
+  hskLevel: number;
+  inProgress: boolean;
+  totalLessons: number;
+  completedLessons: number;
+}
+
 export interface LessonDetail {
   lesson: {
     id: string;

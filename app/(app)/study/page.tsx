@@ -14,7 +14,7 @@ import {
 import { Icon } from "@/components/icon";
 import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
-import { useLearnPath, useLesson } from "@/lib/hooks";
+import { useCurrentLesson, useLearnPath, useLesson } from "@/lib/hooks";
 import type { Quiz, Rating, StudyQueue } from "@/lib/types";
 import styles from "./study.module.css";
 
@@ -27,6 +27,8 @@ interface Item {
 function StudyInner({ lessonId }: { lessonId: string | null }) {
   const { user, loading } = useRequireAuth();
   const lesson = useLesson(lessonId);
+  // Bài đang học dở — để phiên ôn tự do vẫn hiện được chủ đề hiện tại.
+  const current = useCurrentLesson(!lessonId);
   const path = useLearnPath(lesson.data?.lesson.hskLevel);
 
   const [phase, setPhase] = useState<Phase>("loading");
@@ -159,7 +161,14 @@ function StudyInner({ lessonId }: { lessonId: string | null }) {
         </LinkButton>
         <span className={styles.location}>
           <Icon name={lessonId ? "route" : "cards"} size={18} />
-          {lessonId ? title : "Góc ôn tập"}
+          {/* Ôn tự do (không có ?lesson=) vẫn cho biết mình đang ở CHỦ ĐỀ nào
+           * trong lộ trình — trước đó chỉ ghi "Góc ôn tập", người học không
+           * biết những từ này thuộc bài gì nên thấy rời rạc. */}
+          {lessonId
+            ? title
+            : current.data
+              ? `Góc ôn tập · đang học: ${current.data.title}`
+              : "Góc ôn tập"}
         </span>
       </div>
 

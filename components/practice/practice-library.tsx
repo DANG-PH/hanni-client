@@ -11,7 +11,7 @@ import {
   Spinner,
 } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
-import { useLesson, useWords } from "@/lib/hooks";
+import { useCurrentLesson, useLesson, useWords } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
 import { LevelFilter } from "@/components/learning-library";
 import styles from "./practice-library.module.css";
@@ -48,12 +48,25 @@ function LibraryContent({
   lessonId,
   children,
 }: LibraryProps) {
-  const lessonQuery = useLesson(lessonId ?? null);
-  const lesson = lessonId ? lessonQuery.data?.lesson : undefined;
+  // Không có `?lesson=` thì mặc định luyện ĐÚNG BÀI ĐANG HỌC DỞ, thay vì
+  // rơi về HSK1 trang 1 như trước. Dữ liệu đã chia theo chủ đề thật ("Gia
+  // đình & con người", "Đồ ăn & thức uống"...) nhưng trang luyện tập lại lấy
+  // ngẫu nhiên theo cấp, nên người đang học bài "Gia đình" vào luyện nghe
+  // gặp toàn từ khác — chính là cảm giác "loạn, không theo lộ trình".
+  const current = useCurrentLesson(!lessonId);
+  const activeLessonId = lessonId ?? current.data?.id ?? null;
+  const lessonQuery = useLesson(activeLessonId);
+  const lesson = activeLessonId ? lessonQuery.data?.lesson : undefined;
   const [level, setLevel] = useState(1);
   const [page, setPage] = useState(1);
   const [started, setStarted] = useState(false);
-  const words = useWords(lessonId ? { lessonId } : { level, page });
+  // `freeMode` = người dùng CHỦ ĐỘNG chọn cấp để luyện tự do, lúc đó không
+  // ép về bài học nữa.
+  const [freeMode, setFreeMode] = useState(false);
+  const useLessonScope = Boolean(activeLessonId) && !freeMode;
+  const words = useWords(
+    useLessonScope ? { lessonId: activeLessonId! } : { level, page },
+  );
   const sessionRef = useRef<HTMLDivElement>(null);
 
   const pagination = words.data &&
@@ -101,7 +114,7 @@ function LibraryContent({
         <>
           <div className={styles.sessionBar}>
             <p>
-              {lessonId ? (
+              {useLessonScope ? (
                 <>
                   <span className={styles.levelBadge}>
                     HSK {lesson?.hskLevel ?? "…"}
@@ -161,13 +174,13 @@ function LibraryContent({
               <div>
                 <h2>Bài luyện của bạn</h2>
                 <p>
-                  {lessonId
+                  {useLessonScope
                     ? `Luyện đúng từ vựng của bài "${lesson?.title ?? "…"}".`
                     : "Chọn mức vừa sức, tiến bộ từng chút một."}
                 </p>
               </div>
             </div>
-            {!lessonId && (
+            {!useLessonScope && (
               <div className={styles.levelPicker}>
                 <h3>Chọn cấp độ HSK</h3>
                 <LevelFilter
@@ -243,14 +256,25 @@ function LibraryContent({
                   : "Bắt đầu luyện tập"}
               <Icon name="arrow" size={17} />
             </Button>
-            {lessonId && (
-              <Link
-                href={skill === "listening" ? "/listening" : "/pronunciation"}
-                className="mt-3 inline-flex min-h-9 items-center text-xs font-medium text-muted hover:text-primary"
-              >
-                Hoặc luyện tự do theo cấp độ <Icon name="arrow" size={13} />
-              </Link>
-            )}
+            {useLessonScope &&
+              (lessonId ? (
+                <Link
+                  href={skill === "listening" ? "/listening" : "/pronunciation"}
+                  className="mt-3 inline-flex min-h-9 items-center text-xs font-medium text-muted hover:text-primary"
+                >
+                  Hoặc luyện tự do theo cấp độ <Icon name="arrow" size={13} />
+                </Link>
+              ) : (
+                // Bám bài mặc định (không có ?lesson=) thì đổi bằng state,
+                // không điều hướng — tránh mất chỗ đang đứng.
+                <button
+                  type="button"
+                  onClick={() => setFreeMode(true)}
+                  className="mt-3 inline-flex min-h-9 items-center text-xs font-medium text-muted hover:text-primary"
+                >
+                  Hoặc luyện tự do theo cấp độ <Icon name="arrow" size={13} />
+                </button>
+              ))}
             {pagination}
           </div>
           <aside className={styles.guide}>

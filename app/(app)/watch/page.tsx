@@ -18,6 +18,7 @@ import {
 import { useRequireAuth } from "@/lib/auth";
 import { useVideos } from "@/lib/hooks";
 import styles from "@/components/video-library.module.css";
+import { NextStep } from "@/components/next-step";
 
 const KINDS = [
   ["", "Tất cả"],
@@ -233,6 +234,17 @@ export default function WatchPage() {
           )}
         </div>
       </section>
+
+      {/* Xem danh sách xong thì đi đâu? Trước đó cụt — video là cách học phụ,
+       * gốc vẫn là lộ trình + ôn tập. */}
+      <NextStep
+        title="Xem video là để gặp lại từ đã học"
+        description="Bấm vào từ trong bản chép để lưu vào danh sách ôn. Nhưng vốn từ nền vẫn đến từ lộ trình bài học."
+        actions={[
+          { href: "/learn", label: "Lộ trình HSK", icon: "route" as const },
+          { href: "/study", label: "Ôn tập flashcard", icon: "cards" as const },
+        ]}
+      />
     </div>
   );
 }

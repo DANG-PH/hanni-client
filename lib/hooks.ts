@@ -9,6 +9,7 @@ import type {
   AssistantMessage,
   AssistantSession,
   DayActivity,
+  CurrentLesson,
   ExamHistory,
   Leaderboard,
   LeaderboardMetric,
@@ -92,6 +93,14 @@ export function useLearnPath(level?: number) {
     level ? `/learn/path?level=${level}` : "/learn/path",
     fetcher,
     { keepPreviousData: true },
+  );
+}
+
+/** Bài đang học dở. `enabled=false` khi chưa đăng nhập (tránh gọi API cần auth). */
+export function useCurrentLesson(enabled = true) {
+  return useSWR<CurrentLesson | null>(
+    enabled ? "/learn/current" : null,
+    fetcher,
   );
 }
 

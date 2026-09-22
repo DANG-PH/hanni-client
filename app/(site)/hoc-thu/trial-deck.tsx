@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { AudioButton } from "@/components/audio-button";
 import { Icon } from "@/components/icon";
@@ -54,6 +55,19 @@ export function TrialDeck({ words }: { words: Word[] }) {
         </div>
         <p className="mt-4 text-xs text-muted">
           Toàn bộ nội dung học ở Hanni miễn phí — tài khoản chỉ để lưu tiến độ.
+        </p>
+        {/* Người chưa muốn đăng ký vẫn phải có đường đi tiếp — đây là trang
+         * đích của SEO, cụt ở đây là mất luôn khách. */}
+        <p className="mt-3 text-xs text-muted">
+          Chưa muốn tạo tài khoản?{" "}
+          <Link href="/tu-dien" className="text-primary hover:underline">
+            Tra từ điển
+          </Link>{" "}
+          hoặc{" "}
+          <Link href="/ngu-phap" className="text-primary hover:underline">
+            xem ngữ pháp
+          </Link>{" "}
+          — không cần đăng nhập.
         </p>
       </section>
     );
