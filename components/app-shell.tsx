@@ -24,16 +24,26 @@ export function AppShell({ children }: { children: ReactNode }) {
       (link) => pathname === link.href || pathname.startsWith(link.href + "/"),
     )?.label ?? "Góc học tập";
   const close = () => drawer.current?.close();
-  if (loading) return <StudyLoader variant="startup" label="Đang chuẩn bị không gian học của bạn…" />;
+  if (loading)
+    return (
+      <StudyLoader
+        variant="startup"
+        label="Đang chuẩn bị không gian học của bạn…"
+      />
+    );
   return (
-    <div className={`app-workspace flex min-h-screen bg-background ${styles.workspace}`}>
+    <div
+      className={`app-workspace flex min-h-screen bg-background ${styles.workspace}`}
+    >
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:p-3"
       >
         Đến nội dung chính
       </a>
-      <aside className={`hidden w-60 shrink-0 border-r border-border bg-surface lg:block ${styles.sidebar}`}>
+      <aside
+        className={`hidden w-60 shrink-0 border-r border-border bg-surface lg:block ${styles.sidebar}`}
+      >
         <div className="app-sidebar-scroll sticky top-0 h-dvh overflow-y-auto">
           <Sidebar />
         </div>
@@ -59,7 +69,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </dialog>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className={`sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur-lg sm:px-7 ${styles.topbar}`}>
+        <header
+          className={`sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur-lg sm:px-7 ${styles.topbar}`}
+        >
           <button
             type="button"
             onClick={() => drawer.current?.showModal()}
@@ -72,7 +84,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Link href="/" className="sm:hidden" aria-label="Hanni — trang chủ">
             <Brand compact />
           </Link>
-          <div className={`hidden items-center gap-2 text-xs sm:flex ${styles.breadcrumb}`}>
+          <div
+            className={`hidden items-center gap-2 text-xs sm:flex ${styles.breadcrumb}`}
+          >
             <Link href="/dashboard" className="text-muted hover:text-primary">
               Góc học tập
             </Link>
@@ -89,6 +103,19 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Icon name="flame" size={16} />
                 {streak.data.currentStreak}
                 <span className="hidden md:inline">ngày</span>
+                {/* Lá chắn kiếm được (mốc 7 ngày, mời bạn, mua bằng xu) trước
+                 * đây KHÔNG hiện ở đâu cả — phần thưởng vô hình thì không tạo
+                 * được động lực nào. `streakFreezeCount` đã có sẵn trong
+                 * `GET /streak` từ lâu mà chưa UI nào đọc. */}
+                {streak.data.streakFreezeCount > 0 && (
+                  <span
+                    title={`${streak.data.streakFreezeCount} lá chắn — giữ chuỗi nếu bạn lỡ nghỉ 1 ngày`}
+                    className="ml-0.5 flex items-center gap-0.5 border-l border-primary/20 pl-1.5 text-[11px]"
+                  >
+                    <Icon name="heart" size={13} />
+                    {streak.data.streakFreezeCount}
+                  </span>
+                )}
               </Link>
             )}
             <NotificationBell />
@@ -110,7 +137,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </header>
         <main className="flex-1">{children}</main>
-        <footer className={`mt-auto border-t border-border px-6 py-4 text-[10px] text-muted ${styles.footer}`}>
+        <footer
+          className={`mt-auto border-t border-border px-6 py-4 text-[10px] text-muted ${styles.footer}`}
+        >
           <span>Hanni · Mỗi ngày một chút, tiến xa hơn.</span>
         </footer>
       </div>
