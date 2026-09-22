@@ -73,6 +73,16 @@ app/
                         `/grammar?level=&open=slug`, `/grammar` redirect 308 ở
                         `next.config.ts`. Chỉ hiện mục CÓ giải thích thật (`flat !== true`)
                         — mục đại cương rút gọn mở ra là ngõ cụt.
+components/  next-step.tsx (khối "bước tiếp theo" cuối các trang hoạt động — rà liên kết
+             chéo 2026-09-22 thấy `/writing`, `/roleplay`, `/minigame` KHÔNG dẫn đi đâu cả và
+             `/watch/[id]` chỉ quay lại danh sách, người học làm xong là cụt đường. Khi thêm
+             chỉ gợi ý bước TỰ NHIÊN của việc vừa làm, không nhét link bừa. Lưu ý khi rà kiểu
+             này: phải tính cả component con — `/listening`+`/pronunciation` tưởng cụt nhưng
+             thực ra có link `/study` trong `PracticeLibrary`)
+             · pwa/notification-nudge.tsx (dải mời bật thông báo ở dashboard — đo production
+             0 người từng bật, chỗ bật duy nhất lại nằm trong `/settings`. CỐ Ý không tự gọi
+             `Notification.requestPermission()` khi vào trang: trình duyệt nhớ vĩnh viễn, bị
+             từ chối 1 lần là mất luôn cơ hội)
 components/  ui.tsx · nav.tsx · flashcard.tsx · quiz-runner.tsx · comment-section.tsx
              · sidebar.tsx (`NAV_GROUPS` — điều hướng xếp theo CHU TRÌNH HỌC: học mỗi ngày
                → tra cứu → luyện kỹ năng → của bạn. Rút 16 → 12 mục 2026-09-22 vì người mới
