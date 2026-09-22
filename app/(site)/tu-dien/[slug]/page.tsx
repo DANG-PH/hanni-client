@@ -184,8 +184,11 @@ export default async function TuDienPage({
           người Việt khi học tiếng Trung. Flashcard lặp lại ngắt quãng giúp bạn
           nhớ lâu, miễn phí toàn bộ nội dung học.
         </p>
-        <LinkButton href="/onboarding" className="mt-4">
-          Bắt đầu học miễn phí
+        {/* Mời HỌC THỬ trước, không mời đăng ký ngay: người từ Google vào đây
+         * chưa biết học ở Hanni ra sao mà đã bị đòi tạo tài khoản thì phần lớn
+         * rời đi. Cho nếm thử rồi mới mời, lúc đó lời mời mới có sức nặng. */}
+        <LinkButton href="/hoc-thu" className="mt-4">
+          Học thử 8 từ — không cần đăng ký
           <Icon name="arrow" size={16} />
         </LinkButton>
       </section>

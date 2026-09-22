@@ -41,6 +41,17 @@ app/
 ├── settings            mục tiêu ngày, thuật toán SRS, múi giờ
 ├── nguon-du-lieu       trang ghi công nguồn dữ liệu (bắt buộc theo license)
 └── tu-dien             TỪ ĐIỂN CÔNG KHAI (SEO) — `/tu-dien` + `/tu-dien/[slug]`.
+                        **Đã GỘP `/vocabulary` vào đây (2026-09-22)** — 2 trang trước đó
+                        hiển thị CÙNG dữ liệu, chỉ khác `/vocabulary` cần đăng nhập và
+                        render bằng JS nên Google không đọc được; để song song là trùng
+                        lặp. `/tu-dien` giờ làm cả duyệt (lọc cấp + tìm + phân trang qua
+                        `searchParams`, nên `?level=2` cũng là 1 URL index được) lẫn tra
+                        chi tiết; `app/(app)/vocabulary/page.tsx` chỉ còn `redirect()`
+                        phía server, giữ `?level=` cho link cũ. Nút "Lưu để ôn tập"
+                        (`components/save-word-button.tsx`) là client component NHỎ nhúng
+                        trong trang server-rendered — nội dung vẫn nằm sẵn trong HTML cho
+                        Google, chỉ hành động cá nhân mới cần JS; đây là chỗ NỐI tra cứu
+                        vào SRS (dùng lại `addWordToSrs()` của bản chép video).
                         **Server Component, KHÔNG "use client"** — nội dung phải nằm sẵn
                         trong HTML thì Google mới index được (đây là toàn bộ mục đích của
                         2 trang này). Lý do tồn tại: sitemap trước đó chỉ có 6 URL toàn
@@ -51,6 +62,13 @@ app/
                         try/catch: khi API không phản hồi được thì `fetch` THROW chứ không
                         trả `!res.ok`, không bắt là sập cả build.
 components/  ui.tsx · nav.tsx · flashcard.tsx · quiz-runner.tsx · comment-section.tsx
+             · sidebar.tsx (`NAV_GROUPS` — điều hướng xếp theo CHU TRÌNH HỌC: học mỗi ngày
+               → tra cứu → luyện kỹ năng → của bạn. Rút 16 → 12 mục 2026-09-22 vì người mới
+               mở app thấy 16 lựa chọn thì không biết bấm gì; Huy hiệu/Bảng xếp hạng vào từ
+               `/progress`, Cài đặt vào từ `/account` — các trang vẫn tồn tại, chỉ không
+               chiếm chỗ ở sidebar. Khi bỏ mục khỏi nav PHẢI kiểm tra còn link nào trỏ tới
+               không, nếu không sẽ thành trang mồ côi)
+             · save-word-button.tsx (nút "Lưu để ôn tập" ở trang từ điển công khai)
              · video-like-button.tsx · notification-bell.tsx · follow-button.tsx
              · activity-calendar.tsx (lịch hoạt động 30 ngày)
              · assistant-widget.tsx (bong bóng chat nổi, mount trong app-shell.tsx)

@@ -119,11 +119,13 @@ export default function Home() {
               cùng bạn học, luyện tập và nhìn thấy mình tiến bộ.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
+              {/* Khách chưa đăng nhập: mời HỌC THỬ (chạm được giá trị ngay)
+               * thay vì đẩy vào khảo sát rồi đăng ký — xem app/(site)/hoc-thu. */}
               <LinkButton
-                href={user ? "/learn" : "/onboarding"}
+                href={user ? "/learn" : "/hoc-thu"}
                 className="px-6!"
               >
-                {user ? "Tiếp tục hành trình" : "Bắt đầu học ngay"}
+                {user ? "Tiếp tục hành trình" : "Học thử ngay — miễn phí"}
                 <Icon name="arrow" size={17} />
               </LinkButton>
               <LinkButton href="#lo-trinh" variant="secondary">
