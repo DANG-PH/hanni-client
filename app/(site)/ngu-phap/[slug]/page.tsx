@@ -13,7 +13,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Icon } from "@/components/icon";
 import { LinkButton } from "@/components/ui";
-import { API_BASE } from "@/lib/api";
+import { fetchPublic } from "@/lib/public-fetch";
 
 interface GrammarExample {
   zh: string;
@@ -34,18 +34,12 @@ interface GrammarPoint {
 
 export const revalidate = 86400;
 
-async function fetchPoint(slug: string): Promise<GrammarPoint | null> {
-  // try/catch: fetch THROW khi API không phản hồi, không chỉ !res.ok
-  try {
-    const res = await fetch(
-      `${API_BASE}/grammar/${encodeURIComponent(slug)}`,
-      { next: { revalidate } },
-    );
-    if (!res.ok) return null;
-    return (await res.json()) as GrammarPoint;
-  } catch {
-    return null;
-  }
+function fetchPoint(slug: string) {
+  // Lỗi tạm thời ném ra thay vì hoá thành 404 — xem lib/public-fetch.ts.
+  return fetchPublic<GrammarPoint>(
+    `/grammar/${encodeURIComponent(slug)}`,
+    revalidate,
+  );
 }
 
 export async function generateMetadata({
@@ -156,8 +150,8 @@ export default async function NguPhapPage({
         </h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted">
           Hanni xếp ngữ pháp HSK {p.hskLevel} cùng với từ vựng cùng cấp thành
-          bài học theo chủ đề, và nhắc bạn ôn đúng lúc sắp quên — miễn phí
-          toàn bộ nội dung học.
+          bài học theo chủ đề, và nhắc bạn ôn đúng lúc sắp quên — miễn phí toàn
+          bộ nội dung học.
         </p>
         <LinkButton href="/hoc-thu" className="mt-4">
           Học thử — không cần đăng ký

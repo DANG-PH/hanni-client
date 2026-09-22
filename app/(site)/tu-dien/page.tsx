@@ -14,7 +14,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/icon";
 import { Button, LinkButton } from "@/components/ui";
-import { API_BASE } from "@/lib/api";
+import { fetchPublic } from "@/lib/public-fetch";
 import type { Paginated, Word } from "@/lib/types";
 
 export const revalidate = 86400;
@@ -57,16 +57,9 @@ async function fetchWords(
   const params = new URLSearchParams({ page: String(page), pageSize: "24" });
   if (level) params.set("level", String(level));
   if (q) params.set("q", q);
-  // try/catch: fetch THROW khi API không phản hồi (build/ISR), không chỉ !res.ok
-  try {
-    const res = await fetch(`${API_BASE}/words?${params}`, {
-      next: { revalidate },
-    });
-    if (!res.ok) return null;
-    return (await res.json()) as Paginated<Word>;
-  } catch {
-    return null;
-  }
+  // Lỗi tạm thời ném ra thay vì hoá thành trang rỗng bị cache 24h — xem
+  // lib/public-fetch.ts.
+  return fetchPublic<Paginated<Word>>(`/words?${params}`, revalidate);
 }
 
 export default async function TuDienPage({
@@ -182,7 +175,10 @@ export default async function TuDienPage({
               className="flex items-center justify-center gap-3 text-sm"
             >
               {page > 1 && (
-                <Link href={qs({ page: page - 1 })} className="text-primary hover:underline">
+                <Link
+                  href={qs({ page: page - 1 })}
+                  className="text-primary hover:underline"
+                >
                   ← Trước
                 </Link>
               )}
@@ -190,7 +186,10 @@ export default async function TuDienPage({
                 Trang {data.page}/{data.totalPages}
               </span>
               {page < data.totalPages && (
-                <Link href={qs({ page: page + 1 })} className="text-primary hover:underline">
+                <Link
+                  href={qs({ page: page + 1 })}
+                  className="text-primary hover:underline"
+                >
                   Sau →
                 </Link>
               )}
@@ -204,9 +203,9 @@ export default async function TuDienPage({
           Học có lộ trình, nhớ lâu hơn
         </h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted">
-          Tra từ là bước đầu. Hanni xếp {level ? `HSK ${level}` : "toàn bộ 9 cấp"}{" "}
-          thành bài học theo chủ đề và nhắc bạn ôn đúng lúc sắp quên — miễn phí
-          toàn bộ nội dung học.
+          Tra từ là bước đầu. Hanni xếp{" "}
+          {level ? `HSK ${level}` : "toàn bộ 9 cấp"} thành bài học theo chủ đề
+          và nhắc bạn ôn đúng lúc sắp quên — miễn phí toàn bộ nội dung học.
         </p>
         <LinkButton href="/onboarding" className="mt-4">
           Bắt đầu học miễn phí

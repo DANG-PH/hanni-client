@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/icon";
 import { LinkButton } from "@/components/ui";
-import { API_BASE } from "@/lib/api";
+import { fetchPublic } from "@/lib/public-fetch";
 
 interface GrammarListItem {
   slug: string;
@@ -45,16 +45,12 @@ export async function generateMetadata({
 }
 
 async function fetchList(level?: number): Promise<GrammarListItem[]> {
-  try {
-    const qs = level ? `?level=${level}` : "";
-    const res = await fetch(`${API_BASE}/grammar${qs}`, {
-      next: { revalidate },
-    });
-    if (!res.ok) return [];
-    return (await res.json()) as GrammarListItem[];
-  } catch {
-    return [];
-  }
+  // Lỗi tạm thời ném ra thay vì hoá thành danh sách rỗng bị cache 24h — xem
+  // lib/public-fetch.ts.
+  const qs = level ? `?level=${level}` : "";
+  return (
+    (await fetchPublic<GrammarListItem[]>(`/grammar${qs}`, revalidate)) ?? []
+  );
 }
 
 export default async function NguPhapIndexPage({

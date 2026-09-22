@@ -16,6 +16,7 @@ import { Icon } from "@/components/icon";
 import { SaveWordButton } from "@/components/save-word-button";
 import { LinkButton } from "@/components/ui";
 import { API_BASE } from "@/lib/api";
+import { fetchPublic } from "@/lib/public-fetch";
 import type { Word } from "@/lib/types";
 
 interface RelatedWord {
@@ -58,19 +59,13 @@ interface LookupResult {
  * gọi API mỗi lượt truy cập (quan trọng khi bot quét hàng nghìn trang). */
 export const revalidate = 86400;
 
-async function lookup(slug: string): Promise<LookupResult | null> {
-  // try/catch chứ không chỉ kiểm tra res.ok: khi API không phản hồi được
-  // (build/ISR lúc server chưa chạy) thì fetch THROW chứ không trả response.
-  try {
-    const res = await fetch(
-      `${API_BASE}/dictionary/${encodeURIComponent(slug)}`,
-      { next: { revalidate } },
-    );
-    if (!res.ok) return null;
-    return (await res.json()) as LookupResult;
-  } catch {
-    return null;
-  }
+function lookup(slug: string) {
+  // Lỗi TẠM THỜI của API phải ném ra, không được biến thành 404 — xem
+  // lib/public-fetch.ts (trang hỏng từng bị cache nguyên 24h kèm HTTP 200).
+  return fetchPublic<LookupResult>(
+    `/dictionary/${encodeURIComponent(slug)}`,
+    revalidate,
+  );
 }
 
 export async function generateMetadata({
@@ -251,9 +246,7 @@ export default async function TuDienPage({
                   {c.hanViet && (
                     <p className="font-semibold text-primary">{c.hanViet}</p>
                   )}
-                  {c.pinyin && (
-                    <p className="text-xs text-muted">{c.pinyin}</p>
-                  )}
+                  {c.pinyin && <p className="text-xs text-muted">{c.pinyin}</p>}
                   <p className="mt-0.5">
                     {c.meaningVi ?? (
                       <span className="text-muted">
@@ -277,8 +270,8 @@ export default async function TuDienPage({
             </span>
           </h2>
           <p className="mt-1 text-xs text-muted">
-            Gặp lại cùng một chữ trong nhiều từ là cách nhớ chắc nhất — và
-            đoán được nghĩa của từ mới.
+            Gặp lại cùng một chữ trong nhiều từ là cách nhớ chắc nhất — và đoán
+            được nghĩa của từ mới.
           </p>
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
             {data.compounds.map((c) => (
