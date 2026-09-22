@@ -97,6 +97,37 @@ export default async function TuDaBietPage() {
             </div>
           </section>
 
+          {/* Phân bố theo cấp nói lên một điều quan trọng và ngược trực giác:
+           * lợi thế Hán Việt CÀNG LÊN CAO CÀNG RÕ (từ trừu tượng/học thuật
+           * hay là từ Hán Việt), nên đừng nản ở giai đoạn đầu. */}
+          <section className="panel p-6">
+            <h2 className="text-base font-bold">
+              Càng học lên cao, càng dễ
+            </h2>
+            <p className="mt-2 text-sm leading-7 text-muted">
+              Ngược với cảm giác thông thường: ở HSK 1 chỉ có{" "}
+              {data.byLevel.find((b) => b.hskLevel === 1)?.count ?? 0} từ trùng
+              khớp, nhưng lên HSK 5–7 thì có tới{" "}
+              {data.byLevel
+                .filter((b) => b.hskLevel >= 5)
+                .reduce((s, b) => s + b.count, 0)}{" "}
+              từ. Lý do: từ vựng nâng cao phần lớn là từ trừu tượng, học thuật
+              — mà đó chính là nhóm tiếng Việt vay mượn nhiều nhất từ tiếng
+              Hán. Qua được giai đoạn đầu thì mọi thứ nhẹ dần.
+            </p>
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {data.byLevel.map((b) => (
+                <li
+                  key={b.hskLevel}
+                  className="rounded-lg bg-surface-2 px-3 py-1.5 text-xs"
+                >
+                  HSK {b.hskLevel === 7 ? "7–9" : b.hskLevel}:{" "}
+                  <strong className="text-primary">{b.count}</strong> từ
+                </li>
+              ))}
+            </ul>
+          </section>
+
           <section>
             <h2 className="text-sm font-semibold">
               Danh sách đầy đủ ({data.total} từ)
