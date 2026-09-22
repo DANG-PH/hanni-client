@@ -130,7 +130,16 @@ tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ
 đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
 màn trống.
 
-**Lưới "Rèn từng kỹ năng" ở dashboard thiếu 2 mảng (sửa 2026-09-22)** — `PRACTICE_AREAS` chỉ có
+**Học thử xong đăng ký thì từ vừa học phải THEO VÀO (sửa 2026-09-22)** — màn kết `/hoc-thu` có
+nút "Lưu N từ này vào tài khoản" nhưng KHÔNG có gì lưu cả: đăng ký xong N từ biến mất sạch. Lời
+hứa gãy đúng khoảnh khắc quan trọng nhất của phễu — lúc người lạ đến từ Google quyết định tạo
+tài khoản. `lib/pending-words.ts` ghi tạm id vào `sessionStorage` (cùng cách
+`hanni:pending-onboarding` làm với khảo sát), `components/auth-form-card.tsx` gọi
+`saveTrialWords()` sau khi xác thực xong — cho CẢ đăng ký lẫn ĐĂNG NHẬP, cả email lẫn Google:
+người đã có tài khoản bấm nút đó rồi chọn Đăng nhập thì lời hứa vẫn phải giữ. Chạy
+`Promise.allSettled` và nuốt lỗi từng từ — việc phụ này không được chặn đường vào app.
+
+**Lưới "Rèn từng kỹ năng" ở dashboard thiếu 2 mảng (sửa 2026-09-22)****Lưới "Rèn từng kỹ năng" ở dashboard thiếu 2 mảng (sửa 2026-09-22)** — `PRACTICE_AREAS` chỉ có
 từ vựng / ngữ pháp / nghe / phát âm, trong khi `/roleplay` (luyện nói với AI — đo production chỉ
 5 tin nhắn, gần như không ai dùng vì chỉ vào được từ sidebar) và `/writing` đều đã có trang
 riêng; riêng luyện viết còn bị chính lời chào persona ACADEMIC hứa trước ("nắm chắc ngữ pháp và
