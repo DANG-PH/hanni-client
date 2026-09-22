@@ -7,12 +7,14 @@ import {
 } from "@/components/feature-tour";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/icon";
+import { MarkdownLite } from "@/components/markdown-lite";
 import { NextStep } from "@/components/next-step";
 import { Button, Card, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { ApiError } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import {
   deleteRoleplaySession,
+  feedbackRoleplay,
   hintRoleplay,
   replyRoleplay,
   startRoleplaySession,
@@ -188,6 +190,7 @@ function ChatView({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [ending, setEnding] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const [hinting, setHinting] = useState(false);
   const [hint, setHint] = useState<{
     suggestionZh: string;
@@ -252,9 +255,31 @@ function ChatView({
     }
   }
 
+  /** Kết thúc = XIN NHẬN XÉT trước, chưa xoá gì. Trước đó bấm "Kết thúc" là
+   * hội thoại biến mất ngay, luyện xong không biết mình sai chỗ nào —
+   * `/listening` và `/pronunciation` đều đã có phần "kết quả buổi luyện". */
   async function endSession() {
     if (ending) return;
     setEnding(true);
+    setError("");
+    try {
+      const res = await feedbackRoleplay(sessionId);
+      setFeedback(res.feedbackVi);
+    } catch (err) {
+      // Không chặn đường thoát chỉ vì AI bận: bỏ qua nhận xét, đóng luôn.
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Chưa lấy được nhận xét, nhưng bạn vẫn kết thúc được buổi luyện.",
+      );
+      setFeedback("");
+    } finally {
+      setEnding(false);
+    }
+  }
+
+  /** Đóng hẳn: xoá hội thoại rồi về màn chọn tình huống. */
+  async function closeSession() {
     try {
       await deleteRoleplaySession(sessionId);
     } catch {
@@ -284,105 +309,139 @@ function ChatView({
         </Button>
       </div>
 
-      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto p-4">
-        {!messages ? (
-          <Spinner />
-        ) : (
-          messages.map((m) => (
-            <div
-              key={m.id}
-              className={`flex ${m.role === "USER" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[78%] space-y-1 rounded-2xl px-3.5 py-2.5 text-sm leading-6 ${
-                  m.role === "USER"
-                    ? "bg-primary text-primary-fg"
-                    : "bg-surface-2"
-                }`}
-              >
-                <p className="whitespace-pre-wrap">{m.text}</p>
-                {m.pinyin && (
-                  <p
-                    className={`text-xs ${m.role === "USER" ? "text-primary-fg/75" : "text-muted"}`}
-                  >
-                    {m.pinyin}
-                  </p>
-                )}
+      {feedback !== null ? (
+        <div className="flex-1 overflow-y-auto p-5">
+          <div className="mx-auto max-w-lg space-y-4 text-center">
+            <span className="icon-tile mx-auto flex h-14 w-14 items-center justify-center text-good">
+              <Icon name="check" size={26} />
+            </span>
+            <h3 className="text-lg font-bold">Xong buổi luyện!</h3>
+            {feedback ? (
+              <div className="rounded-2xl border border-border bg-surface-2 p-4 text-left text-sm leading-6">
+                <MarkdownLite text={feedback} />
               </div>
+            ) : (
+              <p className="text-sm text-muted">
+                Lần này chưa lấy được nhận xét từ trợ lý. Bạn vẫn giữ nguyên
+                phần luyện tập vừa rồi nhé.
+              </p>
+            )}
+            <div className="flex flex-wrap justify-center gap-2.5">
+              <Button onClick={() => void closeSession()}>
+                Đóng buổi luyện
+                <Icon name="arrow" size={16} />
+              </Button>
+              {/* Chưa xoá gì cho tới khi bấm "Đóng" — đọc nhận xét xong vẫn
+               * quay lại nói tiếp được. */}
+              <Button variant="secondary" onClick={() => setFeedback(null)}>
+                Nói tiếp
+              </Button>
             </div>
-          ))
-        )}
-      </div>
-
-      {hint && (
-        <div className="mx-4 mb-2 flex items-start gap-3 rounded-xl border border-accent/20 bg-accent/5 px-3.5 py-2.5">
-          <Icon
-            name="spark"
-            size={16}
-            className="mt-0.5 shrink-0 text-accent"
-          />
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">{hint.suggestionZh}</p>
-            {hint.meaningVi && (
-              <p className="mt-0.5 text-xs text-muted">{hint.meaningVi}</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto p-4">
+            {!messages ? (
+              <Spinner />
+            ) : (
+              messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={`flex ${m.role === "USER" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[78%] space-y-1 rounded-2xl px-3.5 py-2.5 text-sm leading-6 ${
+                      m.role === "USER"
+                        ? "bg-primary text-primary-fg"
+                        : "bg-surface-2"
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap">{m.text}</p>
+                    {m.pinyin && (
+                      <p
+                        className={`text-xs ${m.role === "USER" ? "text-primary-fg/75" : "text-muted"}`}
+                      >
+                        {m.pinyin}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))
             )}
           </div>
-          <button
-            type="button"
-            onClick={useHint}
-            className="shrink-0 text-xs font-semibold text-accent hover:underline"
-          >
-            Dùng câu này
-          </button>
-          <button
-            type="button"
-            onClick={() => setHint(null)}
-            aria-label="Đóng gợi ý"
-            className="shrink-0 text-muted hover:text-foreground"
-          >
-            <Icon name="close" size={14} />
-          </button>
-        </div>
-      )}
 
-      {error && (
-        <div className="px-4 pb-2">
-          <ErrorNote>{error}</ErrorNote>
-        </div>
-      )}
+          {hint && (
+            <div className="mx-4 mb-2 flex items-start gap-3 rounded-xl border border-accent/20 bg-accent/5 px-3.5 py-2.5">
+              <Icon
+                name="spark"
+                size={16}
+                className="mt-0.5 shrink-0 text-accent"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium">{hint.suggestionZh}</p>
+                {hint.meaningVi && (
+                  <p className="mt-0.5 text-xs text-muted">{hint.meaningVi}</p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={useHint}
+                className="shrink-0 text-xs font-semibold text-accent hover:underline"
+              >
+                Dùng câu này
+              </button>
+              <button
+                type="button"
+                onClick={() => setHint(null)}
+                aria-label="Đóng gợi ý"
+                className="shrink-0 text-muted hover:text-foreground"
+              >
+                <Icon name="close" size={14} />
+              </button>
+            </div>
+          )}
 
-      <form
-        className="flex items-center gap-2 border-t border-border p-3"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void send();
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => void getHint()}
-          disabled={hinting || sending}
-          title="Gợi ý câu trả lời"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-accent disabled:opacity-50"
-        >
-          <Icon name="spark" size={18} />
-        </button>
-        <input
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          placeholder="Nhập câu trả lời bằng tiếng Trung…"
-          disabled={sending}
-          className="field flex-1"
-        />
-        <button
-          type="submit"
-          disabled={!input.trim() || sending}
-          aria-label="Gửi"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-fg disabled:opacity-50"
-        >
-          <Icon name="arrow" size={18} />
-        </button>
-      </form>
+          {error && (
+            <div className="px-4 pb-2">
+              <ErrorNote>{error}</ErrorNote>
+            </div>
+          )}
+
+          <form
+            className="flex items-center gap-2 border-t border-border p-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void send();
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => void getHint()}
+              disabled={hinting || sending}
+              title="Gợi ý câu trả lời"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-accent disabled:opacity-50"
+            >
+              <Icon name="spark" size={18} />
+            </button>
+            <input
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              placeholder="Nhập câu trả lời bằng tiếng Trung…"
+              disabled={sending}
+              className="field flex-1"
+            />
+            <button
+              type="submit"
+              disabled={!input.trim() || sending}
+              aria-label="Gửi"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-fg disabled:opacity-50"
+            >
+              <Icon name="arrow" size={18} />
+            </button>
+          </form>
+        </>
+      )}
     </Card>
   );
 }

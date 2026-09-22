@@ -45,6 +45,15 @@ export function hintRoleplay(sessionId: string) {
   );
 }
 
+/** Nhận xét ngắn sau khi kết thúc buổi luyện — xem `RoleplayService.feedback`
+ * ở server. Không lưu DB, chỉ trả về một lần. */
+export function feedbackRoleplay(sessionId: string) {
+  return api.post<{ userTurns: number; feedbackVi: string }>(
+    `/roleplay/sessions/${sessionId}/feedback`,
+    {},
+  );
+}
+
 export function deleteRoleplaySession(sessionId: string) {
   return api.del<{ ok: true }>(`/roleplay/sessions/${sessionId}`);
 }
