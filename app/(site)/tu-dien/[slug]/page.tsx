@@ -60,10 +60,17 @@ export async function generateMetadata({
 
   const hanViet = w.hanViet ? ` (Hán Việt: ${w.hanViet})` : "";
   const nghia = w.meaningVi ?? w.meaningEn ?? "";
+  const title = `${w.simplified} là gì? ${w.pinyin} — ${nghia} | Hanni`;
+  const description = `${w.simplified} (${w.pinyin})${hanViet} nghĩa là "${nghia}". Từ vựng HSK ${w.hskLevel} — nghe phát âm chuẩn, xem câu ví dụ và học cùng Hanni.`;
   return {
-    title: `${w.simplified} là gì? ${w.pinyin} — ${nghia} | Hanni`,
-    description: `${w.simplified} (${w.pinyin})${hanViet} nghĩa là "${nghia}". Từ vựng HSK ${w.hskLevel} — nghe phát âm chuẩn, xem câu ví dụ và học cùng Hanni.`,
+    title,
+    description,
     alternates: { canonical: `/tu-dien/${encodeURIComponent(w.simplified)}` },
+    // Ảnh minh hoạ vào cả thẻ Open Graph để link chia sẻ ra ngoài có ảnh
+    // thay vì chỉ một khối chữ.
+    openGraph: w.imageUrl
+      ? { title, description, images: [{ url: w.imageUrl }] }
+      : { title, description },
   };
 }
 
@@ -136,6 +143,20 @@ export default async function TuDienPage({
               </div>
             )}
           </dl>
+
+          {/* Ảnh minh hoạ (Wikimedia Commons — giấy phép tự do, xem
+           * hanni-server/CLAUDE.md). Dùng <img> thường chứ không next/image:
+           * ảnh đến từ domain ngoài và chỉ là minh hoạ phụ, thêm domain vào
+           * cấu hình next/image cho 2 host Wikimedia là phức tạp thừa. */}
+          {w.imageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={w.imageUrl}
+              alt={`Ảnh minh hoạ cho từ ${w.simplified} (${w.meaningVi ?? ""})`}
+              loading="lazy"
+              className="mt-5 max-h-56 w-full rounded-xl object-cover"
+            />
+          )}
 
           {w.audioUrl && (
             <audio

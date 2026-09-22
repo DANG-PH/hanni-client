@@ -71,6 +71,17 @@ export function TrialDeck({ words }: { words: Word[] }) {
         aria-label={`Lật thẻ để xem nghĩa của ${word.simplified}`}
         className="panel hover-card flex min-h-64 w-full flex-col items-center justify-center gap-3 p-8 text-center"
       >
+        {/* Ảnh minh hoạ nếu có (Wikimedia Commons) — giúp thẻ đầu tiên người
+         * lạ nhìn thấy sinh động hơn hẳn một khối chữ Hán trơ trọi. */}
+        {word.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={word.imageUrl}
+            alt=""
+            loading="lazy"
+            className="h-28 w-full rounded-xl object-cover"
+          />
+        )}
         <span lang="zh" className="hanzi text-6xl text-primary">
           {word.simplified}
         </span>
