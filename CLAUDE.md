@@ -130,7 +130,15 @@ tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ
 đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
 màn trống.
 
-**Ảnh minh hoạ: dữ liệu có sẵn nhưng luồng học không render (sửa 2026-09-22)** — user hỏi
+**Lưới "Rèn từng kỹ năng" ở dashboard thiếu 2 mảng (sửa 2026-09-22)** — `PRACTICE_AREAS` chỉ có
+từ vựng / ngữ pháp / nghe / phát âm, trong khi `/roleplay` (luyện nói với AI — đo production chỉ
+5 tin nhắn, gần như không ai dùng vì chỉ vào được từ sidebar) và `/writing` đều đã có trang
+riêng; riêng luyện viết còn bị chính lời chào persona ACADEMIC hứa trước ("nắm chắc ngữ pháp và
+luyện viết") mà lưới không có. **Bẫy khi thêm**: `GOAL_PERSONA[*].order` phải liệt kê ĐỦ mọi
+href — thiếu cái nào thì `indexOf` trả `-1` và mảng đó bị đẩy lên ĐẦU cho mọi persona.
+`.skillsGrid` đổi 4 → 3 cột để 6 thẻ thành 2 hàng đều (breakpoint nhỏ vốn đã 2 cột / 1 cột).
+
+**Ảnh minh hoạ: dữ liệu có sẵn nhưng luồng học không render (sửa 2026-09-22)****Ảnh minh hoạ: dữ liệu có sẵn nhưng luồng học không render (sửa 2026-09-22)** — user hỏi
 "chưa thấy ảnh trên production, nó ở đâu". Đo: 1.652 từ ĐÃ có ảnh, nhưng chỉ render ở từ điển
 công khai, popup bấm từ trong video, thẻ "Từ vựng hôm nay" và bộ thẻ học thử — đúng 2 chỗ người
 học ngồi lâu nhất (`components/flashcard.tsx`, `/learn/[lessonId]`) thì không có gì. Thêm 2 chỗ
