@@ -11,6 +11,62 @@
   gap: 10px;
 }
 
+.search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 54px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding-inline: 14px;
+  background: var(--surface);
+  color: var(--muted);
+  min-height: 42px;
+  transition: border-color 180ms, outline-color 180ms;
+}
+
+.search:focus-within {
+  border-color: var(--primary);
+  outline: 3px solid color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.search svg {
+  flex-shrink: 0;
+}
+
+.search input {
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--foreground);
+  font-size: 13px;
+  outline: none;
+  min-height: 40px;
+}
+
+.searchResult {
+  display: grid;
+  gap: 10px;
+}
+
+.searchBack {
+  justify-self: start;
+}
+
+.searchResult .windowStatus {
+  margin-left: 54px;
+}
+
+@media (max-width: 640px) {
+  .search,
+  .searchResult .windowStatus {
+    margin-left: 0;
+  }
+}
+
 .windowControl,
 .windowFooter {
   display: flex;

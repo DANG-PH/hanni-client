@@ -16,6 +16,15 @@ const STATUS_META: Record<
   AVAILABLE: { label: "Sẵn sàng", tone: styles.available },
 };
 
+/** Bỏ dấu tiếng Việt để gõ "do an" vẫn ra "Đồ ăn & thức uống". */
+function normalize(text: string) {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .toLowerCase();
+}
+
 const PATH_WINDOW_SIZE = 6;
 const PATH_CONTEXT_BEFORE_CURRENT = 1;
 
@@ -53,24 +62,24 @@ function LessonItems({
   lessons,
   currentLessonId,
   totalLessons,
+  listLabel,
 }: {
   lessons: LessonNode[];
   currentLessonId?: string | null;
   totalLessons?: number;
+  /** Ghi đè nhãn khi danh sách KHÔNG liền mạch (kết quả tìm kiếm). */
+  listLabel?: string;
 }) {
   const firstOrder = lessons[0]?.orderIndex;
   const lastOrder = lessons.at(-1)?.orderIndex;
   const label =
-    totalLessons && firstOrder && lastOrder
+    listLabel ??
+    (totalLessons && firstOrder && lastOrder
       ? `Bài học ${firstOrder} đến ${lastOrder} trong ${totalLessons} bài`
-      : "Danh sách bài học";
+      : "Danh sách bài học");
 
   return (
-    <ol
-      className={styles.list}
-      start={firstOrder}
-      aria-label={label}
-    >
+    <ol className={styles.list} start={firstOrder} aria-label={label}>
       {lessons.map((lesson) => {
         const meta = STATUS_META[lesson.status];
         const pct = lesson.wordCount
@@ -80,9 +89,7 @@ function LessonItems({
           <div
             className={styles.card}
             data-status={lesson.status}
-            data-current={
-              lesson.id === currentLessonId ? "true" : undefined
-            }
+            data-current={lesson.id === currentLessonId ? "true" : undefined}
           >
             <span className={`${styles.number} ${meta.tone}`}>
               {lesson.status === "COMPLETED" ? (
@@ -160,6 +167,10 @@ function FocusedLessonPath({
   lessons: LessonNode[];
   currentLessonId?: string | null;
 }) {
+  // Tìm theo CHỦ ĐỀ: cửa sổ 6 bài/lần là đủ khi đi tuần tự, nhưng từ khi bỏ
+  // khoá thì người học chọn bài tự do — mà HSK 7-9 có tới 357 bài, lật từng
+  // trang 6 bài để tìm "Thành ngữ" là không thực tế.
+  const [query, setQuery] = useState("");
   const focusedIndex = currentLessonIndex(lessons, currentLessonId);
   const focusedLessonId = currentLessonId ?? lessons[focusedIndex]?.id;
   const defaultRange = initialRange(lessons.length, focusedIndex);
@@ -195,70 +206,117 @@ function FocusedLessonPath({
     setRange(defaultRange);
   }
 
+  const needle = normalize(query.trim());
+  const matches = needle
+    ? lessons.filter((lesson) => normalize(lesson.title).includes(needle))
+    : [];
+
   return (
     <div className={styles.window}>
-      {hiddenBefore > 0 && (
-        <div className={`${styles.windowControl} ${styles.windowControlBefore}`}>
-          <Button
-            variant="secondary"
-            onClick={showPrevious}
-            aria-controls={listId}
-            aria-expanded={false}
-          >
-            <Icon name="back" size={15} />
-            Xem {Math.min(PATH_WINDOW_SIZE, hiddenBefore)} bài trước
-          </Button>
-          <span>{hiddenBefore} bài đang ẩn</span>
-        </div>
-      )}
-
-      <div id={listId}>
-        <LessonItems
-          lessons={visibleLessons}
-          currentLessonId={focusedLessonId}
-          totalLessons={lessons.length}
+      <label className={styles.search}>
+        <Icon name="search" size={16} />
+        <input
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Tìm bài theo chủ đề: gia đình, đồ ăn…"
+          aria-label="Tìm bài học theo chủ đề"
         />
-      </div>
+      </label>
 
-      <div className={styles.windowFooter}>
-        <p className={styles.windowStatus} role="status" aria-live="polite">
-          Đang xem bài <strong>{firstVisible}–{lastVisible}</strong> trên{" "}
-          <strong>{lessons.length}</strong>
-        </p>
-        <div className={styles.windowActions}>
-          {hiddenAfter > 0 && (
-            <Button
-              variant="secondary"
-              onClick={showNext}
-              aria-controls={listId}
-              aria-expanded={false}
-            >
-              Xem {Math.min(PATH_WINDOW_SIZE, hiddenAfter)} bài tiếp
-              <Icon name="arrow" size={15} />
-            </Button>
+      {needle ? (
+        <div className={styles.searchResult}>
+          <p className={styles.windowStatus} role="status" aria-live="polite">
+            {matches.length
+              ? `${matches.length} bài khớp "${query.trim()}"`
+              : `Không có bài nào khớp "${query.trim()}"`}
+          </p>
+          {matches.length > 0 && (
+            <LessonItems
+              lessons={matches}
+              currentLessonId={focusedLessonId}
+              listLabel={`${matches.length} bài khớp từ khoá`}
+            />
           )}
-          {(hiddenBefore > 0 || hiddenAfter > 0) && (
-            <Button
-              variant="ghost"
-              onClick={showAll}
-              aria-controls={listId}
-              aria-expanded={false}
-            >
-              Xem tất cả
-            </Button>
-          )}
-          {changedFromDefault && (
-            <Button
-              variant="ghost"
-              onClick={collapseToCurrent}
-              aria-controls={listId}
-              aria-expanded
-            >
-              Thu gọn về bài đang học
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            className={styles.searchBack}
+            onClick={() => setQuery("")}
+          >
+            <Icon name="back" size={15} /> Quay lại lộ trình
+          </Button>
         </div>
-      </div>
+      ) : (
+        <>
+          {hiddenBefore > 0 && (
+            <div
+              className={`${styles.windowControl} ${styles.windowControlBefore}`}
+            >
+              <Button
+                variant="secondary"
+                onClick={showPrevious}
+                aria-controls={listId}
+                aria-expanded={false}
+              >
+                <Icon name="back" size={15} />
+                Xem {Math.min(PATH_WINDOW_SIZE, hiddenBefore)} bài trước
+              </Button>
+              <span>{hiddenBefore} bài đang ẩn</span>
+            </div>
+          )}
+
+          <div id={listId}>
+            <LessonItems
+              lessons={visibleLessons}
+              currentLessonId={focusedLessonId}
+              totalLessons={lessons.length}
+            />
+          </div>
+
+          <div className={styles.windowFooter}>
+            <p className={styles.windowStatus} role="status" aria-live="polite">
+              Đang xem bài{" "}
+              <strong>
+                {firstVisible}–{lastVisible}
+              </strong>{" "}
+              trên <strong>{lessons.length}</strong>
+            </p>
+            <div className={styles.windowActions}>
+              {hiddenAfter > 0 && (
+                <Button
+                  variant="secondary"
+                  onClick={showNext}
+                  aria-controls={listId}
+                  aria-expanded={false}
+                >
+                  Xem {Math.min(PATH_WINDOW_SIZE, hiddenAfter)} bài tiếp
+                  <Icon name="arrow" size={15} />
+                </Button>
+              )}
+              {(hiddenBefore > 0 || hiddenAfter > 0) && (
+                <Button
+                  variant="ghost"
+                  onClick={showAll}
+                  aria-controls={listId}
+                  aria-expanded={false}
+                >
+                  Xem tất cả
+                </Button>
+              )}
+              {changedFromDefault && (
+                <Button
+                  variant="ghost"
+                  onClick={collapseToCurrent}
+                  aria-controls={listId}
+                  aria-expanded
+                >
+                  Thu gọn về bài đang học
+                </Button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
