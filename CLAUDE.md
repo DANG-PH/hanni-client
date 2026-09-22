@@ -130,6 +130,14 @@ tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ
 đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
 màn trống.
 
+**Phần thưởng/ngữ cảnh bị bỏ quên — rà 2026-09-22**: 3 chỗ dữ liệu đã có sẵn mà UI không dùng.
+(1) `streakFreezeCount` nằm trong `GET /streak` từ lâu nhưng KHÔNG hiện ở đâu — người dùng kiếm
+được lá chắn (mốc 7 ngày, mời bạn) hoặc mua 300 xu mà không thấy gì, phần thưởng vô hình thì
+không tạo động lực; giờ hiện cạnh chuỗi ngày ở topbar (`components/app-shell.tsx`).
+(2) Thẻ "Từ vựng hôm nay" khoe MỘT từ nhưng nút lại dẫn ra danh sách cả cấp HSK — giờ mở thẳng
+`/tu-dien/<từ đó>`. (3) `components/save-word-button.tsx` thêm nút "Tôi đã biết từ này": tra từ
+điển chính là lúc hay gặp từ đã biết sẵn, không nên bắt đợi gặp lại trong lượt ôn mới ẩn được.
+
 **Ôn riêng "từ khó nhớ" (2026-09-22)** — `/study?leeches=1` dùng lại NGUYÊN bộ khung buổi ôn
 (flashcard, đánh giá, quiz cuối buổi), chỉ đổi nguồn thẻ (`GET /study/leeches`) và lời dẫn; prop
 `leechMode` trong `StudyInner`, `key` đổi theo mode để ép remount. Nút vào nằm ở chính mục "Từ
