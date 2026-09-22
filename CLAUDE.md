@@ -130,7 +130,15 @@ tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ
 đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
 màn trống.
 
-**`/roleplay` — kết quả buổi luyện (2026-09-22)**: bấm "Kết thúc" giờ gọi `feedbackRoleplay()`
+**Refresh token: gộp chung 1 lượt (sửa 2026-09-22)** — `lib/api.ts` trước đây để MỖI request
+401 tự gọi `/auth/refresh`. Dashboard bắn cả chục request SWR song song nên access token hết
+hạn là cả chục lượt refresh cùng lúc với cùng 1 cookie; server xoay token cho lượt đầu rồi coi
+những lượt sau là token bị đánh cắp và huỷ cả phiên — đo log production: **661 lần**, tức 661
+lần đăng xuất oan với chỉ 6 người dùng thật. Giờ giữ 1 promise dùng chung (`refreshSession()`),
+request tới sau thì ĐỢI kết quả lượt đang chạy. Server cũng có cửa sổ ân hạn 30s cho trường hợp
+nhiều tab/thiết bị mà client không kiểm soát được — xem `hanni-server/CLAUDE.md`.
+
+**`/roleplay` — kết quả buổi luyện (2026-09-22)****`/roleplay` — kết quả buổi luyện (2026-09-22)**: bấm "Kết thúc" giờ gọi `feedbackRoleplay()`
 và hiện màn nhận xét (render bằng `MarkdownLite` có sẵn) TRƯỚC khi xoá gì; người học chọn "Đóng
 buổi luyện" (mới thật sự xoá) hoặc "Nói tiếp". AI lỗi/bận thì vẫn hiện màn đó kèm lời nhắn ngắn
 — không được chặn đường thoát chỉ vì nhận xét không lấy được. Xem `hanni-server/CLAUDE.md` cho
