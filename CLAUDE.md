@@ -130,6 +130,11 @@ tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ
 đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
 màn trống.
 
+**Ôn riêng "từ khó nhớ" (2026-09-22)** — `/study?leeches=1` dùng lại NGUYÊN bộ khung buổi ôn
+(flashcard, đánh giá, quiz cuối buổi), chỉ đổi nguồn thẻ (`GET /study/leeches`) và lời dẫn; prop
+`leechMode` trong `StudyInner`, `key` đổi theo mode để ép remount. Nút vào nằm ở chính mục "Từ
+khó nhớ" trong `/progress` — trước đó mục đó chỉ liệt kê, xem xong không làm gì được.
+
 **Ẩn từ đã biết (2026-09-22)** — `components/flashcard.tsx` có nút "Tôi đã biết từ này" ở mặt
 SAU (chỉ hiện sau khi lật, để không ai bấm lúc chưa thấy nghĩa). `/study` xử lý bằng cách BỎ thẻ
 khỏi mảng `items` chứ không nhảy qua — mẫu số thống kê cuối buổi mới đúng — và KHÔNG gọi
