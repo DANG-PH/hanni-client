@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  FeatureTour,
+  TourButton,
+  type TourStep,
+} from "@/components/feature-tour";
 import { useEffect, useMemo, useState } from "react";
 import { Card, EmptyState, PageHeading, Spinner } from "@/components/ui";
 import { Icon } from "@/components/icon";
@@ -15,6 +20,27 @@ interface HanziEntry {
 }
 
 const LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+const WRITING_TOUR_STEPS: TourStep[] = [
+  {
+    icon: "pencil",
+    title: "Ba bước, đi theo thứ tự",
+    description:
+      'Bắt đầu ở "1. Xem" để nhìn đúng thứ tự nét, sang "2. Tô lại" để tô theo nét mờ, rồi "3. Tự viết" để kiểm tra trí nhớ. Nút bên dưới khung luôn cho bạn làm lại bước đang đứng.',
+  },
+  {
+    icon: "route",
+    title: "Mặc định là chữ trong bài đang học",
+    description:
+      'Danh sách bên phải chỉ hiện những chữ có trong bài bạn đang học, để luyện viết không lạc khỏi lộ trình. Muốn rộng hơn thì bấm "Toàn bộ cấp HSK", hoặc gõ thẳng chữ/pinyin vào ô tìm.',
+  },
+  {
+    icon: "book",
+    title: "Viết xong nhớ tra nghĩa",
+    description:
+      "Cuối trang có lối sang trang từ điển của đúng chữ vừa viết — xem âm Hán Việt và nghĩa để nhớ cả mặt chữ lẫn nghĩa, thay vì chỉ thuộc tay.",
+  },
+];
 
 export default function WritingPage() {
   const { user, loading } = useRequireAuth();
@@ -56,7 +82,10 @@ export default function WritingPage() {
       })
       .then((data: HanziEntry[]) => {
         setIndex(data);
-        setActive((prev) => prev ?? data.find((d) => d.level === 1)?.c ?? data[0]?.c ?? null);
+        setActive(
+          (prev) =>
+            prev ?? data.find((d) => d.level === 1)?.c ?? data[0]?.c ?? null,
+        );
       })
       .catch(() => setIndexError(true));
   }, []);
@@ -69,7 +98,10 @@ export default function WritingPage() {
         if (!lessonChars!.has(entry.c)) return false;
       } else if (level && entry.level !== level) return false;
       if (!term) return true;
-      return entry.c.includes(term) || entry.pinyin.toLowerCase().includes(term.toLowerCase());
+      return (
+        entry.c.includes(term) ||
+        entry.pinyin.toLowerCase().includes(term.toLowerCase())
+      );
     });
   }, [index, level, q, lessonScope, lessonChars]);
 
@@ -116,12 +148,15 @@ export default function WritingPage() {
 
   return (
     <div className="page-wrap space-y-7">
+      <FeatureTour tourKey="writing" steps={WRITING_TOUR_STEPS} />
       <PageHeading
         icon="pencil"
         eyebrow="Luyện tay"
         title="Luyện viết Hán tự"
         description="Xem thứ tự nét, tô theo nét mờ, rồi tự viết lại để kiểm tra trí nhớ."
-      />
+      >
+        <TourButton tourKey="writing" />
+      </PageHeading>
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
         <Card className="order-2 flex flex-col items-center gap-2 py-8 lg:order-1">
           {indexError ? (

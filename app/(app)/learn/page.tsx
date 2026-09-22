@@ -2,7 +2,11 @@
 
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { FeatureTour, type TourStep } from "@/components/feature-tour";
+import {
+  FeatureTour,
+  TourButton,
+  type TourStep,
+} from "@/components/feature-tour";
 import { Icon } from "@/components/icon";
 import { LearningJourney } from "@/components/learning-journey";
 import { LessonPath } from "@/components/lesson-path";
@@ -78,8 +82,8 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
           </p>
           <h1 id="learn-page-title">Mỗi ngày một bước, bạn sẽ tiến xa hơn</h1>
           <p>
-            Chọn cấp HSK, học một bài, rồi ôn lại để nhớ lâu hơn. Không bài
-            nào bị khoá — cứ chọn chủ đề bạn thấy cần nhất.
+            Chọn cấp HSK, học một bài, rồi ôn lại để nhớ lâu hơn. Không bài nào
+            bị khoá — cứ chọn chủ đề bạn thấy cần nhất.
           </p>
         </div>
         <div className={styles.introActions}>
@@ -95,6 +99,7 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
           <LinkButton href="/study" variant="secondary">
             <Icon name="cards" size={17} /> Ôn tập hôm nay
           </LinkButton>
+          <TourButton tourKey="learn" />
         </div>
       </section>
 
@@ -120,7 +125,8 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
               </span>
               <div>
                 <h2 id="next-lesson-heading">
-                  {currentLesson?.title ?? `Bạn đã hoàn thành ${data.levelName}`}
+                  {currentLesson?.title ??
+                    `Bạn đã hoàn thành ${data.levelName}`}
                 </h2>
                 <p>
                   {currentLesson
@@ -157,7 +163,10 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
         </section>
       )}
 
-      <section aria-labelledby="hsk-lessons-heading" className={styles.pathBoard}>
+      <section
+        aria-labelledby="hsk-lessons-heading"
+        className={styles.pathBoard}
+      >
         <div className={styles.pathHeader}>
           <div>
             <p className={styles.pathEyebrow}>
@@ -168,9 +177,7 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
                 ? `HSK ${activeLevel === 7 ? "7–9" : activeLevel}`
                 : "Chọn cấp độ để bắt đầu"}
             </h2>
-            <p>
-              Chọn bài bất kỳ để học. Hanni đánh dấu sẵn bài nên học tiếp.
-            </p>
+            <p>Chọn bài bất kỳ để học. Hanni đánh dấu sẵn bài nên học tiếp.</p>
           </div>
           {!!data?.levels.length && (
             <SelectionGroup

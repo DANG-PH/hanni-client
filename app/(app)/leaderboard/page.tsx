@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  FeatureTour,
+  TourButton,
+  type TourStep,
+} from "@/components/feature-tour";
 import { useRef, useState, type KeyboardEvent } from "react";
 import { Icon } from "@/components/icon";
 import {
@@ -19,6 +24,27 @@ import {
 import { useRequireAuth } from "@/lib/auth";
 import { useLeaderboard, useLeaderboardMetrics } from "@/lib/hooks";
 import type { LeaderboardMetricKey } from "@/lib/types";
+
+const LEADERBOARD_TOUR_STEPS: TourStep[] = [
+  {
+    icon: "trophy",
+    title: "Năm cách xếp hạng khác nhau",
+    description:
+      "Từ đã thuộc, chuỗi hiện tại, chuỗi dài nhất, bài đã xong và ELO đấu 1v1. Đổi tab để xem bảng tương ứng — mỗi bảng đo một kiểu nỗ lực khác nhau.",
+  },
+  {
+    icon: "user",
+    title: "Theo dõi người học khác",
+    description:
+      'Bấm "Theo dõi" ngay trong bảng. Sau đó ở Tổng quan sẽ có thẻ so chuỗi ngày học riêng trong nhóm bạn theo dõi — dễ bám hơn là so với cả server.',
+  },
+  {
+    icon: "info",
+    title: '"Từ đã thuộc" tăng chậm là bình thường',
+    description:
+      "Một từ chỉ được tính là đã thuộc khi bạn ôn đúng nó đủ lâu (khoảng 21 ngày). Muốn thấy nỗ lực hằng ngày phản ánh ngay thì xem bảng chuỗi ngày học.",
+  },
+];
 
 export default function LeaderboardPage() {
   const { user, loading } = useRequireAuth();
@@ -62,6 +88,7 @@ export default function LeaderboardPage() {
 
   return (
     <div className="page-wrap space-y-6">
+      <FeatureTour tourKey="leaderboard" steps={LEADERBOARD_TOUR_STEPS} />
       <PageHeading
         icon="trophy"
         tone="accent"
@@ -73,6 +100,7 @@ export default function LeaderboardPage() {
           <Icon name="spark" size={15} className="text-accent" />
           Mỗi ngày một bước tiến
         </span>
+        <TourButton tourKey="leaderboard" />
       </PageHeading>
 
       <div className="space-y-3">

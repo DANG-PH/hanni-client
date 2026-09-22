@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  FeatureTour,
+  TourButton,
+  type TourStep,
+} from "@/components/feature-tour";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import {
@@ -24,6 +29,27 @@ import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { useExamHistory, useLevels, useWords } from "@/lib/hooks";
 import type { Quiz } from "@/lib/types";
+
+const EXAM_TOUR_STEPS: TourStep[] = [
+  {
+    icon: "clock",
+    title: "Mỗi câu có giới hạn thời gian",
+    description:
+      "Đồng hồ chạy theo nhịp độ đề HSK thật. Hết giờ sẽ tự chuyển câu và tính đáp án đang chọn — chưa chọn gì thì tính là sai.",
+  },
+  {
+    icon: "headphones",
+    title: "Nghe trước, đọc sau",
+    description:
+      "Câu nghe xếp trước giống đề thi thật: âm thanh tự phát, Hán tự chỉ hiện sau khi bạn chọn đáp án. Nghe lại được bằng nút loa.",
+  },
+  {
+    icon: "info",
+    title: "Đây chưa phải đề HSK đầy đủ",
+    description:
+      "Hiện mới là bài trắc nghiệm từ vựng có tính giờ, chưa có đủ các phần đọc hiểu dài và viết như đề thật. Dùng để tự đo tốc độ phản xạ, không thay thế thi thử.",
+  },
+];
 
 export default function ExamsPage() {
   const { user, loading } = useRequireAuth();
@@ -137,6 +163,7 @@ export default function ExamsPage() {
 
   return (
     <div className={`page-wrap ${styles.page}`}>
+      <FeatureTour tourKey="exams" steps={EXAM_TOUR_STEPS} />
       <LearningHeader
         section="exams"
         eyebrow="Nhìn lại điều đã học"
@@ -146,6 +173,7 @@ export default function ExamsPage() {
         <LinkButton href="/exams/results" variant="secondary">
           <Icon name="chart" size={16} /> Kết quả gần nhất
         </LinkButton>
+        <TourButton tourKey="exams" />
       </LearningHeader>
       {levels.error ? (
         <Card className="space-y-4">

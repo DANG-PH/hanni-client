@@ -1,12 +1,23 @@
 "use client";
 
+import {
+  FeatureTour,
+  TourButton,
+  type TourStep,
+} from "@/components/feature-tour";
 import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { AudioButton } from "@/components/audio-button";
 import { Icon, type IconName } from "@/components/icon";
 import { NextStep } from "@/components/next-step";
 import { RankEmblem } from "@/components/rank-emblem";
-import { Button, Card, PageHeading, SectionHeading, Spinner } from "@/components/ui";
+import {
+  Button,
+  Card,
+  PageHeading,
+  SectionHeading,
+  Spinner,
+} from "@/components/ui";
 import { mediaUrl } from "@/lib/api";
 import { useAuth, useRequireAuth } from "@/lib/auth";
 import {
@@ -106,6 +117,27 @@ const GAMES: GameDef[] = [
 
 // ------------------------------ Sảnh chọn game ------------------------------
 
+const MINIGAME_TOUR_STEPS: TourStep[] = [
+  {
+    icon: "spark",
+    title: "Bốn trò chơi một mình",
+    description:
+      "Dịch tốc độ, Nghe đoán từ, Ghép cặp và Chọn pinyin đúng — mỗi ván 60 giây. Bấm vào một trò sẽ xem luật trước rồi mới bắt đầu.",
+  },
+  {
+    icon: "trophy",
+    title: "Đấu 1v1 với người thật",
+    description:
+      "Tab đấu 1v1 ghép bạn với người đang online, 8 câu, ai đúng nhiều hơn thì thắng và được cộng ELO. Rank từ Sắt tới Thách Đấu, reset theo mùa mỗi tháng.",
+  },
+  {
+    icon: "plus",
+    title: "Chơi được cộng xu",
+    description:
+      "Mỗi câu đúng đổi thành xu, tiêu ở cửa hàng khung avatar, danh hiệu hoặc lá chắn giữ chuỗi ngày trong mục Tài khoản.",
+  },
+];
+
 function GameHub({ onSelect }: { onSelect: (game: GameDef) => void }) {
   return (
     <div className="grid gap-4.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -126,7 +158,9 @@ function GameHub({ onSelect }: { onSelect: (game: GameDef) => void }) {
               </span>
             )}
           </div>
-          <h3 className="mb-2 text-base font-bold text-foreground">{g.title}</h3>
+          <h3 className="mb-2 text-base font-bold text-foreground">
+            {g.title}
+          </h3>
           <p className="mb-5 text-xs leading-relaxed text-muted">{g.tagline}</p>
           <span className="inline-flex items-center gap-1.5 text-xs font-bold text-primary">
             Xem chi tiết <Icon name="arrow" size={15} />
@@ -283,7 +317,10 @@ function SoloMinigame({ game }: { game: GameDef }) {
   function choose(index: number) {
     const q = questions[qIndex];
     if (!q || phase !== "playing") return;
-    const next = [...answersRef.current, { wordId: q.wordId, chosenIndex: index }];
+    const next = [
+      ...answersRef.current,
+      { wordId: q.wordId, chosenIndex: index },
+    ];
     // finish() chạy ngay ở câu cuối, trước khi effect đồng bộ state.
     answersRef.current = next;
     setAnswers(next);
@@ -301,9 +338,9 @@ function SoloMinigame({ game }: { game: GameDef }) {
           <div className="py-8 text-center">
             <Icon name="clock" size={36} className="mx-auto mb-4 text-accent" />
             <p className="mx-auto mb-5 max-w-md text-sm leading-6 text-muted">
-              Bạn có 60 giây để trả lời càng nhiều câu hỏi trắc nghiệm càng
-              tốt. Mỗi câu đúng thưởng 1 xu — dùng xu để mua thêm lá chắn giữ
-              chuỗi ngày học trong trang Tài khoản.
+              Bạn có 60 giây để trả lời càng nhiều câu hỏi trắc nghiệm càng tốt.
+              Mỗi câu đúng thưởng 1 xu — dùng xu để mua thêm lá chắn giữ chuỗi
+              ngày học trong trang Tài khoản.
             </p>
             <Button onClick={() => void start()} disabled={starting}>
               {starting ? "Đang chuẩn bị…" : "Bắt đầu chơi"}
@@ -475,7 +512,11 @@ function MatchMinigame() {
     setPhase("finished");
     if (!id) return;
     try {
-      const res = await finishMatchMinigame(id, mistakesRef.current, durationMs);
+      const res = await finishMatchMinigame(
+        id,
+        mistakesRef.current,
+        durationMs,
+      );
       setResult(res);
       void leaderboard.mutate();
     } catch {
@@ -570,8 +611,8 @@ function MatchMinigame() {
             <Icon name="cards" size={36} className="mx-auto mb-4 text-good" />
             <p className="mx-auto mb-5 max-w-md text-sm leading-6 text-muted">
               Lật 2 thẻ mỗi lượt để tìm đúng cặp Hán tự ↔ nghĩa. Hoàn thành
-              không sai lần nào được thưởng tối đa 8 xu, mỗi lần lật sai trừ
-              1 xu.
+              không sai lần nào được thưởng tối đa 8 xu, mỗi lần lật sai trừ 1
+              xu.
             </p>
             <Button onClick={() => void start()} disabled={starting}>
               {starting ? "Đang chuẩn bị…" : "Bắt đầu chơi"}
@@ -716,12 +757,7 @@ function MatchMinigame() {
 // ------------------------------ Đấu 1v1 ------------------------------
 
 type DuelPhase =
-  | "idle"
-  | "queueing"
-  | "matched"
-  | "playing"
-  | "round-result"
-  | "finished";
+  "idle" | "queueing" | "matched" | "playing" | "round-result" | "finished";
 
 function SeasonCountdown() {
   const season = useDuelSeason();
@@ -764,7 +800,12 @@ function RankTiersLegend() {
                 key={t.name}
                 className="flex items-center gap-3 rounded-xl border border-border p-2.5"
               >
-                <RankEmblem tierName={t.name} color={t.color} tiers={tiers} size={32} />
+                <RankEmblem
+                  tierName={t.name}
+                  color={t.color}
+                  tiers={tiers}
+                  size={32}
+                />
                 <div className="min-w-0">
                   <p className="text-sm font-semibold">{t.name}</p>
                   <p className="text-xs text-muted">
@@ -801,9 +842,7 @@ function DuelMinigame() {
     null,
   );
   const [finishResult, setFinishResult] = useState<DuelFinished | null>(null);
-  const [introSecondsLeft, setIntroSecondsLeft] = useState<number | null>(
-    null,
-  );
+  const [introSecondsLeft, setIntroSecondsLeft] = useState<number | null>(null);
   const [queueElapsedS, setQueueElapsedS] = useState(0);
   const queueStartedAtRef = useRef(0);
   const [resumeChecked, setResumeChecked] = useState(false);
@@ -940,7 +979,9 @@ function DuelMinigame() {
                   size={64}
                 />
                 <p className="text-sm text-muted">
-                  <strong className="text-foreground">{rating.data.tier}</strong>
+                  <strong className="text-foreground">
+                    {rating.data.tier}
+                  </strong>
                   {" · "}
                   {rating.data.elo} ELO
                 </p>
@@ -950,7 +991,11 @@ function DuelMinigame() {
                 </p>
               </div>
             ) : (
-              <Icon name="flame" size={36} className="mx-auto mb-4 text-danger" />
+              <Icon
+                name="flame"
+                size={36}
+                className="mx-auto mb-4 text-danger"
+              />
             )}
             <p className="mx-auto mb-5 max-w-md text-sm leading-6 text-muted">
               Đối đầu trực tiếp với 1 người chơi khác qua {8} câu hỏi — ai trả
@@ -1078,7 +1123,11 @@ function DuelMinigame() {
 
         {phase === "finished" && finishResult && (
           <div className="py-6 text-center">
-            <Icon name="trophy" size={40} className="mx-auto mb-3 text-primary" />
+            <Icon
+              name="trophy"
+              size={40}
+              className="mx-auto mb-3 text-primary"
+            />
             <p className="text-2xl font-bold">
               {finishResult.winnerId === myId
                 ? "Bạn thắng!"
@@ -1242,13 +1291,16 @@ export default function MinigamePage() {
 
   return (
     <div className="page-wrap space-y-6">
+      <FeatureTour tourKey="minigame" steps={MINIGAME_TOUR_STEPS} />
       <PageHeading
         icon="spark"
         tone="accent"
         eyebrow="Vừa học vừa chơi"
         title="Minigame"
         description="Chọn 1 trò chơi để luyện phản xạ từ vựng — 1 mình hoặc đấu trực tiếp với người khác."
-      />
+      >
+        <TourButton tourKey="minigame" />
+      </PageHeading>
       {view.stage === "hub" && (
         <>
           <GameHub onSelect={(game) => setView({ stage: "intro", game })} />

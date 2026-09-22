@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  FeatureTour,
+  TourButton,
+  type TourStep,
+} from "@/components/feature-tour";
 import Link from "next/link";
 import { ActivityCalendar } from "@/components/activity-calendar";
 import { AudioButton } from "@/components/audio-button";
@@ -24,6 +29,27 @@ const BAND_VI: Record<string, string> = {
   ADVANCED: "Cao cấp",
 };
 
+const PROGRESS_TOUR_STEPS: TourStep[] = [
+  {
+    icon: "chart",
+    title: "Bốn con số nói bốn chuyện khác nhau",
+    description:
+      '"Đang học" là vốn từ bạn đã chạm tới; "Đến hạn ôn" là việc cần làm hôm nay; "Sắp quên" là những từ sắp rơi; "Đã thuộc" chỉ tính từ đã ôn đúng khoảng 21 ngày nên tăng chậm nhất.',
+  },
+  {
+    icon: "flame",
+    title: "Lịch 30 ngày",
+    description:
+      "Mỗi ô là một ngày có học. Nhìn vào đây dễ thấy mình đang đều hay đang đứt quãng hơn là nhìn con số tổng.",
+  },
+  {
+    icon: "target",
+    title: "Từ khó nhớ",
+    description:
+      "Những từ bạn sai nhiều lần sẽ tự gom vào một mục riêng ở cuối trang. Khi bạn thật sự nhớ được, từ đó tự rời khỏi danh sách.",
+  },
+];
+
 export default function ProgressPage() {
   const { user, loading } = useRequireAuth();
   const { data, isLoading, error, mutate } = useProgress();
@@ -35,6 +61,7 @@ export default function ProgressPage() {
     : 0;
   return (
     <div className="page-wrap space-y-8">
+      <FeatureTour tourKey="progress" steps={PROGRESS_TOUR_STEPS} />
       <PageHeading
         icon="chart"
         tone="good"
@@ -56,6 +83,7 @@ export default function ProgressPage() {
           <Icon name="flame" size={17} />
           Bảng xếp hạng
         </LinkButton>
+        <TourButton tourKey="progress" />
       </PageHeading>
       {error ? (
         <ErrorNote>
@@ -101,8 +129,8 @@ export default function ProgressPage() {
                   </p>
                   <p className="mt-2 text-xs leading-5 text-muted">
                     Một từ chỉ tính “đã thuộc” khi ôn đều và đạt chu kỳ ôn ≥ 21
-                    ngày — cần vài tuần ôn đặn mới thấy % này tăng. Số từ
-                    “Đang học” bên dưới tăng nhanh hơn nhiều.
+                    ngày — cần vài tuần ôn đặn mới thấy % này tăng. Số từ “Đang
+                    học” bên dưới tăng nhanh hơn nhiều.
                   </p>
                 </div>
               </Card>
@@ -230,11 +258,14 @@ export default function ProgressPage() {
                     >
                       <span className="text-sm text-muted">
                         {q.completedAt
-                          ? new Date(q.completedAt).toLocaleDateString("vi-VN", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                            })
+                          ? new Date(q.completedAt).toLocaleDateString(
+                              "vi-VN",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                              },
+                            )
                           : "—"}
                       </span>
                       <span className="text-sm">

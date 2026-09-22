@@ -7,29 +7,38 @@ import { Icon } from "@/components/icon";
 
 type Mode = "watch" | "trace" | "quiz";
 
+/** 3 chế độ là 3 BƯỚC nối tiếp nhau (xem -> tô -> tự viết), không phải 3 lựa
+ * chọn ngang hàng — đánh số để người mới biết nên bắt đầu từ đâu. `replayLabel`
+ * nói rõ nút bên dưới làm gì Ở TỪNG bước: trước đây nút đó luôn ghi "Chạy lại"
+ * nên ở bước "Xem" nó trùng hệt nút "Xem" phía trên, người dùng không biết 2
+ * nút khác nhau chỗ nào. */
 const MODES: {
   key: Mode;
   label: string;
   icon: "eye" | "pencil" | "check";
   hint: string;
+  replayLabel: string;
 }[] = [
   {
     key: "watch",
-    label: "Xem",
+    label: "1. Xem",
     icon: "eye",
     hint: "Chữ tự động vẽ theo đúng thứ tự nét — chỉ cần quan sát.",
+    replayLabel: "Xem lại từ đầu",
   },
   {
     key: "trace",
-    label: "Tô lại",
+    label: "2. Tô lại",
     icon: "pencil",
     hint: "Nét mờ hiện sẵn — bạn dùng chuột/ngón tay tô lại theo đúng nét.",
+    replayLabel: "Tô lại từ đầu",
   },
   {
     key: "quiz",
-    label: "Kiểm tra",
+    label: "3. Tự viết",
     icon: "check",
     hint: "Không còn nét mờ — tự viết lại chữ từ trí nhớ để kiểm tra.",
+    replayLabel: "Viết lại từ đầu",
   },
 ];
 
@@ -194,7 +203,7 @@ export function HanziWriterCanvas({
         </div>
         <Button variant="secondary" onClick={replay} disabled={status !== "ready"}>
           <Icon name="refresh" size={16} />
-          Chạy lại
+          {MODES.find((m) => m.key === mode)?.replayLabel}
         </Button>
       </div>
     </div>

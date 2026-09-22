@@ -4,7 +4,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { DailyQuestCard } from "@/components/daily-quest-card";
-import { FeatureTour, type TourStep } from "@/components/feature-tour";
+import {
+  FeatureTour,
+  TourButton,
+  type TourStep,
+} from "@/components/feature-tour";
 import { FriendsLeaderboard } from "@/components/friends-leaderboard";
 import { HeroBanner } from "@/components/hero-banner";
 import { Icon, type IconName } from "@/components/icon";
@@ -24,7 +28,12 @@ import {
   Stat,
 } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
-import { useLearnPath, useOnboarding, useStreak, useStudyStats } from "@/lib/hooks";
+import {
+  useLearnPath,
+  useOnboarding,
+  useStreak,
+  useStudyStats,
+} from "@/lib/hooks";
 import type { OnboardingGoal } from "@/lib/types";
 import styles from "./dashboard.module.css";
 
@@ -123,13 +132,13 @@ const DASHBOARD_TOUR_STEPS: TourStep[] = [
     icon: "flame",
     title: "Giữ chuỗi ngày học",
     description:
-      "Học đều mỗi ngày để tăng chuỗi streak — thẻ \"Mục tiêu hôm nay\" theo dõi tiến độ và nhắc bạn hoàn thành.",
+      'Học đều mỗi ngày để tăng chuỗi streak — thẻ "Mục tiêu hôm nay" theo dõi tiến độ và nhắc bạn hoàn thành.',
   },
   {
     icon: "route",
     title: "Lộ trình dành riêng cho bạn",
     description:
-      "Dựa trên khảo sát ban đầu, Hanni gợi ý cấp HSK và thứ tự luyện tập phù hợp mục tiêu của bạn — bấm \"Tiếp tục học\" để vào đúng bài đang dở.",
+      'Dựa trên khảo sát ban đầu, Hanni gợi ý cấp HSK và thứ tự luyện tập phù hợp mục tiêu của bạn — bấm "Tiếp tục học" để vào đúng bài đang dở.',
   },
   {
     icon: "play",
@@ -174,14 +183,11 @@ export default function DashboardPage() {
     (l) => l.id === path.data?.currentLessonId,
   );
 
-  const persona = onboarding.data
-    ? GOAL_PERSONA[onboarding.data.goal]
-    : null;
+  const persona = onboarding.data ? GOAL_PERSONA[onboarding.data.goal] : null;
   const examDaysLeft =
     onboarding.data?.plansToTakeExam && onboarding.data.targetDate
       ? Math.ceil(
-          (new Date(onboarding.data.targetDate).getTime() - now) /
-            86_400_000,
+          (new Date(onboarding.data.targetDate).getTime() - now) / 86_400_000,
         )
       : null;
   const heroSubtitle = persona
@@ -204,14 +210,17 @@ export default function DashboardPage() {
           Góc học tập <span className="mx-2 text-border">/</span>{" "}
           <span className="font-medium text-foreground">Tổng quan</span>
         </p>
-        <Link
-          href="/account"
-          className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted transition-colors hover:border-primary/30 hover:text-primary"
-        >
-          <Avatar user={user} size={24} />
-          {user.displayName}
-          <Icon name="arrow" size={13} />
-        </Link>
+        <div className="flex items-center gap-2">
+          <TourButton tourKey="dashboard" />
+          <Link
+            href="/account"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted transition-colors hover:border-primary/30 hover:text-primary"
+          >
+            <Avatar user={user} size={24} />
+            {user.displayName}
+            <Icon name="arrow" size={13} />
+          </Link>
+        </div>
       </div>
       <div className={styles.welcome}>
         <HeroBanner
@@ -231,7 +240,9 @@ export default function DashboardPage() {
         />
 
         {onboarding.data === null ? (
-          <Card className={`flex flex-wrap items-center justify-between gap-4 border-primary/15 bg-primary/5! ${styles.planCard}`}>
+          <Card
+            className={`flex flex-wrap items-center justify-between gap-4 border-primary/15 bg-primary/5! ${styles.planCard}`}
+          >
             <div className="flex items-center gap-3">
               <span className="icon-tile text-primary">
                 <Icon name="route" size={18} />
@@ -241,7 +252,8 @@ export default function DashboardPage() {
                   Chưa có lộ trình cá nhân
                 </h2>
                 <p className="mt-0.5 text-xs text-muted">
-                  Làm khảo sát 1 phút để Hanni gợi ý cấp HSK và nhịp học phù hợp mục tiêu của bạn.
+                  Làm khảo sát 1 phút để Hanni gợi ý cấp HSK và nhịp học phù hợp
+                  mục tiêu của bạn.
                 </p>
               </div>
             </div>
@@ -254,7 +266,9 @@ export default function DashboardPage() {
           </Card>
         ) : (
           onboarding.data && (
-            <Card className={`flex flex-wrap items-center justify-between gap-4 border-primary/15 bg-primary/5! ${styles.planCard}`}>
+            <Card
+              className={`flex flex-wrap items-center justify-between gap-4 border-primary/15 bg-primary/5! ${styles.planCard}`}
+            >
               <div className="flex min-w-0 items-center gap-3">
                 <span className="icon-tile text-primary">
                   <Icon name="route" size={18} />
@@ -299,9 +313,13 @@ export default function DashboardPage() {
 
       <div className={styles.sessionGrid}>
         {/* Tiếp tục học */}
-        <Card className={`flex flex-col justify-between ${styles.continueCard}`}>
+        <Card
+          className={`flex flex-col justify-between ${styles.continueCard}`}
+        >
           <div className="flex items-center gap-2.5 text-primary">
-            <span className={styles.sectionIcon}><Icon name="play" size={17} /></span>
+            <span className={styles.sectionIcon}>
+              <Icon name="play" size={17} />
+            </span>
             <span className="text-sm font-semibold">Tiếp tục học</span>
           </div>
           {path.isLoading ? (
@@ -457,56 +475,56 @@ export default function DashboardPage() {
       {!isNewLearner && <VideoShelf />}
 
       {!isNewLearner && (
-      <div className={styles.statsGrid}>
-        <Stat
-          label="Chuỗi ngày học"
-          value={streak.data ? `${streak.data.currentStreak}` : "—"}
-          hint={
-            streak.data
-              ? `Kỷ lục ${streak.data.longestStreak} ngày${
-                  streak.data.streakFreezeCount > 0
-                    ? ` · 🧊 ${streak.data.streakFreezeCount} lá chắn`
-                    : ""
-                }`
-              : ""
-          }
-          icon="flame"
-          tone="text-warn bg-warn/10"
-        />
-        <Stat
-          label="Cần ôn tập"
-          value={stats.data?.dueNow ?? "—"}
-          hint={
-            stats.data?.atRisk
-              ? `${stats.data.atRisk} từ sắp quên trong hôm nay`
-              : "Từ đã đến lịch ôn"
-          }
-          icon="cards"
-          tone="text-primary bg-primary/10"
-        />
-        <Stat
-          label="Bài đã xong"
-          value={
-            path.data
-              ? `${path.data.completedLessons}/${path.data.totalLessons}`
-              : "—"
-          }
-          hint={path.data?.levelName ?? ""}
-          icon="route"
-          tone="text-lavender bg-lavender/12"
-        />
-        <Stat
-          label="Vốn từ"
-          value={stats.data?.inProgress ?? "—"}
-          hint={
-            stats.data?.learnedTotal
-              ? `${stats.data.learnedTotal} từ đã thuộc lòng`
-              : "Từ bạn đã bắt đầu học"
-          }
-          icon="book"
-          tone="text-good bg-good/10"
-        />
-      </div>
+        <div className={styles.statsGrid}>
+          <Stat
+            label="Chuỗi ngày học"
+            value={streak.data ? `${streak.data.currentStreak}` : "—"}
+            hint={
+              streak.data
+                ? `Kỷ lục ${streak.data.longestStreak} ngày${
+                    streak.data.streakFreezeCount > 0
+                      ? ` · 🧊 ${streak.data.streakFreezeCount} lá chắn`
+                      : ""
+                  }`
+                : ""
+            }
+            icon="flame"
+            tone="text-warn bg-warn/10"
+          />
+          <Stat
+            label="Cần ôn tập"
+            value={stats.data?.dueNow ?? "—"}
+            hint={
+              stats.data?.atRisk
+                ? `${stats.data.atRisk} từ sắp quên trong hôm nay`
+                : "Từ đã đến lịch ôn"
+            }
+            icon="cards"
+            tone="text-primary bg-primary/10"
+          />
+          <Stat
+            label="Bài đã xong"
+            value={
+              path.data
+                ? `${path.data.completedLessons}/${path.data.totalLessons}`
+                : "—"
+            }
+            hint={path.data?.levelName ?? ""}
+            icon="route"
+            tone="text-lavender bg-lavender/12"
+          />
+          <Stat
+            label="Vốn từ"
+            value={stats.data?.inProgress ?? "—"}
+            hint={
+              stats.data?.learnedTotal
+                ? `${stats.data.learnedTotal} từ đã thuộc lòng`
+                : "Từ bạn đã bắt đầu học"
+            }
+            icon="book"
+            tone="text-good bg-good/10"
+          />
+        </div>
       )}
 
       {/* Mời bật thông báo — tự ẩn nếu đã bật/bị từ chối/đã tắt dải này.
@@ -550,7 +568,9 @@ export default function DashboardPage() {
             >
               <div className={styles.practiceTopline}>
                 <span className={styles.practiceNumber}>0{index + 1}</span>
-                <span className={styles.practiceArrow}><Icon name="arrow" size={15} /></span>
+                <span className={styles.practiceArrow}>
+                  <Icon name="arrow" size={15} />
+                </span>
               </div>
               <span
                 aria-hidden="true"
@@ -558,17 +578,11 @@ export default function DashboardPage() {
               >
                 {area.character}
               </span>
-              <span
-                className={`${styles.practiceIcon} ${area.tile}`}
-              >
+              <span className={`${styles.practiceIcon} ${area.tile}`}>
                 <Icon name={area.icon} size={21} />
               </span>
-              <h3 className={styles.practiceTitle}>
-                {area.title}
-              </h3>
-              <p className={styles.practiceDescription}>
-                {area.description}
-              </p>
+              <h3 className={styles.practiceTitle}>{area.title}</h3>
+              <p className={styles.practiceDescription}>{area.description}</p>
               <span className={styles.practiceFooter}>
                 <span className={styles.practiceDot} /> Bắt đầu luyện
               </span>

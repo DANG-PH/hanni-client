@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { Icon, type IconName } from "@/components/icon";
+import { onOpenTour, openTour } from "@/lib/tour";
 
 export interface TourStep {
   icon: IconName;
@@ -43,6 +44,17 @@ export function FeatureTour({
     () => typeof window === "undefined" || seen(tourKey),
   );
   const [index, setIndex] = useState(0);
+
+  // Mở lại khi người dùng bấm nút "Hướng dẫn" ở tiêu đề trang.
+  useEffect(
+    () =>
+      onOpenTour((key) => {
+        if (key !== tourKey) return;
+        setIndex(0);
+        setHidden(false);
+      }),
+    [tourKey],
+  );
 
   if (hidden || steps.length === 0) return null;
 
@@ -103,5 +115,19 @@ export function FeatureTour({
         </div>
       </div>
     </div>
+  );
+}
+
+/** Nút mở lại hướng dẫn của trang — đặt ở `PageHeading`. */
+export function TourButton({ tourKey }: { tourKey: string }) {
+  return (
+    <button
+      type="button"
+      onClick={() => openTour(tourKey)}
+      className="motion-button flex min-h-9 items-center gap-1.5 rounded-xl border border-border bg-surface px-3 text-xs font-medium text-muted hover:border-primary/40 hover:text-primary"
+    >
+      <Icon name="info" size={15} />
+      Hướng dẫn
+    </button>
   );
 }

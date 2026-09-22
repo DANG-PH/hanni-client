@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  FeatureTour,
+  TourButton,
+  type TourStep,
+} from "@/components/feature-tour";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/icon";
 import { NextStep } from "@/components/next-step";
@@ -17,6 +22,27 @@ import {
 } from "@/lib/roleplay";
 import type { RoleplayMessage } from "@/lib/types";
 
+const ROLEPLAY_TOUR_STEPS: TourStep[] = [
+  {
+    icon: "message",
+    title: "AI đóng vai, không dạy ngữ pháp",
+    description:
+      "Chọn một tình huống, AI sẽ giữ đúng vai đó và chỉ nói tiếng Trung — giống nói chuyện thật. Mỗi câu của AI đều có pinyin ngay bên dưới.",
+  },
+  {
+    icon: "spark",
+    title: 'Bí thì bấm "Gợi ý"',
+    description:
+      'Nút gợi ý cạnh ô nhập đưa ra một câu bạn có thể nói tiếp kèm nghĩa tiếng Việt. Bấm "Dùng câu này" để điền vào ô nhập rồi tự sửa trước khi gửi.',
+  },
+  {
+    icon: "info",
+    title: "Muốn hỏi-đáp thì dùng trợ lý",
+    description:
+      "Trang này để luyện phản xạ. Cần giải thích ngữ pháp hay hỏi cách dùng từ thì mở bong bóng trợ lý Hanni ở góc màn hình.",
+  },
+];
+
 export default function RoleplayPage() {
   const { user, loading } = useRequireAuth();
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
@@ -25,13 +51,16 @@ export default function RoleplayPage() {
 
   return (
     <div className="page-wrap space-y-6">
+      <FeatureTour tourKey="roleplay" steps={ROLEPLAY_TOUR_STEPS} />
       <PageHeading
         icon="message"
         tone="accent"
         eyebrow="Luyện phản xạ"
         title="Luyện nói với AI"
         description="Chọn 1 tình huống đời thường, AI đóng vai để bạn luyện phản xạ tiếng Trung — không giải thích ngữ pháp giữa chừng, đúng như hội thoại thật."
-      />
+      >
+        <TourButton tourKey="roleplay" />
+      </PageHeading>
       {activeSessionId ? (
         <ChatView
           sessionId={activeSessionId}
@@ -59,7 +88,9 @@ function ScenarioPicker({ onStart }: { onStart: (sessionId: string) => void }) {
       onStart(res.sessionId);
     } catch (err) {
       setError(
-        err instanceof ApiError ? err.message : "Chưa bắt đầu được, thử lại nhé.",
+        err instanceof ApiError
+          ? err.message
+          : "Chưa bắt đầu được, thử lại nhé.",
       );
     } finally {
       setStartingKey(null);
@@ -81,7 +112,9 @@ function ScenarioPicker({ onStart }: { onStart: (sessionId: string) => void }) {
             </div>
             <div>
               <h2 className="font-semibold">{s.titleVi}</h2>
-              <p className="mt-1 text-xs text-muted">AI đóng vai: {s.persona}</p>
+              <p className="mt-1 text-xs text-muted">
+                AI đóng vai: {s.persona}
+              </p>
             </div>
             <Button
               variant="secondary"
@@ -156,9 +189,10 @@ function ChatView({
   const [error, setError] = useState("");
   const [ending, setEnding] = useState(false);
   const [hinting, setHinting] = useState(false);
-  const [hint, setHint] = useState<{ suggestionZh: string; meaningVi: string } | null>(
-    null,
-  );
+  const [hint, setHint] = useState<{
+    suggestionZh: string;
+    meaningVi: string;
+  } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -240,7 +274,11 @@ function ChatView({
         >
           <Icon name="back" size={16} /> Chọn tình huống khác
         </button>
-        <Button variant="ghost" disabled={ending} onClick={() => void endSession()}>
+        <Button
+          variant="ghost"
+          disabled={ending}
+          onClick={() => void endSession()}
+        >
           <Icon name="trash" size={15} />
           Kết thúc
         </Button>
@@ -278,7 +316,11 @@ function ChatView({
 
       {hint && (
         <div className="mx-4 mb-2 flex items-start gap-3 rounded-xl border border-accent/20 bg-accent/5 px-3.5 py-2.5">
-          <Icon name="spark" size={16} className="mt-0.5 shrink-0 text-accent" />
+          <Icon
+            name="spark"
+            size={16}
+            className="mt-0.5 shrink-0 text-accent"
+          />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">{hint.suggestionZh}</p>
             {hint.meaningVi && (

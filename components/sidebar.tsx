@@ -48,6 +48,18 @@ export const NAV_GROUPS: {
     ],
   },
   {
+    // Rút 16 -> 12 mục (2026-09-22) đã bỏ NHẦM 2 mục này: minigame và bảng
+    // xếp hạng là 2 thứ giữ chân mạnh nhất (chơi + thi đua), bỏ khỏi nav là
+    // gần như không ai tìm ra — `/minigame` chỉ còn link từ `/account`.
+    // Gom thành nhóm riêng thay vì nhét lại vào nhóm học: vẫn gọn, mà không
+    // giấu mất tính năng.
+    title: "CHƠI & THI ĐUA",
+    links: [
+      { href: "/minigame", label: "Minigame & Đấu 1v1", icon: "spark" },
+      { href: "/leaderboard", label: "Bảng xếp hạng", icon: "trophy" },
+    ],
+  },
+  {
     title: "CỦA BẠN",
     links: [
       { href: "/progress", label: "Tiến độ", icon: "chart" },
