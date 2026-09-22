@@ -66,7 +66,7 @@ export function AuthFormCard({
     async (isNewUser: boolean) => {
       manualRedirect.current = true;
       await refresh();
-      if (isNewUser) await saveTrialWords();
+      await saveTrialWords();
       if (mode === "register") {
         router.replace(
           next !== "/dashboard"
@@ -108,6 +108,9 @@ export function AuthFormCard({
       });
       manualRedirect.current = true;
       await refresh();
+      // Người ĐÃ có tài khoản bấm "Lưu N từ này" rồi chọn Đăng nhập thay vì
+      // Đăng ký thì lời hứa đó vẫn phải được giữ.
+      await saveTrialWords();
       router.replace(next);
     } catch (err) {
       setError(
