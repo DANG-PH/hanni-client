@@ -10,6 +10,7 @@
  * 时间". Âm Hán Việt là thứ khiến trang này khác các từ điển Trung-Việt khác.
  */
 import type { Metadata } from "next";
+import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Icon } from "@/components/icon";
@@ -59,14 +60,14 @@ interface LookupResult {
  * gọi API mỗi lượt truy cập (quan trọng khi bot quét hàng nghìn trang). */
 export const revalidate = 86400;
 
-function lookup(slug: string) {
+const lookup = cache(async (slug: string) => {
   // Lỗi TẠM THỜI của API phải ném ra, không được biến thành 404 — xem
   // lib/public-fetch.ts (trang hỏng từng bị cache nguyên 24h kèm HTTP 200).
   return fetchPublic<LookupResult>(
     `/dictionary/${encodeURIComponent(slug)}`,
     revalidate,
   );
-}
+});
 
 export async function generateMetadata({
   params,

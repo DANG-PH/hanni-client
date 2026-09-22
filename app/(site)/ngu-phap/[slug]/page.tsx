@@ -9,6 +9,7 @@
  * Server Component, cùng khuôn với `/tu-dien/[slug]`.
  */
 import type { Metadata } from "next";
+import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Icon } from "@/components/icon";
@@ -34,13 +35,13 @@ interface GrammarPoint {
 
 export const revalidate = 86400;
 
-function fetchPoint(slug: string) {
+const fetchPoint = cache(async (slug: string) => {
   // Lỗi tạm thời ném ra thay vì hoá thành 404 — xem lib/public-fetch.ts.
   return fetchPublic<GrammarPoint>(
     `/grammar/${encodeURIComponent(slug)}`,
     revalidate,
   );
-}
+});
 
 export async function generateMetadata({
   params,

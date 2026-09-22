@@ -25,7 +25,15 @@ export async function fetchPublic<T>(
   path: string,
   revalidate: number,
 ): Promise<T | null> {
-  const res = await fetch(`${API_BASE}${path}`, { next: { revalidate } });
+  const url = `${API_BASE}${path}`;
+  let res = await fetch(url, { next: { revalidate } });
+  // Thử lại ĐÚNG 1 lần bỏ qua cache trước khi kết luận là lỗi: chính Data
+  // Cache có thể đang giữ một phản hồi lỗi cũ từ lúc API chớp tắt (đo thật
+  // trên production: 3 từ kẹt ở trạng thái này trong khi gọi thẳng API vẫn
+  // 200). 404 thì không thử lại — đó là câu trả lời thật, không phải sự cố.
+  if (!res.ok && res.status !== 404) {
+    res = await fetch(url, { cache: "no-store" });
+  }
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`API ${path} trả về ${res.status}`);
   return (await res.json()) as T;
