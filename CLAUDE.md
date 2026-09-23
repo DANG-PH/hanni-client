@@ -138,6 +138,17 @@ tài khoản. `lib/pending-words.ts` ghi tạm id vào `sessionStorage` (cùng c
 `saveTrialWords()` sau khi xác thực xong — cho CẢ đăng ký lẫn ĐĂNG NHẬP, cả email lẫn Google:
 người đã có tài khoản bấm nút đó rồi chọn Đăng nhập thì lời hứa vẫn phải giữ. Chạy
 `Promise.allSettled` và nuốt lỗi từng từ — việc phụ này không được chặn đường vào app.
+**Bỏ qua `/onboarding` bắt buộc nếu vừa lưu được từ học thử (2026-09-23)** — `saveTrialWords()`
+giờ trả về `boolean` (có từ nào được lưu hay không). Đăng ký xong mà VỪA lưu được từ trial thì
+vào thẳng `/dashboard` thay vì bị đẩy qua khảo sát 3 bước — người đó vừa thể hiện ý định học rõ
+ràng nhất có thể (đã chọn học thử, đã bấm "Lưu N từ"), và N từ đó ĐANG đến hạn ôn ngay lúc này
+(`addWordToSrs()` đặt `dueAt = now`). Bắt đi qua 3 màn khảo sát trước khi chạm được vào chính từ
+của mình là thêm ma sát đúng lúc ý định mạnh nhất — nguyên tắc time-to-value. Dashboard hero tự
+nhận ra `dueNow > 0` và đưa "Ôn N từ đến hạn" lên trước (xem mục "Hai nút chính trỏ cùng một
+chỗ" phía dưới); khảo sát KHÔNG mất — vẫn còn banner không chặn "Chưa có lộ trình cá nhân" ngay
+trên dashboard (nhánh `onboarding.data === null`) cho ai muốn làm sau. Đăng ký KHÔNG qua trial
+(vd từ CTA "Bắt đầu ngay" ở trang chủ) vẫn đi qua `/onboarding` như cũ — chỉ bỏ bước này cho
+đúng 1 trường hợp đã có bằng chứng ý định mạnh.
 
 **Lưới "Rèn từng kỹ năng" ở dashboard thiếu 2 mảng (sửa 2026-09-22)****Lưới "Rèn từng kỹ năng" ở dashboard thiếu 2 mảng (sửa 2026-09-22)** — `PRACTICE_AREAS` chỉ có
 từ vựng / ngữ pháp / nghe / phát âm, trong khi `/roleplay` (luyện nói với AI — đo production chỉ

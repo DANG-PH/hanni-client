@@ -66,12 +66,12 @@ export function AuthFormCard({
     async (isNewUser: boolean) => {
       manualRedirect.current = true;
       await refresh();
-      await saveTrialWords();
+      const savedTrial = await saveTrialWords();
       if (mode === "register") {
         router.replace(
           next !== "/dashboard"
             ? next
-            : isNewUser
+            : isNewUser && !savedTrial
               ? "/onboarding"
               : "/dashboard",
         );
@@ -89,11 +89,15 @@ export function AuthFormCard({
    * nuốt lỗi từng từ: không được để việc phụ này chặn đường vào app ngay
    * sau khi người ta vừa quyết định đăng ký. `addWordToSrs` vốn idempotent
    * nên gọi trùng cũng vô hại.
+   *
+   * Trả về CÓ từ nào được lưu hay không — dùng để quyết định có bắt đi qua
+   * `/onboarding` nữa không (xem `onRegisterSubmit`).
    */
-  async function saveTrialWords() {
+  async function saveTrialWords(): Promise<boolean> {
     const ids = drainPendingWords();
-    if (ids.length === 0) return;
+    if (ids.length === 0) return false;
     await Promise.allSettled(ids.map((id) => addWordToSrs(id)));
+    return true;
   }
 
   async function onLoginSubmit(event: React.FormEvent) {
@@ -140,8 +144,18 @@ export function AuthFormCard({
       });
       manualRedirect.current = true;
       await refresh();
-      await saveTrialWords();
-      router.replace(next !== "/dashboard" ? next : "/onboarding");
+      const savedTrial = await saveTrialWords();
+      // Vừa học 8 từ ở /hoc-thu rồi bấm "Lưu N từ này vào tài khoản" là đã
+      // thể hiện rõ ý định học — mấy từ đó ĐANG đến hạn ôn ngay lúc này.
+      // Bắt đi qua khảo sát 3 bước nữa trước khi chạm được vào chính từ của
+      // mình là thêm ma sát không cần thiết ngay khoảnh khắc ý định mạnh
+      // nhất. Vào thẳng dashboard — hero ở đó tự nhận ra có từ đến hạn và
+      // đưa nút "Ôn N từ đến hạn" lên trước (xem GOAL_PERSONA/dueNow bên
+      // dưới). Khảo sát vẫn còn nguyên, chỉ đổi từ BẮT BUỘC thành banner
+      // gợi ý trên dashboard (nhánh `onboarding.data === null`).
+      router.replace(
+        next !== "/dashboard" ? next : savedTrial ? "/dashboard" : "/onboarding",
+      );
     } catch (err) {
       setError(
         err instanceof ApiError
