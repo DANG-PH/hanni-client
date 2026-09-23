@@ -8,6 +8,7 @@ import { useStreak } from "@/lib/hooks";
 import { Brand, NAV_GROUPS, Sidebar } from "./sidebar";
 import { AssistantWidget } from "./assistant-widget";
 import { NotificationBell } from "./notification-bell";
+import { StreakCelebration } from "./streak-celebration";
 import { ThemeToggle } from "./theme-toggle";
 import { Icon } from "./icon";
 import { Avatar } from "./avatar";
@@ -144,6 +145,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </footer>
       </div>
       {user && <AssistantWidget />}
+      {user && <StreakCelebration />}
     </div>
   );
 }

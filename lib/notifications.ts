@@ -5,7 +5,12 @@ import { io, type Socket } from "socket.io-client";
 import useSWR, { mutate } from "swr";
 import { api, apiFetch, SERVER_ORIGIN } from "./api";
 import { useAuth } from "./auth";
+import { announceStreakMilestone } from "./streak-celebration";
 import type { AppNotification, NotificationsPage } from "./types";
+
+/** Mã huy hiệu chuỗi ngày có dạng "STREAK_7" — tách số ra để biết đúng cột
+ * mốc vừa cán, dùng chung với `MILESTONE_COPY` ở `streak-celebration.tsx`. */
+const STREAK_CODE = /^STREAK_(\d+)$/;
 
 const fetcher = <T>(path: string) => apiFetch<T>(path);
 
@@ -54,6 +59,12 @@ export function useNotificationSocket() {
         total: current.total + 1,
         unreadCount: current.unreadCount + 1,
       }));
+      // Mở khoá huy hiệu CHUỖI NGÀY là cột mốc hiếm (chỉ 5 lần trong đời 1
+      // tài khoản: 1/3/7/30/100) — xứng đáng một màn ăn mừng riêng thay vì
+      // chìm trong danh sách thông báo chung. Xem lib/streak-celebration.ts.
+      const code = notification.achievement?.code;
+      const match = code ? STREAK_CODE.exec(code) : null;
+      if (match) announceStreakMilestone(Number(match[1]));
     }
     s.on("notification:new", onNew);
     return () => {

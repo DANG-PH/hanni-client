@@ -225,6 +225,27 @@ khỏi mảng `items` chứ không nhảy qua — mẫu số thống kê cuối 
 không thấy được quan hệ giữa chúng. Số dư xu hiện ngay đầu thẻ thay vì phải cuộn lên. **Chỉ gộp
 ở tầng hiển thị** — `ShopService`/`TitleService` phía server vẫn tách riêng có chủ đích.
 
+**Cột mốc chuỗi ngày học — màn ăn mừng riêng (2026-09-23)** — research đối chiếu Duolingo: họ đo
+được riêng việc tách MÀN HÌNH ĂN MỪNG cho đúng những cột mốc hiếm (không lặp lại mỗi buổi ôn)
+dịch chuyển được tỉ lệ quay lại đúng ngày 7 — vì "user thấy animation 2 lần thì tới lần 3 nó chỉ
+còn là hình nền" (nguồn: đội thiết kế Duolingo, xem phần trả lời cho user). Ngày 7 đặc biệt quan
+trọng: nghiên cứu bên ngoài ghi nhận đây là ngưỡng mà khả năng quay lại tăng rõ rệt so với trước
+đó — Hanni ĐÃ có sẵn 5 mốc `STREAK_1/3/7/30/100` trong achievement-catalog nhưng trước đây mở
+khoá chỉ thêm 1 dòng vào chuông thông báo, chìm lẫn với thông báo bình luận/theo dõi.
+`components/streak-celebration.tsx` — modal toàn màn hình, hiện ĐÚNG 1 lần mỗi mốc (ăn theo tính
+idempotent có sẵn của `AchievementsService.unlock()` — không cần dựng cơ chế chống lặp riêng).
+Kích hoạt qua `lib/streak-celebration.ts` (pub/sub module-level, cùng khuôn `lib/tour.ts`):
+`lib/notifications.ts`'s `onNew()` (đã nhận MỌI thông báo qua socket có sẵn) lọc riêng
+`type === "ACHIEVEMENT_UNLOCKED"` có `achievement.code` khớp `/^STREAK_(\d+)$/` rồi phát tín
+hiệu — KHÔNG mở kết nối socket riêng. Mount 1 lần ở `app-shell.tsx` (như `NotificationBell`) để
+bắt được sự kiện dù đang ở trang nào, vì mở khoá streak có thể xảy ra ở `/study` lẫn nơi khác
+(vd học từ mới qua bản chép video). Verify TRỰC TIẾP trên production trước khi push: tạo tài
+khoản thật, ôn 1 từ, gọi `GET /notifications` xác nhận đúng hình dạng
+`{type: "ACHIEVEMENT_UNLOCKED", achievement: {code: "STREAK_1"}}` mà client đang lọc theo —
+không đoán cấu trúc payload. Dòng "Chuỗi N ngày" cuối mỗi buổi ôn ở `/study` GIỮ NGUYÊN (đó là
+trạng thái + nhắc loss-aversion cho NGÀY THƯỜNG, khác mục đích với màn ăn mừng chỉ dành cho
+NGÀY HIẾM — Duolingo cũng làm song song cả 2 kiểu này, không thay thế nhau).
+
 **Rà trang cụt**: script rà phải bắt cả `href="/x"`, `href: "/x"` (trong mảng `actions` của
 NextStep), `push("/x")`, VÀ cả component import tương đối (`./trial-deck`) lẫn tuyệt đối
 (`@/components/...`). Bỏ sót bất kỳ dạng nào là báo nhầm trang đã có link thành cụt — đã mắc
