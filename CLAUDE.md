@@ -13,24 +13,21 @@ Giao diện web cho **Hanni** (học tiếng Trung theo HSK 3.0). Gọi `hanni-s
 ```
 app/
 ├── layout.tsx           AuthProvider + Nav + footer
-├── page.tsx             landing (redirect /dashboard nếu đã đăng nhập)
+├── page.tsx             landing — hero "Bạn đã biết tiếng Trung nhiều hơn bạn nghĩ", nút chính
+│                        "Học bài đầu tiên" → /bat-dau (khách học trước, đăng ký sau)
 ├── login, register, forgot-password, reset-password
-├── onboarding           khảo sát 3 bước → đề xuất cấp HSK + lộ trình — làm được TRƯỚC khi có
-│                        tài khoản (kiểu Duolingo, xem "Điểm quan trọng" dưới), nằm ngoài cả
-│                        (site) lẫn (app) vì cần khung tối giản dùng chung 2 trạng thái
+├── onboarding           khảo sát 3 bước → đề xuất cấp HSK (server ghi luôn `courseLevel`) — làm
+│                        được TRƯỚC khi có tài khoản; khách xong khảo sát được mời học bài 1 ngay
+├── bat-dau              "Học bài đầu tiên": khách → bài 1 của cấp (`GET /learn/start`); đã đăng
+│                        nhập → lưu cấp rồi về /learn
+├── bai-hoc/[lessonId]   PHIÊN HỌC 1 BÀI — lõi học từ mới (khung tập trung, không sidebar, dùng
+│                        chung khách/đã đăng nhập), xem "Lộ trình một nút bấm" ở Trạng thái
 ├── auth/callback        nhận redirect sau Google OAuth
 ├── auth/verify-email
-├── dashboard            streak, mục tiêu ngày, tiến độ theo cấp — hero + thứ tự mảng luyện
-│                        tập đổi theo `OnboardingProfile.goal` (GOAL_PERSONA), xem "Trạng thái".
-│                        CTA "Tiếp tục/Bắt đầu bài học" (2 chỗ: HeroBanner + thẻ "Tiếp tục học")
-│                        từ 2026-09-18 trỏ vào `/learn/[lessonId]` (trang chi tiết, có ngữ pháp
-│                        liên quan + nút luyện nghe/phát âm riêng bài) khi bài CHƯA bắt đầu
-│                        (`startedWords === 0`), chỉ trỏ thẳng `/study?lesson=` (flashcard) khi
-│                        ĐÃ học dở — trước đó CẢ 2 trường hợp đều nhảy thẳng flashcard, khiến
-│                        các tính năng mới ở trang chi tiết bài học hoàn toàn không ai thấy được
-│                        (user chỉ vào được trang đó nếu tự bấm từ danh sách bài học, không phải
-│                        qua luồng "tiếp tục học" chính)
-├── study               buổi ôn flashcard (SM-2) + quiz cuối buổi
+├── (app)/learn          TRANG CHỦ sau đăng nhập (dashboard đã gộp vào, /dashboard → 308)
+├── (app)/kham-pha       gom mọi công cụ luyện thêm (nghe, phát âm, viết, nói AI, video, trò
+│                        chơi, từ điển, ngữ pháp) — danh mục ở `lib/explore.ts`
+├── study               ÔN TẬP: chỉ từ đã học đến hạn (không còn lấy từ mới) + quiz cuối buổi
 ├── progress            bucket đã thuộc / đang học / sắp quên theo cấp; có lịch hoạt động 30
 │                        ngày (`components/activity-calendar.tsx`, dùng GET /streak/history) +
 │                        lịch sử quiz gần đây (GET /quiz/recent)
@@ -318,6 +315,35 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 ```
 
 ## Trạng thái hiện tại
+
+### Lộ trình một nút bấm (tái cấu trúc 2026-10-05 — đọc mục này TRƯỚC)
+User báo: flashcard "tự nhảy vào HSK4 khi muốn học HSK1, không theo chủ đề", web "nhiều chức
+năng nhưng rời rạc", và giao toàn quyền định hướng lại sản phẩm. Research (Duolingo làm lại màn
+chính 2022 vì người học không biết dùng app "đúng"; HelloChinese/SuperChinese dạy theo chủ đề,
+bài 5-10 phút; Migii/Hanzii — đối thủ Việt — thu tiền chủ yếu từ luyện thi) → chọn mô hình:
+**một lộ trình, một nút "Học tiếp"; mọi thứ khác xoay quanh nó.** Những gì ghi về "dashboard" ở
+các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/learn`.
+- **Học từ mới = phiên học `/bai-hoc/[id]`** (`components/lesson-session/`), không còn là lật
+  flashcard SRS với từ chưa từng thấy. Server dựng sẵn kế hoạch (`GET /learn/lessons/:id/
+  session`): giới thiệu nhóm 4 từ → luyện ngay nhóm đó (nghĩa / nghe / Hán tự) → ghép cặp → ôn
+  trộn + điền từ vào câu ví dụ. Câu sai quay lại cuối bài (tối đa 2 lần/từ). Thẻ giới thiệu có
+  pinyin tô màu thanh, âm Hán Việt + **mẹo thanh điệu** ("học → thanh 2 ✓", quy luật dấu tiếng
+  Việt → thanh tiếng Trung, đúng ~87%). Học xong → `POST /complete` đưa từ vào SRS, màn hoàn
+  thành có bài tiếp theo + nút chia sẻ. SWR của trang này TẮT revalidate — server trộn câu hỏi
+  ngẫu nhiên mỗi lần gọi, tải lại giữa chừng là đổi đề.
+- **Khách học được ngay**: kết quả giữ ở `lib/pending-lessons.ts` (sessionStorage), đăng
+  ký/đăng nhập xong `auth-form-card.tsx` nạp lên (cùng khảo sát + từ học thử còn chờ) rồi vào
+  thẳng `/learn`. Chỉ người đăng ký "tay trắng" mới qua `/onboarding`.
+- **`/learn` là trang chủ** (`components/learn/`): thẻ "Học tiếp", lộ trình gom theo CHỦ ĐỀ
+  (bài "X (1/2)", "X (2/2)" liền nhau thành 1 cụm), cột phải = chuỗi ngày + mục tiêu + từ cần
+  ôn, nhiệm vụ ngày, giải đấu tuần. Đổi cấp lưu ở server (`courseLevel`) — mọi trang theo cùng
+  một cấp. `/learn?level=N` (thẻ cấp ở trang chủ) = chọn cấp đó.
+- **Ôn tập `/study` chỉ ôn từ đã học** — server không còn trả từ mới khi không có bài/cấp (gốc
+  của lỗi HSK4). Màn trống nói rõ + nút học bài tiếp theo.
+- **Menu 16 → 8 mục**: Học, Ôn tập (có số từ đến hạn), Luyện thi HSK · Khám phá, Xếp hạng · Tiến
+  độ, Tin nhắn, Tài khoản. "So với bạn bè" chuyển sang `/leaderboard`; từ vựng hôm nay + kệ video
+  sang `/kham-pha`. Mặc định sau đăng nhập: `HOME_PATH` (`lib/auth-redirect.ts`).
+
 Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard (lật 3D, chạm cả thẻ — mặt
 sau hiện thêm badge **"Hán Việt: ..."** nếu `word.hanViet` có dữ liệu, xem `hanni-server/
 CLAUDE.md` mục Âm Hán Việt cho lý do đây là điểm khác biệt cốt lõi của Hanni) + quiz,
