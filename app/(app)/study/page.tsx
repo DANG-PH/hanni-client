@@ -214,11 +214,11 @@ function StudyInner({
     <div className={styles.page}>
       <div className={styles.navigation}>
         <LinkButton
-          href={leechMode ? "/progress" : lessonId ? "/learn" : "/dashboard"}
+          href={leechMode ? "/progress" : "/learn"}
           variant="ghost"
         >
           <Icon name="back" size={17} />
-          {leechMode ? "Tiến độ" : lessonId ? "Lộ trình" : "Tổng quan"}
+          {leechMode ? "Tiến độ" : "Lộ trình"}
         </LinkButton>
         <span className={styles.location}>
           <Icon name={lessonId ? "route" : "cards"} size={18} />
@@ -436,19 +436,19 @@ function StudyInner({
             <Icon name={items.length ? "check" : "cards"} size={32} />
           </span>
           <p className={styles.eyebrow}>
-            {items.length ? "Thêm một bước tiến" : "Sẵn sàng cho điều mới"}
+            {items.length ? "Thêm một bước tiến" : "Ôn tập xong cho bây giờ"}
           </p>
           <h1 id="review-result-title">
             {items.length
               ? lessonId
                 ? "Xong bài!"
                 : "Bạn đã hoàn thành buổi ôn!"
-              : "Chưa có thẻ để học"}
+              : "Không có từ nào cần ôn lúc này"}
           </h1>
           <p className={styles.finishDescription}>
             {items.length > 0
               ? `Bạn nhớ được ${correct}/${items.length} thẻ. Mỗi lần ôn là một lần nhớ lâu hơn.`
-              : "Hiện chưa có thẻ. Bạn có thể mở bài khác trong lộ trình hoặc quay lại sau."}
+              : "Từ bạn đã học sẽ tự quay lại đây đúng lúc sắp quên. Trong lúc chờ, học thêm một bài mới nhé."}
           </p>
           {items.length > 0 && !!streak.data?.currentStreak && (
             <p className={styles.streakNote}>
@@ -487,25 +487,26 @@ function StudyInner({
             )}
             {nextLesson && (
               <LinkButton
-                href={`/study?lesson=${nextLesson.id}`}
+                href={`/bai-hoc/${nextLesson.id}`}
                 variant="secondary"
                 className="w-full"
               >
                 {nextLesson.title} <Icon name="arrow" size={16} />
               </LinkButton>
             )}
+            {items.length === 0 && !lessonId && (
+              <LinkButton href={current.data ? `/bai-hoc/${current.data.id}` : "/learn"}>
+                {current.data ? `Học bài tiếp theo: ${current.data.title}` : "Về lộ trình"}
+                <Icon name="arrow" size={16} />
+              </LinkButton>
+            )}
             <LinkButton
-              href={lessonId ? "/learn" : "/dashboard"}
+              href="/learn"
               variant="ghost"
               className="w-full"
             >
-              {lessonId ? "Về lộ trình" : "Về tổng quan"}
+              Về lộ trình
             </LinkButton>
-            {items.length === 0 && !lessonId && (
-              <LinkButton href="/learn">
-                Khám phá lộ trình <Icon name="arrow" size={16} />
-              </LinkButton>
-            )}
           </div>
         </section>
       )}
@@ -541,17 +542,17 @@ function StudyInner({
           <div className={styles.finishActions}>
             {nextLesson ? (
               <LinkButton
-                href={`/study?lesson=${nextLesson.id}`}
+                href={`/bai-hoc/${nextLesson.id}`}
                 className="w-full"
               >
                 {nextLesson.title} <Icon name="arrow" size={16} />
               </LinkButton>
             ) : (
               <LinkButton
-                href={lessonId ? "/learn" : "/dashboard"}
+                href="/learn"
                 className="w-full"
               >
-                {lessonId ? "Về lộ trình" : "Về tổng quan"}
+                Về lộ trình
               </LinkButton>
             )}
           </div>

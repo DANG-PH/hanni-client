@@ -121,7 +121,7 @@ export function InstallCard() {
               <Icon name="check" size={18} />
               Hanni đã được cài trên thiết bị này.
             </p>
-            <LinkButton href="/dashboard">
+            <LinkButton href="/learn">
               <Icon name="home" size={17} />
               Mở ứng dụng
             </LinkButton>

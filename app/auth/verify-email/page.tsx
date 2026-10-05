@@ -27,7 +27,7 @@ function VerifyInner() {
       {state === "ok" && (
         <p>
           Đã xác minh email.{" "}
-          <Link href="/dashboard" className="text-primary hover:underline">
+          <Link href="/learn" className="text-primary hover:underline">
             Vào học
           </Link>
         </p>

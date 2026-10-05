@@ -357,7 +357,7 @@ export default function Home() {
           <SectionHeading
             icon="target"
             title="Hôm nay, bạn muốn luyện gì?"
-            href="/dashboard"
+            href="/learn"
             label="Góc học tập"
           />
           <div className="reveal-group mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

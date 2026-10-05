@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
+import { EXPLORE_ITEMS } from "@/lib/explore";
 import { useStreak } from "@/lib/hooks";
 import { Brand, NAV_GROUPS, Sidebar } from "./sidebar";
 import { AssistantWidget } from "./assistant-widget";
@@ -21,7 +22,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const drawer = useRef<HTMLDialogElement>(null);
   const pageLabel =
-    NAV_GROUPS.flatMap((group) => group.links).find(
+    [...NAV_GROUPS.flatMap((group) => group.links), ...EXPLORE_ITEMS].find(
       (link) => pathname === link.href || pathname.startsWith(link.href + "/"),
     )?.label ?? "Góc học tập";
   const close = () => drawer.current?.close();
@@ -88,7 +89,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div
             className={`hidden items-center gap-2 text-xs sm:flex ${styles.breadcrumb}`}
           >
-            <Link href="/dashboard" className="text-muted hover:text-primary">
+            <Link href="/learn" className="text-muted hover:text-primary">
               Góc học tập
             </Link>
             <Icon name="chevron" size={12} className="text-muted" />

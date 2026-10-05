@@ -8,7 +8,7 @@ import { Icon } from "@/components/icon";
 import { GoogleButton } from "@/components/google-button";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import { safeNextPath } from "@/lib/auth-redirect";
+import { HOME_PATH, safeNextPath } from "@/lib/auth-redirect";
 import { addWordToSrs } from "@/lib/hooks";
 import { drainPendingLessons } from "@/lib/pending-lessons";
 import { drainPendingWords } from "@/lib/pending-words";
@@ -94,19 +94,15 @@ export function AuthFormCard({
       manualRedirect.current = true;
       await refresh();
       const saved = await saveGuestProgress();
-      if (mode === "register") {
-        router.replace(
-          next !== "/dashboard"
-            ? next
-            : saved.lessons > 0
-              ? "/learn"
-              : isNewUser && !saved.words
-                ? "/onboarding"
-                : "/dashboard",
-        );
-      } else {
-        router.replace(saved.lessons > 0 && next === "/dashboard" ? "/learn" : next);
-      }
+      router.replace(
+        mode === "register" &&
+          next === HOME_PATH &&
+          isNewUser &&
+          !saved.lessons &&
+          !saved.words
+          ? "/onboarding"
+          : next,
+      );
     },
     [refresh, router, next, mode],
   );
@@ -125,8 +121,8 @@ export function AuthFormCard({
       await refresh();
       // Người ĐÃ có tài khoản bấm "Lưu N từ này" rồi chọn Đăng nhập thay vì
       // Đăng ký thì lời hứa đó vẫn phải được giữ.
-      const saved = await saveGuestProgress();
-      router.replace(saved.lessons > 0 && next === "/dashboard" ? "/learn" : next);
+      await saveGuestProgress();
+      router.replace(next);
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -156,22 +152,15 @@ export function AuthFormCard({
       manualRedirect.current = true;
       await refresh();
       const saved = await saveGuestProgress();
-      // Vừa học 8 từ ở /hoc-thu rồi bấm "Lưu N từ này vào tài khoản" là đã
-      // thể hiện rõ ý định học — mấy từ đó ĐANG đến hạn ôn ngay lúc này.
-      // Bắt đi qua khảo sát 3 bước nữa trước khi chạm được vào chính từ của
-      // mình là thêm ma sát không cần thiết ngay khoảnh khắc ý định mạnh
-      // nhất. Vào thẳng dashboard — hero ở đó tự nhận ra có từ đến hạn và
-      // đưa nút "Ôn N từ đến hạn" lên trước (xem GOAL_PERSONA/dueNow bên
-      // dưới). Khảo sát vẫn còn nguyên, chỉ đổi từ BẮT BUỘC thành banner
-      // gợi ý trên dashboard (nhánh `onboarding.data === null`).
+      // Đã học thử (bài học hoặc 8 từ ở /hoc-thu) là đã thể hiện rõ ý định
+      // học — bắt đi qua khảo sát 3 bước nữa trước khi chạm được vào chính
+      // tiến độ của mình là thêm ma sát đúng khoảnh khắc ý định mạnh nhất.
+      // Vào thẳng lộ trình; chỉ người đăng ký "tay trắng" mới qua khảo sát
+      // (để chọn cấp HSK, không thì lộ trình mặc định HSK1).
       router.replace(
-        next !== "/dashboard"
-          ? next
-          : saved.lessons > 0
-            ? "/learn"
-            : saved.words
-              ? "/dashboard"
-              : "/onboarding",
+        next === HOME_PATH && !saved.lessons && !saved.words
+          ? "/onboarding"
+          : next,
       );
     } catch (err) {
       setError(

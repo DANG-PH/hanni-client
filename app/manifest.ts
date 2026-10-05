@@ -15,7 +15,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description:
       "Học tiếng Trung theo lộ trình HSK, ôn từ vựng và theo dõi tiến độ của bạn.",
     lang: "vi",
-    start_url: "/dashboard",
+    start_url: "/learn",
     scope: "/",
     display: "standalone",
     background_color: "#f7f8fa",

@@ -6,6 +6,7 @@ import {
   type TourStep,
 } from "@/components/feature-tour";
 import { useRef, useState, type KeyboardEvent } from "react";
+import { FriendsLeaderboard } from "@/components/friends-leaderboard";
 import { Icon } from "@/components/icon";
 import {
   LEADERBOARD_METRICS,
@@ -102,6 +103,8 @@ export default function LeaderboardPage() {
         </span>
         <TourButton tourKey="leaderboard" />
       </PageHeading>
+
+      <FriendsLeaderboard />
 
       <div className="space-y-3">
         <div

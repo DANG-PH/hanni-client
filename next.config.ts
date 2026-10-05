@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
       // `/grammar` gộp vào `/ngu-phap` cùng lý do: 2 trang cùng dữ liệu,
       // chỉ khác chỗ một cái cần đăng nhập nên Google không đọc được.
       { source: "/grammar", destination: "/ngu-phap", permanent: true },
+      // Dashboard gộp vào lộ trình (2026-10-05): trang chủ sau đăng nhập chỉ
+      // còn MỘT nơi — lộ trình + chuỗi ngày/ôn tập/nhiệm vụ/giải đấu ở cạnh.
+      // Giữ redirect vì link /dashboard còn nằm trong email, thông báo đẩy,
+      // PWA đã cài và trợ lý AI.
+      { source: "/dashboard", destination: "/learn", permanent: true },
     ];
   },
 

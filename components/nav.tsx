@@ -57,7 +57,7 @@ export function Nav() {
             />
           ) : user ? (
             <Link
-              href="/dashboard"
+              href="/learn"
               className="motion-button flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-xs font-semibold text-primary-fg"
             >
               Vào học

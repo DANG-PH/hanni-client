@@ -206,7 +206,7 @@ function OnboardingShell({
             <span className={styles.topbarContext}>Thiết lập lộ trình</span>
           </Link>
           {authenticated ? (
-            <Link href="/dashboard" className={styles.topbarLink}>
+            <Link href="/learn" className={styles.topbarLink}>
               Bỏ qua, làm sau <Icon name="arrow" size={15} />
             </Link>
           ) : (
@@ -691,15 +691,13 @@ function ResultScreen({
           ) : (
             <>
               <Button
-                onClick={() =>
-                  router.push(`/learn?level=${profile.recommendedLevel}`)
-                }
+                onClick={() => router.push("/learn")}
               >
                 Bắt đầu học HSK {profile.recommendedLevel}
                 <Icon name="arrow" size={16} />
               </Button>
               <Link
-                href="/dashboard"
+                href="/learn"
                 className="motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-surface-2"
               >
                 Vào trang chủ

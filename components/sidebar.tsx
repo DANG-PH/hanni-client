@@ -5,58 +5,32 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
+import { useStudyStats } from "@/lib/hooks";
 import { useMessagesSocket, useUnreadMessageCount } from "@/lib/messages";
 import { Icon, type IconName } from "./icon";
 
-/** Điều hướng xếp theo CHU TRÌNH HỌC (học bài mới → ôn lại → luyện kỹ năng),
- * không phải theo loại tính năng. Rút từ 16 mục xuống 12 (2026-09-22) vì
- * người mới mở app ra thấy 16 lựa chọn thì không biết bấm gì trước:
- * - `/vocabulary` BỎ HẲN — đã gộp vào `/tu-dien` (trước đó 2 trang hiển thị
- *   cùng dữ liệu, chỉ khác chỗ một cái cần đăng nhập).
- * - Huy hiệu + Bảng xếp hạng bỏ khỏi nav, vào từ trong `/progress` — cả 3 đều
- *   trả lời cùng 1 câu hỏi "mình đang ở đâu", tách 3 mục là thừa.
- * - Cài đặt vào từ trong `/account` (cùng là thiết lập cá nhân).
- * Các trang đó vẫn tồn tại và có link trỏ tới, chỉ không chiếm chỗ ở nav. */
+/** Điều hướng theo mô hình "một lộ trình" (2026-10-05): HỌC (bài mới) → ÔN
+ * (từ đã học, đúng lúc sắp quên) → LUYỆN THI. Mọi công cụ luyện thêm (nghe,
+ * phát âm, viết, nói AI, video, trò chơi, từ điển, ngữ pháp) gom vào 1 trang
+ * Khám phá — 16 mục trước đây khiến người mới không biết bắt đầu từ đâu,
+ * user báo "rất nhiều chức năng nhưng rời rạc". Dashboard gộp vào /learn. */
 export const NAV_GROUPS: {
   title: string;
   links: { href: string; label: string; icon: IconName }[];
 }[] = [
   {
-    title: "HỌC MỖI NGÀY",
+    title: "HỌC",
     links: [
-      { href: "/dashboard", label: "Tổng quan", icon: "home" },
-      { href: "/learn", label: "Lộ trình HSK", icon: "route" },
-      { href: "/study", label: "Ôn tập flashcard", icon: "cards" },
-      { href: "/watch", label: "Học qua video", icon: "play" },
+      { href: "/learn", label: "Học", icon: "route" },
+      { href: "/study", label: "Ôn tập", icon: "cards" },
+      { href: "/exams", label: "Luyện thi HSK", icon: "target" },
     ],
   },
   {
-    title: "TRA CỨU",
+    title: "THÊM",
     links: [
-      { href: "/tu-dien", label: "Từ điển", icon: "book" },
-      { href: "/ngu-phap", label: "Ngữ pháp & mẫu câu", icon: "cards" },
-    ],
-  },
-  {
-    title: "LUYỆN KỸ NĂNG",
-    links: [
-      { href: "/listening", label: "Luyện nghe", icon: "headphones" },
-      { href: "/pronunciation", label: "Luyện phát âm", icon: "mic" },
-      { href: "/writing", label: "Luyện viết Hán tự", icon: "pencil" },
-      { href: "/roleplay", label: "Luyện nói với AI", icon: "message" },
-      { href: "/exams", label: "Kiểm tra HSK", icon: "target" },
-    ],
-  },
-  {
-    // Rút 16 -> 12 mục (2026-09-22) đã bỏ NHẦM 2 mục này: minigame và bảng
-    // xếp hạng là 2 thứ giữ chân mạnh nhất (chơi + thi đua), bỏ khỏi nav là
-    // gần như không ai tìm ra — `/minigame` chỉ còn link từ `/account`.
-    // Gom thành nhóm riêng thay vì nhét lại vào nhóm học: vẫn gọn, mà không
-    // giấu mất tính năng.
-    title: "CHƠI & THI ĐUA",
-    links: [
-      { href: "/minigame", label: "Minigame & Đấu 1v1", icon: "spark" },
-      { href: "/leaderboard", label: "Bảng xếp hạng", icon: "trophy" },
+      { href: "/kham-pha", label: "Khám phá", icon: "spark" },
+      { href: "/leaderboard", label: "Xếp hạng", icon: "trophy" },
     ],
   },
   {
@@ -99,6 +73,8 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { logout } = useAuth();
   const [busy, setBusy] = useState(false);
   const { data: unread } = useUnreadMessageCount();
+  const { data: stats } = useStudyStats();
+  const due = stats?.dueNow ?? 0;
   // Sidebar nằm trong app-shell nên luôn mount ở mọi trang — nghe socket ở
   // đây để badge chưa đọc cập nhật realtime dù đang không mở /messages
   // (trang /messages tự nghe thêm 1 lần nữa cho đúng hội thoại đang xem,
@@ -144,6 +120,14 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                         {unread.count > 9 ? "9+" : unread.count}
                       </span>
                     )}
+                  {link.href === "/study" && due > 0 && (
+                    <span
+                      title={`${due} từ cần ôn`}
+                      className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/12 px-1.5 text-[10px] font-bold text-primary"
+                    >
+                      {due > 99 ? "99+" : due}
+                    </span>
+                  )}
                 </Link>
               ))}
             </div>
