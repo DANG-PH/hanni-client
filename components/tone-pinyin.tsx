@@ -3,7 +3,7 @@
  * thật thì bấm được để xem nghĩa + lưu vào SRS, đoạn không khớp giữ nguyên. */
 import type { LineToken } from "@/lib/types";
 
-const TONE_CLASS: Record<string, string> = {
+export const TONE_CLASS: Record<string, string> = {
   "1": "text-[#c23b32]",
   "2": "text-[#2f8f4f]",
   "3": "text-[#2f6fd0]",

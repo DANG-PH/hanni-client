@@ -136,7 +136,7 @@ function LearnContent({ initialLevel }: { initialLevel?: number }) {
               </div>
             </div>
             <LinkButton
-              href={currentLesson ? `/learn/${currentLesson.id}` : "/study"}
+              href={currentLesson ? `/bai-hoc/${currentLesson.id}` : "/study"}
               className={styles.nextAction}
             >
               {currentLesson

@@ -10,7 +10,34 @@ import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { safeNextPath } from "@/lib/auth-redirect";
 import { addWordToSrs } from "@/lib/hooks";
+import { drainPendingLessons } from "@/lib/pending-lessons";
 import { drainPendingWords } from "@/lib/pending-words";
+
+/** Đưa các từ vừa học ở `/hoc-thu` vào hàng đợi ôn của tài khoản mới.
+ *
+ * Màn kết học thử có nút "Lưu N từ này vào tài khoản" — trước 2026-09-22
+ * đăng ký xong CHẲNG có gì được lưu, N từ đó biến mất. Chạy song song và
+ * nuốt lỗi từng từ: không được để việc phụ này chặn đường vào app ngay
+ * sau khi người ta vừa quyết định đăng ký. `addWordToSrs` vốn idempotent
+ * nên gọi trùng cũng vô hại.
+ */
+async function saveTrialWords(): Promise<boolean> {
+  const ids = drainPendingWords();
+  if (ids.length === 0) return false;
+  await Promise.allSettled(ids.map((id) => addWordToSrs(id)));
+  return true;
+}
+
+/** Từ học thử + các BÀI HỌC đã làm lúc chưa có tài khoản (`/bai-hoc`). Có
+ * bài nào thì vào thẳng lộ trình — đã học xong bài 1 rồi mà còn bắt làm
+ * khảo sát là đẩy ngược người ta ra khỏi đà đang học. */
+async function saveGuestProgress() {
+  const [words, lessons] = await Promise.all([
+    saveTrialWords(),
+    drainPendingLessons(),
+  ]);
+  return { words, lessons };
+}
 
 export function AuthFormCard({
   initialMode,
@@ -66,39 +93,23 @@ export function AuthFormCard({
     async (isNewUser: boolean) => {
       manualRedirect.current = true;
       await refresh();
-      const savedTrial = await saveTrialWords();
+      const saved = await saveGuestProgress();
       if (mode === "register") {
         router.replace(
           next !== "/dashboard"
             ? next
-            : isNewUser && !savedTrial
-              ? "/onboarding"
-              : "/dashboard",
+            : saved.lessons > 0
+              ? "/learn"
+              : isNewUser && !saved.words
+                ? "/onboarding"
+                : "/dashboard",
         );
       } else {
-        router.replace(next);
+        router.replace(saved.lessons > 0 && next === "/dashboard" ? "/learn" : next);
       }
     },
     [refresh, router, next, mode],
   );
-
-  /** Đưa các từ vừa học ở `/hoc-thu` vào hàng đợi ôn của tài khoản mới.
-   *
-   * Màn kết học thử có nút "Lưu N từ này vào tài khoản" — trước 2026-09-22
-   * đăng ký xong CHẲNG có gì được lưu, N từ đó biến mất. Chạy song song và
-   * nuốt lỗi từng từ: không được để việc phụ này chặn đường vào app ngay
-   * sau khi người ta vừa quyết định đăng ký. `addWordToSrs` vốn idempotent
-   * nên gọi trùng cũng vô hại.
-   *
-   * Trả về CÓ từ nào được lưu hay không — dùng để quyết định có bắt đi qua
-   * `/onboarding` nữa không (xem `onRegisterSubmit`).
-   */
-  async function saveTrialWords(): Promise<boolean> {
-    const ids = drainPendingWords();
-    if (ids.length === 0) return false;
-    await Promise.allSettled(ids.map((id) => addWordToSrs(id)));
-    return true;
-  }
 
   async function onLoginSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -114,8 +125,8 @@ export function AuthFormCard({
       await refresh();
       // Người ĐÃ có tài khoản bấm "Lưu N từ này" rồi chọn Đăng nhập thay vì
       // Đăng ký thì lời hứa đó vẫn phải được giữ.
-      await saveTrialWords();
-      router.replace(next);
+      const saved = await saveGuestProgress();
+      router.replace(saved.lessons > 0 && next === "/dashboard" ? "/learn" : next);
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -144,7 +155,7 @@ export function AuthFormCard({
       });
       manualRedirect.current = true;
       await refresh();
-      const savedTrial = await saveTrialWords();
+      const saved = await saveGuestProgress();
       // Vừa học 8 từ ở /hoc-thu rồi bấm "Lưu N từ này vào tài khoản" là đã
       // thể hiện rõ ý định học — mấy từ đó ĐANG đến hạn ôn ngay lúc này.
       // Bắt đi qua khảo sát 3 bước nữa trước khi chạm được vào chính từ của
@@ -154,7 +165,13 @@ export function AuthFormCard({
       // dưới). Khảo sát vẫn còn nguyên, chỉ đổi từ BẮT BUỘC thành banner
       // gợi ý trên dashboard (nhánh `onboarding.data === null`).
       router.replace(
-        next !== "/dashboard" ? next : savedTrial ? "/dashboard" : "/onboarding",
+        next !== "/dashboard"
+          ? next
+          : saved.lessons > 0
+            ? "/learn"
+            : saved.words
+              ? "/dashboard"
+              : "/onboarding",
       );
     } catch (err) {
       setError(

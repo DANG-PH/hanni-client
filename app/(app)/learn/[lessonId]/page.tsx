@@ -58,7 +58,10 @@ export default function LessonDetailPage() {
   const startedWords = words.filter(
     (word) => word.progressState && word.progressState !== "NEW",
   ).length;
-  const startLabel = startedWords > 0 ? "Học tiếp" : "Bắt đầu học";
+  const startLabel =
+    startedWords >= words.length && words.length > 0
+      ? "Học lại bài này"
+      : "Bắt đầu học";
 
   return (
     <div className="page-wrap space-y-6">
@@ -74,9 +77,16 @@ export default function LessonDetailPage() {
         description="Làm quen với từ mới, lắng nghe cách đọc và khám phá cách dùng trong từng ví dụ."
       >
         {words.length > 0 && (
-          <LinkButton href={`/study?lesson=${lesson.id}`}>
-            <Icon name="play" size={16} /> {startLabel}
-          </LinkButton>
+          <div className="flex flex-wrap gap-2">
+            <LinkButton href={`/bai-hoc/${lesson.id}`}>
+              <Icon name="play" size={16} /> {startLabel}
+            </LinkButton>
+            {startedWords > 0 && (
+              <LinkButton href={`/study?lesson=${lesson.id}`} variant="secondary">
+                <Icon name="cards" size={16} /> Ôn bằng flashcard
+              </LinkButton>
+            )}
+          </div>
         )}
       </PageHeading>
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">

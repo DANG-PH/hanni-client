@@ -305,13 +305,7 @@ export default function DashboardPage() {
                 : "Bắt đầu học ngay"
           }
           ctaHref={
-            dueNow > 0
-              ? "/study"
-              : current
-                ? current.startedWords
-                  ? `/study?lesson=${current.id}`
-                  : `/learn/${current.id}`
-                : "/learn"
+            dueNow > 0 ? "/study" : current ? `/bai-hoc/${current.id}` : "/learn"
           }
         />
 
@@ -432,11 +426,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               <Link
-                href={
-                  current.startedWords > 0
-                    ? `/study?lesson=${current.id}`
-                    : `/learn/${current.id}`
-                }
+                href={`/bai-hoc/${current.id}`}
                 className="motion-button inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-fg"
               >
                 {current.startedWords > 0 ? "Học tiếp bài này" : "Vào bài"}

@@ -873,3 +873,69 @@ export interface DuelActiveMatch {
   question: DuelRoundQuestion | null;
   myAnswered: boolean;
 }
+
+/** Gợi ý quy luật thanh điệu Hán Việt → tiếng Trung cho 1 chữ (server tính). */
+export interface ToneHint {
+  char: string;
+  hanViet: string;
+  tone: number;
+  rule: string;
+  predicted: number | null;
+  follows: boolean | null;
+}
+
+export interface SessionWord {
+  id: string;
+  simplified: string;
+  pinyin: string;
+  pinyinNumeric: string;
+  hanViet: string | null;
+  meaningVi: string | null;
+  meaningEn: string | null;
+  audioUrl: string | null;
+  imageUrl: string | null;
+  examples: { zh: string; pinyin: string | null; vi: string | null }[];
+  toneHints: ToneHint[] | null;
+}
+
+export type SessionStep =
+  | { kind: "intro"; wordId: string }
+  | {
+      kind: "choice";
+      wordId: string;
+      prompt: "hanzi" | "meaning" | "audio";
+      options: string[];
+      answer: number;
+    }
+  | { kind: "match"; wordIds: string[] }
+  | {
+      kind: "sentence";
+      wordId: string;
+      before: string;
+      after: string;
+      vi: string | null;
+      options: string[];
+      answer: number;
+    };
+
+export interface LessonSession {
+  lesson: {
+    id: string;
+    title: string;
+    hskLevel: number;
+    orderIndex: number;
+    wordCount: number;
+    totalLessons: number;
+  };
+  nextLesson: { id: string; title: string; orderIndex: number } | null;
+  words: SessionWord[];
+  steps: SessionStep[];
+}
+
+export interface LessonCompleteResult {
+  lessonId: string;
+  newWords: number;
+  accuracy: number;
+  currentStreak: number;
+  nextLesson: { id: string; title: string; orderIndex: number } | null;
+}
