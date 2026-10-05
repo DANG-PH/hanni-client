@@ -129,8 +129,8 @@ export default async function NguPhapIndexPage({
           Hanni gắn điểm ngữ pháp vào đúng bài học chứa từ vựng liên quan, nên
           bạn gặp lại cấu trúc ngay khi đang dùng nó.
         </p>
-        <LinkButton href="/hoc-thu" className="mt-4">
-          Học thử — không cần đăng ký
+        <LinkButton href="/bat-dau" className="mt-4">
+          Học bài đầu tiên — không cần đăng ký
           <Icon name="arrow" size={16} />
         </LinkButton>
       </section>

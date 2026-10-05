@@ -675,17 +675,22 @@ function ResultScreen({
         <div className={styles.resultActions}>
           {guest ? (
             <>
-              <Button onClick={() => router.push("/register")}>
-                Tạo tài khoản để lưu lộ trình
+              {/* Học bài 1 NGAY rồi mới mời đăng ký (kiểu Duolingo) — ép
+               * đăng ký ở đây là chỗ rời đi nhiều nhất của cả phễu. Câu trả
+               * lời khảo sát vẫn được giữ và nộp lúc đăng ký. */}
+              <Button
+                onClick={() =>
+                  router.push(`/bat-dau?level=${Math.min(profile.recommendedLevel, 7)}`)
+                }
+              >
+                Học bài 1 HSK {profile.recommendedLevel} ngay
                 <Icon name="arrow" size={16} />
               </Button>
-              {/* Vẫn cho xem thử trước khi đăng ký — ép đăng ký ngay là chỗ
-               * rời đi nhiều nhất. */}
               <Link
-                href="/hoc-thu"
+                href="/register?next=/learn"
                 className="motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-surface-2"
               >
-                Học thử 8 từ, chưa cần tài khoản
+                Tạo tài khoản để lưu lộ trình
               </Link>
             </>
           ) : (

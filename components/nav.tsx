@@ -29,7 +29,12 @@ export function Nav() {
       </a>
       <div className="mx-auto flex min-h-[72px] max-w-7xl items-center gap-5 px-5 sm:px-8">
         <Link href="/" aria-label="Hanni — trang chủ" className="shrink-0">
-          <Brand />
+          <span className="sm:hidden">
+            <Brand compact />
+          </span>
+          <span className="hidden sm:block">
+            <Brand />
+          </span>
         </Link>
         <nav
           className="mx-auto hidden items-center gap-6 text-xs font-medium text-muted lg:flex"
@@ -67,15 +72,15 @@ export function Nav() {
             <>
               <Link
                 href="/login"
-                className="rounded-lg px-2.5 py-2.5 text-xs font-semibold text-muted transition-colors hover:text-primary sm:border sm:border-border sm:px-4 sm:hover:border-primary/40"
+                className="whitespace-nowrap rounded-lg px-2 py-2.5 text-xs font-semibold text-muted transition-colors hover:text-primary sm:border sm:border-border sm:px-4 sm:hover:border-primary/40"
               >
                 Đăng nhập
               </Link>
               <Link
-                href="/onboarding"
-                className="motion-button rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-primary-fg sm:px-4"
+                href="/bat-dau"
+                className="motion-button whitespace-nowrap rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-primary-fg sm:px-4"
               >
-                Bắt đầu ngay
+                Học miễn phí
               </Link>
             </>
           )}

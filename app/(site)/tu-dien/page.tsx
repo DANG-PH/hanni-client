@@ -220,8 +220,8 @@ export default async function TuDienPage({
           {level ? `HSK ${level}` : "toàn bộ 9 cấp"} thành bài học theo chủ đề
           và nhắc bạn ôn đúng lúc sắp quên — miễn phí toàn bộ nội dung học.
         </p>
-        <LinkButton href="/onboarding" className="mt-4">
-          Bắt đầu học miễn phí
+        <LinkButton href="/bat-dau" className="mt-4">
+          Học bài đầu tiên — miễn phí
           <Icon name="arrow" size={16} />
         </LinkButton>
       </section>

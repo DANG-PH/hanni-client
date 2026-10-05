@@ -165,8 +165,8 @@ export default async function NguPhapPage({
           bài học theo chủ đề, và nhắc bạn ôn đúng lúc sắp quên — miễn phí toàn
           bộ nội dung học.
         </p>
-        <LinkButton href="/hoc-thu" className="mt-4">
-          Học thử — không cần đăng ký
+        <LinkButton href="/bat-dau" className="mt-4">
+          Học bài đầu tiên — không cần đăng ký
           <Icon name="arrow" size={16} />
         </LinkButton>
       </section>

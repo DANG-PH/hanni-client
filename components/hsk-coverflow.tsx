@@ -23,7 +23,7 @@ const LEVELS: Level[] = [
     name: "Nhập môn",
     words: "≈ 300 từ",
     band: "sc",
-    href: "/learn?level=1",
+    href: "/bat-dau?level=1",
   },
   {
     n: 2,
@@ -32,7 +32,7 @@ const LEVELS: Level[] = [
     name: "Sơ cấp",
     words: "≈ 500 từ",
     band: "sc",
-    href: "/learn?level=2",
+    href: "/bat-dau?level=2",
   },
   {
     n: 3,
@@ -41,7 +41,7 @@ const LEVELS: Level[] = [
     name: "Sơ cấp mở rộng",
     words: "≈ 1.000 từ",
     band: "sc",
-    href: "/learn?level=3",
+    href: "/bat-dau?level=3",
   },
   {
     n: 4,
@@ -50,7 +50,7 @@ const LEVELS: Level[] = [
     name: "Trung cấp",
     words: "≈ 2.000 từ",
     band: "tc",
-    href: "/learn?level=4",
+    href: "/bat-dau?level=4",
   },
   {
     n: 5,
@@ -59,7 +59,7 @@ const LEVELS: Level[] = [
     name: "Trung cấp mở rộng",
     words: "≈ 3.600 từ",
     band: "tc",
-    href: "/learn?level=5",
+    href: "/bat-dau?level=5",
   },
   {
     n: 6,
@@ -68,7 +68,7 @@ const LEVELS: Level[] = [
     name: "Trung cấp nâng cao",
     words: "≈ 5.400 từ",
     band: "tc",
-    href: "/learn?level=6",
+    href: "/bat-dau?level=6",
   },
   {
     n: 7,
@@ -77,7 +77,7 @@ const LEVELS: Level[] = [
     name: "Cao cấp",
     words: "≈ 11.000 từ",
     band: "cc",
-    href: "/learn?level=7",
+    href: "/bat-dau?level=7",
   },
 ];
 

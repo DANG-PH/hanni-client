@@ -30,6 +30,9 @@ export default function robots(): MetadataRoute.Robots {
       ],
       disallow: [
         "/dashboard",
+        "/bai-hoc",
+        "/bat-dau",
+        "/kham-pha",
         "/learn",
         "/listening",
         "/pronunciation",

@@ -111,34 +111,39 @@ export default function Home() {
         <div className="page-wrap relative grid items-center gap-4 py-10! md:grid-cols-[1.05fr_1fr] md:py-12!">
           <div className="reveal-group relative z-10 max-w-xl">
             <span className="section-label">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> MỖI NGÀY
-              MỘT CHÚT TIẾNG TRUNG
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> HỌC
+              TIẾNG TRUNG CHO NGƯỜI VIỆT
             </span>
+            {/* Điểm khác biệt nói NGAY ở tiêu đề — trước đây là câu chung
+             * chung "Học thêm mỗi ngày", còn lợi thế Hán Việt nằm ở dòng phụ
+             * mà phần lớn khách không đọc tới. */}
             <h1 className="mt-5 text-[34px] font-extrabold leading-[1.12] tracking-tight sm:text-5xl lg:text-[56px]">
-              Học thêm mỗi ngày.
+              Bạn đã biết tiếng Trung
               <br />
-              <span className="text-primary">Tự tin thêm một chút.</span>
+              <span className="text-primary">nhiều hơn bạn nghĩ.</span>
             </h1>
-            {/* Nói NGAY điểm khác biệt: phần lớn khách vào trang chủ không
-             * cuộn xuống tới mục "Bạn đã biết trước hàng nghìn từ" bên dưới. */}
             <p className="mt-5 max-w-md text-sm leading-7 text-muted sm:text-base">
-              Học theo chuẩn HSK 3.0, có âm Hán Việt cạnh từng từ — thứ giúp
-              người Việt đoán ra nghĩa ngay thay vì học thuộc lòng từ đầu.
+              <span lang="zh" className="hanzi">电话</span> là điện thoại,{" "}
+              <span lang="zh" className="hanzi">世界</span> là thế giới — hàng
+              trăm từ tiếng Trung đọc gần giống tiếng Việt nhờ âm Hán Việt.
+              Hanni dạy theo lộ trình HSK 3.0, mỗi bài chỉ 5–10 phút.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              {/* Khách chưa đăng nhập: mời HỌC THỬ (chạm được giá trị ngay)
-               * thay vì đẩy vào khảo sát rồi đăng ký — xem app/(site)/hoc-thu. */}
-              <LinkButton href={user ? "/learn" : "/hoc-thu"} className="px-6!">
-                {user ? "Tiếp tục hành trình" : "Học thử ngay — miễn phí"}
+              {/* Khách: vào thẳng bài 1 (học trước, đăng ký sau — kiểu
+               * Duolingo). Người đã biết một chút đi qua khảo sát chọn cấp. */}
+              <LinkButton href={user ? "/learn" : "/bat-dau"} className="px-6!">
+                {user ? "Tiếp tục học" : "Học bài đầu tiên — miễn phí"}
                 <Icon name="arrow" size={17} />
               </LinkButton>
-              <LinkButton href="#lo-trinh" variant="secondary">
-                Khám phá lộ trình
-              </LinkButton>
+              {!user && (
+                <LinkButton href="/onboarding" variant="secondary">
+                  Tôi đã biết một chút
+                </LinkButton>
+              )}
             </div>
             <p className="mt-5 flex items-center gap-2 text-xs text-muted">
-              <Icon name="check" size={15} className="text-good" /> Học theo
-              nhịp của bạn · Lưu từng bước tiến
+              <Icon name="check" size={15} className="text-good" /> Không cần
+              đăng ký để bắt đầu · Toàn bộ bài học miễn phí
             </p>
             <ul className="reveal mt-6 flex flex-wrap gap-2.5">
               {[
@@ -148,7 +153,7 @@ export default function Home() {
                     : "10.900+",
                   t: "từ vựng có audio",
                 },
-                { n: "9 cấp", t: "HSK 3.0 · 731 bài" },
+                { n: "9 cấp", t: "HSK 3.0, bài theo chủ đề" },
                 { n: "42 video", t: "phụ đề chạy đồng bộ" },
               ].map((f) => (
                 <li
@@ -431,10 +436,10 @@ export default function Home() {
               nhất.
             </p>
             <LinkButton
-              href={user ? "/settings" : "/onboarding"}
+              href={user ? "/settings" : "/bat-dau"}
               className="mt-5"
             >
-              {user ? "Đặt mục tiêu mỗi ngày" : "Tạo góc học của bạn"}
+              {user ? "Đặt mục tiêu mỗi ngày" : "Học bài đầu tiên"}
               <Icon name="arrow" size={16} />
             </LinkButton>
           </div>

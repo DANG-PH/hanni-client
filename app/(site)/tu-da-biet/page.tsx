@@ -168,8 +168,8 @@ export default async function TuDaBietPage() {
               mà âm Hán Việt giúp bạn đoán được nghĩa — lợi thế mà người học
               nước khác không có.
             </p>
-            <LinkButton href="/hoc-thu" className="mt-4">
-              Học thử 8 từ — không cần đăng ký
+            <LinkButton href="/bat-dau" className="mt-4">
+              Học bài đầu tiên — không cần đăng ký
               <Icon name="arrow" size={16} />
             </LinkButton>
           </section>

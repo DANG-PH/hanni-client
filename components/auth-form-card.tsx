@@ -9,9 +9,10 @@ import { GoogleButton } from "@/components/google-button";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { HOME_PATH, safeNextPath } from "@/lib/auth-redirect";
-import { addWordToSrs } from "@/lib/hooks";
+import { addWordToSrs, submitOnboarding } from "@/lib/hooks";
 import { drainPendingLessons } from "@/lib/pending-lessons";
 import { drainPendingWords } from "@/lib/pending-words";
+import type { SubmitOnboardingInput } from "@/lib/types";
 
 /** Đưa các từ vừa học ở `/hoc-thu` vào hàng đợi ôn của tài khoản mới.
  *
@@ -28,15 +29,34 @@ async function saveTrialWords(): Promise<boolean> {
   return true;
 }
 
-/** Từ học thử + các BÀI HỌC đã làm lúc chưa có tài khoản (`/bai-hoc`). Có
- * bài nào thì vào thẳng lộ trình — đã học xong bài 1 rồi mà còn bắt làm
- * khảo sát là đẩy ngược người ta ra khỏi đà đang học. */
+/** Khảo sát làm lúc chưa có tài khoản (`/onboarding` ghi vào sessionStorage).
+ * Trước đây chỉ được nộp khi người dùng quay lại /onboarding sau đăng ký —
+ * nay đăng ký xong vào thẳng lộ trình nên phải nộp ở đây, không thì mục
+ * tiêu/ngày thi họ vừa khai biến mất. */
+async function submitPendingOnboarding(): Promise<boolean> {
+  try {
+    const raw = sessionStorage.getItem("hanni:pending-onboarding");
+    if (!raw) return false;
+    sessionStorage.removeItem("hanni:pending-onboarding");
+    await submitOnboarding(JSON.parse(raw) as SubmitOnboardingInput);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Khảo sát + từ học thử + các BÀI HỌC đã làm lúc chưa có tài khoản. Khảo
+ * sát nộp TRƯỚC: nó đặt cấp lộ trình theo đề xuất, rồi bài đã học (nếu có)
+ * mới là thứ quyết định cuối cùng. Có bài nào thì vào thẳng lộ trình — đã học
+ * xong bài 1 rồi mà còn bắt làm khảo sát là đẩy ngược người ta ra khỏi đà
+ * đang học. */
 async function saveGuestProgress() {
+  const onboarded = await submitPendingOnboarding();
   const [words, lessons] = await Promise.all([
     saveTrialWords(),
     drainPendingLessons(),
   ]);
-  return { words, lessons };
+  return { words, lessons, onboarded };
 }
 
 export function AuthFormCard({
@@ -99,7 +119,8 @@ export function AuthFormCard({
           next === HOME_PATH &&
           isNewUser &&
           !saved.lessons &&
-          !saved.words
+          !saved.words &&
+          !saved.onboarded
           ? "/onboarding"
           : next,
       );
@@ -158,7 +179,10 @@ export function AuthFormCard({
       // Vào thẳng lộ trình; chỉ người đăng ký "tay trắng" mới qua khảo sát
       // (để chọn cấp HSK, không thì lộ trình mặc định HSK1).
       router.replace(
-        next === HOME_PATH && !saved.lessons && !saved.words
+        next === HOME_PATH &&
+          !saved.lessons &&
+          !saved.words &&
+          !saved.onboarded
           ? "/onboarding"
           : next,
       );

@@ -167,8 +167,8 @@ export default async function HskPage() {
           Hanni chia sẵn từng cấp thành bài học theo chủ đề (Gia đình, Đồ ăn,
           Thời tiết...) và nhắc bạn ôn đúng lúc sắp quên. Miễn phí toàn bộ.
         </p>
-        <LinkButton href="/hoc-thu" className="mt-4">
-          Học thử — không cần đăng ký
+        <LinkButton href="/bat-dau" className="mt-4">
+          Học bài đầu tiên — không cần đăng ký
           <Icon name="arrow" size={16} />
         </LinkButton>
       </section>
