@@ -8,11 +8,13 @@ import { StudyLoader } from "./study-loader";
 import loaderStyles from "./study-loader.module.css";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
+// Nút "nổi khối" (bóng đáy đặc, bấm thì lún xuống) như Duolingo/Hanbeego —
+// nhìn là biết bấm được, cảm giác chơi chứ không như form hành chính.
 const VARIANTS: Record<Variant, string> = {
   primary:
-    "border border-primary/90 bg-gradient-to-b from-primary to-primary/90 text-primary-fg hover:brightness-110 shadow-md shadow-primary/25 active:translate-y-0.5",
+    "border border-primary bg-primary font-bold text-primary-fg shadow-[0_4px_0_0_color-mix(in_srgb,var(--primary)_62%,#000)] hover:brightness-105 active:translate-y-[3px] active:shadow-[0_1px_0_0_color-mix(in_srgb,var(--primary)_62%,#000)]",
   secondary:
-    "border border-border/80 bg-surface/90 text-foreground hover:bg-surface-2 hover:border-primary/30 shadow-xs active:translate-y-0.5",
+    "border border-border bg-surface text-foreground shadow-[0_3px_0_0_var(--border)] hover:bg-surface-2 hover:border-primary/30 active:translate-y-[2px] active:shadow-[0_1px_0_0_var(--border)]",
   ghost:
     "border border-transparent text-muted hover:bg-surface-2 hover:text-foreground active:translate-y-0.5",
   danger:

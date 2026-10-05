@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Flashcard } from "@/components/flashcard";
 import { QuizRunner } from "@/components/quiz-runner";
+import { StudyHub } from "@/components/study/study-hub";
 import {
   Button,
   ErrorNote,
@@ -22,7 +23,13 @@ import {
   useLesson,
   useStreak,
 } from "@/lib/hooks";
-import type { LeechWord, Quiz, Rating, StudyQueue } from "@/lib/types";
+import type {
+  LeechWord,
+  LessonDetail,
+  Quiz,
+  Rating,
+  StudyQueue,
+} from "@/lib/types";
 import styles from "./study.module.css";
 
 type Phase = "loading" | "intro" | "review" | "review-done" | "quiz" | "done";
@@ -89,6 +96,16 @@ function StudyInner({
           ...queue.due.map((d) => ({ word: d.word, isNew: false })),
           ...queue.newCards.map((n) => ({ word: n.word, isNew: true })),
         ];
+        // Flashcard THEO BÀI = lật toàn bộ thẻ của bài người học vừa chọn,
+        // không chỉ thẻ đến hạn: bài vừa học xong thì mai mới có thẻ đến hạn,
+        // bấm "Ôn bằng flashcard" mà ra "không có từ cần ôn" là cụt đường.
+        if (lessonId) {
+          const detail = await api.get<LessonDetail>(`/learn/lessons/${lessonId}`);
+          const seen = new Set(list.map((i) => i.word.id));
+          for (const w of detail.words)
+            if (!seen.has(w.id))
+              list.push({ word: w, isNew: !w.progressState || w.progressState === "NEW" });
+        }
       }
       setItems(list);
       setPhase(list.length ? "intro" : "review-done");
@@ -566,6 +583,9 @@ function StudySession() {
   const params = useSearchParams();
   const lessonId = params.get("lesson");
   const leechMode = params.get("leeches") === "1";
+  // Không kèm tham số = trang CHỌN bộ thẻ; phiên ôn chỉ chạy khi người học
+  // đã chọn (`?review=1` từ đến hạn, `?lesson=` theo bài, `?leeches=1`).
+  if (!lessonId && !leechMode && params.get("review") !== "1") return <StudyHub />;
   return (
     <StudyInner
       key={leechMode ? "leeches" : (lessonId ?? "review")}

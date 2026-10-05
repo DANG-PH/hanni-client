@@ -174,9 +174,11 @@ export default function ProgressPage() {
                 </p>
                 <Link
                   href={
-                    data.totals.due > 0 || data.totals.atRisk > 0
-                      ? "/study"
-                      : "/learn"
+                    data.totals.due > 0
+                      ? "/study?review=1"
+                      : data.totals.atRisk > 0
+                        ? "/study"
+                        : "/learn"
                   }
                   className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary"
                 >

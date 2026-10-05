@@ -1,8 +1,11 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, type ReactNode } from "react";
 import { AppShell } from "@/components/app-shell";
+import { StudyLoader } from "@/components/study-loader";
 import { useAuth } from "@/lib/auth";
+import { HOME_PATH } from "@/lib/auth-redirect";
 
 /**
  * Khung cho các trang CÔNG KHAI (`(site)`): `/tu-dien`, `/ngu-phap`,
@@ -18,6 +21,10 @@ import { useAuth } from "@/lib/auth";
  * trang trong app); khách thì giữ khung site tối giản. `children` vẫn là
  * Server Component nên nội dung vẫn nằm sẵn trong HTML cho Google — bọc
  * bằng client component ở ngoài không làm mất điều đó.
+ *
+ * Riêng trang chủ `/`: đã đăng nhập thì về thẳng góc học — trước đây vẫn
+ * hiện trang giới thiệu cho KHÁCH ("Không cần đăng ký để bắt đầu"...) lọt
+ * trong khung app có sidebar, user báo khó hiểu.
  */
 export function SiteShell({
   guest,
@@ -28,10 +35,19 @@ export function SiteShell({
   children: ReactNode;
 }) {
   const { user, loading } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
+  const goHome = !loading && !!user && pathname === "/";
+
+  useEffect(() => {
+    if (goHome) router.replace(HOME_PATH);
+  }, [goHome, router]);
 
   // Chưa biết trạng thái đăng nhập: render khung khách để không nhấp nháy
   // sidebar rồi lại mất (và đây cũng là thứ bot nhìn thấy).
   if (loading || !user) return <>{guest}</>;
+  if (goHome)
+    return <StudyLoader variant="startup" label="Đang vào góc học của bạn…" />;
   return (
     <AppShell>
       <div id="main-content">{children}</div>

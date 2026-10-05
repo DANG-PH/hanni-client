@@ -1,11 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { DailyQuestCard } from "@/components/daily-quest-card";
 import { Icon } from "@/components/icon";
-import { NotificationNudge } from "@/components/pwa/notification-nudge";
 import { ProgressBar } from "@/components/ui";
-import { WeeklyLeagueCard } from "@/components/weekly-league-card";
 import { useStreak, useStudyStats } from "@/lib/hooks";
 
 /** Chuỗi ngày + mục tiêu hôm nay + từ cần ôn — gọn trong 1 thẻ vì đây là 3
@@ -53,7 +50,7 @@ export function TodayCard() {
         </div>
       )}
       <Link
-        href="/study"
+        href={due > 0 ? "/study?review=1" : "/study"}
         className={`motion-button mt-4 flex items-center gap-3 rounded-xl border px-3.5 py-3 ${
           due > 0 ? "border-primary/30 bg-primary/5 hover:bg-primary/10" : "border-border hover:bg-surface-2"
         }`}
@@ -70,18 +67,5 @@ export function TodayCard() {
         {due > 0 && <Icon name="arrow" size={16} className="text-primary" />}
       </Link>
     </section>
-  );
-}
-
-export function LearnRail() {
-  return (
-    <div className="space-y-4">
-      <div className="hidden lg:block">
-        <TodayCard />
-      </div>
-      <NotificationNudge />
-      <DailyQuestCard />
-      <WeeklyLeagueCard />
-    </div>
   );
 }
