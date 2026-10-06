@@ -25,6 +25,10 @@ app/
 ├── auth/callback        nhận redirect sau Google OAuth
 ├── auth/verify-email
 ├── (app)/learn          TRANG CHỦ sau đăng nhập (dashboard đã gộp vào, /dashboard → 308)
+├── thi-thu-hsk/[slug]   LÀM 1 ĐỀ THI THỬ — khung tập trung như phòng thi (ngoài `(site)`, không
+│                        sidebar); trang danh sách `/thi-thu-hsk` thì nằm TRONG `(site)` (công khai,
+│                        SEO, người đăng nhập vẫn có sidebar) — cùng 1 đoạn URL ở 2 nhánh thư mục
+│                        vẫn build được. Xem "Lộ trình một nút bấm" ở Trạng thái
 ├── kiem-tra-trinh-do    KIỂM TRA TRÌNH ĐỘ (công khai, index được — "kiểm tra trình độ tiếng
 │                        Trung" là truy vấn hay tìm): hỏi dần HSK1→7-9, khung tập trung như
 │                        /bai-hoc, xem "Lộ trình một nút bấm" ở Trạng thái
@@ -359,6 +363,19 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   `savePendingCourseLevel()` → đăng ký xong `drainPendingCourseLevel()` đặt cấp lộ trình (chạy SAU
   bài học chờ — kết quả đo thật thắng cấp tự khai). Lối vào: nút "Tôi đã biết một chút" ở trang
   chủ, link cạnh tab cấp ở `/learn`, link ở bước 1 khảo sát, trợ lý AI (`placement`), sitemap.
+- **Luyện thi HSK `/thi-thu-hsk`** (`components/mock-exam/`, 2026-10-06) — đề thi thử đúng cấu
+  trúc đề thật (đối thủ đều có; `/exams` cũ chỉ là trắc nghiệm từ vựng, giờ là mục "Luyện nhanh
+  từ vựng" trong trang này). Sidebar + menu khách "Luyện thi HSK" trỏ vào đây. Màn làm bài kiểu
+  XieHanzi: cuộn theo phần Nghe/Đọc, đồng hồ đếm ngược (hết giờ tự nộp ĐÚNG 1 lần), bảng số câu
+  (máy tính: cột phải; điện thoại: tấm dưới đáy), đánh dấu câu, pinyin bật sẵn với HSK 1–2. Bài
+  làm dở lưu `localStorage` → tải lại trang vẫn "Làm tiếp". Chấm ở server; chữa bài lọc câu sai,
+  có lời thoại + pinyin + bản dịch + giải thích, câu điền từ hiện từ đúng ngay trong chỗ trống.
+  **Phần nghe** (`lib/listening-audio.ts`): giọng tiếng Trung của trình duyệt, 2 giọng nam/nữ
+  (thiếu giọng nam thì hạ cao độ giọng nữ), mỗi câu 2 lần như đề thật; có `audio.url` thì phát
+  ghi âm thật; thiết bị không có giọng tiếng Trung thì hiện lời thoại thay vì im lặng. **Màu**:
+  phương án ĐÃ CHỌN dùng màu tối trung tính (`foreground`) — màu chủ đạo Hanni là đỏ, tô đỏ lúc
+  đang làm bài trông như báo sai; xanh/đỏ chỉ dùng khi chữa bài. Khách làm xong bấm "Lưu điểm"
+  → `savePendingExam()` → đăng ký xong `drainPendingExam()` nộp lại bằng tài khoản.
 - **Popup mời cài PWA chỉ hiện từ lần ghé THỨ HAI** (`returningVisitor()` +
   `hanni-first-seen` trong `components/pwa/install-prompt.tsx`) — lần đầu tới chỉ để học thử,
   popup che màn đầu tiên là thêm ma sát.

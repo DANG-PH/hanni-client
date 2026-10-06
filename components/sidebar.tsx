@@ -23,7 +23,7 @@ export const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
     items: [
       { href: "/learn", label: "Trang chủ", icon: "home" },
       { href: "/study", label: "Ôn tập & flashcard", icon: "cards" },
-      { href: "/exams", label: "Luyện thi HSK", icon: "target" },
+      { href: "/thi-thu-hsk", label: "Luyện thi HSK", icon: "target" },
       {
         label: "Kỹ năng",
         icon: "headphones",

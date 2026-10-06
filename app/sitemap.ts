@@ -62,6 +62,23 @@ async function grammarEntries(): Promise<MetadataRoute.Sitemap> {
   }
 }
 
+/** Từng đề thi thử — "đề thi thử HSK 1 đề 2" là truy vấn có thật. */
+async function mockExamEntries(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const res = await fetch(`${API_BASE}/mock-exams`, { next: { revalidate } });
+    if (!res.ok) return [];
+    const rows = (await res.json()) as { slug: string }[];
+    return rows.map((e) => ({
+      url: `${siteUrl}/thi-thu-hsk/${e.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const staticPages: MetadataRoute.Sitemap = [
@@ -71,6 +88,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/tu-da-biet`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${siteUrl}/hsk`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${siteUrl}/kiem-tra-trinh-do`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${siteUrl}/thi-thu-hsk`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${siteUrl}/ngu-phap`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${siteUrl}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${siteUrl}/register`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
@@ -78,9 +96,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/nguon-du-lieu`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${siteUrl}/install`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
   ];
-  const [dict, grammar] = await Promise.all([
+  const [dict, grammar, exams] = await Promise.all([
     dictionaryEntries(),
     grammarEntries(),
+    mockExamEntries(),
   ]);
-  return [...staticPages, ...grammar, ...dict];
+  return [...staticPages, ...exams, ...grammar, ...dict];
 }

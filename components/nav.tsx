@@ -12,7 +12,7 @@ const LINKS = [
   { href: "/#lo-trinh", label: "Lộ trình HSK" },
   { href: "/tu-dien", label: "Từ vựng" },
   { href: "/listening", label: "Luyện tập" },
-  { href: "/exams", label: "Kiểm tra" },
+  { href: "/thi-thu-hsk", label: "Luyện thi HSK" },
 ];
 
 export function Nav() {

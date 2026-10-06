@@ -1,4 +1,5 @@
 import { api } from "./api";
+import type { MockAnswer } from "./types";
 
 /**
  * Kết quả bài học KHÁCH làm trước khi có tài khoản (kiểu Duolingo: học bài 1
@@ -94,4 +95,43 @@ export async function drainPendingLessons(): Promise<number> {
       .catch(() => undefined);
   }
   return saved;
+}
+
+/** Đề thi thử KHÁCH đã làm — điểm chỉ lưu khi có tài khoản, nên đăng ký xong
+ * nộp lại đúng bài đó (server chấm lại, lưu lịch sử + giữ chuỗi ngày). Chỉ giữ
+ * bài gần nhất: khách làm 2 đề rồi mới đăng ký thì lưu đề sau cùng. */
+const EXAM_KEY = "hanni:pending-mock-exam";
+
+export interface PendingExam {
+  slug: string;
+  answers: (MockAnswer | null)[];
+  durationSec: number;
+}
+
+export function savePendingExam(exam: PendingExam) {
+  try {
+    sessionStorage.setItem(EXAM_KEY, JSON.stringify(exam));
+  } catch {
+    /* bỏ qua — chỉ mất phần lưu điểm sau khi đăng ký */
+  }
+}
+
+export async function drainPendingExam(): Promise<boolean> {
+  let exam: PendingExam | null = null;
+  try {
+    exam = JSON.parse(sessionStorage.getItem(EXAM_KEY) ?? "null") as PendingExam | null;
+    sessionStorage.removeItem(EXAM_KEY);
+  } catch {
+    return false;
+  }
+  if (!exam?.slug) return false;
+  return api
+    .post(`/mock-exams/${encodeURIComponent(exam.slug)}/submit`, {
+      answers: exam.answers,
+      durationSec: exam.durationSec,
+    })
+    .then(
+      () => true,
+      () => false,
+    );
 }

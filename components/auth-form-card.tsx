@@ -10,7 +10,11 @@ import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { HOME_PATH, safeNextPath } from "@/lib/auth-redirect";
 import { addWordToSrs, submitOnboarding } from "@/lib/hooks";
-import { drainPendingCourseLevel, drainPendingLessons } from "@/lib/pending-lessons";
+import {
+  drainPendingCourseLevel,
+  drainPendingExam,
+  drainPendingLessons,
+} from "@/lib/pending-lessons";
 import { drainPendingWords } from "@/lib/pending-words";
 import type { SubmitOnboardingInput } from "@/lib/types";
 
@@ -53,12 +57,13 @@ async function submitPendingOnboarding(): Promise<boolean> {
  * đà đang học. */
 async function saveGuestProgress() {
   const onboarded = await submitPendingOnboarding();
-  const [words, lessons] = await Promise.all([
+  const [words, lessons, exam] = await Promise.all([
     saveTrialWords(),
     drainPendingLessons(),
+    drainPendingExam(),
   ]);
   const placed = await drainPendingCourseLevel();
-  return { words, lessons, onboarded: onboarded || placed };
+  return { words, lessons: lessons > 0 || exam, onboarded: onboarded || placed };
 }
 
 export function AuthFormCard({

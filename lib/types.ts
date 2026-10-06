@@ -941,6 +941,88 @@ export interface PlacementTest {
   levels: { level: number; steps: Extract<SessionStep, { kind: "choice" }>[] }[];
 }
 
+/** Chữ Hán kèm pinyin từng chữ (`py[i]` ứng với `Array.from(zh)[i]`, dấu câu
+ * là chuỗi rỗng) — server sinh sẵn. */
+export interface Ruby {
+  zh: string;
+  py: string[];
+}
+
+export type MockSectionKind = "listening" | "reading" | "writing";
+export type MockAnswer = number | boolean;
+
+export interface MockExamMeta {
+  slug: string;
+  level: number;
+  title: string;
+  durationMin: number;
+  questionCount: number;
+  maxScore: number;
+  passScore: number;
+  sections: { kind: MockSectionKind; count: number }[];
+  /** Chỉ có khi đã đăng nhập và từng làm đề này. */
+  best?: number | null;
+  attempts?: number;
+}
+
+export interface MockSpeechLine {
+  s: "M" | "F" | "N";
+  zh: string;
+}
+
+export interface MockItem {
+  no: number;
+  audio?: { lines: MockSpeechLine[]; url?: string };
+  text?: Ruby;
+  blank?: { before: Ruby; after: Ruby };
+  picture?: string;
+  pictures?: string[];
+  options?: Ruby[];
+}
+
+export type MockPartType =
+  | "judge"
+  | "choose-picture"
+  | "match-picture"
+  | "choose-text"
+  | "match-text"
+  | "fill-blank";
+
+export interface MockPart {
+  no: number;
+  type: MockPartType;
+  pictures?: string[];
+  options?: Ruby[];
+  items: MockItem[];
+}
+
+export interface MockPaper
+  extends Omit<MockExamMeta, "sections" | "best" | "attempts"> {
+  showPinyin: boolean;
+  sections: { kind: MockSectionKind; parts: MockPart[] }[];
+}
+
+export interface MockReviewItem {
+  no: number;
+  answer: MockAnswer;
+  given: MockAnswer | null;
+  correct: boolean;
+  vi: string;
+  explain?: string;
+  transcript?: (Ruby & { s: MockSpeechLine["s"] })[];
+  pictureLabels?: string[];
+}
+
+export interface MockExamResult {
+  attemptId: string | null;
+  score: number;
+  maxScore: number;
+  passScore: number;
+  passed: boolean;
+  sections: { kind: MockSectionKind; correct: number; total: number; score: number }[];
+  review: MockReviewItem[];
+}
+
 export interface LessonCompleteResult {
   lessonId: string;
   newWords: number;
