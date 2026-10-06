@@ -4,9 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
-import { EXPLORE_ITEMS } from "@/lib/explore";
 import { useStreak } from "@/lib/hooks";
-import { Brand, NAV_GROUPS, Sidebar } from "./sidebar";
+import { Brand, NAV_LINKS, Sidebar } from "./sidebar";
 import { AssistantWidget } from "./assistant-widget";
 import { NotificationBell } from "./notification-bell";
 import { StreakCelebration } from "./streak-celebration";
@@ -22,7 +21,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const drawer = useRef<HTMLDialogElement>(null);
   const pageLabel =
-    [...NAV_GROUPS.flatMap((group) => group.links), ...EXPLORE_ITEMS].find(
+    NAV_LINKS.find(
       (link) => pathname === link.href || pathname.startsWith(link.href + "/"),
     )?.label ?? "Góc học tập";
   const close = () => drawer.current?.close();

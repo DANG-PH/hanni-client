@@ -3,13 +3,16 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { mutate } from "swr";
+import Image from "next/image";
 import { DailyQuestCard } from "@/components/daily-quest-card";
 import { Icon } from "@/components/icon";
 import { TodayCard } from "@/components/learn/today-card";
 import { TopicExplorer } from "@/components/learn/topic-explorer";
 import { NotificationNudge } from "@/components/pwa/notification-nudge";
 import { Button, ErrorNote, LinkButton, Spinner } from "@/components/ui";
+import { VideoShelf } from "@/components/video-shelf";
 import { WeeklyLeagueCard } from "@/components/weekly-league-card";
+import { WordOfTheDayCard } from "@/components/word-of-the-day";
 import { api } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { useLearnPath, useLevels } from "@/lib/hooks";
@@ -19,7 +22,8 @@ import { lessonMinutes, toUnits } from "@/lib/units";
  * Trang chủ sau đăng nhập — MỘT lộ trình, MỘT nút "Học tiếp" (cách Duolingo
  * làm lại màn chính 2022), bố cục theo Hanbeego (user chỉ đích danh làm mẫu):
  * thẻ bài tiếp theo + vòng tiến độ, thẻ chuỗi ngày; tab cấp HSK để xem; chủ
- * đề hai cột (danh sách chủ đề | các bài); nhiệm vụ + giải đấu ở cuối.
+ * đề hai cột (danh sách chủ đề | các bài); nhiệm vụ, giải đấu, từ vựng hôm
+ * nay và video ở cuối (Hanbeego cũng đặt các thẻ này ngay trang chủ).
  */
 export default function LearnPage() {
   return (
@@ -107,7 +111,17 @@ function LearnHome() {
       <NotificationNudge />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <section className="panel tint-primary flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-6" aria-labelledby="next-lesson">
+        <section className="panel tint-primary relative flex flex-col gap-5 overflow-hidden p-5 sm:flex-row sm:items-center sm:p-6 md:pr-44" aria-labelledby="next-lesson">
+          {/* Cáo Hanni — mascot vốn chỉ hiện ở màn tải trang; các app học khác
+           * (Hanbeego, Hanpeak) dùng mascot khắp nơi để tạo cảm giác thân thiện. */}
+          <Image
+            src="/anhloading.png"
+            alt=""
+            width={190}
+            height={160}
+            priority
+            className="pointer-events-none absolute -right-3 bottom-0 hidden h-40 w-auto md:block"
+          />
           {error ? (
             <div className="space-y-3">
               <ErrorNote>Chưa tải được lộ trình. Vui lòng thử lại.</ErrorNote>
@@ -219,10 +233,13 @@ function LearnHome() {
         </section>
       )}
 
-      <div className="grid items-start gap-4 md:grid-cols-2">
+      <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
         <DailyQuestCard />
         <WeeklyLeagueCard />
+        <WordOfTheDayCard />
       </div>
+
+      <VideoShelf limit={8} />
     </div>
   );
 }

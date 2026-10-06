@@ -32,7 +32,6 @@ export default function robots(): MetadataRoute.Robots {
         "/dashboard",
         "/bai-hoc",
         "/bat-dau",
-        "/kham-pha",
         "/learn",
         "/listening",
         "/pronunciation",

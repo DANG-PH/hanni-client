@@ -18,6 +18,25 @@ function snoozed(): boolean {
   }
 }
 
+const FIRST_SEEN_KEY = "hanni-first-seen";
+
+/** Chỉ mời cài khi người dùng đã QUAY LẠI (ghé sang ngày khác) — buổi đầu
+ * tiên là lúc đang làm quen bài học, popup che nửa màn hình điện thoại ngay
+ * lúc đó chỉ cản trở; người đã quay lại mới là người đáng mời cài. */
+function returningVisitor(): boolean {
+  try {
+    const today = new Date().toDateString();
+    const first = localStorage.getItem(FIRST_SEEN_KEY);
+    if (!first) {
+      localStorage.setItem(FIRST_SEEN_KEY, today);
+      return false;
+    }
+    return first !== today;
+  } catch {
+    return false;
+  }
+}
+
 function remember() {
   try {
     localStorage.setItem(SNOOZE_KEY, String(Date.now()));
@@ -27,7 +46,8 @@ function remember() {
 }
 
 /**
- * Popup mời cài ứng dụng, nổi ở góc phải dưới. Người dùng tắt được — tạm ẩn
+ * Popup mời cài ứng dụng, nổi ở góc phải dưới — chỉ từ lần ghé sang ngày thứ
+ * hai (xem `returningVisitor`). Người dùng tắt được — tạm ẩn
  * 7 ngày. Ba trường hợp:
  * - Có `beforeinstallprompt` thật (Chrome/Edge/Android đủ điều kiện) → nút cài 1 chạm.
  * - iOS Safari (không có sự kiện này bao giờ) → hướng dẫn Chia sẻ → Thêm vào MHC.
@@ -49,7 +69,7 @@ export function InstallPrompt() {
   } = usePwaState();
   const pathname = usePathname();
   const [hidden, setHidden] = useState(
-    () => typeof window === "undefined" || snoozed(),
+    () => typeof window === "undefined" || snoozed() || !returningVisitor(),
   );
   const [busy, setBusy] = useState(false);
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/icon";
 import { ShareButton } from "@/components/share-button";
@@ -37,9 +38,14 @@ export function SessionComplete({
         className="mx-auto w-full max-w-xl flex-1 px-4 py-10 text-center"
         style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
       >
-        <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/12 text-primary">
-          <Icon name="trophy" size={40} />
-        </span>
+        <Image
+          src="/anhloading.png"
+          alt="Cáo Hanni chúc mừng bạn"
+          width={180}
+          height={150}
+          priority
+          className="mx-auto h-36 w-auto"
+        />
         <p className="mt-5 text-[11px] font-bold tracking-wider text-primary">
           HOÀN THÀNH BÀI {session.lesson.orderIndex}/{session.lesson.totalLessons}
         </p>
