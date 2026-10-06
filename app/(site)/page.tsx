@@ -130,13 +130,14 @@ export default function Home() {
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               {/* Khách: vào thẳng bài 1 (học trước, đăng ký sau — kiểu
-               * Duolingo). Người đã biết một chút đi qua khảo sát chọn cấp. */}
+               * Duolingo). Người đã biết một chút làm bài kiểm tra trình độ
+               * thay vì tự khai cấp ở khảo sát. */}
               <LinkButton href={user ? "/learn" : "/bat-dau"} className="px-6!">
                 {user ? "Tiếp tục học" : "Học bài đầu tiên — miễn phí"}
                 <Icon name="arrow" size={17} />
               </LinkButton>
               {!user && (
-                <LinkButton href="/onboarding" variant="secondary">
+                <LinkButton href="/kiem-tra-trinh-do" variant="secondary">
                   Tôi đã biết một chút
                 </LinkButton>
               )}

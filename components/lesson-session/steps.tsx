@@ -194,7 +194,7 @@ export function ChoiceStep({
   onPick,
 }: {
   step: Extract<SessionStep, { kind: "choice" }>;
-  word: SessionWord;
+  word: Pick<SessionWord, "simplified" | "meaningVi" | "audioUrl">;
   picked: number | null;
   onPick: (i: number) => void;
 }) {

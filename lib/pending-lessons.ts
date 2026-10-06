@@ -37,6 +37,34 @@ export function hasPendingLessons(): boolean {
   return read().length > 0;
 }
 
+/** Cấp mà bài kiểm tra trình độ đề xuất cho KHÁCH — không lưu thì người vừa
+ * làm bài ra "HSK3" rồi bấm đăng ký luôn sẽ vào lộ trình HSK1 mặc định. */
+const LEVEL_KEY = "hanni:pending-course-level";
+
+export function savePendingCourseLevel(level: number) {
+  try {
+    sessionStorage.setItem(LEVEL_KEY, String(level));
+  } catch {
+    /* bỏ qua — chỉ mất phần ghi nhớ cấp */
+  }
+}
+
+/** Đặt cấp lộ trình theo kết quả kiểm tra (nếu có) rồi XOÁ. */
+export async function drainPendingCourseLevel(): Promise<boolean> {
+  let level = 0;
+  try {
+    level = Number(sessionStorage.getItem(LEVEL_KEY));
+    sessionStorage.removeItem(LEVEL_KEY);
+  } catch {
+    return false;
+  }
+  if (!level) return false;
+  return api.patch("/users/me/settings", { courseLevel: level }).then(
+    () => true,
+    () => false,
+  );
+}
+
 /** Nạp mọi bài đã học lúc chưa đăng nhập rồi XOÁ (chỉ nạp đúng 1 lần). Cấp
  * của bài đầu tiên thành cấp lộ trình — người vừa học thử HSK1 thì vào app
  * là thấy đúng lộ trình HSK1, không phải tự chọn lại. Trả về số bài đã lưu. */

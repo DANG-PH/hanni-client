@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { mutate } from "swr";
 import Image from "next/image";
+import Link from "next/link";
 import { DailyQuestCard } from "@/components/daily-quest-card";
 import { Icon } from "@/components/icon";
 import { TodayCard } from "@/components/learn/today-card";
@@ -198,6 +199,13 @@ function LearnHome() {
                 Học theo chủ đề — bài nào cũng mở, Hanni đánh dấu sẵn bài nên học tiếp.
               </p>
             </div>
+            <Link
+              href="/kiem-tra-trinh-do"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            >
+              Không chắc nên học cấp nào? Kiểm tra trình độ
+              <Icon name="arrow" size={14} />
+            </Link>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Cấp HSK">
             {data.levels.map((l) => {

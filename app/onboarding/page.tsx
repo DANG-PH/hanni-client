@@ -417,6 +417,15 @@ function OnboardingWizard({
                     value={selfAssessedLevel}
                     onChange={setSelfAssessedLevel}
                   />
+                  <p className="mt-3 text-sm text-muted">
+                    Không chắc?{" "}
+                    <Link
+                      href="/kiem-tra-trinh-do"
+                      className="font-semibold text-primary hover:underline"
+                    >
+                      Làm bài kiểm tra trình độ 2–5 phút
+                    </Link>
+                  </p>
                 </div>
               )}
               <div className={styles.wizardFooter}>

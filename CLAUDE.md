@@ -25,8 +25,9 @@ app/
 ├── auth/callback        nhận redirect sau Google OAuth
 ├── auth/verify-email
 ├── (app)/learn          TRANG CHỦ sau đăng nhập (dashboard đã gộp vào, /dashboard → 308)
-├── (app)/kham-pha       gom mọi công cụ luyện thêm (nghe, phát âm, viết, nói AI, video, trò
-│                        chơi, từ điển, ngữ pháp) — danh mục ở `lib/explore.ts`
+├── kiem-tra-trinh-do    KIỂM TRA TRÌNH ĐỘ (công khai, index được — "kiểm tra trình độ tiếng
+│                        Trung" là truy vấn hay tìm): hỏi dần HSK1→7-9, khung tập trung như
+│                        /bai-hoc, xem "Lộ trình một nút bấm" ở Trạng thái
 ├── study               ÔN TẬP: chỉ từ đã học đến hạn (không còn lấy từ mới) + quiz cuối buổi
 ├── progress            bucket đã thuộc / đang học / sắp quên theo cấp; có lịch hoạt động 30
 │                        ngày (`components/activity-calendar.tsx`, dùng GET /streak/history) +
@@ -340,9 +341,27 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   một cấp. `/learn?level=N` (thẻ cấp ở trang chủ) = chọn cấp đó.
 - **Ôn tập `/study` chỉ ôn từ đã học** — server không còn trả từ mới khi không có bài/cấp (gốc
   của lỗi HSK4). Màn trống nói rõ + nút học bài tiếp theo.
-- **Menu 16 → 8 mục**: Học, Ôn tập (có số từ đến hạn), Luyện thi HSK · Khám phá, Xếp hạng · Tiến
-  độ, Tin nhắn, Tài khoản. "So với bạn bè" chuyển sang `/leaderboard`; từ vựng hôm nay + kệ video
-  sang `/kham-pha`. Mặc định sau đăng nhập: `HOME_PATH` (`lib/auth-redirect.ts`).
+- **Sidebar nhóm thu gọn kiểu Hanbeego** (`NAV_SECTIONS` trong `components/sidebar.tsx`, đổi
+  2026-10-05): HỌC TẬP (Trang chủ, Ôn tập & flashcard + số từ đến hạn, Luyện thi HSK, nhóm "Kỹ
+  năng" nghe/phát âm/nói AI/viết, nhóm "Từ vựng & ngữ pháp") · GIẢI TRÍ & CỘNG ĐỒNG (nhóm "Video &
+  trò chơi", Xếp hạng, Tin nhắn + số chưa đọc) · CỦA BẠN (Tiến độ, Tài khoản). Nhóm tự mở khi
+  đang ở trang bên trong. Trang `/kham-pha` gom công cụ phụ đã XOÁ — sidebar đủ chỗ cho mọi thứ.
+  `NAV_LINKS` (dẹt) dùng cho nhãn breadcrumb ở `app-shell.tsx`. "So với bạn bè" ở `/leaderboard`.
+  Mặc định sau đăng nhập: `HOME_PATH` (`lib/auth-redirect.ts`).
+- **`/study` không tham số = chọn bộ thẻ** (`components/study/study-hub.tsx`); `?review=1` ôn
+  từ đến hạn, `?lesson=` ôn đúng 1 bài (gồm MỌI từ của bài, kể cả từ vừa học chưa tới hạn — nếu
+  không thì vừa học xong bấm "Ôn bằng flashcard" sẽ ra "không có từ cần ôn"), `?leeches=1`.
+- **Kiểm tra trình độ `/kiem-tra-trinh-do`** (`components/placement-test.tsx`, 2026-10-06) — thay
+  cho TỰ KHAI cấp. Đề lấy 1 lần (`GET /learn/placement`), câu hỏi dùng lại `ChoiceStep` của phiên
+  học; hỏi dần từ HSK1: đúng 3 là qua cấp (đủ 3 thì bỏ câu thứ 4), sai 2 là dừng và đề xuất cấp
+  đó. Nút "Tôi chưa biết từ này" (tính sai, chỉ hiện đáp án) để người mới không phải đoán bừa.
+  Kết quả → `/bat-dau?level=N` (khách vào bài 1, đã đăng nhập thì lưu cấp). Khách: cấp ghi tạm
+  `savePendingCourseLevel()` → đăng ký xong `drainPendingCourseLevel()` đặt cấp lộ trình (chạy SAU
+  bài học chờ — kết quả đo thật thắng cấp tự khai). Lối vào: nút "Tôi đã biết một chút" ở trang
+  chủ, link cạnh tab cấp ở `/learn`, link ở bước 1 khảo sát, trợ lý AI (`placement`), sitemap.
+- **Popup mời cài PWA chỉ hiện từ lần ghé THỨ HAI** (`returningVisitor()` +
+  `hanni-first-seen` trong `components/pwa/install-prompt.tsx`) — lần đầu tới chỉ để học thử,
+  popup che màn đầu tiên là thêm ma sát.
 
 Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard (lật 3D, chạm cả thẻ — mặt
 sau hiện thêm badge **"Hán Việt: ..."** nếu `word.hanViet` có dữ liệu, xem `hanni-server/

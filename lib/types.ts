@@ -932,6 +932,15 @@ export interface LessonSession {
   steps: SessionStep[];
 }
 
+/** Đề kiểm tra trình độ (`GET /learn/placement`): mỗi cấp vài câu trắc nghiệm
+ * từ từ vựng thật của cấp đó; client hỏi dần từ HSK1 lên. */
+export interface PlacementTest {
+  perLevel: number;
+  passPerLevel: number;
+  words: Pick<SessionWord, "id" | "simplified" | "pinyin" | "meaningVi" | "audioUrl">[];
+  levels: { level: number; steps: Extract<SessionStep, { kind: "choice" }>[] }[];
+}
+
 export interface LessonCompleteResult {
   lessonId: string;
   newWords: number;

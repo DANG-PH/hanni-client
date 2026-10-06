@@ -10,7 +10,7 @@ import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { HOME_PATH, safeNextPath } from "@/lib/auth-redirect";
 import { addWordToSrs, submitOnboarding } from "@/lib/hooks";
-import { drainPendingLessons } from "@/lib/pending-lessons";
+import { drainPendingCourseLevel, drainPendingLessons } from "@/lib/pending-lessons";
 import { drainPendingWords } from "@/lib/pending-words";
 import type { SubmitOnboardingInput } from "@/lib/types";
 
@@ -45,18 +45,20 @@ async function submitPendingOnboarding(): Promise<boolean> {
   }
 }
 
-/** Khảo sát + từ học thử + các BÀI HỌC đã làm lúc chưa có tài khoản. Khảo
- * sát nộp TRƯỚC: nó đặt cấp lộ trình theo đề xuất, rồi bài đã học (nếu có)
- * mới là thứ quyết định cuối cùng. Có bài nào thì vào thẳng lộ trình — đã học
- * xong bài 1 rồi mà còn bắt làm khảo sát là đẩy ngược người ta ra khỏi đà
- * đang học. */
+/** Khảo sát + từ học thử + các BÀI HỌC + kết quả kiểm tra trình độ đã làm lúc
+ * chưa có tài khoản. Khảo sát nộp TRƯỚC: nó đặt cấp lộ trình theo cấp TỰ KHAI;
+ * bài đã học đặt lại theo cấp của bài; kết quả kiểm tra (đo thật) đặt SAU
+ * CÙNG. Có bất kỳ thứ gì thì vào thẳng lộ trình — đã học xong bài 1 hay đã
+ * làm bài kiểm tra rồi mà còn bắt làm khảo sát là đẩy ngược người ta ra khỏi
+ * đà đang học. */
 async function saveGuestProgress() {
   const onboarded = await submitPendingOnboarding();
   const [words, lessons] = await Promise.all([
     saveTrialWords(),
     drainPendingLessons(),
   ]);
-  return { words, lessons, onboarded };
+  const placed = await drainPendingCourseLevel();
+  return { words, lessons, onboarded: onboarded || placed };
 }
 
 export function AuthFormCard({
