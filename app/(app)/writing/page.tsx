@@ -158,7 +158,7 @@ export default function WritingPage() {
         <TourButton tourKey="writing" />
       </PageHeading>
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
-        <Card className="order-2 flex flex-col items-center gap-2 py-8 lg:order-1">
+        <Card className="order-2 flex min-w-0 flex-col items-center gap-2 py-8 lg:order-1">
           {indexError ? (
             <EmptyState
               title="Chưa tải được danh sách chữ"
@@ -212,7 +212,7 @@ export default function WritingPage() {
             </>
           )}
         </Card>
-        <Card className="order-1 space-y-4 lg:order-2 lg:sticky lg:top-24">
+        <Card className="order-1 min-w-0 space-y-4 lg:order-2 lg:sticky lg:top-24">
           <div className="relative">
             <Icon
               name="search"

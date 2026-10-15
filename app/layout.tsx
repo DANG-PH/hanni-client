@@ -45,11 +45,13 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false },
   title,
   description,
+  // KHÔNG khai title/description cứng ở đây: Next tự lấy `title`/`description`
+  // của từng trang làm og:title/og:description khi layout không đặt sẵn. Đặt
+  // cứng thì link nào chia sẻ lên Facebook/Zalo cũng hiện "Hanni — Học tiếng
+  // Trung…", kể cả link đề thi thử từ nút "Chia sẻ" kết quả (sửa 2026-10-15).
   openGraph: {
     type: "website",
     siteName: "Hanni",
-    title,
-    description,
     images: [
       {
         url: "/themes.png",
@@ -61,8 +63,6 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title,
-    description,
     images: ["/themes.png"],
   },
 };

@@ -7,7 +7,7 @@ import { PlacementTest } from "@/components/placement-test";
 export const metadata: Metadata = {
   title: "Kiểm tra trình độ tiếng Trung miễn phí — bạn đang ở HSK mấy? | Hanni",
   description:
-    "Bài kiểm tra trình độ tiếng Trung online miễn phí, không cần đăng ký: câu hỏi nghe – đọc bằng từ vựng HSK 3.0 thật, hỏi dần từ HSK1 đến HSK7–9, biết ngay nên bắt đầu học từ cấp nào. Khoảng 2–5 phút.",
+    "Bài kiểm tra trình độ tiếng Trung online miễn phí, không cần đăng ký: câu hỏi nghe – đọc bằng từ vựng HSK 3.0 thật, chọn cấp bắt đầu, đúng thì lên cấp, sai thì xuống cấp — biết ngay nên học từ HSK mấy. Khoảng 2–5 phút.",
   alternates: { canonical: "/kiem-tra-trinh-do" },
 };
 

@@ -504,12 +504,14 @@ function Intro({
             </li>
           </ul>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border px-4 py-3">
-            <Button variant="secondary" onClick={testAudio} disabled={voice === "checking"} className="h-9 px-3! text-sm">
+          {/* Điện thoại: nút trên, lời nhắc dưới — để cùng hàng `flex-wrap` thì
+           * lời nhắc `flex-1` bị bóp còn ~60px ở màn 360px. */}
+          <div className="mt-5 flex flex-col items-start gap-2 rounded-2xl border border-border px-4 py-3 sm:flex-row sm:items-center sm:gap-3">
+            <Button variant="secondary" onClick={testAudio} disabled={voice === "checking"} className="h-9 shrink-0 px-3! text-sm">
               <Icon name="sound" size={16} />
               Kiểm tra âm thanh
             </Button>
-            <p className="min-w-0 flex-1 text-xs text-muted">
+            <p className="min-w-0 text-xs text-muted sm:flex-1">
               {voice === "ok"
                 ? "Nghe rõ là ổn. Nên dùng tai nghe như phòng thi thật."
                 : voice === "missing"
@@ -887,9 +889,10 @@ function Result({
                 </div>
               </div>
               {!isGuest && wrongWords.length > 0 && (
-                <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
-                  <Icon name="cards" size={18} className="shrink-0 text-primary" />
-                  <p className="min-w-0 flex-1">
+                <div className="flex flex-col gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm sm:flex-row sm:items-center">
+                  <p className="flex min-w-0 items-start gap-3 sm:flex-1">
+                    <Icon name="cards" size={18} className="mt-0.5 shrink-0 text-primary" />
+                    <span>
                     {saveState === "saved" ? (
                       <>Đã thêm {wrongWords.length} từ vào Ôn tập — Hanni sẽ nhắc đúng lúc bạn sắp quên.</>
                     ) : (
@@ -899,13 +902,14 @@ function Result({
                         để ôn, lần sau gặp là nhận ra.
                       </>
                     )}
+                    </span>
                   </p>
                   {saveState === "saved" ? (
                     <Link href="/study" className="font-semibold text-primary hover:underline">
                       Ôn ngay
                     </Link>
                   ) : (
-                    <Button onClick={saveWords} disabled={saveState === "saving"} className="h-9 px-4! text-sm">
+                    <Button onClick={saveWords} disabled={saveState === "saving"} className="h-9 shrink-0 px-4! text-sm">
                       {saveState === "saving" ? "Đang lưu…" : "Lưu vào Ôn tập"}
                     </Button>
                   )}

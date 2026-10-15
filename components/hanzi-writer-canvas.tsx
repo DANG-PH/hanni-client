@@ -59,6 +59,11 @@ export function HanziWriterCanvas({
   const writerRef = useRef<HanziWriter | null>(null);
   const [mode, setMode] = useState<Mode>("watch");
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  // Khung 280px tràn ngang trang ở điện thoại 360px (lề trang + thẻ + viền ăn
+  // ~100px) — màn hẹp thì thu nhỏ khung cho vừa.
+  const [size] = useState(() =>
+    typeof window === "undefined" ? 280 : Math.max(220, Math.min(280, window.innerWidth - 100)),
+  );
   const [quizFeedback, setQuizFeedback] = useState<
     { state: "mistake" | "correct" | "done"; mistakes?: number } | null
   >(null);
@@ -70,8 +75,8 @@ export function HanziWriterCanvas({
     hostRef.current.innerHTML = "";
 
     const writer = HanziWriter.create(hostRef.current, char, {
-      width: 280,
-      height: 280,
+      width: size,
+      height: size,
       padding: 16,
       strokeAnimationSpeed: 1,
       delayBetweenStrokes: 250,
@@ -174,14 +179,17 @@ export function HanziWriterCanvas({
           </div>
         )}
         {status === "error" && (
-          <div className="flex h-[280px] w-[280px] items-center justify-center px-6 text-center text-xs text-muted">
+          <div
+            className="flex items-center justify-center px-6 text-center text-xs text-muted"
+            style={{ width: size, height: size }}
+          >
             Chưa có dữ liệu nét viết cho chữ này.
           </div>
         )}
         <div
           ref={hostRef}
           className="[&_svg]:!bg-transparent"
-          style={{ width: 280, height: 280, visibility: status === "ready" ? "visible" : "hidden" }}
+          style={{ width: size, height: size, visibility: status === "ready" ? "visible" : "hidden" }}
         />
       </div>
       <div className="flex items-center justify-between gap-3">

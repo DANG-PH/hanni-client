@@ -224,7 +224,9 @@ export default function ExamsPage() {
                 <span>1</span> Chọn cấp độ HSK
               </legend>
               <div className={styles.examLevels}>
-                {levels.data.map((item) => (
+                {/* HSK 8, 9 thi chung với 7 (từ vựng gộp vào cấp 7) — API vẫn trả
+                 * 2 cấp đó với 0 từ, chọn vào là ra bài kiểm tra rỗng. */}
+                {levels.data.filter((item) => item.wordsInDb > 0).map((item) => (
                   <button
                     key={item.level}
                     type="button"

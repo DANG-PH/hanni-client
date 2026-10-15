@@ -65,19 +65,25 @@ export function NotificationNudge() {
   }
 
   return (
-    <div className="panel tint-primary flex flex-wrap items-center gap-4 p-5">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary">
-        <Icon name="flame" size={22} />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold">Đừng để mất chuỗi ngày học</p>
-        <p className="mt-1 text-xs leading-5 text-muted">
-          Bật thông báo để Hanni nhắc bạn ôn đúng lúc sắp quên, và báo khi có
-          tin nhắn hay ai đó trả lời bạn.
-        </p>
+    // Điện thoại: chữ một hàng, nút một hàng bên dưới. Đừng để 2 nút cùng hàng
+    // với khối chữ `flex-1` trong `flex-wrap`: khối chữ rộng gốc = 0 nên nút
+    // không bao giờ xuống dòng, chữ bị bóp còn 1 từ/dòng (user chụp trên Android).
+    <div className="panel tint-primary flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
+      <div className="flex min-w-0 flex-1 items-start gap-4">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary">
+          <Icon name="flame" size={22} />
+        </span>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold">Đừng để mất chuỗi ngày học</p>
+          <p className="mt-1 text-xs leading-5 text-muted">
+            Bật thông báo để Hanni nhắc bạn ôn đúng lúc sắp quên, và báo khi có
+            tin nhắn hay ai đó trả lời bạn.
+          </p>
+        </div>
       </div>
-      <div className="flex shrink-0 gap-2">
+      <div className="flex gap-2 sm:shrink-0">
         <Button
+          className="flex-1 sm:flex-none"
           disabled={busy}
           onClick={async () => {
             setBusy(true);

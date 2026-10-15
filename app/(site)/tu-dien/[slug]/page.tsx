@@ -110,9 +110,13 @@ export async function generateMetadata({
     alternates: { canonical: `/tu-dien/${encodeURIComponent(w.simplified)}` },
     // Ảnh minh hoạ vào cả thẻ Open Graph để link chia sẻ ra ngoài có ảnh
     // thay vì chỉ một khối chữ.
-    openGraph: w.imageUrl
-      ? { title, description, images: [{ url: w.imageUrl }] }
-      : { title, description },
+    // Khai `openGraph` ở trang là thay HẲN của layout — không có ảnh minh hoạ
+    // thì phải tự gắn lại ảnh chung, không link chia sẻ sẽ trơn không ảnh.
+    openGraph: {
+      title,
+      description,
+      images: [w.imageUrl ? { url: w.imageUrl } : { url: "/themes.png", width: 1672, height: 941 }],
+    },
   };
 }
 

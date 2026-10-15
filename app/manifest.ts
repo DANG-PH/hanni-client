@@ -1,5 +1,8 @@
 import type { MetadataRoute } from "next";
 
+/** Tăng khi đổi hình icon app (xem `scripts/make-icons.py`). */
+const ICON_VERSION = 2;
+
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -31,21 +34,24 @@ export default function manifest(): MetadataRoute.Manifest {
     related_applications: [
       { platform: "webapp", url: `${siteUrl}/manifest.webmanifest` },
     ],
+    // `?v=` đổi mỗi lần đổi hình icon: Chrome Android so manifest của app ĐÃ
+    // cài (~1 lần/ngày khi mở app) — đường dẫn khác hẳn thì chắc chắn nhận ra
+    // icon mới (2026-10-15 đổi sang cáo Hanni, máy đã cài vẫn giữ icon cũ).
     icons: [
       {
-        src: "/icons/icon-192.png",
+        src: `/icons/icon-192.png?v=${ICON_VERSION}`,
         sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/icons/icon-512.png",
+        src: `/icons/icon-512.png?v=${ICON_VERSION}`,
         sizes: "512x512",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/icons/icon-maskable-512.png",
+        src: `/icons/icon-maskable-512.png?v=${ICON_VERSION}`,
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable",
@@ -57,7 +63,7 @@ export default function manifest(): MetadataRoute.Manifest {
         short_name: "Vào học",
         url: "/learn",
         icons: [
-          { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: `/icons/icon-192.png?v=${ICON_VERSION}`, sizes: "192x192", type: "image/png" },
         ],
       },
       {
@@ -65,7 +71,7 @@ export default function manifest(): MetadataRoute.Manifest {
         short_name: "Ôn tập",
         url: "/study",
         icons: [
-          { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: `/icons/icon-192.png?v=${ICON_VERSION}`, sizes: "192x192", type: "image/png" },
         ],
       },
     ],

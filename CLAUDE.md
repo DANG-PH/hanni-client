@@ -307,6 +307,14 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
   `key={lessonId ?? "review"}`), đã áp dụng lại cho `/grammar`, `/listening`, `/pronunciation`.
 - Biến môi trường client: prefix `NEXT_PUBLIC_`. API base: `NEXT_PUBLIC_API_URL`.
 - Màu qua token Tailwind (`bg-surface`, `text-muted`, `bg-primary`…), không hardcode hex.
+- **Hàng có chữ + nút trên điện thoại**: KHÔNG đặt khối chữ `min-w-0 flex-1` cạnh nút `shrink-0`
+  trong cùng `flex flex-wrap` — `flex-1` có độ rộng gốc 0 nên nút không bao giờ xuống dòng, chữ bị
+  bóp còn 1 từ/dòng (user chụp trên Android 2026-10-15: thẻ nhắc bật thông báo). Dùng `flex-col`
+  trên điện thoại, `sm:flex-row` từ màn vừa. Tương tự cột lưới chứa nội dung rộng cố định (khung
+  vẽ chữ 280px, hàng tab cuộn ngang) cần `min-w-0`, không thì cả trang tràn ngang ở máy 360px.
+  Kiểm tra: dựng bản production (`NEXT_PUBLIC_API_URL=… npm run build && next start`) — thẻ nhắc
+  thông báo, worker chỉ có ở bản production; Chromium headless mặc định TỪ CHỐI quyền thông báo nên
+  phải giả `Notification.permission = "default"` thì thẻ mới hiện.
 - Next.js 16: đọc `node_modules/next/dist/docs/` khi cần — `params`/`searchParams`/`cookies()` là async.
 
 ## Chạy
@@ -418,6 +426,11 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   sau mỗi lần ra trang công khai mới. **Google không hỗ trợ IndexNow**: cần chủ domain xác minh
   Search Console (cách "Thẻ HTML" → đặt biến `GOOGLE_SITE_VERIFICATION` trên Vercel, `app/layout.tsx`
   tự gắn meta) rồi nộp `/sitemap.xml`.
+- **Xem trước khi chia sẻ link (Open Graph)**: `app/layout.tsx` chỉ khai ảnh chung, KHÔNG khai
+  `openGraph.title/description` — Next tự lấy `title`/`description` của từng trang (`inheritFromMetadata`).
+  Trước 2026-10-15 layout đặt cứng nên link nào chia sẻ lên Facebook/Zalo cũng hiện "Hanni — Học tiếng
+  Trung theo HSK 3.0". Trang nào tự khai `openGraph` là thay HẲN của layout → phải tự gắn lại ảnh
+  (xem `tu-dien/[slug]`).
 - **Popup mời cài PWA chỉ hiện từ lần ghé THỨ HAI** (`returningVisitor()` +
   `hanni-first-seen` trong `components/pwa/install-prompt.tsx`) — lần đầu tới chỉ để học thử,
   popup che màn đầu tiên là thêm ma sát.
