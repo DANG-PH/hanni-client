@@ -389,6 +389,12 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   nhóm "Từ vựng & ngữ pháp", menu khách "Phát âm" (thay "Luyện tập" → `/listening` cần đăng nhập),
   trợ lý AI (`pinyin`). Nút CTA cuối trang: khách → `/bat-dau?level=1`, đã đăng nhập → `/learn`
   (KHÔNG `/bat-dau?level=1`: trang đó lưu luôn cấp 1, người đang học HSK 3 sẽ bị đổi cấp).
+- **Được công cụ tìm kiếm biết tới (2026-10-15)** — đo 9 ngày sau khi ra đề thi thử: 0 người dùng
+  mới, công cụ tìm kiếm chưa thấy trang nào của site. `scripts/indexnow.mjs` báo URL qua IndexNow
+  (Bing — nguồn của ChatGPT Search/DuckDuckGo —, Yandex…; khoá = `public/<KEY>.txt`) — chạy lại
+  sau mỗi lần ra trang công khai mới. **Google không hỗ trợ IndexNow**: cần chủ domain xác minh
+  Search Console (cách "Thẻ HTML" → đặt biến `GOOGLE_SITE_VERIFICATION` trên Vercel, `app/layout.tsx`
+  tự gắn meta) rồi nộp `/sitemap.xml`.
 - **Popup mời cài PWA chỉ hiện từ lần ghé THỨ HAI** (`returningVisitor()` +
   `hanni-first-seen` trong `components/pwa/install-prompt.tsx`) — lần đầu tới chỉ để học thử,
   popup che màn đầu tiên là thêm ma sát.

@@ -25,6 +25,12 @@ const siteUrl =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  // Mã xác minh Google Search Console (cách "Thẻ HTML") — chỉ chủ domain lấy
+  // được, đặt biến môi trường trên Vercel rồi deploy lại. Chưa xác minh thì
+  // Google chỉ biết tới site khi tình cờ có link trỏ vào.
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
   applicationName: "Hanni",
   appleWebApp: { capable: true, title: "Hanni", statusBarStyle: "default" },
   icons: {
