@@ -38,6 +38,7 @@ export const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
         label: "Từ vựng & ngữ pháp",
         icon: "book",
         children: [
+          { href: "/phien-am", label: "Bảng phiên âm (pinyin)", icon: "sound" },
           { href: "/tu-dien", label: "Từ điển", icon: "search" },
           { href: "/ngu-phap", label: "Ngữ pháp & mẫu câu", icon: "book" },
           { href: "/tu-da-biet", label: "Từ bạn đã biết sẵn", icon: "heart" },

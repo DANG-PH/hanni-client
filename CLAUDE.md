@@ -376,6 +376,19 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   phương án ĐÃ CHỌN dùng màu tối trung tính (`foreground`) — màu chủ đạo Hanni là đỏ, tô đỏ lúc
   đang làm bài trông như báo sai; xanh/đỏ chỉ dùng khi chữa bài. Khách làm xong bấm "Lưu điểm"
   → `savePendingExam()` → đăng ký xong `drainPendingExam()` nộp lại bằng tài khoản.
+- **Bảng phiên âm `/phien-am`** (`app/(site)/phien-am`, `components/pinyin/`, `lib/pinyin.ts`,
+  2026-10-15) — bước 拼/声 của dải "Sáu chặng" ở trang chủ trước đó trỏ sang `/tu-dien` và
+  `/pronunciation` (hứa "làm quen phiên âm", "nghe mā má mǎ mà" mà không có chỗ nào dạy). Công khai,
+  server render cho SEO ("bảng phiên âm tiếng Trung" là truy vấn lớn). Gồm: 4 thanh + đường cao độ
+  SVG + so với dấu tiếng Việt + 3 quy tắc biến điệu; **mẹo Hán Việt → thanh** với tỉ lệ đúng ĐO
+  THẬT từ server (thanh ngang → 1 đúng 96%...); 21 thanh mẫu / 36 vận mẫu đọc theo kiểu "gần âm
+  Việt nào"; bảng ghép âm theo phụ âm đầu (ô trống = thanh không có chữ đơn 1 cách đọc có ghi âm —
+  để trống chứ không phát sai); luyện nghe 10 câu chọn thanh (đề dựng + phát câu đầu NGAY trong
+  lượt bấm "Bắt đầu" — trình duyệt chỉ cho tự phát âm thanh trong sự kiện người dùng). Lối vào:
+  "Sáu chặng", nút "Học phát âm trước (10 phút)" ở `/learn` (HSK 1 chưa xong bài nào), sidebar
+  nhóm "Từ vựng & ngữ pháp", menu khách "Phát âm" (thay "Luyện tập" → `/listening` cần đăng nhập),
+  trợ lý AI (`pinyin`). Nút CTA cuối trang: khách → `/bat-dau?level=1`, đã đăng nhập → `/learn`
+  (KHÔNG `/bat-dau?level=1`: trang đó lưu luôn cấp 1, người đang học HSK 3 sẽ bị đổi cấp).
 - **Popup mời cài PWA chỉ hiện từ lần ghé THỨ HAI** (`returningVisitor()` +
   `hanni-first-seen` trong `components/pwa/install-prompt.tsx`) — lần đầu tới chỉ để học thử,
   popup che màn đầu tiên là thêm ma sát.

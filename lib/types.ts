@@ -1023,6 +1023,25 @@ export interface MockExamResult {
   review: MockReviewItem[];
 }
 
+/** Bảng phiên âm (`GET /pinyin/overview`): âm tiết có ghi âm thật (chữ đơn
+ * 1 cách đọc) + quy luật Hán Việt → thanh kèm tỉ lệ đúng đo trên HSK 1–4. */
+export interface SyllableSound {
+  char: string;
+  mark: string;
+  url: string;
+}
+
+export interface PinyinOverview {
+  syllables: { base: string; tones: Partial<Record<"1" | "2" | "3" | "4", SyllableSound>> }[];
+  toneRules: {
+    key: string;
+    predicted: number | null;
+    total: number;
+    follows: number;
+    examples: { char: string; hanViet: string; mark: string; url: string | null }[];
+  }[];
+}
+
 export interface LessonCompleteResult {
   lessonId: string;
   newWords: number;

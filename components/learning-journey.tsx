@@ -23,8 +23,8 @@ const STAGES: Stage[] = [
     label: "Pinyin",
     title: "Làm quen với phiên âm",
     desc: "Bắt đầu từ thanh mẫu, vận mẫu và cách ghép âm. Một nền tảng nhỏ để bạn tự tin đọc những chữ Hán đầu tiên.",
-    href: "/tu-dien",
-    action: "Khám phá phiên âm",
+    href: "/phien-am",
+    action: "Học bảng phiên âm",
     accent: "red",
   },
   {
@@ -33,8 +33,8 @@ const STAGES: Stage[] = [
     label: "Thanh điệu",
     title: "Cùng một âm, bốn thanh điệu",
     desc: "Nghe và phân biệt mā, má, mǎ, mà cùng thanh nhẹ. Luyện từng âm ngắn để phát âm rõ ngay từ đầu.",
-    href: "/pronunciation",
-    action: "Luyện thanh điệu",
+    href: "/phien-am#thanh-dieu",
+    action: "Nghe 4 thanh điệu",
     accent: "amber",
   },
   {

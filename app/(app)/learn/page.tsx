@@ -158,6 +158,12 @@ function LearnHome() {
                         <Icon name="play" size={16} />
                         {data.completedLessons === 0 ? "Bắt đầu học" : "Học tiếp"}
                       </LinkButton>
+                      {data.level === 1 && data.completedLessons === 0 && (
+                        <LinkButton href="/phien-am" variant="secondary">
+                          <Icon name="sound" size={16} />
+                          Học phát âm trước (10 phút)
+                        </LinkButton>
+                      )}
                       {!isCourse && (
                         <Button variant="secondary" disabled={switching} onClick={() => void chooseLevel(data.level)}>
                           Chọn học HSK {data.level === 7 ? "7–9" : data.level}

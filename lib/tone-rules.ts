@@ -9,4 +9,5 @@ export const TONE_RULE_TEXT: Record<string, string> = {
   sac_nang: "Dấu sắc, nặng → thường là thanh 4",
   nhap_nang: "Dấu nặng, tận cùng -p/-t/-c/-ch → thường là thanh 2",
   nhap_nang_vang: "Dấu nặng, tận cùng -p/-t/-c/-ch, mở đầu m/n/l/v/d → thường là thanh 4",
+  nhap_sac: "Dấu sắc, tận cùng -p/-t/-c/-ch → rải đều 4 thanh, phải nhớ riêng",
 };

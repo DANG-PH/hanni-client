@@ -23,6 +23,7 @@ export default function robots(): MetadataRoute.Robots {
         "/hsk",
         "/ngu-phap",
         "/thi-thu-hsk",
+        "/phien-am",
         "/kiem-tra-trinh-do",
         "/login",
         "/register",
