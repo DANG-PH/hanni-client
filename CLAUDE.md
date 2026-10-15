@@ -366,8 +366,10 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   không thì vừa học xong bấm "Ôn bằng flashcard" sẽ ra "không có từ cần ôn"), `?leeches=1`.
 - **Kiểm tra trình độ `/kiem-tra-trinh-do`** (`components/placement-test.tsx`, 2026-10-06) — thay
   cho TỰ KHAI cấp. Đề lấy 1 lần (`GET /learn/placement`), câu hỏi dùng lại `ChoiceStep` của phiên
-  học; hỏi dần từ HSK1: đúng 3 là qua cấp (đủ 3 thì bỏ câu thứ 4), sai 2 là dừng và đề xuất cấp
-  đó. Nút "Tôi chưa biết từ này" (tính sai, chỉ hiện đáp án) để người mới không phải đoán bừa.
+  học; đúng 3 là qua cấp (đủ 3 thì bỏ câu thứ 4), sai 2 là trượt cấp đó. **Chọn cấp bắt đầu**
+  (2026-10-15, như "Đánh giá năng lực" của Hanzii — người đã học HSK 3 khỏi làm lại câu HSK 1, mặc
+  định vẫn HSK 1): qua thì lên cấp; trượt NGAY cấp xuất phát thì xuống dần tới khi gặp cấp vững.
+  Cấp đề xuất = cấp THẤP NHẤT chưa vững (đúng cho cả 2 chiều, `recommendedLevel()`). Nút "Tôi chưa biết từ này" (tính sai, chỉ hiện đáp án) để người mới không phải đoán bừa.
   Kết quả → `/bat-dau?level=N` (khách vào bài 1, đã đăng nhập thì lưu cấp). Khách: cấp ghi tạm
   `savePendingCourseLevel()` → đăng ký xong `drainPendingCourseLevel()` đặt cấp lộ trình (chạy SAU
   bài học chờ — kết quả đo thật thắng cấp tự khai). Lối vào: nút "Tôi đã biết một chút" ở trang

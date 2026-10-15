@@ -24,11 +24,23 @@ interface LevelScore {
 
 /** "Không biết" — tính là sai nhưng không tô đỏ ô nào, chỉ hiện đáp án. */
 const SKIPPED = -1;
+const START_LEVELS = [1, 2, 3, 4, 5, 6];
+
+/** Cấp nên học = cấp THẤP NHẤT chưa vững; vững hết thì cấp cao nhất đã hỏi.
+ * Đúng cho cả 2 chiều: đi lên (dừng ở cấp trượt đầu tiên) lẫn đi xuống (trượt
+ * cấp xuất phát, xuống tới khi gặp cấp vững — cấp nên học là cấp ngay trên). */
+function recommendedLevel(scores: LevelScore[]) {
+  const failed = scores.filter((s) => !s.passed).map((s) => s.level);
+  if (failed.length) return Math.min(...failed);
+  return Math.max(1, ...scores.map((s) => s.level));
+}
 
 /**
  * Kiểm tra trình độ đầu vào — thay cho việc TỰ KHAI cấp ở khảo sát (Hanbeego,
- * Hanpeak, XieHanzi đều có). Hỏi dần từ HSK1 lên: mỗi cấp tối đa 4 câu, đúng 3
- * là qua (đủ 3 thì bỏ câu cuối), sai 2 là dừng và đề xuất học từ cấp đó.
+ * Hanpeak, XieHanzi đều có). Mỗi cấp tối đa 4 câu, đúng 3 là qua (đủ 3 thì bỏ
+ * câu cuối), sai 2 là trượt cấp đó. Bắt đầu từ cấp người học chọn (như "Đánh
+ * giá năng lực" của Hanzii — người đã học HSK 3 khỏi làm lại câu HSK 1): qua
+ * thì lên cấp, trượt ngay cấp xuất phát thì xuống dần tới khi gặp cấp vững.
  * Khách làm được không cần tài khoản; kết quả ghi tạm để đăng ký xong thành cấp
  * lộ trình (`savePendingCourseLevel`).
  */
@@ -43,6 +55,8 @@ export function PlacementTest() {
   const [picked, setPicked] = useState<number | null>(null);
   const [tally, setTally] = useState({ correct: 0, wrong: 0 });
   const [scores, setScores] = useState<LevelScore[]>([]);
+  const [startLevel, setStartLevel] = useState(1);
+  const [goingDown, setGoingDown] = useState(false);
 
   const words = useMemo(
     () => new Map((test?.words ?? []).map((w) => [w.id, w])),
@@ -59,7 +73,9 @@ export function PlacementTest() {
       const levels = t.levels.filter((l) => l.steps.length > 0);
       if (levels.length === 0) throw new Error("Đề trống");
       setTest({ ...t, levels });
-      setLevelIdx(0);
+      const from = levels.findIndex((l) => l.level >= startLevel);
+      setLevelIdx(from === -1 ? levels.length - 1 : from);
+      setGoingDown(false);
       setQIdx(0);
       setPicked(null);
       setTally({ correct: 0, wrong: 0 });
@@ -96,15 +112,20 @@ export function PlacementTest() {
     }
     const done = [...scores, { level: level.level, correct: tally.correct, asked, passed: !failed }];
     setScores(done);
-    if (!failed && levelIdx + 1 < test.levels.length) {
-      setLevelIdx(levelIdx + 1);
+    const goTo = (idx: number) => {
+      setLevelIdx(idx);
       setQIdx(0);
       setTally({ correct: 0, wrong: 0 });
-      return;
+    };
+    // Đi lên khi còn qua cấp; trượt ngay cấp xuất phát thì quay xuống.
+    if (!goingDown && !failed && levelIdx + 1 < test.levels.length) return goTo(levelIdx + 1);
+    if (failed && levelIdx > 0 && (goingDown || done.length === 1)) {
+      setGoingDown(true);
+      return goTo(levelIdx - 1);
     }
-    if (!user) savePendingCourseLevel(level.level);
+    if (!user) savePendingCourseLevel(recommendedLevel(done));
     setPhase("result");
-  }, [test, level, tally, scores, qIdx, levelIdx, user]);
+  }, [test, level, tally, scores, qIdx, levelIdx, user, goingDown]);
 
   // Enter = Tiếp tục sau khi đã trả lời.
   useEffect(() => {
@@ -122,7 +143,9 @@ export function PlacementTest() {
 
   if (phase === "test" && test && level && step && word) {
     const correct = picked === null || picked === SKIPPED ? null : picked === step.answer;
-    const progress = ((levelIdx + qIdx / level.steps.length) / test.levels.length) * 100;
+    // Số cấp còn phải hỏi phụ thuộc câu trả lời — ước theo hướng đang đi, chặn 95%.
+    const span = goingDown ? scores.length + levelIdx + 1 : scores.length + test.levels.length - levelIdx;
+    const progress = Math.min(95, ((scores.length + qIdx / level.steps.length) / Math.max(1, span)) * 100);
     return (
       <div className="flex min-h-dvh flex-col bg-background">
         <header className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur">
@@ -210,7 +233,7 @@ export function PlacementTest() {
         </div>
       </header>
       <main
-        className="mx-auto w-full max-w-xl flex-1 px-4 py-10 text-center"
+        className="mx-auto w-full max-w-xl flex-1 px-4 py-6 text-center sm:py-10"
         style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
       >
         <Image
@@ -219,19 +242,54 @@ export function PlacementTest() {
           width={180}
           height={150}
           priority
-          className="mx-auto h-32 w-auto"
+          className="mx-auto h-20 w-auto sm:h-32"
         />
-        <p className="mt-5 text-[11px] font-bold tracking-wider text-primary">
+        <p className="mt-4 text-[11px] font-bold tracking-wider text-primary sm:mt-5">
           MIỄN PHÍ · KHÔNG CẦN ĐĂNG KÝ
         </p>
         <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight sm:text-3xl">
           Kiểm tra trình độ tiếng Trung
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted">
-          Trả lời vài câu nghe – đọc bằng từ vựng HSK 3.0 thật. Hanni hỏi dần từ HSK1
-          lên, dừng ở cấp bạn chưa vững rồi đề xuất cấp nên bắt đầu học — khoảng 2–5
-          phút.
+          Trả lời vài câu nghe – đọc bằng từ vựng HSK 3.0 thật. Đúng thì lên cấp, sai thì
+          xuống cấp, đủ chắc là dừng và đề xuất cấp nên bắt đầu học — khoảng 2–5 phút.
         </p>
+        <div className="mx-auto mt-6 max-w-md rounded-2xl border border-border bg-surface px-4 py-3 text-left">
+          <p className="text-sm font-semibold">Bắt đầu từ cấp</p>
+          <p className="text-xs text-muted">Chỉ là điểm xuất phát — bài sẽ tự lên/xuống theo câu trả lời.</p>
+          <div className="mt-2.5 flex flex-wrap gap-2" role="radiogroup" aria-label="Cấp bắt đầu">
+            {START_LEVELS.map((l) => (
+              <button
+                key={l}
+                type="button"
+                role="radio"
+                aria-checked={startLevel === l}
+                onClick={() => setStartLevel(l)}
+                className={`rounded-full border px-3.5 py-1.5 text-sm font-semibold ${
+                  startLevel === l
+                    ? "border-primary bg-primary text-primary-fg"
+                    : "border-border bg-surface hover:border-primary/40"
+                }`}
+              >
+                HSK {l}
+                {l === 1 && <span className="font-normal opacity-80"> · mới học</span>}
+              </button>
+            ))}
+          </div>
+        </div>
+        {phase === "error" && (
+          <p className="mt-5 text-sm text-danger">
+            Chưa tải được đề kiểm tra. Bạn kiểm tra kết nối mạng rồi thử lại nhé.
+          </p>
+        )}
+        <Button
+          onClick={start}
+          disabled={phase === "loading"}
+          className="mt-5 w-full sm:w-auto sm:px-10!"
+        >
+          {phase === "loading" ? "Đang chuẩn bị đề…" : "Bắt đầu kiểm tra"}
+          <Icon name="arrow" size={16} />
+        </Button>
         <ul className="mx-auto mt-6 grid max-w-md gap-2 text-left text-sm">
           {[
             { icon: "target" as const, text: "Mỗi cấp tối đa 4 câu — đúng 3 câu là qua cấp." },
@@ -247,19 +305,6 @@ export function PlacementTest() {
             </li>
           ))}
         </ul>
-        {phase === "error" && (
-          <p className="mt-5 text-sm text-danger">
-            Chưa tải được đề kiểm tra. Bạn kiểm tra kết nối mạng rồi thử lại nhé.
-          </p>
-        )}
-        <Button
-          onClick={start}
-          disabled={phase === "loading"}
-          className="mt-7 w-full sm:w-auto sm:px-10!"
-        >
-          {phase === "loading" ? "Đang chuẩn bị đề…" : "Bắt đầu kiểm tra"}
-          <Icon name="arrow" size={16} />
-        </Button>
         <p className="mt-5 text-xs text-muted">
           Chưa học tiếng Trung bao giờ?{" "}
           <Link href="/bat-dau?level=1" className="font-semibold text-primary hover:underline">
@@ -281,9 +326,10 @@ function Result({
   onRetry: () => void;
 }) {
   const failed = scores.find((s) => !s.passed);
-  const level = failed?.level ?? scores[scores.length - 1]?.level ?? 1;
+  const level = recommendedLevel(scores);
   const passed = scores.filter((s) => s.passed);
   const label = levelLabel(level);
+  const byLevel = [...scores].sort((a, b) => a.level - b.level);
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
@@ -310,11 +356,11 @@ function Result({
             ? "Học từ những từ cơ bản nhất là vừa sức nhất — mỗi bài 5–10 phút, nhiều từ đọc gần giống tiếng Việt nhờ âm Hán Việt."
             : !failed
               ? "Bạn nắm chắc từ vựng cả 6 cấp đầu — HSK 7–9 là chặng tiếp theo."
-              : `Bạn đã vững từ vựng HSK ${passed.length === 1 ? "1" : `1–${levelLabel(passed[passed.length - 1].level)}`}. Học tiếp từ HSK ${label} để không phải học lại thứ đã biết.`}
+              : `Bạn đã vững từ vựng tới HSK ${levelLabel(level - 1)}. Học tiếp từ HSK ${label} để không phải học lại thứ đã biết.`}
         </p>
 
         <ul className="mx-auto mt-6 grid max-w-sm gap-2 text-left">
-          {scores.map((s) => (
+          {byLevel.map((s) => (
             <li
               key={s.level}
               className={`flex items-center gap-3 rounded-2xl border px-4 py-2.5 ${
