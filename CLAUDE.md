@@ -407,6 +407,11 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   "Đánh giá năng lực" của Hanzii), khối **Phân tích điểm mạnh, yếu + Lịch sử làm bài** cho người đã
   đăng nhập (`/mock-exams/analysis/me`, `/attempts/me`). Hanzii/Hanbeego bắt đăng nhập (Hanzii còn
   bắt nâng cấp ngay cả đề miễn phí) mới cho làm — Hanni cho khách làm trọn vẹn là lợi thế, giữ nguyên.
+  **Hỏi trợ lý AI về từng câu** (lớp cuối "chat với trợ giảng AI" của Migii, 2026-10-15): nút "Hỏi trợ
+  lý Hanni về câu này" dưới mỗi câu đã chữa (người đã đăng nhập) → `askAssistant(text)` (sự kiện
+  `hanni:ask-assistant`) → widget tự mở, tạo phiên MỚI và gửi câu hỏi soạn sẵn (lời thoại/câu, đáp án
+  đúng, đáp án đã chọn, "dựa vào từ khoá nào"). Màn thi nằm ngoài khung app nên màn kết quả tự gắn
+  `<AssistantWidget />`. Câu hỏi ≤ 1000 ký tự (giới hạn `AskAssistantDto`).
 - **Bảng phiên âm `/phien-am`** (`app/(site)/phien-am`, `components/pinyin/`, `lib/pinyin.ts`,
   2026-10-15) — bước 拼/声 của dải "Sáu chặng" ở trang chủ trước đó trỏ sang `/tu-dien` và
   `/pronunciation` (hứa "làm quen phiên âm", "nghe mā má mǎ mà" mà không có chỗ nào dạy). Công khai,

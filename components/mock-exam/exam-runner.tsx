@@ -34,7 +34,8 @@ import type {
   MockSectionKind,
   MockWord,
 } from "@/lib/types";
-import { ExamItem, SharedBoard } from "./exam-items";
+import { AssistantWidget, askAssistant } from "@/components/assistant-widget";
+import { ExamItem, LETTERS, SharedBoard } from "./exam-items";
 const PART_ZH = ["第一部分", "第二部分", "第三部分", "第四部分"];
 
 /** Hướng dẫn từng dạng câu — đề thật in bằng tiếng Trung kèm ví dụ, ở đây nói
@@ -600,6 +601,40 @@ function Result({
   const practiceDone = Object.keys(practice).length;
   const practiceRight = wrongItems.filter((r) => practice[r.no] === r.answer).length;
 
+  /** Câu hỏi gửi trợ lý AI cho 1 câu đã chữa: nội dung câu, đáp án đúng và
+   * đáp án mình chọn — trợ lý trả lời đúng chỗ vướng, không phải hỏi lại. */
+  function askAbout(no: number, picked: MockAnswer | null) {
+    for (const section of paper.sections)
+      for (const [pi, part] of section.parts.entries()) {
+        const item = part.items.find((it) => it.no === no);
+        const r = review.get(no);
+        if (!item || !r) continue;
+        const describe = (v: MockAnswer | null) => {
+          if (v === null) return "bỏ trống";
+          if (typeof v === "boolean") return v ? "✓ (khớp với tranh)" : "✗ (không khớp tranh)";
+          const option = item.options?.[v] ?? part.options?.[v];
+          const picture = r.pictureLabels?.[v];
+          return `${LETTERS[v]}${option ? ` (${option.zh})` : picture ? ` (tranh: ${picture})` : ""}`;
+        };
+        const sentence = r.transcript?.length
+          ? `Lời thoại: ${r.transcript.map((l) => l.zh).join(" ")}`
+          : item.blank
+            ? `Câu: ${item.blank.before.zh}（ ）${item.blank.after.zh}`
+            : item.text
+              ? `Câu: ${item.text.zh}`
+              : "";
+        const lines = [
+          `Giải thích giúp mình câu ${no} — ${paper.title}, phần ${SECTION_SHORT[section.kind]} ${pi + 1} (${partInfo(section.kind, part.type).label}).`,
+          sentence.slice(0, 400),
+          part.type === "judge" && r.pictureLabels?.[0] ? `Tranh: ${r.pictureLabels[0]}.` : "",
+          `Đáp án đúng: ${describe(r.answer)}. Mình chọn: ${describe(picked)}.`,
+          "Vì sao đáp án đúng là vậy, dựa vào từ khoá nào? Ngắn gọn thôi nhé.",
+        ];
+        askAssistant(lines.filter(Boolean).join("\n"));
+        return;
+      }
+  }
+
   function jumpTo(no: number) {
     if (filter === "wrong" && review.get(no)?.correct) setFilter("all");
     setMode("review");
@@ -829,6 +864,7 @@ function Result({
                             onChange={done ? undefined : (v) => setPractice((p) => ({ ...p, [item.no]: v }))}
                             review={done ? { ...r, given: picked, correct: picked === r.answer } : undefined}
                             pinyin={pinyin}
+                            onAsk={isGuest || !done ? undefined : () => askAbout(item.no, picked)}
                           />
                         );
                       })}
@@ -945,6 +981,7 @@ function Result({
                           given={answers[item.no - 1] ?? null}
                           review={review.get(item.no)}
                           pinyin={pinyin}
+                          onAsk={isGuest ? undefined : () => askAbout(item.no, answers[item.no - 1] ?? null)}
                         />
                       ))}
                     </div>
@@ -964,6 +1001,9 @@ function Result({
           )}
         </section>
       </main>
+      {/* Màn làm bài nằm ngoài khung app nên không có sẵn trợ lý — gắn riêng ở
+       * màn kết quả cho người đã đăng nhập (trợ lý cần tài khoản). */}
+      {!isGuest && <AssistantWidget />}
     </div>
   );
 }

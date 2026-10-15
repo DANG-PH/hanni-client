@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { mutate as revalidate } from "swr";
 import { Icon } from "./icon";
 import { MarkdownLite } from "./markdown-lite";
 import { useAuth } from "@/lib/auth";
@@ -29,6 +30,15 @@ function HanniLogo({ size }: { size: number }) {
       sizes={`${size}px`}
     />
   );
+}
+
+const ASK_EVENT = "hanni:ask-assistant";
+
+/** Mở trợ lý và hỏi ngay 1 câu soạn sẵn từ chỗ khác trong app (nút "Hỏi trợ
+ * lý về câu này" ở màn chữa bài thi thử — lớp "chat với trợ giảng AI" của
+ * Migii HSK). Luôn mở cuộc trò chuyện MỚI để không lẫn vào chủ đề cũ. */
+export function askAssistant(text: string) {
+  window.dispatchEvent(new CustomEvent<string>(ASK_EVENT, { detail: text }));
 }
 
 /** Nút bấm cho hành động trợ lý gợi ý (mở trang/video) — người dùng tự bấm
@@ -105,10 +115,13 @@ export function AssistantWidget() {
   // Đóng kết nối SSE dở dang nếu component gỡ bỏ giữa chừng (vd đăng xuất).
   useEffect(() => () => closeStreamRef.current?.(), []);
 
-  function send() {
-    const text = input.trim();
-    if (!text || sending) return;
-    setInput("");
+  /** `preset`: câu hỏi gửi từ nơi khác (`askAssistant`) vào 1 phiên vừa tạo —
+   * không đọc ô nhập, không chờ lượt trước (lượt trước đã bị đóng). */
+  function send(preset?: { text: string; sessionId: string }) {
+    const text = (preset?.text ?? input).trim();
+    if (!text || (sending && !preset)) return;
+    if (!preset) setInput("");
+    const requestSessionId = preset?.sessionId ?? effectiveSessionId ?? undefined;
     setSending(true);
     const modelMsgId = `tmp-m-${Date.now()}`;
     setStreamingId(modelMsgId);
@@ -152,7 +165,7 @@ export function AssistantWidget() {
 
     const closeStream = streamAssistant(
       text,
-      effectiveSessionId ?? undefined,
+      requestSessionId,
       {
         onDelta: (delta) => {
           backlog += delta;
@@ -160,8 +173,11 @@ export function AssistantWidget() {
         onDone: (newSessionId, action) => {
           onNetworkDone = () => {
             if (action) setLastAction({ text: accumulated, action });
-            if (newSessionId && effectiveSessionId !== newSessionId) {
+            if (newSessionId && requestSessionId !== newSessionId) {
               setSessionId(newSessionId);
+            } else if (preset) {
+              // `mutate` của lần render này còn trỏ phiên cũ.
+              void revalidate(`/assistant/sessions/${preset.sessionId}/messages`);
             } else {
               void mutate();
             }
@@ -196,6 +212,30 @@ export function AssistantWidget() {
       closeStream();
     };
   }
+
+  // Câu hỏi soạn sẵn từ nơi khác: mở widget, tạo phiên mới rồi gửi luôn.
+  const sendRef = useRef(send);
+  useEffect(() => {
+    sendRef.current = send;
+  });
+  useEffect(() => {
+    async function onAsk(event: Event) {
+      const text = (event as CustomEvent<string>).detail;
+      if (!text) return;
+      setOpen(true);
+      setView("chat");
+      closeStreamRef.current?.();
+      const created = await createAssistantSession();
+      setSessionId(created.id);
+      setPending([]);
+      setLastAction(null);
+      // `sessions.mutate` trong closure này gắn khoá lúc widget còn đóng (null).
+      void revalidate("/assistant/sessions");
+      sendRef.current({ text, sessionId: created.id });
+    }
+    window.addEventListener(ASK_EVENT, onAsk);
+    return () => window.removeEventListener(ASK_EVENT, onAsk);
+  }, []);
 
   async function startNewChat() {
     closeStreamRef.current?.();

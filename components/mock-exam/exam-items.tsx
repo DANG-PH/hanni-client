@@ -272,7 +272,15 @@ function JudgeButtons({
 }
 
 /** Lời thoại + bản dịch + giải thích — chỉ hiện khi chữa bài. */
-function ReviewNotes({ review, pinyin }: { review: MockReviewItem; pinyin: boolean }) {
+function ReviewNotes({
+  review,
+  pinyin,
+  onAsk,
+}: {
+  review: MockReviewItem;
+  pinyin: boolean;
+  onAsk?: () => void;
+}) {
   return (
     <div className="mt-3 space-y-2 rounded-2xl bg-surface-2 px-4 py-3 text-sm">
       {review.transcript?.map((l, i) => (
@@ -309,6 +317,17 @@ function ReviewNotes({ review, pinyin }: { review: MockReviewItem; pinyin: boole
           ))}
         </ul>
       )}
+      {/* Lớp cuối của chữa bài kiểu Migii HSK: hỏi trợ giảng AI đúng câu này. */}
+      {onAsk && (
+        <button
+          type="button"
+          onClick={onAsk}
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/15"
+        >
+          <Icon name="message" size={14} />
+          Hỏi trợ lý Hanni về câu này
+        </button>
+      )}
     </div>
   );
 }
@@ -324,6 +343,7 @@ export function ExamItem({
   pinyin,
   flagged,
   onFlag,
+  onAsk,
 }: {
   part: MockPart;
   item: MockItem;
@@ -334,6 +354,8 @@ export function ExamItem({
   pinyin: boolean;
   flagged?: boolean;
   onFlag?: () => void;
+  /** Có thì hiện nút hỏi trợ lý AI dưới phần chữa bài. */
+  onAsk?: () => void;
 }) {
   const listening = section === "listening";
   const labels = review?.pictureLabels;
@@ -465,7 +487,7 @@ export function ExamItem({
             </>
           )}
 
-          {review && <ReviewNotes review={review} pinyin={pinyin} />}
+          {review && <ReviewNotes review={review} pinyin={pinyin} onAsk={onAsk} />}
         </div>
       </div>
     </article>
