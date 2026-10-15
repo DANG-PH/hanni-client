@@ -290,6 +290,25 @@ function ReviewNotes({ review, pinyin }: { review: MockReviewItem; pinyin: boole
           {review.explain}
         </p>
       )}
+      {/* Từ vựng trong câu — kèm âm Hán Việt (học sinh, điện thoại…): chỗ
+       * người Việt nhớ nghĩa nhanh nhất, app luyện thi khác không có. */}
+      {review.words && review.words.length > 0 && (
+        <ul className="flex flex-wrap gap-1.5 pt-1" aria-label="Từ vựng trong câu">
+          {review.words.map((w) => (
+            <li
+              key={w.id}
+              className="flex flex-wrap items-baseline gap-x-1.5 rounded-xl border border-border bg-surface px-2.5 py-1 text-xs"
+            >
+              <span lang="zh" className="hanzi text-sm font-semibold">
+                {w.zh}
+              </span>
+              <span className="text-muted">{w.pinyin}</span>
+              {w.hanViet && <span className="font-semibold text-primary">{w.hanViet}</span>}
+              <span>· {w.vi}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

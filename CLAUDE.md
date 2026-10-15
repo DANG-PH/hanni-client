@@ -274,11 +274,8 @@ components/  ui.tsx · nav.tsx · flashcard.tsx (4 nút đánh giá: hint nói K
              4 nút ẩn hẳn (`hidden`) khi chưa lật thẻ thay vì hiện xám mờ khó hiểu — sửa
              2026-09-22 theo phản ánh "ui ux flashcard vẫn đang rất khó hiểu")
              · quiz-runner.tsx · comment-section.tsx
-             · sidebar.tsx (`NAV_GROUPS` — điều hướng xếp theo CHU TRÌNH HỌC: học mỗi ngày
-               → tra cứu → luyện kỹ năng → của bạn. Rút 16 → 12 mục 2026-09-22 vì người mới
-               mở app thấy 16 lựa chọn thì không biết bấm gì; Huy hiệu/Bảng xếp hạng vào từ
-               `/progress`, Cài đặt vào từ `/account` — các trang vẫn tồn tại, chỉ không
-               chiếm chỗ ở sidebar. Khi bỏ mục khỏi nav PHẢI kiểm tra còn link nào trỏ tới
+             · sidebar.tsx + bottom-nav.tsx (dữ liệu menu ở `lib/nav.ts` — xem mục "Menu
+               ngắn" bên dưới. Khi bỏ mục khỏi nav PHẢI kiểm tra còn link nào trỏ tới
                không, nếu không sẽ thành trang mồ côi)
              · save-word-button.tsx (nút "Lưu để ôn tập" ở trang từ điển công khai)
              · video-like-button.tsx · notification-bell.tsx · follow-button.tsx
@@ -345,13 +342,25 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   một cấp. `/learn?level=N` (thẻ cấp ở trang chủ) = chọn cấp đó.
 - **Ôn tập `/study` chỉ ôn từ đã học** — server không còn trả từ mới khi không có bài/cấp (gốc
   của lỗi HSK4). Màn trống nói rõ + nút học bài tiếp theo.
-- **Sidebar nhóm thu gọn kiểu Hanbeego** (`NAV_SECTIONS` trong `components/sidebar.tsx`, đổi
-  2026-10-05): HỌC TẬP (Trang chủ, Ôn tập & flashcard + số từ đến hạn, Luyện thi HSK, nhóm "Kỹ
-  năng" nghe/phát âm/nói AI/viết, nhóm "Từ vựng & ngữ pháp") · GIẢI TRÍ & CỘNG ĐỒNG (nhóm "Video &
-  trò chơi", Xếp hạng, Tin nhắn + số chưa đọc) · CỦA BẠN (Tiến độ, Tài khoản). Nhóm tự mở khi
-  đang ở trang bên trong. Trang `/kham-pha` gom công cụ phụ đã XOÁ — sidebar đủ chỗ cho mọi thứ.
-  `NAV_LINKS` (dẹt) dùng cho nhãn breadcrumb ở `app-shell.tsx`. "So với bạn bè" ở `/leaderboard`.
-  Mặc định sau đăng nhập: `HOME_PATH` (`lib/auth-redirect.ts`).
+- **Menu ngắn + trang Luyện tập** (`lib/nav.ts`, đổi 2026-10-15 — thay bản nhóm xổ ra kiểu web
+  Hanbeego 06/10 vốn dài lại 10–20 dòng; user thấy rối, "hình như user thích thu gọn hơn").
+  Nghiên cứu kỹ trước khi đổi: Hanzii (4,8★, 1 triệu+ lượt tải) chỉ 6 mục thanh trên; app Hanzii,
+  Migii HSK, Hanbeego đều 5–6 tab dưới đáy + 1 trang lưới công cụ; web Hanbeego 28 mục phải kèm ô
+  "Tìm kiếm tính năng ⌘K"; NN/g: menu ẩn sau ☰ được dùng ít hơn hẳn menu luôn hiện (27% vs 48%).
+  - **Sidebar máy tính** = 5 mục học (Trang chủ, Ôn tập + số từ đến hạn, Luyện thi HSK, Luyện tập,
+    Từ điển) · vạch ngăn · Xếp hạng, Tin nhắn + số chưa đọc, Tiến độ · chân: Tài khoản, Đăng xuất,
+    **"Thu gọn menu"** (chỉ còn dải biểu tượng 76px, rê chuột thấy tên; nhớ bằng `localStorage`
+    `hanni:sidebar-collapsed` qua `useSyncExternalStore` — Wikimedia đo: ai thu gọn thì giữ luôn).
+  - **Trang `/luyen-tap`** (`app/(app)/luyen-tap`) gom nghe/phát âm/nói AI/viết · video/trò chơi ·
+    phiên âm/ngữ pháp/từ đã biết/kiểm tra trình độ (`PRACTICE_SECTIONS`), mỗi ô 1 dòng mô tả, kèm
+    ô tra từ gửi sang `/tu-dien?q=`. Đang ở trang công cụ nào trong đó thì mục "Luyện tập" sáng.
+  - **Điện thoại/máy tính bảng (< lg)**: thanh tab dưới đáy `components/bottom-nav.tsx` (Trang chủ,
+    Ôn tập, Luyện thi, Luyện tập, **Thêm** = mở ngăn kéo menu đầy đủ; bỏ nút ☰ trên thanh trên).
+    Chiều cao thanh là biến CSS `--bottom-nav-h` (0 từ lg) — nội dung app chừa đáy theo biến này,
+    các nút nổi (trợ lý AI, mời cài app) và khung phụ đề video trên điện thoại cũng tính theo nó.
+    Thêm nút nổi/khung cao theo màn hình mới thì nhớ trừ biến này.
+  - `pageLabel()` cho nhãn breadcrumb ở `app-shell.tsx`. "So với bạn bè" ở `/leaderboard`. Mặc định
+    sau đăng nhập: `HOME_PATH` (`lib/auth-redirect.ts`).
 - **`/study` không tham số = chọn bộ thẻ** (`components/study/study-hub.tsx`); `?review=1` ôn
   từ đến hạn, `?lesson=` ôn đúng 1 bài (gồm MỌI từ của bài, kể cả từ vừa học chưa tới hạn — nếu
   không thì vừa học xong bấm "Ôn bằng flashcard" sẽ ra "không có từ cần ôn"), `?leeches=1`.
@@ -376,6 +385,18 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   phương án ĐÃ CHỌN dùng màu tối trung tính (`foreground`) — màu chủ đạo Hanni là đỏ, tô đỏ lúc
   đang làm bài trông như báo sai; xanh/đỏ chỉ dùng khi chữa bài. Khách làm xong bấm "Lưu điểm"
   → `savePendingExam()` → đăng ký xong `drainPendingExam()` nộp lại bằng tài khoản.
+  **Bổ sung 2026-10-15 (tham khảo Hanzii, Migii HSK — app luyện thi cùng công ty Hanzii —, Hanbeego)**:
+  thẻ đề có trạng thái (Đang làm dở x/40 + thanh tiến độ + "Làm tiếp" — đọc `localStorage` qua
+  `useSyncExternalStore`, server không có; Đạt/Chưa đạt + điểm cao nhất + "Làm lại"); màn kết quả có
+  **bảng đáp án** 40 ô xanh/đỏ/xám (bấm tới câu), **phân tích từng phần** (8 dạng câu, thanh %,
+  2 phần yếu nhất kèm mẹo + nút luyện đúng kỹ năng — `lib/mock-exam.ts` `PART_INFO`), **luyện lại
+  câu sai** (chọn lại, chấm ngay + lời giải), **từ vựng từng câu kèm âm Hán Việt** trong chữa bài
+  (server gửi `words[]`), **lưu từ ở câu sai vào Ôn tập** (tối đa 20/lần — từ thêm vào là đến hạn
+  ngay, làm bừa 1 đề ra 89 từ; khách thì nút "Lưu điểm + N từ" ghi tạm `savePendingWords()`, đăng ký
+  xong nạp cả điểm lẫn từ). Trang danh sách: ô "Chưa biết nên thi cấp nào?" → kiểm tra trình độ (như
+  "Đánh giá năng lực" của Hanzii), khối **Phân tích điểm mạnh, yếu + Lịch sử làm bài** cho người đã
+  đăng nhập (`/mock-exams/analysis/me`, `/attempts/me`). Hanzii/Hanbeego bắt đăng nhập (Hanzii còn
+  bắt nâng cấp ngay cả đề miễn phí) mới cho làm — Hanni cho khách làm trọn vẹn là lợi thế, giữ nguyên.
 - **Bảng phiên âm `/phien-am`** (`app/(site)/phien-am`, `components/pinyin/`, `lib/pinyin.ts`,
   2026-10-15) — bước 拼/声 của dải "Sáu chặng" ở trang chủ trước đó trỏ sang `/tu-dien` và
   `/pronunciation` (hứa "làm quen phiên âm", "nghe mā má mǎ mà" mà không có chỗ nào dạy). Công khai,
@@ -715,6 +736,11 @@ màn đang làm bài — popup chắn ngang giữa lúc đồng hồ đang chạ
 **PWA** (`docs/pwa.md`): manifest + service worker (chỉ cache màn mất mạng), trang `/install`,
 thẻ cài trong `/settings`, popup mời cài nổi góc phải dưới (`components/pwa/`). Test: `npm run test:pwa`.
 Lời mời cài thật chỉ chạy ở bản production/HTTPS, không đăng ký worker ở `npm run dev`.
+**Icon app/favicon = cáo Hanni trên nền đỏ** (2026-10-15, user chọn): dựng từ mascot
+`public/anhloading.png` bằng `python3 scripts/make-icons.py` (mặt cáo căn giữa, viền kem để cáo đỏ
+không chìm vào nền đỏ; bản maskable thu nhỏ vào vùng an toàn, bản iOS để vuông). Logo chữ Hanni
+(`public/brand/hanni.png`) vẫn dùng trong trang. Đổi icon thì tăng `CACHE_NAME` trong `public/sw.js`
+(đang `hanni-public-v2`) + test, để máy đã cài nhận icon mới.
 **Nhận diện ĐÃ CÀI hay chưa** (`lib/pwa/store.ts`'s `installed`, từ 2026-09-19) — trước đây chỉ
 có `standalone` (đang CHẠY ở chế độ app ngay lúc này), nên ai đã cài PWA nhưng đang xem lại ở
 tab trình duyệt thường vẫn bị coi như CHƯA cài (`beforeinstallprompt`/`appinstalled` không bắn

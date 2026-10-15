@@ -7,7 +7,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/icon";
-import { MockExamList, MockExamProgress } from "@/components/mock-exam/exam-list";
+import { MockExamInsights, MockExamList, MockExamProgress } from "@/components/mock-exam/exam-list";
 import { API_BASE } from "@/lib/api";
 import type { MockExamMeta } from "@/lib/types";
 
@@ -101,14 +101,31 @@ export default async function MockExamHubPage() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px] lg:items-start">
-        <section aria-labelledby="exam-list" className="space-y-3">
+        <section aria-labelledby="exam-list" className="min-w-0 space-y-3">
           <h2 id="exam-list" className="text-lg font-extrabold tracking-tight">
             Chọn đề
           </h2>
           <MockExamList exams={exams} />
+          <div className="pt-3">
+            <MockExamInsights exams={exams} />
+          </div>
         </section>
 
-        <aside className="space-y-4">
+        <aside className="min-w-0 space-y-4">
+          {/* Như ô "Đánh giá năng lực — Bạn đang ở đâu?" cạnh danh sách đề của Hanzii. */}
+          <Link
+            href="/kiem-tra-trinh-do"
+            className="panel flex items-center gap-3 p-4 text-sm transition-colors hover:border-primary/40"
+          >
+            <span className="icon-tile flex h-11 w-11 shrink-0 items-center justify-center">
+              <Icon name="chart" size={20} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <strong>Chưa biết nên thi cấp nào?</strong>
+              <span className="block text-xs text-muted">Kiểm tra trình độ — vài phút, không cần tài khoản</span>
+            </span>
+            <Icon name="arrow" size={16} className="shrink-0 text-muted" />
+          </Link>
           <section className="panel p-5">
             <h2 className="text-sm font-bold">Cấu trúc đề thi HSK 1</h2>
             <table className="mt-3 w-full text-xs">

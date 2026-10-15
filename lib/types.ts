@@ -1002,6 +1002,15 @@ export interface MockPaper
   sections: { kind: MockSectionKind; parts: MockPart[] }[];
 }
 
+/** Từ trong câu kèm âm Hán Việt — chú thích khi chữa bài. */
+export interface MockWord {
+  id: string;
+  zh: string;
+  pinyin: string;
+  hanViet: string | null;
+  vi: string;
+}
+
 export interface MockReviewItem {
   no: number;
   answer: MockAnswer;
@@ -1011,6 +1020,34 @@ export interface MockReviewItem {
   explain?: string;
   transcript?: (Ruby & { s: MockSpeechLine["s"] })[];
   pictureLabels?: string[];
+  words?: MockWord[];
+}
+
+/** `GET /mock-exams/analysis/me` — tỉ lệ đúng từng phần đề qua mọi lượt làm. */
+export interface MockPartStat {
+  level: number;
+  section: MockSectionKind;
+  part: number;
+  type: MockPartType;
+  correct: number;
+  total: number;
+}
+
+export interface MockAnalysis {
+  attempts: number;
+  parts: MockPartStat[];
+}
+
+/** `GET /mock-exams/attempts/me` */
+export interface MockAttempt {
+  id: string;
+  examSlug: string;
+  hskLevel: number;
+  score: number;
+  maxScore: number;
+  passed: boolean;
+  durationSec: number | null;
+  createdAt: string;
 }
 
 export interface MockExamResult {
