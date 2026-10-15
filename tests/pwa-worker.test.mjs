@@ -42,8 +42,8 @@ function harness(overrides = {}) {
     caches: {
       open: async () => cache,
       keys: async () => [
-        "hanni-public-v0",
         "hanni-public-v1",
+        "hanni-public-v2",
         "other-app-cache",
       ],
       delete: async (key) => deleted.push(key),
@@ -106,7 +106,7 @@ test("Cài worker chỉ tải tài nguyên công khai và không ép cập nhậ
 test("Kích hoạt không xóa cache của ứng dụng khác", async () => {
   const h = harness();
   await h.fire("activate");
-  assert.deepEqual(h.deleted, ["hanni-public-v0"]);
+  assert.deepEqual(h.deleted, ["hanni-public-v1"]);
   assert.equal(h.claimed(), 1);
 });
 

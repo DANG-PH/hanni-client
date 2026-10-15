@@ -1,6 +1,6 @@
 /* Service worker Hanni: chỉ lưu màn mất mạng và tài nguyên thương hiệu công khai. */
 const CACHE_PREFIX = "hanni-public-";
-const CACHE_NAME = `${CACHE_PREFIX}v1`;
+const CACHE_NAME = `${CACHE_PREFIX}v2`;
 const OFFLINE_PAGE = "/offline/index.html";
 const PUBLIC_ASSETS = [
   OFFLINE_PAGE,
