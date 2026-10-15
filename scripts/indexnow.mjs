@@ -13,6 +13,9 @@
 const HOST = "hanni.dangpham.id.vn";
 const KEY = "7f568f7653e25b72aebc4f37acc0ceac";
 const BATCH = 10000; // giới hạn của IndexNow cho 1 lần gửi
+// Gửi thẳng Bing: Bing tự chia sẻ cho các công cụ khác trong IndexNow, còn
+// api.indexnow.org từng trả 403 rồi timeout từ máy dev (2026-10-15).
+const ENDPOINT = "https://www.bing.com/indexnow";
 
 async function urlsFromSitemap() {
   const xml = await (await fetch(`https://${HOST}/sitemap.xml`)).text();
@@ -26,10 +29,10 @@ if (key.trim() !== KEY) throw new Error("File khoá chưa có trên site — dep
 
 for (let i = 0; i < urls.length; i += BATCH) {
   const urlList = urls.slice(i, i + BATCH);
-  const res = await fetch("https://api.indexnow.org/indexnow", {
+  const res = await fetch(ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json; charset=utf-8" },
     body: JSON.stringify({ host: HOST, key: KEY, keyLocation: `https://${HOST}/${KEY}.txt`, urlList }),
   });
-  console.log(`Gửi ${urlList.length} URL → HTTP ${res.status}`);
+  console.log(`Gửi ${urlList.length} URL → HTTP ${res.status} ${await res.text()}`);
 }
