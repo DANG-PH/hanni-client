@@ -54,6 +54,8 @@ const paths = {
   share:
     "M18 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM6 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM18 16a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM8.59 13.51 15.42 17.49M15.41 6.51 8.59 10.49",
   crown: "M4 18h16M4 18 3 8l5 4 4-6 4 6 5-4-1 10",
+  grid: "M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z",
+  sidebar: "M4 4h16v16H4V4Zm5 0v16",
 } as const;
 
 export type IconName = keyof typeof paths;

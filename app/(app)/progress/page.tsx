@@ -94,7 +94,7 @@ export default function ProgressPage() {
           <Icon name="cards" size={17} />
           Tiếp tục ôn tập
         </LinkButton>
-        {/* Huy hiệu không có mục riêng ở sidebar (xem NAV_SECTIONS) — cùng trả
+        {/* Huy hiệu không có mục riêng ở sidebar (xem lib/nav.ts) — cùng trả
          * lời "mình đang ở đâu" với trang này nên gom lối vào tại đây. */}
         <LinkButton href="/achievements" variant="secondary">
           <Icon name="trophy" size={17} />

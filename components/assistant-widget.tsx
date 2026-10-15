@@ -231,7 +231,7 @@ export function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Đóng trợ lý Hanni" : "Mở trợ lý Hanni"}
         aria-expanded={open}
-        className={`motion-button fixed right-5 z-40 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90 ${promptDialogVisible ? "bottom-56" : "bottom-5"}`}
+        className={`motion-button fixed right-5 z-40 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90 ${promptDialogVisible ? "bottom-[calc(var(--bottom-nav-h,0px)_+_14rem)]" : "bottom-[calc(var(--bottom-nav-h,0px)_+_1.25rem)]"}`}
       >
         {open ? <Icon name="close" size={24} /> : <HanniLogo size={56} />}
       </button>
@@ -240,7 +240,7 @@ export function AssistantWidget() {
         <div
           role="dialog"
           aria-label="Trợ lý Hanni"
-          className={`fixed right-5 z-40 flex h-[min(32rem,70vh)] w-[min(23rem,90vw)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl ${promptDialogVisible ? "bottom-72" : "bottom-24"}`}
+          className={`fixed right-5 z-40 flex h-[min(32rem,calc(100dvh_-_var(--bottom-nav-h,0px)_-_11rem))] w-[min(23rem,90vw)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl ${promptDialogVisible ? "bottom-[calc(var(--bottom-nav-h,0px)_+_18rem)]" : "bottom-[calc(var(--bottom-nav-h,0px)_+_6rem)]"}`}
         >
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
             <div className="flex items-center gap-2">

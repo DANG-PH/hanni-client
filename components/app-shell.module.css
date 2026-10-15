@@ -1,4 +1,7 @@
 .workspace {
+  /* Chiều cao thanh tab dưới đáy (điện thoại/máy tính bảng) — nội dung và các
+   * nút nổi (trợ lý AI, mời cài app) chừa chỗ theo biến này. */
+  --bottom-nav-h: calc(4rem + env(safe-area-inset-bottom));
   --radius-section: 26px;
   --radius-card: 20px;
   --radius-inner: 14px;
@@ -191,8 +194,13 @@
   box-shadow: 0 1px 0 color-mix(in srgb, var(--primary) 78%, var(--foreground));
 }
 
+@media (min-width: 1024px) {
+  .workspace { --bottom-nav-h: 0px; }
+}
+
 @media (min-width: 1280px) {
   .sidebar { width: 256px; }
+  .sidebar[data-collapsed="true"] { width: 76px; }
 }
 
 @media (max-width: 639px) {

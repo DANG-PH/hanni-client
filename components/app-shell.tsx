@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import { useRef, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
 import { useStreak } from "@/lib/hooks";
-import { Brand, NAV_LINKS, Sidebar } from "./sidebar";
+import { pageLabel } from "@/lib/nav";
+import { BottomNav } from "./bottom-nav";
+import { Brand, Sidebar, useSidebarCollapsed } from "./sidebar";
 import { AssistantWidget } from "./assistant-widget";
 import { NotificationBell } from "./notification-bell";
 import { StreakCelebration } from "./streak-celebration";
@@ -20,10 +22,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const streak = useStreak();
   const pathname = usePathname();
   const drawer = useRef<HTMLDialogElement>(null);
-  const pageLabel =
-    NAV_LINKS.find(
-      (link) => pathname === link.href || pathname.startsWith(link.href + "/"),
-    )?.label ?? "Góc học tập";
+  const [collapsed, setCollapsed] = useSidebarCollapsed();
   const close = () => drawer.current?.close();
   if (loading)
     return (
@@ -43,10 +42,13 @@ export function AppShell({ children }: { children: ReactNode }) {
         Đến nội dung chính
       </a>
       <aside
-        className={`hidden w-60 shrink-0 border-r border-border bg-surface lg:block ${styles.sidebar}`}
+        data-collapsed={collapsed}
+        className={`hidden shrink-0 border-r border-border bg-surface transition-[width] duration-200 lg:block ${
+          collapsed ? "w-[76px]" : "w-60"
+        } ${styles.sidebar}`}
       >
         <div className="app-sidebar-scroll sticky top-0 h-dvh overflow-y-auto">
-          <Sidebar />
+          <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
         </div>
       </aside>
       <dialog
@@ -69,19 +71,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Sidebar onNavigate={close} />
         </div>
       </dialog>
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col pb-[var(--bottom-nav-h)]">
         <header
           className={`sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur-lg sm:px-7 ${styles.topbar}`}
         >
-          <button
-            type="button"
-            onClick={() => drawer.current?.showModal()}
-            aria-label="Mở menu"
-            aria-haspopup="dialog"
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-muted hover:bg-surface-2 lg:hidden"
-          >
-            <Icon name="menu" />
-          </button>
           <Link href="/" className="sm:hidden" aria-label="Hanni — trang chủ">
             <Brand compact />
           </Link>
@@ -92,7 +85,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               Góc học tập
             </Link>
             <Icon name="chevron" size={12} className="text-muted" />
-            <span className="font-medium">{pageLabel}</span>
+            <span className="font-medium">{pageLabel(pathname)}</span>
           </div>
           <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
             {streak.data && (
@@ -144,6 +137,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span>Hanni · Mỗi ngày một chút, tiến xa hơn.</span>
         </footer>
       </div>
+      <BottomNav onMore={() => drawer.current?.showModal()} />
       {user && <AssistantWidget />}
       {user && <StreakCelebration />}
     </div>

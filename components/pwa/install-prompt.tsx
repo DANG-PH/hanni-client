@@ -125,7 +125,7 @@ export function InstallPrompt() {
     <div
       role="dialog"
       aria-label="Cài ứng dụng Hanni"
-      className="fixed inset-x-4 bottom-4 z-[60] sm:left-auto sm:right-5 sm:bottom-5 sm:w-[21rem]"
+      className="fixed inset-x-4 bottom-[calc(var(--bottom-nav-h,0px)_+_1rem)] z-[60] sm:left-auto sm:right-5 sm:bottom-[calc(var(--bottom-nav-h,0px)_+_1.25rem)] sm:w-[21rem]"
       style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
     >
       <div className="relative rounded-2xl border border-primary/20 bg-surface p-4 shadow-2xl ring-1 ring-primary/10">

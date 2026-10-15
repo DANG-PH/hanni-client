@@ -4,7 +4,7 @@
   }
 
   .transcript {
-    height: max(300px, calc(100svh - var(--watch-top, 72px) - 56.25cqw - 12px));
+    height: max(300px, calc(100svh - var(--watch-top, 72px) - 56.25cqw - 12px - var(--bottom-nav-h, 0px)));
   }
 }
 
@@ -17,7 +17,7 @@
   }
 
   .transcript {
-    height: max(280px, calc(100svh - 84px));
+    height: max(280px, calc(100svh - 84px - var(--bottom-nav-h, 0px)));
     min-height: 280px;
     border-top: 1px solid var(--border);
     border-radius: 16px;
