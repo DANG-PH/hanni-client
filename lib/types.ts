@@ -974,6 +974,8 @@ export interface MockItem {
   no: number;
   audio?: { lines: MockSpeechLine[]; url?: string };
   text?: Ruby;
+  /** Câu ★ cần xét đúng/sai (dạng `judge-text`, HSK 2 phần đọc 3). */
+  statement?: Ruby;
   blank?: { before: Ruby; after: Ruby };
   picture?: string;
   pictures?: string[];
@@ -986,11 +988,15 @@ export type MockPartType =
   | "match-picture"
   | "choose-text"
   | "match-text"
-  | "fill-blank";
+  | "fill-blank"
+  | "judge-text";
 
 export interface MockPart {
   no: number;
   type: MockPartType;
+  /** Nửa sau của cùng 1 phần đề nhưng có bộ tranh/đáp án riêng (HSK 2 câu
+   * 16–20, 56–60) — vẫn đánh số cùng "第二部分"/"第四部分". */
+  continues?: boolean;
   pictures?: string[];
   options?: Ruby[];
   items: MockItem[];

@@ -27,7 +27,7 @@ interface PartInfo {
  * mẹo và chỗ luyện tiếp — sai ở đâu thì có ngay việc cụ thể để làm. */
 const PART_INFO: Record<string, PartInfo> = {
   "listening:judge": {
-    label: "Nghe từ, đối chiếu tranh",
+    label: "Nghe, đối chiếu tranh",
     tip: "Nghe cho ra từ khoá (đồ vật, hành động) rồi mới so với tranh — đừng chọn theo âm nghe na ná.",
     href: "/listening",
     cta: "Luyện nghe",
@@ -68,6 +68,12 @@ const PART_INFO: Record<string, PartInfo> = {
     href: "/ngu-phap",
     cta: "Xem ngữ pháp",
   },
+  "reading:judge-text": {
+    label: "Đọc đoạn, xét câu ★",
+    tip: "Câu ★ thường chỉ khác đoạn văn ở 1 chi tiết (giờ, số, người, nơi chốn) — đối chiếu từng chi tiết, đừng đoán theo cảm giác.",
+    href: "/study",
+    cta: "Ôn từ vựng",
+  },
   "reading:fill-blank": {
     label: "Điền từ vào chỗ trống",
     tip: "Xác định chỗ trống cần loại từ gì (danh từ, động từ, lượng từ) trước khi chọn.",
@@ -96,17 +102,29 @@ export interface PartScore {
   total: number;
 }
 
-/** Số câu đúng từng phần của 1 lượt làm. */
+/** Thứ tự phần đề CHÍNH THỨC (0-based) của từng phần dữ liệu — nửa sau
+ * `continues` (HSK 2 câu 16–20) chung số với nửa trước. */
+export function officialIndexes(parts: MockPaper["sections"][number]["parts"]): number[] {
+  let n = -1;
+  return parts.map((p) => (p.continues ? Math.max(n, 0) : ++n));
+}
+
+/** Số câu đúng từng phần (theo phần đề chính thức) của 1 lượt làm. */
 export function partScores(paper: MockPaper, review: Map<number, MockReviewItem>): PartScore[] {
-  return paper.sections.flatMap((s) =>
-    s.parts.map((p, i) => ({
-      section: s.kind,
-      part: i + 1,
-      type: p.type,
-      correct: p.items.filter((it) => review.get(it.no)?.correct).length,
-      total: p.items.length,
-    })),
-  );
+  return paper.sections.flatMap((s) => {
+    const official = officialIndexes(s.parts);
+    const out: PartScore[] = [];
+    s.parts.forEach((p, i) => {
+      const correct = p.items.filter((it) => review.get(it.no)?.correct).length;
+      const last = out[out.length - 1];
+      if (p.continues && last) {
+        last.correct += correct;
+        last.total += p.items.length;
+      } else
+        out.push({ section: s.kind, part: official[i] + 1, type: p.type, correct, total: p.items.length });
+    });
+    return out;
+  });
 }
 
 /** Các phần yếu nhất (dưới 80% câu đúng), yếu trước. */

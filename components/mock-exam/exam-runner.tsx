@@ -15,6 +15,7 @@ import { addWordToSrs } from "@/lib/hooks";
 import { hasChineseVoice, playListening, stopListening } from "@/lib/listening-audio";
 import {
   clearSaved,
+  officialIndexes,
   partInfo,
   partScores,
   readSaved,
@@ -39,26 +40,30 @@ import { ExamItem, LETTERS, SharedBoard } from "./exam-items";
 const PART_ZH = ["第一部分", "第二部分", "第三部分", "第四部分"];
 
 /** Hướng dẫn từng dạng câu — đề thật in bằng tiếng Trung kèm ví dụ, ở đây nói
- * thẳng bằng tiếng Việt để người mới khỏi đoán. */
-function instruction(section: MockSectionKind, type: MockPart["type"]): string {
+ * thẳng bằng tiếng Việt để người mới khỏi đoán. Bộ phương án dùng chung có
+ * thể là A–F thừa 1 (như đề thật) hoặc A–E vừa đủ (HSK 2 câu 16–20, 56–60). */
+function instruction(section: MockSectionKind, part: MockPart): string {
   const listen = section === "listening";
-  switch (type) {
+  const board = part.pictures ?? part.options ?? [];
+  const range = `A–${LETTERS[Math.max(0, board.length - 1)]}`;
+  const spare = board.length > part.items.length;
+  switch (part.type) {
     case "judge":
       return listen
-        ? "Nghe từ/cụm từ rồi xem tranh: khớp với tranh chọn ✓, không khớp chọn ✗."
+        ? "Nghe rồi xem tranh: khớp với tranh chọn ✓, không khớp chọn ✗."
         : "Đọc từ bên cạnh tranh: khớp với tranh chọn ✓, không khớp chọn ✗.";
     case "choose-picture":
       return "Nghe 1 câu, chọn tranh đúng với câu vừa nghe.";
     case "match-picture":
-      return listen
-        ? "Nghe đoạn hội thoại, chọn tranh A–F phù hợp. Mỗi tranh dùng 1 lần, thừa 1 tranh."
-        : "Đọc câu, chọn tranh A–F phù hợp. Mỗi tranh dùng 1 lần, thừa 1 tranh.";
+      return `${listen ? "Nghe đoạn hội thoại" : "Đọc câu"}, chọn tranh ${range} phù hợp. Mỗi tranh dùng 1 lần${spare ? ", thừa 1 tranh" : ""}.`;
     case "choose-text":
       return "Nghe câu và câu hỏi (问), chọn đáp án đúng.";
     case "match-text":
-      return "Chọn câu trả lời A–F phù hợp với mỗi câu hỏi. Mỗi câu trả lời dùng 1 lần.";
+      return `Chọn câu trả lời ${range} phù hợp với mỗi câu hỏi. Mỗi câu trả lời dùng 1 lần${spare ? ", thừa 1 câu" : ""}.`;
     case "fill-blank":
-      return "Chọn từ A–F điền vào chỗ trống. Mỗi từ dùng 1 lần.";
+      return `Chọn từ ${range} điền vào chỗ trống. Mỗi từ dùng 1 lần${spare ? ", thừa 1 từ" : ""}.`;
+    case "judge-text":
+      return "Đọc đoạn văn rồi xét câu có dấu ★: đúng với đoạn văn chọn ✓, sai chọn ✗.";
   }
 }
 
@@ -266,11 +271,11 @@ export function MockExamRunner({ slug }: { slug: string }) {
                   <div className="rounded-2xl bg-surface-2 px-4 py-3">
                     <p className="text-sm font-bold">
                       <span lang="zh" className="hanzi mr-2">
-                        {PART_ZH[pi]}
+                        {PART_ZH[officialIndexes(section.parts)[pi]]}
                       </span>
                       Câu {part.no}–{part.no + part.items.length - 1}
                     </p>
-                    <p className="mt-0.5 text-sm text-muted">{instruction(section.kind, part.type)}</p>
+                    <p className="mt-0.5 text-sm text-muted">{instruction(section.kind, part)}</p>
                   </div>
                   <SharedBoard part={part} pinyin={showPinyin} />
                   {part.items.map((item) => (
@@ -488,7 +493,7 @@ function Intro({
                   <strong>
                     {SECTION_VI[s.kind].vi} ({SECTION_VI[s.kind].zh})
                   </strong>{" "}
-                  — {s.parts.length} phần, {s.parts.reduce((n, p) => n + p.items.length, 0)} câu, tối đa 100 điểm.
+                  — {s.parts.filter((p) => !p.continues).length} phần, {s.parts.reduce((n, p) => n + p.items.length, 0)} câu, tối đa 100 điểm.
                 </span>
               </li>
             ))}
@@ -844,7 +849,7 @@ function Result({
                       <p className="text-sm font-bold">
                         {SECTION_VI[section.kind].vi} ·{" "}
                         <span lang="zh" className="hanzi">
-                          {PART_ZH[pi]}
+                          {PART_ZH[officialIndexes(section.parts)[pi]]}
                         </span>
                       </p>
                       {(part.type === "match-picture" || part.type === "match-text" || part.type === "fill-blank") && (
@@ -966,7 +971,7 @@ function Result({
                       <p className="text-sm font-bold">
                         {SECTION_VI[section.kind].vi} ·{" "}
                         <span lang="zh" className="hanzi">
-                          {PART_ZH[pi]}
+                          {PART_ZH[officialIndexes(section.parts)[pi]]}
                         </span>
                       </p>
                       {(part.type === "match-picture" || part.type === "match-text" || part.type === "fill-blank") && (

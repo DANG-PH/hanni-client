@@ -249,17 +249,20 @@ function JudgeButtons({
   given,
   review,
   onChange,
+  statement = false,
 }: {
   given: MockAnswer | null;
   review?: MockReviewItem;
   onChange?: (v: MockAnswer) => void;
+  /** Xét câu ★ (không phải đối chiếu tranh). */
+  statement?: boolean;
 }) {
   return (
     <div className="flex gap-2">
       {[true, false].map((v) => (
         <OptionButton
           key={String(v)}
-          label={v ? "Đúng với tranh" : "Sai với tranh"}
+          label={statement ? (v ? "Câu ★ đúng" : "Câu ★ sai") : v ? "Đúng với tranh" : "Sai với tranh"}
           state={optionState(v, given, review)}
           onClick={onChange && (() => onChange(v))}
           className="flex h-11 w-16 items-center justify-center"
@@ -408,6 +411,21 @@ export function ExamItem({
               <div className="ml-auto">
                 <JudgeButtons given={given} review={review} onChange={onChange} />
               </div>
+            </div>
+          )}
+
+          {part.type === "judge-text" && item.text && (
+            <div className="space-y-3">
+              <RubyText ruby={item.text} pinyin={pinyin} className="text-xl leading-loose" />
+              {item.statement && (
+                <p className="flex items-baseline gap-2 rounded-2xl bg-surface-2 px-3 py-2">
+                  <span aria-label="Câu cần xét" className="shrink-0 font-bold text-primary">
+                    ★
+                  </span>
+                  <RubyText ruby={item.statement} pinyin={pinyin} className="text-lg leading-loose" />
+                </p>
+              )}
+              <JudgeButtons given={given} review={review} onChange={onChange} statement />
             </div>
           )}
 

@@ -8,15 +8,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/icon";
 import { MockExamInsights, MockExamList, MockExamProgress } from "@/components/mock-exam/exam-list";
+import { ExamStructure } from "@/components/mock-exam/exam-structure";
 import { API_BASE } from "@/lib/api";
 import type { MockExamMeta } from "@/lib/types";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Đề thi thử HSK online miễn phí — đúng cấu trúc đề thật, chấm điểm ngay | Hanni",
+  title: "Đề thi thử HSK 1, HSK 2 online miễn phí — đúng cấu trúc đề thật, chấm điểm ngay | Hanni",
   description:
-    "Làm đề thi thử HSK online miễn phí, đúng cấu trúc đề thi hiện hành: phần nghe có giọng đọc, phần đọc in pinyin, tự chấm điểm và chữa bài từng câu bằng tiếng Việt (lời thoại, bản dịch). Không cần đăng ký.",
+    "Làm đề thi thử HSK 1, HSK 2 online miễn phí, đúng cấu trúc đề thi hiện hành: phần nghe có giọng đọc, phần đọc in pinyin, tự chấm điểm và chữa bài từng câu bằng tiếng Việt (lời thoại, bản dịch, từ vựng kèm âm Hán Việt). Không cần đăng ký.",
   alternates: { canonical: "/thi-thu-hsk" },
 };
 
@@ -32,17 +33,6 @@ async function fetchExams(): Promise<MockExamMeta[]> {
   }
 }
 
-const HSK1_STRUCTURE = [
-  { part: "Nghe — Phần 1", task: "Nghe từ, đối chiếu tranh: đúng ✓ / sai ✗", n: 5 },
-  { part: "Nghe — Phần 2", task: "Nghe 1 câu, chọn 1 trong 3 tranh", n: 5 },
-  { part: "Nghe — Phần 3", task: "Nghe hội thoại, ghép với tranh A–F", n: 5 },
-  { part: "Nghe — Phần 4", task: "Nghe câu + câu hỏi, chọn đáp án", n: 5 },
-  { part: "Đọc — Phần 1", task: "Đọc từ, đối chiếu tranh: đúng ✓ / sai ✗", n: 5 },
-  { part: "Đọc — Phần 2", task: "Đọc câu, ghép với tranh A–F", n: 5 },
-  { part: "Đọc — Phần 3", task: "Ghép câu hỏi với câu trả lời A–F", n: 5 },
-  { part: "Đọc — Phần 4", task: "Chọn từ A–F điền vào chỗ trống", n: 5 },
-];
-
 const TIPS = [
   "Bấm giờ như thi thật để quen áp lực thời gian.",
   "Phần nghe: đọc trước các tranh/đáp án để biết cần nghe gì.",
@@ -53,15 +43,19 @@ const TIPS = [
 const FAQ: [string, string][] = [
   [
     "Đề thi thử trên Hanni có giống đề HSK thật không?",
-    "Giống về CẤU TRÚC: HSK 1 gồm 40 câu (20 câu nghe, 20 câu đọc), 8 dạng câu y như đề thật, thang 200 điểm. Nội dung do Hanni tự soạn bằng đúng 300 từ vựng HSK 1, tranh minh hoạ bằng biểu tượng, phần nghe dùng giọng đọc tiếng Trung của trình duyệt chứ không phải băng ghi âm đề thật.",
+    "Giống về CẤU TRÚC: HSK 1 gồm 40 câu (20 nghe, 20 đọc), HSK 2 gồm 60 câu (35 nghe, 25 đọc), đủ các dạng câu y như đề thật, thang 200 điểm. Nội dung do Hanni tự soạn, chỉ dùng từ vựng đúng cấp (HSK 3.0), tranh minh hoạ bằng biểu tượng, phần nghe dùng giọng đọc tiếng Trung của trình duyệt chứ không phải băng ghi âm đề thật.",
   ],
   [
     "Thi HSK 1 bao nhiêu điểm thì đạt?",
-    "Tổng 200 điểm (nghe 100, đọc 100), đạt từ 120 điểm. HSK 3 trở lên có thêm phần viết, tổng 300 điểm, đạt từ 180.",
+    "HSK 1 và HSK 2 đều tổng 200 điểm (nghe 100, đọc 100), đạt từ 120 điểm. HSK 3 trở lên có thêm phần viết, tổng 300 điểm, đạt từ 180.",
   ],
   [
-    "Đề HSK 1 thi trong bao lâu?",
-    "Khoảng 40 phút: nghe chừng 15 phút, đọc 17 phút, cộng thời gian điền phiếu. Đề thử trên Hanni cho 35 phút làm bài.",
+    "Đề HSK 1, HSK 2 thi trong bao lâu?",
+    "HSK 1 khoảng 40 phút (35 phút làm bài + điền thông tin), HSK 2 khoảng 55 phút (50 phút làm bài). Đề thử trên Hanni tính giờ đúng thời gian làm bài: 35 phút với HSK 1, 50 phút với HSK 2.",
+  ],
+  [
+    "Đề thi HSK 2 gồm những phần nào?",
+    "Nghe 35 câu: nghe câu đối chiếu tranh (10), nghe hội thoại ghép tranh (10), hội thoại ngắn chọn đáp án (10), hội thoại dài chọn đáp án (5). Đọc 25 câu: ghép câu với tranh (5), điền từ (5), đọc đoạn văn xét câu ★ đúng/sai (5), ghép câu hỏi – câu trả lời (10).",
   ],
   [
     "Có cần tạo tài khoản không?",
@@ -90,7 +84,7 @@ export default async function MockExamHubPage() {
             bản dịch, chỗ dễ nhầm.
           </p>
           <ul className="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
-            {["40 câu · 35 phút", "200 điểm, đạt 120", "Chữa bài tiếng Việt", "Miễn phí"].map((t) => (
+            {["HSK 1 · HSK 2", "200 điểm, đạt 120", "Chữa bài tiếng Việt", "Miễn phí"].map((t) => (
               <li key={t} className="rounded-full border border-primary/20 bg-surface/70 px-3 py-1.5">
                 {t}
               </li>
@@ -126,21 +120,7 @@ export default async function MockExamHubPage() {
             </span>
             <Icon name="arrow" size={16} className="shrink-0 text-muted" />
           </Link>
-          <section className="panel p-5">
-            <h2 className="text-sm font-bold">Cấu trúc đề thi HSK 1</h2>
-            <table className="mt-3 w-full text-xs">
-              <tbody>
-                {HSK1_STRUCTURE.map((r) => (
-                  <tr key={r.part} className="border-b border-border/60 last:border-0">
-                    <td className="py-2 pr-2 align-top font-semibold whitespace-nowrap">{r.part}</td>
-                    <td className="py-2 text-muted">{r.task}</td>
-                    <td className="py-2 pl-2 text-right align-top font-semibold">{r.n}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="mt-3 text-xs text-muted">Tổng 40 câu · 200 điểm · đạt từ 120 điểm.</p>
-          </section>
+          <ExamStructure />
           <section className="panel p-5">
             <h2 className="flex items-center gap-2 text-sm font-bold">
               <Icon name="spark" size={16} className="text-primary" /> Mẹo luyện thi

@@ -412,6 +412,12 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   `hanni:ask-assistant`) → widget tự mở, tạo phiên MỚI và gửi câu hỏi soạn sẵn (lời thoại/câu, đáp án
   đúng, đáp án đã chọn, "dựa vào từ khoá nào"). Màn thi nằm ngoài khung app nên màn kết quả tự gắn
   `<AssistantWidget />`. Câu hỏi ≤ 1000 ký tự (giới hạn `AskAssistantDto`).
+  **HSK 2 (2026-10-16)**: dạng `judge-text` (đoạn văn + câu ★, nút "Câu ★ đúng/sai"); phần có
+  `continues` (nửa sau dùng bộ tranh/đáp án riêng) vẫn mang nhãn "第N部分" của phần chính thức
+  (`officialIndexes()` ở `lib/mock-exam.ts`), hướng dẫn tự ghi A–F/A–E và có "thừa 1" hay không
+  theo số phương án; `partScores` gộp 2 nửa. Bảng cấu trúc đề theo cấp
+  (`components/mock-exam/exam-structure.tsx`, cả 2 bảng nằm sẵn trong HTML — bảng ẩn chỉ gắn
+  `hidden` — để Google đọc được "cấu trúc đề HSK 2").
 - **Bảng phiên âm `/phien-am`** (`app/(site)/phien-am`, `components/pinyin/`, `lib/pinyin.ts`,
   2026-10-15) — bước 拼/声 của dải "Sáu chặng" ở trang chủ trước đó trỏ sang `/tu-dien` và
   `/pronunciation` (hứa "làm quen phiên âm", "nghe mā má mǎ mà" mà không có chỗ nào dạy). Công khai,
