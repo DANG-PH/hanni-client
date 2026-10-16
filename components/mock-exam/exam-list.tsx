@@ -260,40 +260,51 @@ export function MockExamInsights({ exams: initial }: { exams: MockExamMeta[] }) 
 
   const weak = weakest(analysis.parts, 1)[0];
   const titleOf = (slug: string) => exams.find((e) => e.slug === slug)?.title ?? slug;
+  // Làm cả đề HSK 1 lẫn HSK 2 thì tách theo cấp — trộn chung ra 2 dòng "Nghe 1".
+  const levels = [...new Set(analysis.parts.map((p) => p.level))].sort((a, b) => a - b);
+  const levelTag = (level: number) => (levels.length > 1 ? `HSK ${level} · ` : "");
   return (
     <section aria-labelledby="insights" className="panel p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         {heading}
         <p className="text-xs text-muted">Cộng dồn {analysis.attempts} lượt làm</p>
       </div>
-      <ul className="mt-3 grid gap-x-6 gap-y-3 sm:grid-cols-2">
-        {analysis.parts.map((p) => {
-          const ratio = p.correct / Math.max(1, p.total);
-          return (
-            <li key={`${p.level}-${p.section}-${p.part}`}>
-              <div className="flex items-baseline justify-between gap-3 text-xs">
-                <span className="min-w-0">
-                  <span className="font-semibold">
-                    {SECTION_SHORT[p.section]} {p.part}
-                  </span>
-                  <span className="text-muted"> · {partInfo(p.section, p.type).label}</span>
-                </span>
-                <span className="shrink-0 font-bold tabular-nums">{Math.round(ratio * 100)}%</span>
-              </div>
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-2">
-                <div
-                  className={`h-full rounded-full ${ratio >= 0.8 ? "bg-good" : ratio >= 0.6 ? "bg-warn" : "bg-danger"}`}
-                  style={{ width: `${Math.max(ratio * 100, 2)}%` }}
-                />
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+      {levels.map((level) => (
+        <div key={level} className="mt-3">
+          {levels.length > 1 && <h3 className="mb-2 text-xs font-bold text-muted">HSK {level}</h3>}
+          <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
+            {analysis.parts
+              .filter((p) => p.level === level)
+              .map((p) => {
+                const ratio = p.correct / Math.max(1, p.total);
+                return (
+                  <li key={`${p.level}-${p.section}-${p.part}`}>
+                    <div className="flex items-baseline justify-between gap-3 text-xs">
+                      <span className="min-w-0">
+                        <span className="font-semibold">
+                          {SECTION_SHORT[p.section]} {p.part}
+                        </span>
+                        <span className="text-muted"> · {partInfo(p.section, p.type).label}</span>
+                      </span>
+                      <span className="shrink-0 font-bold tabular-nums">{Math.round(ratio * 100)}%</span>
+                    </div>
+                    <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-2">
+                      <div
+                        className={`h-full rounded-full ${ratio >= 0.8 ? "bg-good" : ratio >= 0.6 ? "bg-warn" : "bg-danger"}`}
+                        style={{ width: `${Math.max(ratio * 100, 2)}%` }}
+                      />
+                    </div>
+                  </li>
+                );
+              })}
+          </ul>
+        </div>
+      ))}
       {weak ? (
         <div className="mt-4 rounded-2xl border border-warn/30 bg-warn/8 p-3 text-sm">
           <p className="font-semibold">
-            Yếu nhất: {SECTION_SHORT[weak.section]} {weak.part} · {partInfo(weak.section, weak.type).label}
+            Yếu nhất: {levelTag(weak.level)}
+            {SECTION_SHORT[weak.section]} {weak.part} · {partInfo(weak.section, weak.type).label}
           </p>
           <p className="mt-1 leading-6 text-muted">{partInfo(weak.section, weak.type).tip}</p>
           <Link
