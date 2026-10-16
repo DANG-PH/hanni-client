@@ -211,8 +211,12 @@ export default async function PinyinPage() {
                       <span className="flex h-10 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg font-extrabold text-primary">
                         {it.l}
                       </span>
-                      <span className="min-w-0 flex-1 text-sm leading-5">{it.tip}</span>
-                      {s && <SoundChip mark={s.mark} char={s.char} url={s.url} />}
+                      {/* Điện thoại: nút nghe xuống dưới mô tả — cùng hàng thì mô tả
+                       * chỉ còn ~130px ở màn 360px, câu dài gãy 4 dòng. */}
+                      <div className="flex min-w-0 flex-1 flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+                        <span className="min-w-0 text-sm leading-5 sm:flex-1">{it.tip}</span>
+                        {s && <SoundChip mark={s.mark} char={s.char} url={s.url} />}
+                      </div>
                     </li>
                   );
                 })}
@@ -240,8 +244,12 @@ export default async function PinyinPage() {
                       <span className="flex h-10 w-14 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-base font-extrabold">
                         {it.l}
                       </span>
-                      <span className="min-w-0 flex-1 text-sm leading-5">{it.tip}</span>
-                      {s && <SoundChip mark={s.mark} char={s.char} url={s.url} />}
+                      {/* Điện thoại: nút nghe xuống dưới mô tả — cùng hàng thì mô tả
+                       * chỉ còn ~130px ở màn 360px, câu dài gãy 4 dòng. */}
+                      <div className="flex min-w-0 flex-1 flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+                        <span className="min-w-0 text-sm leading-5 sm:flex-1">{it.tip}</span>
+                        {s && <SoundChip mark={s.mark} char={s.char} url={s.url} />}
+                      </div>
                     </li>
                   );
                 })}
