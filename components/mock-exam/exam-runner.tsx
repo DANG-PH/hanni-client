@@ -15,6 +15,7 @@ import { addWordToSrs } from "@/lib/hooks";
 import { hasChineseVoice, playListening, stopListening } from "@/lib/listening-audio";
 import {
   clearSaved,
+  isRightAnswer,
   officialIndexes,
   partInfo,
   partScores,
@@ -57,13 +58,21 @@ function instruction(section: MockSectionKind, part: MockPart): string {
     case "match-picture":
       return `${listen ? "Nghe đoạn hội thoại" : "Đọc câu"}, chọn tranh ${range} phù hợp. Mỗi tranh dùng 1 lần${spare ? ", thừa 1 tranh" : ""}.`;
     case "choose-text":
-      return "Nghe câu và câu hỏi (问), chọn đáp án đúng.";
+      return listen
+        ? "Nghe câu và câu hỏi (问), chọn đáp án đúng."
+        : "Đọc đoạn văn rồi trả lời câu hỏi có dấu ★, chọn đáp án đúng.";
     case "match-text":
       return `Chọn câu trả lời ${range} phù hợp với mỗi câu hỏi. Mỗi câu trả lời dùng 1 lần${spare ? ", thừa 1 câu" : ""}.`;
     case "fill-blank":
       return `Chọn từ ${range} điền vào chỗ trống. Mỗi từ dùng 1 lần${spare ? ", thừa 1 từ" : ""}.`;
     case "judge-text":
-      return "Đọc đoạn văn rồi xét câu có dấu ★: đúng với đoạn văn chọn ✓, sai chọn ✗.";
+      return listen
+        ? "Nghe một đoạn văn rồi xét câu có dấu ★ in trên đề: đúng với điều vừa nghe chọn ✓, sai chọn ✗."
+        : "Đọc đoạn văn rồi xét câu có dấu ★: đúng với đoạn văn chọn ✓, sai chọn ✗.";
+    case "order":
+      return "Bấm lần lượt các từ để sắp thành câu đúng; bấm vào từ đã xếp để bỏ ra.";
+    case "pinyin-char":
+      return "Nhìn pinyin, chọn chữ Hán đúng cho chỗ trống — như thi trên máy: gõ pinyin rồi chọn chữ trong danh sách.";
   }
 }
 
@@ -172,7 +181,7 @@ export function MockExamRunner({ slug }: { slug: string }) {
     return () => clearInterval(id);
   }, [phase, paper, startedAt]);
 
-  const setAnswer = (no: number, v: MockAnswer) =>
+  const setAnswer = (no: number, v: MockAnswer | null) =>
     setAnswers((a) => a.map((x, i) => (i === no - 1 ? v : x)));
   const toggleFlag = (no: number) =>
     setFlags((f) => (f.includes(no) ? f.filter((n) => n !== no) : [...f, no]));
@@ -488,7 +497,11 @@ function Intro({
           <ul className="mt-5 space-y-2 text-sm leading-6">
             {paper.sections.map((s) => (
               <li key={s.kind} className="flex gap-2">
-                <Icon name={s.kind === "listening" ? "headphones" : "book"} size={18} className="mt-0.5 shrink-0 text-primary" />
+                <Icon
+                  name={s.kind === "listening" ? "headphones" : s.kind === "writing" ? "pencil" : "book"}
+                  size={18}
+                  className="mt-0.5 shrink-0 text-primary"
+                />
                 <span>
                   <strong>
                     {SECTION_VI[s.kind].vi} ({SECTION_VI[s.kind].zh})
@@ -604,7 +617,7 @@ function Result({
   const levelLabel = paper.level === 7 ? "7–9" : String(paper.level);
   const shown = (r: MockReviewItem | undefined) => filter === "all" || (r && !r.correct);
   const practiceDone = Object.keys(practice).length;
-  const practiceRight = wrongItems.filter((r) => practice[r.no] === r.answer).length;
+  const practiceRight = wrongItems.filter((r) => isRightAnswer(r, practice[r.no] ?? null)).length;
 
   /** Câu hỏi gửi trợ lý AI cho 1 câu đã chữa: nội dung câu, đáp án đúng và
    * đáp án mình chọn — trợ lý trả lời đúng chỗ vướng, không phải hỏi lại. */
@@ -616,21 +629,34 @@ function Result({
         if (!item || !r) continue;
         const describe = (v: MockAnswer | null) => {
           if (v === null) return "bỏ trống";
-          if (typeof v === "boolean") return v ? "✓ (khớp với tranh)" : "✗ (không khớp tranh)";
+          if (typeof v === "string") return `"${v}"`;
+          if (typeof v === "boolean")
+            return part.type === "judge"
+              ? v
+                ? "✓ (khớp với tranh)"
+                : "✗ (không khớp tranh)"
+              : v
+                ? "✓ (câu ★ đúng)"
+                : "✗ (câu ★ sai)";
+          if (item.choices) return `chữ ${item.choices[v]}`;
           const option = item.options?.[v] ?? part.options?.[v];
           const picture = r.pictureLabels?.[v];
           return `${LETTERS[v]}${option ? ` (${option.zh})` : picture ? ` (tranh: ${picture})` : ""}`;
         };
         const sentence = r.transcript?.length
           ? `Lời thoại: ${r.transcript.map((l) => l.zh).join(" ")}`
-          : item.blank
-            ? `Câu: ${item.blank.before.zh}（ ）${item.blank.after.zh}`
-            : item.text
-              ? `Câu: ${item.text.zh}`
-              : "";
+          : item.pieces
+            ? `Các từ cần sắp xếp: ${item.pieces.map((x) => x.zh).join(" / ")}`
+            : item.blank
+              ? `Câu: ${item.blank.before.zh}（${item.pinyin ?? " "}）${item.blank.after.zh}`
+              : item.text
+                ? `Đoạn: ${item.text.zh}`
+                : "";
+        const star = item.statement ?? item.question;
         const lines = [
-          `Giải thích giúp mình câu ${no} — ${paper.title}, phần ${SECTION_SHORT[section.kind]} ${pi + 1} (${partInfo(section.kind, part.type).label}).`,
+          `Giải thích giúp mình câu ${no} — ${paper.title}, phần ${SECTION_SHORT[section.kind]} ${officialIndexes(section.parts)[pi] + 1} (${partInfo(section.kind, part.type).label}).`,
           sentence.slice(0, 400),
+          star ? `★ ${star.zh}` : "",
           part.type === "judge" && r.pictureLabels?.[0] ? `Tranh: ${r.pictureLabels[0]}.` : "",
           `Đáp án đúng: ${describe(r.answer)}. Mình chọn: ${describe(picked)}.`,
           "Vì sao đáp án đúng là vậy, dựa vào từ khoá nào? Ngắn gọn thôi nhé.",
@@ -866,8 +892,10 @@ function Result({
                             item={item}
                             section={section.kind}
                             given={done ? picked : null}
-                            onChange={done ? undefined : (v) => setPractice((p) => ({ ...p, [item.no]: v }))}
-                            review={done ? { ...r, given: picked, correct: picked === r.answer } : undefined}
+                            onChange={
+                              done ? undefined : (v) => v !== null && setPractice((p) => ({ ...p, [item.no]: v }))
+                            }
+                            review={done ? { ...r, given: picked, correct: isRightAnswer(r, picked) } : undefined}
                             pinyin={pinyin}
                             onAsk={isGuest || !done ? undefined : () => askAbout(item.no, picked)}
                           />

@@ -949,7 +949,8 @@ export interface Ruby {
 }
 
 export type MockSectionKind = "listening" | "reading" | "writing";
-export type MockAnswer = number | boolean;
+/** Số thứ tự phương án, ✓/✗, hoặc câu đã sắp xếp (dạng `order`). */
+export type MockAnswer = number | boolean | string;
 
 export interface MockExamMeta {
   slug: string;
@@ -974,9 +975,16 @@ export interface MockItem {
   no: number;
   audio?: { lines: MockSpeechLine[]; url?: string };
   text?: Ruby;
-  /** Câu ★ cần xét đúng/sai (dạng `judge-text`, HSK 2 phần đọc 3). */
+  /** Câu ★ cần xét đúng/sai (dạng `judge-text`: HSK 2 phần đọc 3, HSK 3 phần nghe 2). */
   statement?: Ruby;
+  /** Câu hỏi ★ in trên đề (HSK 3 phần đọc 3). */
+  question?: Ruby;
   blank?: { before: Ruby; after: Ruby };
+  /** Các mảnh cần sắp thành câu (dạng `order`), theo thứ tự in trên đề. */
+  pieces?: Ruby[];
+  /** Dạng `pinyin-char`: pinyin in trên chỗ trống + các chữ đồng âm để chọn. */
+  pinyin?: string;
+  choices?: string[];
   picture?: string;
   pictures?: string[];
   options?: Ruby[];
@@ -989,7 +997,9 @@ export type MockPartType =
   | "choose-text"
   | "match-text"
   | "fill-blank"
-  | "judge-text";
+  | "judge-text"
+  | "order"
+  | "pinyin-char";
 
 export interface MockPart {
   no: number;
@@ -1020,6 +1030,8 @@ export interface MockWord {
 export interface MockReviewItem {
   no: number;
   answer: MockAnswer;
+  /** Câu sắp xếp: các thứ tự khác cũng được chấm đúng. */
+  alternatives?: string[];
   given: MockAnswer | null;
   correct: boolean;
   vi: string;

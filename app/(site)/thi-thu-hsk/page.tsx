@@ -15,9 +15,9 @@ import type { MockExamMeta } from "@/lib/types";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Đề thi thử HSK 1, HSK 2 online miễn phí — đúng cấu trúc đề thật, chấm điểm ngay | Hanni",
+  title: "Đề thi thử HSK 1, HSK 2, HSK 3 online miễn phí — đúng cấu trúc đề thật, chấm điểm ngay | Hanni",
   description:
-    "Làm đề thi thử HSK 1, HSK 2 online miễn phí, đúng cấu trúc đề thi hiện hành: phần nghe có giọng đọc, phần đọc in pinyin, tự chấm điểm và chữa bài từng câu bằng tiếng Việt (lời thoại, bản dịch, từ vựng kèm âm Hán Việt). Không cần đăng ký.",
+    "Làm đề thi thử HSK 1, HSK 2, HSK 3 online miễn phí, đúng cấu trúc đề thi hiện hành: phần nghe có giọng đọc, phần đọc, phần viết HSK 3 (sắp xếp câu, viết chữ theo pinyin), tự chấm điểm và chữa bài từng câu bằng tiếng Việt (lời thoại, bản dịch, từ vựng kèm âm Hán Việt). Không cần đăng ký.",
   alternates: { canonical: "/thi-thu-hsk" },
 };
 
@@ -43,19 +43,23 @@ const TIPS = [
 const FAQ: [string, string][] = [
   [
     "Đề thi thử trên Hanni có giống đề HSK thật không?",
-    "Giống về CẤU TRÚC: HSK 1 gồm 40 câu (20 nghe, 20 đọc), HSK 2 gồm 60 câu (35 nghe, 25 đọc), đủ các dạng câu y như đề thật, thang 200 điểm. Nội dung do Hanni tự soạn, chỉ dùng từ vựng đúng cấp (HSK 3.0), tranh minh hoạ bằng biểu tượng, phần nghe dùng giọng đọc tiếng Trung của trình duyệt chứ không phải băng ghi âm đề thật.",
+    "Giống về CẤU TRÚC: HSK 1 gồm 40 câu (20 nghe, 20 đọc), HSK 2 gồm 60 câu (35 nghe, 25 đọc), HSK 3 gồm 80 câu (40 nghe, 30 đọc, 10 viết), đủ các dạng câu y như đề thật. Nội dung do Hanni tự soạn, chỉ dùng từ vựng đúng cấp (HSK 3.0), tranh minh hoạ bằng biểu tượng, phần nghe dùng giọng đọc tiếng Trung của trình duyệt chứ không phải băng ghi âm đề thật.",
   ],
   [
-    "Thi HSK 1 bao nhiêu điểm thì đạt?",
+    "Thi HSK bao nhiêu điểm thì đạt?",
     "HSK 1 và HSK 2 đều tổng 200 điểm (nghe 100, đọc 100), đạt từ 120 điểm. HSK 3 trở lên có thêm phần viết, tổng 300 điểm, đạt từ 180.",
   ],
   [
-    "Đề HSK 1, HSK 2 thi trong bao lâu?",
-    "HSK 1 khoảng 40 phút (35 phút làm bài + điền thông tin), HSK 2 khoảng 55 phút (50 phút làm bài). Đề thử trên Hanni tính giờ đúng thời gian làm bài: 35 phút với HSK 1, 50 phút với HSK 2.",
+    "Đề HSK 1, HSK 2, HSK 3 thi trong bao lâu?",
+    "HSK 1 khoảng 40 phút, HSK 2 khoảng 55 phút, HSK 3 khoảng 90 phút — đã gồm 5 phút điền thông tin cá nhân. Đề thử trên Hanni tính giờ đúng thời gian làm bài: 35 phút với HSK 1, 50 phút với HSK 2, 85 phút với HSK 3.",
   ],
   [
     "Đề thi HSK 2 gồm những phần nào?",
     "Nghe 35 câu: nghe câu đối chiếu tranh (10), nghe hội thoại ghép tranh (10), hội thoại ngắn chọn đáp án (10), hội thoại dài chọn đáp án (5). Đọc 25 câu: ghép câu với tranh (5), điền từ (5), đọc đoạn văn xét câu ★ đúng/sai (5), ghép câu hỏi – câu trả lời (10).",
+  ],
+  [
+    "Đề thi HSK 3 gồm những phần nào?",
+    "Nghe 40 câu: nghe hội thoại ghép tranh (10), nghe một đoạn văn xét câu ★ đúng/sai (10), hội thoại ngắn chọn đáp án (10), hội thoại dài chọn đáp án (10). Đọc 30 câu: ghép câu với câu đáp (10), chọn từ điền chỗ trống (10), đọc đoạn văn trả lời câu hỏi (10). Viết 10 câu: sắp xếp từ thành câu (5), nhìn pinyin viết chữ Hán (5). Tổng 300 điểm, đạt từ 180. Trên Hanni, câu viết chữ chọn trong các chữ đồng âm — giống thi trên máy, gõ pinyin rồi chọn chữ.",
   ],
   [
     "Có cần tạo tài khoản không?",
@@ -80,11 +84,11 @@ export default async function MockExamHubPage() {
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-7 text-muted">
             Đúng cấu trúc đề thi HSK hiện hành: phần nghe có giọng đọc, phần đọc in pinyin như đề
-            HSK 1–2. Nộp bài là có điểm ngay, kèm chữa bài từng câu bằng tiếng Việt — lời thoại,
-            bản dịch, chỗ dễ nhầm.
+            HSK 1–2, HSK 3 có thêm phần viết. Nộp bài là có điểm ngay, kèm chữa bài từng câu bằng
+            tiếng Việt — lời thoại, bản dịch, chỗ dễ nhầm.
           </p>
           <ul className="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
-            {["HSK 1 · HSK 2", "200 điểm, đạt 120", "Chữa bài tiếng Việt", "Miễn phí"].map((t) => (
+            {["HSK 1 · HSK 2 · HSK 3", "Nghe · Đọc · Viết", "Chữa bài tiếng Việt", "Miễn phí"].map((t) => (
               <li key={t} className="rounded-full border border-primary/20 bg-surface/70 px-3 py-1.5">
                 {t}
               </li>

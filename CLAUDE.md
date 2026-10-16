@@ -418,6 +418,16 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   theo số phương án; `partScores` gộp 2 nửa. Bảng cấu trúc đề theo cấp
   (`components/mock-exam/exam-structure.tsx`, cả 2 bảng nằm sẵn trong HTML — bảng ẩn chỉ gắn
   `hidden` — để Google đọc được "cấu trúc đề HSK 2").
+  **HSK 3 (2026-10-16)**: phần Viết (icon `pencil`). Câu sắp xếp (`OrderBuilder` trong
+  `exam-items.tsx`): bấm mảnh dưới để đưa lên câu, bấm mảnh trên câu để trả lại, "Xếp lại" — CHỈ khi
+  đủ mảnh mới gọi `onChange(câu)`, rút bớt mảnh thì `onChange(null)` (nên `onChange` nhận `null`);
+  làm tiếp bài dở dựng lại thứ tự từ câu đã lưu (`restoreOrder`, có quay lui). Chữa bài: câu của
+  mình (gạch nếu sai) + "Đáp án" + "Cũng đúng" (chỉ các cách KHÁC cách mình đã xếp). Câu viết chữ
+  theo pinyin: `<ruby>` đặt pinyin TRÊN ô trống, 6 chữ đồng âm dạng lưới 6 cột co giãn (vừa 1 hàng ở
+  360px). Luyện lại câu sai chấm bằng `isRightAnswer()` (`lib/mock-exam.ts`, giống server: bỏ dấu
+  câu, nhận `alternatives`). Câu ★ (xét đúng/sai hoặc câu hỏi phần đọc) dùng chung `StarLine`; câu
+  điền từ 56–60 là hội thoại 2 dòng "A：/B：" → `whitespace-pre-line`. Lời thoại trong chữa bài: nhãn
+  "Nam:/Nữ:" nằm CÙNG dòng với lời (tách cột thì đoạn nghe dài bị dồn vào ~180px ở màn 360).
 - **Bảng phiên âm `/phien-am`** (`app/(site)/phien-am`, `components/pinyin/`, `lib/pinyin.ts`,
   2026-10-15) — bước 拼/声 của dải "Sáu chặng" ở trang chủ trước đó trỏ sang `/tu-dien` và
   `/pronunciation` (hứa "làm quen phiên âm", "nghe mā má mǎ mà" mà không có chỗ nào dạy). Công khai,

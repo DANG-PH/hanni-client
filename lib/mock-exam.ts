@@ -80,6 +80,30 @@ const PART_INFO: Record<string, PartInfo> = {
     href: "/ngu-phap",
     cta: "Xem ngữ pháp",
   },
+  "listening:judge-text": {
+    label: "Nghe đoạn văn, xét câu ★",
+    tip: "Đọc câu ★ TRƯỚC khi nghe để biết cần bắt chi tiết nào (giờ, nơi, ai, làm gì) — câu ★ hay chỉ đổi đúng 1 chi tiết so với lời nghe.",
+    href: "/listening",
+    cta: "Luyện nghe",
+  },
+  "reading:choose-text": {
+    label: "Đọc đoạn văn, trả lời câu hỏi",
+    tip: "Đọc câu hỏi ★ trước rồi mới tìm trong đoạn văn — đáp án đúng thường nói lại ý của đoạn bằng từ khác, ít khi chép nguyên văn.",
+    href: "/study",
+    cta: "Ôn từ vựng",
+  },
+  "writing:order": {
+    label: "Sắp xếp từ thành câu",
+    tip: "Tìm chủ ngữ + động từ chính trước; thời gian, nơi chốn đứng TRƯỚC động từ, kết quả/bổ ngữ đứng SAU; 把/被 đi ngay trước động từ chính.",
+    href: "/ngu-phap",
+    cta: "Xem ngữ pháp",
+  },
+  "writing:pinyin-char": {
+    label: "Viết chữ theo pinyin",
+    tip: "Chữ đồng âm rất nhiều — nhớ chữ theo TỪ (出租车, 终于) chứ đừng nhớ rời; âm Hán Việt giúp phân biệt: 出 xuất, 初 sơ, 除 trừ.",
+    href: "/writing",
+    cta: "Luyện viết chữ",
+  },
 };
 
 export function partInfo(section: MockSectionKind, type: MockPartType): PartInfo {
@@ -125,6 +149,21 @@ export function partScores(paper: MockPaper, review: Map<number, MockReviewItem>
     });
     return out;
   });
+}
+
+/** Bỏ dấu câu + khoảng trắng — câu sắp xếp chỉ chấm thứ tự từ (giống server). */
+export const normalizeSentence = (s: string) => s.replace(/[\s\p{P}]/gu, "");
+
+/** Đáp án `v` có đúng với câu đã chữa `r` không — dùng khi luyện lại câu sai
+ * (chấm ngay trên máy). Câu sắp xếp nhận cả các thứ tự khác cũng đúng. */
+export function isRightAnswer(r: Pick<MockReviewItem, "answer" | "alternatives">, v: MockAnswer | null): boolean {
+  if (v === null) return false;
+  if (typeof r.answer === "string")
+    return (
+      typeof v === "string" &&
+      [r.answer, ...(r.alternatives ?? [])].some((a) => normalizeSentence(a) === normalizeSentence(v))
+    );
+  return v === r.answer;
 }
 
 /** Các phần yếu nhất (dưới 80% câu đúng), yếu trước. */

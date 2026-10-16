@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-/** Cấu trúc đề HSK hiện hành theo cấp. Cả 2 bảng đều nằm sẵn trong HTML (bảng
- * đang ẩn chỉ gắn `hidden`) để Google đọc được "cấu trúc đề HSK 2" lẫn HSK 1. */
+/** Cấu trúc đề HSK hiện hành theo cấp. Mọi bảng đều nằm sẵn trong HTML (bảng
+ * đang ẩn chỉ gắn `hidden`) để Google đọc được "cấu trúc đề HSK 3", HSK 2, HSK 1. */
 const STRUCTURES: { level: number; rows: { part: string; task: string; n: number }[]; total: string }[] = [
   {
     level: 1,
@@ -33,13 +33,28 @@ const STRUCTURES: { level: number; rows: { part: string; task: string; n: number
     ],
     total: "Tổng 60 câu · 50 phút làm bài · 200 điểm · đạt từ 120 điểm.",
   },
+  {
+    level: 3,
+    rows: [
+      { part: "Nghe — Phần 1", task: "Nghe hội thoại, ghép tranh (2 bộ tranh)", n: 10 },
+      { part: "Nghe — Phần 2", task: "Nghe 1 đoạn, xét câu ★ đúng / sai", n: 10 },
+      { part: "Nghe — Phần 3", task: "Hội thoại ngắn + câu hỏi, chọn A/B/C", n: 10 },
+      { part: "Nghe — Phần 4", task: "Hội thoại dài hơn + câu hỏi, chọn A/B/C", n: 10 },
+      { part: "Đọc — Phần 1", task: "Ghép câu với câu đáp (2 bộ)", n: 10 },
+      { part: "Đọc — Phần 2", task: "Chọn từ điền chỗ trống (2 bộ)", n: 10 },
+      { part: "Đọc — Phần 3", task: "Đọc đoạn văn, trả lời câu hỏi ★", n: 10 },
+      { part: "Viết — Phần 1", task: "Sắp xếp từ thành câu", n: 5 },
+      { part: "Viết — Phần 2", task: "Nhìn pinyin viết chữ Hán", n: 5 },
+    ],
+    total: "Tổng 80 câu · 85 phút làm bài · 300 điểm · đạt từ 180 điểm.",
+  },
 ];
 
 export function ExamStructure() {
   const [level, setLevel] = useState(1);
   return (
     <section className="panel p-5">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-bold">Cấu trúc đề thi HSK {level}</h2>
         <div className="flex gap-1" role="tablist" aria-label="Chọn cấp">
           {STRUCTURES.map((s) => (

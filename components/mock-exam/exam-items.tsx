@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/icon";
 import { playListening, stopListening } from "@/lib/listening-audio";
+import { normalizeSentence } from "@/lib/mock-exam";
 import type {
   MockAnswer,
   MockItem,
@@ -274,6 +275,148 @@ function JudgeButtons({
   );
 }
 
+/** Câu có dấu ★ in trên đề: câu cần xét đúng/sai hoặc câu hỏi phần đọc. */
+function StarLine({ ruby, pinyin, label }: { ruby: Ruby; pinyin: boolean; label: string }) {
+  return (
+    <p className="flex items-baseline gap-2 rounded-2xl bg-surface-2 px-3 py-2">
+      <span aria-label={label} className="shrink-0 font-bold text-primary">
+        ★
+      </span>
+      <RubyText ruby={ruby} pinyin={pinyin} className="text-lg leading-loose" />
+    </p>
+  );
+}
+
+/** Ghép lại thứ tự mảnh từ câu đã lưu (làm tiếp bài dở, xem chữa bài). */
+function restoreOrder(pieces: Ruby[], given: MockAnswer | null): number[] {
+  if (typeof given !== "string") return [];
+  const out: number[] = [];
+  const go = (rest: string): boolean => {
+    if (!rest) return out.length === pieces.length;
+    for (let i = 0; i < pieces.length; i++) {
+      if (out.includes(i) || !rest.startsWith(pieces[i].zh)) continue;
+      out.push(i);
+      if (go(rest.slice(pieces[i].zh.length))) return true;
+      out.pop();
+    }
+    return false;
+  };
+  return go(normalizeSentence(given)) ? out : [];
+}
+
+/** Sắp xếp câu (HSK 3 phần viết 1): bấm mảnh bên dưới để đưa lên câu, bấm
+ * mảnh trên câu để trả lại. Xếp ĐỦ mảnh mới tính là đã làm câu này. */
+function OrderBuilder({
+  pieces,
+  given,
+  review,
+  onChange,
+  pinyin,
+}: {
+  pieces: Ruby[];
+  given: MockAnswer | null;
+  review?: MockReviewItem;
+  onChange?: (v: MockAnswer | null) => void;
+  pinyin: boolean;
+}) {
+  const [order, setOrder] = useState<number[]>(() => restoreOrder(pieces, given));
+  const sentence = (o: number[]) => o.map((i) => pieces[i].zh).join("");
+
+  function update(next: number[]) {
+    const wasDone = order.length === pieces.length;
+    setOrder(next);
+    if (next.length === pieces.length) onChange?.(sentence(next));
+    else if (wasDone) onChange?.(null);
+  }
+
+  if (review) {
+    const mine = typeof given === "string" ? given : "";
+    // Làm đúng theo 1 cách thì chỉ kể các cách KHÁC; làm sai thì kể các cách thay thế.
+    const others = review.correct
+      ? [String(review.answer), ...(review.alternatives ?? [])].filter(
+          (a) => normalizeSentence(a) !== normalizeSentence(mine),
+        )
+      : (review.alternatives ?? []);
+    return (
+      <div className="space-y-2">
+        {mine && (
+          <p className={`hanzi text-xl leading-loose ${review.correct ? "text-good" : "text-danger line-through"}`} lang="zh">
+            {mine}
+          </p>
+        )}
+        {!review.correct && (
+          <p className="text-sm">
+            <span className="font-semibold text-good">Đáp án: </span>
+            <span lang="zh" className="hanzi text-xl text-good">
+              {String(review.answer)}
+            </span>
+          </p>
+        )}
+        {others.length > 0 && (
+          <p className="text-xs text-muted">
+            Cũng đúng:{" "}
+            <span lang="zh" className="hanzi text-base text-foreground">
+              {others.join(" / ")}
+            </span>
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  const placedSet = new Set(order);
+  return (
+    <div className="space-y-3">
+      <div
+        aria-label="Câu đang xếp"
+        className="flex min-h-14 flex-wrap items-center gap-1.5 rounded-2xl border-2 border-dashed border-border px-2 py-2"
+      >
+        {order.length === 0 ? (
+          <span className="px-1 text-sm text-muted">Bấm các từ bên dưới theo đúng thứ tự…</span>
+        ) : (
+          order.map((i, k) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Bỏ "${pieces[i].zh}" khỏi câu`}
+              disabled={!onChange}
+              onClick={() => update(order.filter((_, j) => j !== k))}
+              className="motion-button rounded-xl border-2 border-foreground bg-foreground/10 px-3 py-1.5"
+            >
+              <RubyText ruby={pieces[i]} pinyin={pinyin} className="text-lg" />
+            </button>
+          ))
+        )}
+      </div>
+      <div className="flex flex-wrap items-center gap-1.5">
+        {pieces.map((piece, i) =>
+          placedSet.has(i) ? null : (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Thêm "${piece.zh}" vào câu`}
+              disabled={!onChange}
+              onClick={() => update([...order, i])}
+              className="motion-button rounded-xl border-2 border-border bg-surface px-3 py-1.5 hover:border-primary/40 hover:bg-primary/5"
+            >
+              <RubyText ruby={piece} pinyin={pinyin} className="text-lg" />
+            </button>
+          ),
+        )}
+        {order.length > 0 && onChange && (
+          <button
+            type="button"
+            onClick={() => update([])}
+            className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-muted hover:text-foreground"
+          >
+            <Icon name="refresh" size={13} /> Xếp lại
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /** Lời thoại + bản dịch + giải thích — chỉ hiện khi chữa bài. */
 function ReviewNotes({
   review,
@@ -286,12 +429,12 @@ function ReviewNotes({
 }) {
   return (
     <div className="mt-3 space-y-2 rounded-2xl bg-surface-2 px-4 py-3 text-sm">
+      {/* Nhãn người nói nằm CÙNG dòng với lời (không tách cột) — đoạn nghe dài
+       * của HSK 3 ở màn 360px khỏi bị dồn vào cột ~180px. */}
       {review.transcript?.map((l, i) => (
-        <p key={i} className="flex gap-2">
-          <span className="shrink-0 text-xs font-semibold leading-7 text-muted">
-            {SPEAKER_VI[l.s]}:
-          </span>
-          <RubyText ruby={l} pinyin={pinyin} className="text-base leading-7" />
+        <p key={i} className="text-base leading-7">
+          <span className="mr-1.5 text-xs font-semibold text-muted">{SPEAKER_VI[l.s]}:</span>
+          <RubyText ruby={l} pinyin={pinyin} />
         </p>
       ))}
       <p className="leading-6">{review.vi}</p>
@@ -352,7 +495,8 @@ export function ExamItem({
   item: MockItem;
   section: MockSectionKind;
   given: MockAnswer | null;
-  onChange?: (v: MockAnswer) => void;
+  /** `null` = bỏ chọn (câu sắp xếp chưa đủ mảnh). */
+  onChange?: (v: MockAnswer | null) => void;
   review?: MockReviewItem;
   pinyin: boolean;
   flagged?: boolean;
@@ -414,17 +558,11 @@ export function ExamItem({
             </div>
           )}
 
-          {part.type === "judge-text" && item.text && (
+          {/* Phần đọc in sẵn đoạn văn; phần nghe (HSK 3) chỉ có lời đọc + câu ★. */}
+          {part.type === "judge-text" && (
             <div className="space-y-3">
-              <RubyText ruby={item.text} pinyin={pinyin} className="text-xl leading-loose" />
-              {item.statement && (
-                <p className="flex items-baseline gap-2 rounded-2xl bg-surface-2 px-3 py-2">
-                  <span aria-label="Câu cần xét" className="shrink-0 font-bold text-primary">
-                    ★
-                  </span>
-                  <RubyText ruby={item.statement} pinyin={pinyin} className="text-lg leading-loose" />
-                </p>
-              )}
+              {item.text && <RubyText ruby={item.text} pinyin={pinyin} className="text-xl leading-loose" />}
+              {item.statement && <StarLine ruby={item.statement} pinyin={pinyin} label="Câu cần xét" />}
               <JudgeButtons given={given} review={review} onChange={onChange} statement />
             </div>
           )}
@@ -446,6 +584,10 @@ export function ExamItem({
             </div>
           )}
 
+          {part.type === "choose-text" && item.text && (
+            <RubyText ruby={item.text} pinyin={pinyin} className="block text-lg leading-loose" />
+          )}
+          {item.question && <StarLine ruby={item.question} pinyin={pinyin} label="Câu hỏi" />}
           {part.type === "choose-text" && item.options && (
             <div className="grid gap-2 sm:grid-cols-3">
               {item.options.map((o, i) => (
@@ -477,7 +619,8 @@ export function ExamItem({
 
           {part.type === "fill-blank" && item.blank && (
             <>
-              <p className="text-xl leading-loose">
+              {/* HSK 3 câu 56–60 là hội thoại 2 dòng "A：… / B：…". */}
+              <p className="text-xl leading-loose whitespace-pre-line">
                 <RubyText ruby={item.blank.before} pinyin={pinyin} />
                 <span
                   className={`mx-1 inline-block min-w-14 border-b-2 px-1 text-center ${
@@ -502,6 +645,55 @@ export function ExamItem({
                 <RubyText ruby={item.blank.after} pinyin={pinyin} />
               </p>
               <LetterRow count={part.options?.length ?? 0} given={given} review={review} onChange={onChange} />
+            </>
+          )}
+
+          {part.type === "order" && item.pieces && (
+            <OrderBuilder pieces={item.pieces} given={given} review={review} onChange={onChange} pinyin={pinyin} />
+          )}
+
+          {part.type === "pinyin-char" && item.blank && item.choices && (
+            <>
+              <p className="text-xl leading-loose">
+                <RubyText ruby={item.blank.before} pinyin={pinyin} />
+                {/* Pinyin in TRÊN chỗ trống như đề thật — dùng <ruby> để chữ
+                 * trong ô vẫn thẳng hàng với cả câu. */}
+                <ruby className="mx-1">
+                  <span
+                    lang="zh"
+                    className={`hanzi inline-block min-w-12 border-b-2 px-1 text-center ${
+                      review ? (review.correct ? "border-good" : "border-danger") : "border-foreground"
+                    }`}
+                  >
+                    {review && !review.correct && typeof given === "number" && (
+                      <s className="mr-1 text-danger">{item.choices[given]}</s>
+                    )}
+                    {review && typeof review.answer === "number" ? (
+                      <span className="text-good">{item.choices[review.answer]}</span>
+                    ) : typeof given === "number" ? (
+                      item.choices[given]
+                    ) : (
+                      "\u00a0"
+                    )}
+                  </span>
+                  <rt className="font-sans text-[0.6em] font-semibold text-primary">{item.pinyin}</rt>
+                </ruby>
+                <RubyText ruby={item.blank.after} pinyin={pinyin} />
+              </p>
+              {/* 6 ô co theo bề ngang để vừa 1 hàng cả ở màn 360px. */}
+              <div className="grid max-w-sm grid-cols-6 gap-1.5 sm:gap-2">
+                {item.choices.map((c, i) => (
+                  <OptionButton
+                    key={c}
+                    label={`Chọn chữ ${c}`}
+                    state={optionState(i, given, review)}
+                    onClick={onChange && (() => onChange(i))}
+                    className="hanzi flex aspect-square w-full items-center justify-center text-2xl"
+                  >
+                    <span lang="zh">{c}</span>
+                  </OptionButton>
+                ))}
+              </div>
             </>
           )}
 
