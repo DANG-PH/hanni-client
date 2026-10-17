@@ -139,7 +139,7 @@ export default function LessonDetailPage() {
             aria-labelledby={
               tab === "words" ? "lesson-words-tab" : "lesson-examples-tab"
             }
-            className="space-y-3"
+            className="grid gap-3 xl:grid-cols-2"
           >
             {tab === "words" &&
               (words.length ? (
@@ -179,8 +179,15 @@ export default function LessonDetailPage() {
                             </span>
                           )}
                         </div>
-                        <p className="mt-2 text-sm text-primary">
+                        <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-primary">
                           {word.pinyin}
+                          {/* Âm Hán Việt hay để lộ luôn nghĩa (时间 = thời gian)
+                           * nên ẩn cùng nghĩa khi tự ôn. */}
+                          {showMeanings && word.hanViet && (
+                            <span className="rounded-md bg-primary/8 px-1.5 py-0.5 text-xs font-semibold">
+                              Hán Việt: {word.hanViet}
+                            </span>
+                          )}
                         </p>
                         {showMeanings ? (
                           <p className="mt-2 text-sm font-medium leading-6">
@@ -211,10 +218,12 @@ export default function LessonDetailPage() {
                   </article>
                 ))
               ) : (
-                <EmptyState
-                  title="Chưa có từ vựng"
-                  description="Nội dung bài học này đang được bổ sung. Hãy chọn bài khác trong lộ trình."
-                />
+                <div className="xl:col-span-2">
+                  <EmptyState
+                    title="Chưa có từ vựng"
+                    description="Nội dung bài học này đang được bổ sung. Hãy chọn bài khác trong lộ trình."
+                  />
+                </div>
               ))}
             {tab === "examples" &&
               examples.length > 0 &&

@@ -369,6 +369,20 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
     Thêm nút nổi/khung cao theo màn hình mới thì nhớ trừ biến này.
   - `pageLabel()` cho nhãn breadcrumb ở `app-shell.tsx`. "So với bạn bè" ở `/leaderboard`. Mặc định
     sau đăng nhập: `HOME_PATH` (`lib/auth-redirect.ts`).
+- **Khung chọn chủ đề → bài dùng chung** (`components/learn/topic-explorer.tsx`, 2026-10-16/17 —
+  user chụp `/learn` hỏi "sao khoảng này trống"): `variant="learn"` ở `/learn`, `variant="review"` ở
+  `/study` (bài đã học → "Ôn flashcard", chưa học → "Học trước"; trước đó `/study` tự dựng lưới riêng
+  bị kéo dài trắng + bỏ trống nửa phải). Cột PHẢI quyết định chiều cao (`lg:min-h-[32rem]`), danh
+  sách chủ đề `absolute inset-0` trong cột trái nên cao đúng bằng cột phải rồi tự cuộn — chủ đề HSK 1
+  chỉ 1–2 bài, để 2 cột tự cao theo nội dung là mảng trống lớn (Hanbeego không gặp vì 4–9 bài/chủ
+  đề). Khung phải có thêm **từ vựng của 1 bài** (`useLesson`: chữ Hán, pinyin, âm Hán Việt, nghĩa, nút
+  nghe + ngữ pháp trong bài). Cuộn chủ đề đang học vào tầm nhìn bằng `scrollTop/scrollLeft` của chính
+  danh sách — `scrollIntoView` kéo cả trang. Cùng đợt rà bố cục máy tính (quét 23 trang ở 1920/1440
+  bằng bộ dò "cột lệch chiều cao"): `/thi-thu-hsk` đưa "Câu hỏi thường gặp" vào cột trái dưới danh
+  sách đề; `/account` chuyển cửa hàng trang trí sang cột trái (cột 320px làm ô giá + "Mở khoá" gãy
+  dòng), nhãn "HSK Student" lên góc trên banner (góc dưới bị avatar đè); `/learn/[lessonId]` danh
+  sách từ 2 cột từ xl + nhãn **Hán Việt** (ẩn cùng nghĩa khi tự ôn); 3 thẻ cuối `/learn` cao bằng
+  nhau. Cột phải `lg:sticky` (`/settings`, `/learn/[lessonId]`) ngắn hơn là bình thường — đi theo khi cuộn.
 - **`/study` không tham số = chọn bộ thẻ** (`components/study/study-hub.tsx`); `?review=1` ôn
   từ đến hạn, `?lesson=` ôn đúng 1 bài (gồm MỌI từ của bài, kể cả từ vừa học chưa tới hạn — nếu
   không thì vừa học xong bấm "Ôn bằng flashcard" sẽ ra "không có từ cần ôn"), `?leeches=1`.

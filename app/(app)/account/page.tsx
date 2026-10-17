@@ -60,7 +60,8 @@ export default function AccountPage() {
         <div className="space-y-5">
           <Card className="overflow-hidden p-0! border-primary/20 shadow-md">
             <div className="relative flex h-32 items-end justify-between overflow-hidden border-b border-primary/15 bg-gradient-to-r from-primary/15 via-primary/8 to-accent/10 px-7 py-3">
-              <div className="flex items-center gap-2">
+              {/* Nhãn ở góc TRÊN: góc dưới bên trái là chỗ avatar kéo lên đè. */}
+              <div className="flex items-center gap-2 self-start">
                 <span className="rounded-full bg-surface/80 px-3 py-1 text-[11px] font-bold text-primary shadow-2xs">
                   HSK Student
                 </span>
@@ -152,6 +153,9 @@ export default function AccountPage() {
             </div>
           </Card>
           <ReferralCard userId={user.id} />
+          {/* Cửa hàng ở cột rộng: trong cột phải 320px lưới 2 ô chỉ còn ~130px
+           * mỗi ô, giá + nút "Mở khoá" gãy dòng, cột phải dài gấp đôi cột trái. */}
+          <CosmeticShop />
           <DangerZone hasPassword={user.hasPassword} />
         </div>
         <aside className="space-y-5">
@@ -188,7 +192,6 @@ export default function AccountPage() {
           </Card>
           <PremiumSection />
           <WalletCard />
-          <CosmeticShop />
           <Card>
             <SectionHeading
               icon="route"

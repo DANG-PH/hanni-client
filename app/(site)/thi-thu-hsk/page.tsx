@@ -107,6 +107,25 @@ export default async function MockExamHubPage() {
           <div className="pt-3">
             <MockExamInsights exams={exams} />
           </div>
+          {/* Câu hỏi thường gặp nằm ở cột trái (không trải cả trang bên dưới):
+           * danh sách đề chỉ vài thẻ nên cột trái hết sớm, cạnh cột phải dài 4
+           * khối là một mảng trống lớn (đo 1920px: 503px vs 1019px). */}
+          <section aria-labelledby="faq" className="space-y-3 pt-3">
+            <h2 id="faq" className="text-lg font-extrabold tracking-tight">
+              Câu hỏi thường gặp
+            </h2>
+            {FAQ.map(([q, a]) => (
+              <details key={q} className="panel group p-5">
+                <summary className="cursor-pointer list-none text-sm font-bold marker:hidden">
+                  <span className="flex items-center justify-between gap-3">
+                    {q}
+                    <Icon name="chevron" size={16} className="shrink-0 transition-transform group-open:rotate-180" />
+                  </span>
+                </summary>
+                <p className="mt-3 text-sm leading-7 text-muted">{a}</p>
+              </details>
+            ))}
+          </section>
         </section>
 
         <aside className="min-w-0 space-y-4">
@@ -154,22 +173,6 @@ export default async function MockExamHubPage() {
         </aside>
       </div>
 
-      <section aria-labelledby="faq" className="space-y-3">
-        <h2 id="faq" className="text-lg font-extrabold tracking-tight">
-          Câu hỏi thường gặp
-        </h2>
-        {FAQ.map(([q, a]) => (
-          <details key={q} className="panel group p-5">
-            <summary className="cursor-pointer list-none text-sm font-bold marker:hidden">
-              <span className="flex items-center justify-between gap-3">
-                {q}
-                <Icon name="chevron" size={16} className="shrink-0 transition-transform group-open:rotate-180" />
-              </span>
-            </summary>
-            <p className="mt-3 text-sm leading-7 text-muted">{a}</p>
-          </details>
-        ))}
-      </section>
     </div>
   );
 }

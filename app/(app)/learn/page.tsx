@@ -247,7 +247,9 @@ function LearnHome() {
         </section>
       )}
 
-      <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {/* Kéo 3 thẻ cao bằng nhau — để `items-start` thì đáy lệch nhau, thẻ ngắn
+       * chừa mảng trống bên dưới. */}
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <DailyQuestCard />
         <WeeklyLeagueCard />
         <WordOfTheDayCard />

@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { Icon } from "@/components/icon";
-import { toUnits } from "@/lib/units";
+import { TopicExplorer } from "@/components/learn/topic-explorer";
 import { LinkButton, Spinner } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { useLearnPath, useStudyStats } from "@/lib/hooks";
@@ -20,14 +19,11 @@ export function StudyHub() {
   const [level, setLevel] = useState<number | undefined>(undefined);
   const stats = useStudyStats();
   const path = useLearnPath(level);
-  const [topic, setTopic] = useState(0);
 
   if (loading || !user) return <Spinner />;
 
   const s = stats.data;
   const due = s?.dueNow ?? 0;
-  const units = path.data ? toUnits(path.data.lessons) : [];
-  const unit = units[Math.min(topic, units.length - 1)];
 
   return (
     <div className="page-wrap space-y-6">
@@ -93,10 +89,7 @@ export function StudyHub() {
                   type="button"
                   role="tab"
                   aria-selected={l === path.data!.level}
-                  onClick={() => {
-                    setLevel(l);
-                    setTopic(0);
-                  }}
+                  onClick={() => setLevel(l)}
                   className={`motion-button shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold ${
                     l === path.data!.level
                       ? "border-primary bg-primary text-primary-fg"
@@ -117,76 +110,15 @@ export function StudyHub() {
             ))}
           </div>
         ) : (
-          <div className="mt-4 grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
-            <ul className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
-              {units.map((u, i) => {
-                const done = u.lessons.filter((l) => l.lesson.startedWords > 0).length;
-                return (
-                  <li key={`${u.title}-${i}`} className="shrink-0 lg:shrink">
-                    <button
-                      type="button"
-                      onClick={() => setTopic(i)}
-                      className={`motion-button flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-sm ${
-                        i === topic
-                          ? "border-primary/40 bg-primary/8 font-semibold text-primary"
-                          : "border-border bg-surface hover:border-primary/30"
-                      }`}
-                    >
-                      <span className="min-w-0 flex-1 truncate">{u.title}</span>
-                      <span className="shrink-0 text-[11px] text-muted">
-                        {done}/{u.lessons.length}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-
-            {unit && (
-              <ul className="grid gap-3 sm:grid-cols-2">
-                {unit.lessons.map(({ lesson, part }) => {
-                  const started = lesson.startedWords > 0;
-                  return (
-                    <li key={lesson.id} className="panel flex flex-col p-4">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-bold">
-                          Bài {lesson.orderIndex}
-                          {part ? ` · phần ${part}` : ""}
-                        </p>
-                        <span
-                          className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                            started ? "bg-good/12 text-good" : "bg-surface-2 text-muted"
-                          }`}
-                        >
-                          {started ? `Đã học ${lesson.startedWords}/${lesson.wordCount}` : "Chưa học"}
-                        </span>
-                      </div>
-                      <p lang="zh" className="hanzi mt-2 text-xl text-primary">
-                        {lesson.previewWords.join(" · ")}
-                      </p>
-                      <p className="text-xs text-muted">{lesson.wordCount} từ</p>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {started ? (
-                          <LinkButton href={`/study?lesson=${lesson.id}`} className="min-h-9! px-3! text-xs!">
-                            <Icon name="cards" size={14} /> Ôn bằng flashcard
-                          </LinkButton>
-                        ) : (
-                          <LinkButton href={`/bai-hoc/${lesson.id}`} className="min-h-9! px-3! text-xs!">
-                            <Icon name="play" size={14} /> Học bài này trước
-                          </LinkButton>
-                        )}
-                        <Link
-                          href={`/learn/${lesson.id}`}
-                          className="inline-flex items-center rounded-lg px-2 text-xs font-medium text-muted hover:text-primary"
-                        >
-                          Xem từ vựng
-                        </Link>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+          <div className="mt-4">
+            {/* Cùng khung chọn chủ đề → bài với lộ trình ở trang chủ: bài đã học
+             * ôn bằng flashcard, chưa học thì mời học trước. */}
+            <TopicExplorer
+              key={path.data.level}
+              lessons={path.data.lessons}
+              currentLessonId={path.data.currentLessonId}
+              variant="review"
+            />
           </div>
         )}
       </section>
