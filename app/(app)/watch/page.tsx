@@ -11,7 +11,6 @@ import {
   Button,
   EmptyState,
   ErrorNote,
-  LinkButton,
   PageHeading,
   SectionHeading,
 } from "@/components/ui";
@@ -37,6 +36,11 @@ export default function WatchPage() {
     kind: kind || undefined,
     level,
   });
+  // Chỉ bày những cấp thật sự có video (kho hiện toàn HSK 4–5 — 7 chip còn lại bấm vào là trống).
+  const { data: allVideos } = useVideos();
+  const levelsWithVideos = [...new Set((allVideos ?? []).map((v) => v.hskLevel).filter((l): l is number => !!l))].sort(
+    (a, b) => a - b,
+  );
   const dangCapNhat = Boolean(data) && isLoading;
   const tuKhoa = query.trim().toLocaleLowerCase("vi");
   const danhSach = (data ?? []).filter((video) =>
@@ -69,10 +73,6 @@ export default function WatchPage() {
           <Icon name="headphones" size={17} /> Hán tự · Pinyin · Nghĩa tiếng
           Việt
         </span>
-        <LinkButton href="/watch/add" variant="secondary">
-          <Icon name="plus" size={17} />
-          Thêm video
-        </LinkButton>
       </PageHeading>
 
       {user && xemTiep && !error && (
@@ -128,10 +128,7 @@ export default function WatchPage() {
             <LevelFilter
               options={[
                 { value: undefined, label: "Mọi cấp" },
-                ...Array.from({ length: 9 }, (_, i) => ({
-                  value: i + 1,
-                  label: `HSK ${i + 1}`,
-                })),
+                ...levelsWithVideos.map((l) => ({ value: l, label: `HSK ${l}` })),
               ]}
               value={level}
               onChange={setLevel}

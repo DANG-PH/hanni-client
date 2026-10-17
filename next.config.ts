@@ -18,6 +18,12 @@ const nextConfig: NextConfig = {
       // Giữ redirect vì link /dashboard còn nằm trong email, thông báo đẩy,
       // PWA đã cài và trợ lý AI.
       { source: "/dashboard", destination: "/learn", permanent: true },
+      // Trắc nghiệm từ vựng cũ "Kiểm tra HSK" (2026-10-17): trùng thi thử + luyện
+      // từng dạng bài + quiz cuối buổi ôn, tên lại dễ nhầm với đề HSK thật.
+      { source: "/exams", destination: "/thi-thu-hsk", permanent: true },
+      { source: "/exams/results", destination: "/thi-thu-hsk", permanent: true },
+      // Kết nối đã là 1 tab của Tin nhắn; chuyển hướng ở server thay vì trang chờ.
+      { source: "/connections", destination: "/messages?tab=connect", permanent: true },
     ];
   },
 

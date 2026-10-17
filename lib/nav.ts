@@ -63,6 +63,14 @@ export const PRACTICE_SECTIONS: { title: string; items: PracticeLink[] }[] = [
 
 const PRACTICE_LINKS = PRACTICE_SECTIONS.flatMap((s) => s.items);
 
+/** Trang không có trong menu nhưng vẫn cần đúng tên ở thanh vị trí (trước đó hiện
+ * "Góc học tập › Góc học tập"). */
+const OTHER_PAGES = [
+  { href: "/settings", label: "Cài đặt" },
+  { href: "/achievements", label: "Huy hiệu" },
+  { href: "/u", label: "Hồ sơ" },
+];
+
 export function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + "/");
 }
@@ -82,7 +90,7 @@ export function isNavActive(pathname: string, href: string) {
 /** Tên trang cho thanh trên (app-shell) — khớp đường dẫn dài nhất (`/tu-dien/quet` trước `/tu-dien`). */
 export function pageLabel(pathname: string) {
   return (
-    [...NAV_MAIN, ...NAV_MORE, ACCOUNT_LINK, ...PRACTICE_LINKS]
+    [...NAV_MAIN, ...NAV_MORE, ACCOUNT_LINK, ...PRACTICE_LINKS, ...OTHER_PAGES]
       .filter((l) => isActive(pathname, l.href))
       .sort((a, b) => b.href.length - a.href.length)[0]?.label ?? "Góc học tập"
   );

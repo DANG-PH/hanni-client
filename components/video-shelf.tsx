@@ -13,8 +13,11 @@ import type { VideoCard } from "@/lib/types";
  * đúng vị trí. Chạy chậm lại (không tắt hẳn) khi bật "giảm chuyển động".
  */
 
-export function VideoShelf({ limit = 8 }: { limit?: number }) {
-  const { data, isLoading } = useVideos();
+/** `maxLevel`: chỉ gợi ý video tới cấp này — kho hiện toàn phim HSK 4–5, người
+ * HSK 1–2 thấy chúng ngay trang chủ là quá sức; không có video hợp cấp thì kệ ẩn. */
+export function VideoShelf({ limit = 8, maxLevel }: { limit?: number; maxLevel?: number }) {
+  const { data: all, isLoading } = useVideos();
+  const data = maxLevel ? all?.filter((v) => v.hskLevel !== null && v.hskLevel <= maxLevel) : all;
   const scrollerRef = useRef<HTMLDivElement>(null);
   const paused = useRef(false);
   const resume = useRef(0);

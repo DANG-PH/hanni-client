@@ -150,21 +150,6 @@ export function Sidebar({
         <div className="space-y-1">{NAV_MORE.map((l) => item(l))}</div>
       </nav>
       <div className="mt-auto pt-6">
-        {!collapsed && (
-          <div className="mb-4 flex items-center gap-2 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/8 to-accent/5 px-3 py-2.5 shadow-2xs">
-            <Image
-              src="/anhloading.png"
-              alt=""
-              width={48}
-              height={40}
-              className="h-10 w-12 shrink-0 object-contain"
-            />
-            <p className="text-[11px] leading-snug text-muted">
-              <span className="block font-bold text-primary">Mỗi ngày một chút</span>
-              Mỗi từ bạn nhớ là một bước tiến.
-            </p>
-          </div>
-        )}
         <div className="space-y-0.5 border-t border-border/70 pt-3">
           {item(ACCOUNT_LINK, true)}
           <button

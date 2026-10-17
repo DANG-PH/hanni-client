@@ -236,14 +236,9 @@ export function PlacementTest() {
         className="mx-auto w-full max-w-xl flex-1 px-4 py-6 text-center sm:py-10"
         style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
       >
-        <Image
-          src="/anhloading.png"
-          alt="Cáo Hanni"
-          width={180}
-          height={150}
-          priority
-          className="mx-auto h-20 w-auto sm:h-32"
-        />
+        <span className="icon-tile mx-auto">
+          <Icon name="chart" />
+        </span>
         <p className="mt-4 text-[11px] font-bold tracking-wider text-primary sm:mt-5">
           MIỄN PHÍ · KHÔNG CẦN ĐĂNG KÝ
         </p>

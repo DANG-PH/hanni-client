@@ -7,9 +7,11 @@ import {
   LinkButton,
   PageHeading,
   ProgressBar,
+  SectionHeading,
   Spinner,
 } from "@/components/ui";
 import { Icon } from "@/components/icon";
+import { TitlePicker } from "@/components/title-shop";
 import { SendToFriendButton } from "@/components/send-to-friend";
 import { ShareButton } from "@/components/share-button";
 import { useRequireAuth } from "@/lib/auth";
@@ -101,6 +103,15 @@ export default function AchievementsPage() {
               </div>
             </div>
           )}
+          <section className="space-y-4">
+            <SectionHeading
+              icon="trophy"
+              tone="accent"
+              title="Danh hiệu"
+              description="Mỗi danh hiệu mở khi bạn đạt một huy hiệu bên dưới — học thật mới có, không mua bằng xu."
+            />
+            <TitlePicker />
+          </section>
           {data?.length ? (
             <>
               <div className="flex flex-wrap gap-2.5" aria-label="Lọc huy hiệu">

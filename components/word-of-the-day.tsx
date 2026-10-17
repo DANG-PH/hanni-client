@@ -11,12 +11,12 @@ import styles from "./word-of-the-day.module.css";
 
 const fetcher = (path: string) => apiFetch<Word>(path);
 
-/** Thẻ "Từ vựng hôm nay" trên dashboard — 1 từ cố định theo ngày, giống
- * nhau cho mọi user (xem `WordsService.ofTheDay()`), tạo cảm giác mới mẻ
- * mỗi lần ghé dù không vào học. Im lặng ẩn đi nếu lỗi/chưa tải xong — đây
- * là nội dung phụ, không đáng để hiện lỗi làm rối dashboard. */
-export function WordOfTheDayCard() {
-  const { data } = useSWR<Word>("/words/of-the-day", fetcher);
+/** Thẻ "Từ vựng hôm nay" trên dashboard — 1 từ cố định theo ngày trong đúng
+ * cấp đang học (`level`; trước đó lấy mọi cấp nên người HSK 1 nhận từ HSK 4),
+ * xem `WordsService.ofTheDay()`. Im lặng ẩn đi nếu lỗi/chưa tải xong — đây là
+ * nội dung phụ, không đáng để hiện lỗi làm rối dashboard. */
+export function WordOfTheDayCard({ level }: { level?: number }) {
+  const { data } = useSWR<Word>(`/words/of-the-day${level ? `?level=${level}` : ""}`, fetcher);
   if (!data) return null;
 
   return (

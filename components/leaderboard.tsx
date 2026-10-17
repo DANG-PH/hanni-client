@@ -318,6 +318,11 @@ export function LeaderboardRankings({
                       <span className="break-words text-sm font-semibold [overflow-wrap:anywhere]">
                         {row.displayName}
                       </span>
+                      {row.title && (
+                        <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-[10px] font-semibold text-accent">
+                          {row.title}
+                        </span>
+                      )}
                       {row.isMe && (
                         <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
                           Bạn

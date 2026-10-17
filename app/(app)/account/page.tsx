@@ -1,6 +1,5 @@
 "use client";
 
-import { CosmeticShop } from "@/components/cosmetic-shop";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -153,9 +152,6 @@ export default function AccountPage() {
             </div>
           </Card>
           <ReferralCard userId={user.id} />
-          {/* Cửa hàng ở cột rộng: trong cột phải 320px lưới 2 ô chỉ còn ~130px
-           * mỗi ô, giá + nút "Mở khoá" gãy dòng, cột phải dài gấp đôi cột trái. */}
-          <CosmeticShop />
           <DangerZone hasPassword={user.hasPassword} />
         </div>
         <aside className="space-y-5">
@@ -451,7 +447,8 @@ function WalletCard() {
            * cách nào khác, cũng không biết tiêu để làm gì. */}
           <p className="mt-1 text-sm text-muted">
             Kiếm xu khi chơi minigame, xong nhiệm vụ hàng ngày và học đều mỗi
-            ngày. Tiêu vào lá chắn streak, khung avatar và danh hiệu.
+            ngày. Dùng xu mua lá chắn giữ chuỗi ngày học. Danh hiệu thì không
+            mua được — mở bằng huy hiệu học thật.
           </p>
         </div>
       </div>

@@ -326,6 +326,28 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 
 ## Trạng thái hiện tại
 
+### Audit UI/UX 2026-10-17 (user giao toàn quyền quyết định) — các mục cũ bên dưới có thể đã lỗi thời
+Báo cáo đầy đủ (mã X/G/S/Q): claude.ai/artifact/Qvahko7HnmTrruqdyvLRs6. User yêu cầu làm ĐÚNG 8 vấn đề
+đã nêu (khảo sát, từ điển, chat, khung avatar, tự thêm video, popup nạp tiền, linh vật cáo, PWA) + cho
+khách xem không cần đăng nhập. Đợt 1 đã làm:
+- **Bỏ hoàn toàn người dùng tự thêm video**: xoá `/watch/add`, nút "Thêm video", nút "Xoá" của chủ video,
+  `isOwner`, tham số `mine` của `useVideos`, 2 loại thông báo video. Dữ liệu xoá bằng migration server.
+- **Bỏ khung avatar + danh hiệu mua bằng xu**: xoá `cosmetic-shop.tsx`, `frame-shop.tsx`; `title-shop.tsx`
+  giờ là `TitlePicker` ở đầu `/achievements` (9 danh hiệu mở theo huy hiệu đã đạt, chưa đạt thì ghi rõ
+  huy hiệu cần đạt); khung Phượng Hoàng bật/tắt trong thẻ Premium (`PremiumFrame`); danh hiệu hiện cạnh
+  tên ở bảng xếp hạng. Ví xu chỉ còn mua lá chắn streak. Người đã mua được hoàn xu (migration server).
+- **Linh vật cáo chỉ còn 3 vai** (chào mừng, chúc mừng, trạng thái rỗng): vòng tải `StudyLoader` dùng logo
+  chữ 汉 (nó hiện ở MỌI lần mở app, mở bài, mở đề); bỏ thẻ "Mỗi ngày một chút" ở sidebar, cáo ở thẻ học
+  tiếp `/learn`, màn mở đầu kiểm tra trình độ, danh sách đề (thay bằng icon-tile). Giữ: video cáo ở màn
+  đăng nhập/đăng ký (logo góc trên đổi sang chữ 汉 cho khớp site), xong bài, kết quả kiểm tra trình độ,
+  kết quả thi thử, mừng cột mốc chuỗi ngày, `EmptyState` (giờ có cáo). Icon app/favicon vẫn là cáo (user
+  chọn 2026-10-15, như Duolingo dùng cú làm icon).
+- `/exams` (trắc nghiệm từ vựng cũ, trùng thi thử) và `/connections` thành chuyển hướng ở `next.config.ts`;
+  xoá `components/exam-result.tsx`. Kệ video `/learn` chỉ hiện video tới cấp đang học + 1 (kho toàn HSK 4–5
+  nên người HSK 1–2 không thấy kệ); "Từ vựng hôm nay" theo đúng cấp (`?level=`); bộ lọc `/watch` chỉ hiện
+  cấp có video. `/settings` ẩn hẳn mục email tuần khi máy chủ email chưa cấu hình (trước đó lộ dòng lỗi
+  nội bộ). Thanh vị trí có tên cho `/settings`, `/achievements`, `/u/[id]` (`OTHER_PAGES` ở `lib/nav.ts`).
+
 ### Lộ trình một nút bấm (tái cấu trúc 2026-10-05 — đọc mục này TRƯỚC)
 User báo: flashcard "tự nhảy vào HSK4 khi muốn học HSK1, không theo chủ đề", web "nhiều chức
 năng nhưng rời rạc", và giao toàn quyền định hướng lại sản phẩm. Research (Duolingo làm lại màn

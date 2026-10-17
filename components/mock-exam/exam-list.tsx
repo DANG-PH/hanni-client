@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import useSWR from "swr";
@@ -243,7 +242,9 @@ export function MockExamProgress({ exams: initial }: { exams: MockExamMeta[] }) 
         </>
       ) : (
         <div className="flex items-center gap-3">
-          <Image src="/anhloading.png" alt="" width={72} height={60} className="h-14 w-auto" />
+          <span className="icon-tile shrink-0">
+            <Icon name="target" />
+          </span>
           <p className="text-sm leading-6">
             <strong>Làm thử ngay</strong>, không cần tài khoản. Đăng nhập để lưu điểm từng đề.
           </p>

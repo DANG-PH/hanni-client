@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CommentSection } from "@/components/comment-section";
 import { NextStep } from "@/components/next-step";
@@ -78,7 +78,6 @@ const WATCH_TOUR_STEPS: TourStep[] = [
 export default function WatchDetailPage() {
   const { user, loading } = useRequireAuth();
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const { data, isLoading, error, mutate } = useVideo(id);
 
   const [showPinyin, setShowPinyin] = useState(true);
@@ -245,12 +244,6 @@ export default function WatchDetailPage() {
     }
   }
 
-  async function del() {
-    if (!confirm("Xoá video này?")) return;
-    await api.del(`/videos/${id}`).catch(() => undefined);
-    router.push("/watch");
-  }
-
   return (
     <div className="page-wrap max-w-none! space-y-3 max-lg:px-3 max-lg:py-3 lg:space-y-5">
       <FeatureTour tourKey="watch-detail" steps={WATCH_TOUR_STEPS} />
@@ -266,14 +259,6 @@ export default function WatchDetailPage() {
         <span className="hidden font-medium text-foreground lg:inline">
           {data.title}
         </span>
-        {data.isOwner && (
-          <button
-            onClick={() => void del()}
-            className="ml-auto text-xs text-danger hover:underline"
-          >
-            Xoá
-          </button>
-        )}
       </div>
 
       <div>
@@ -499,12 +484,6 @@ export default function WatchDetailPage() {
           void mutate({ ...data, commentCount }, { revalidate: false })
         }
       />
-
-      <div className="flex justify-end">
-        <Button variant="ghost" onClick={() => router.push("/watch")}>
-          Xong
-        </Button>
-      </div>
 
       {wordPopup?.word && (
         <div

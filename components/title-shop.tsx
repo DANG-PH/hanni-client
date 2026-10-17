@@ -1,41 +1,22 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { Icon } from "@/components/icon";
-import { Button, Card, ErrorNote } from "@/components/ui";
-import { buyTitle, equipTitle, useTitleShop } from "@/lib/shop";
-import type { Title } from "@/lib/types";
+import { Button, ErrorNote } from "@/components/ui";
+import { equipTitle, useTitleShop } from "@/lib/shop";
 
 /**
- * Cửa hàng danh hiệu ở `/account` — sink xu THỨ BA (sau lá chắn streak +
- * khung avatar), hiện dạng chữ cạnh tên trên hồ sơ công khai. Cùng nguyên
- * tắc với `FrameShop`: mua đứt bằng xu, không dùng cơ chế rương/random.
+ * Danh hiệu ở trang Huy hiệu — hiện cạnh tên trên hồ sơ công khai và bảng xếp
+ * hạng. Mở theo huy hiệu đã đạt (chuỗi ngày, số từ đã thuộc, cấp HSK…), không
+ * mua bằng xu: thay cho cửa hàng khung/danh hiệu mua bằng xu (bỏ 2026-10-17, user
+ * nhận xét "vô nghĩa với việc học"). Chưa đạt thì ghi rõ cần đạt huy hiệu nào.
  */
-export function TitleShop({ bare = false }: { bare?: boolean } = {}) {
-  // `bare`: nhúng vào thẻ "Ví & cửa hàng" gộp (không tự dựng Card/tiêu đề
-  // riêng nữa) — xem components/cosmetic-shop.tsx.
-  const Wrapper = bare ? Fragment : Card;
+export function TitlePicker() {
   const { data, mutate, isLoading } = useTitleShop();
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  async function handleBuy(title: Title) {
-    if (busyKey) return;
-    setBusyKey(title.key);
-    setError("");
-    try {
-      await buyTitle(title.key);
-      await mutate();
-    } catch {
-      setError(
-        "Chưa mở khoá được danh hiệu này. Kiểm tra lại số dư rồi thử lại.",
-      );
-    } finally {
-      setBusyKey(null);
-    }
-  }
-
-  async function handleEquip(key: string | null) {
+  async function equip(key: string | null) {
     if (busyKey) return;
     setBusyKey(key ?? "none");
     setError("");
@@ -49,66 +30,55 @@ export function TitleShop({ bare = false }: { bare?: boolean } = {}) {
     }
   }
 
-  if (isLoading) return null;
+  if (isLoading || !data) return null;
+  const owned = data.titles.filter((t) => t.owned).length;
 
   return (
-    <Wrapper>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {data?.titles.map((title) => {
-          const busy = busyKey === title.key || busyKey === "none";
-          return (
-            <div
-              key={title.key}
-              className="flex items-center gap-3 rounded-2xl border border-border p-3"
+    <div className="space-y-3">
+      <p className="text-sm text-muted">
+        Đã mở <strong className="text-foreground">{owned}</strong>/{data.titles.length} danh hiệu. Chọn 1 danh hiệu
+        để hiện cạnh tên bạn trên hồ sơ và bảng xếp hạng.
+      </p>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {data.titles.map((title) => (
+          <div
+            key={title.key}
+            className={`flex items-center gap-3 rounded-2xl border p-3 ${
+              title.equipped ? "border-primary/40 bg-primary/5" : "border-border"
+            }`}
+          >
+            <span
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                title.owned ? "bg-accent/10 text-accent" : "bg-surface-2 text-muted"
+              }`}
             >
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold">{title.label}</p>
-                {title.equipped ? (
-                  <p className="text-xs font-medium text-good">Đang dùng</p>
-                ) : title.owned ? (
-                  <p className="text-xs text-muted">Đã sở hữu</p>
-                ) : (
-                  <p className="flex items-center gap-1 text-xs font-medium text-accent">
-                    <Icon name="spark" size={12} />
-                    {title.price.toLocaleString("vi-VN")} xu
-                  </p>
-                )}
-              </div>
-              {title.equipped ? (
-                <Button
-                  variant="ghost"
-                  disabled={busy}
-                  onClick={() => void handleEquip(null)}
-                >
-                  Bỏ dùng
-                </Button>
-              ) : title.owned ? (
-                <Button
-                  variant="secondary"
-                  disabled={busy}
-                  onClick={() => void handleEquip(title.key)}
-                >
-                  Dùng
+              <Icon name={title.owned ? "trophy" : "lock"} size={17} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className={`text-sm font-semibold ${title.owned ? "" : "text-muted"}`}>{title.label}</p>
+              <p className="text-xs leading-5 text-muted">
+                {title.equipped ? "Đang dùng" : title.owned ? "Đã mở" : `Cần: ${title.requirement}`}
+              </p>
+            </div>
+            {title.owned &&
+              (title.equipped ? (
+                <Button variant="ghost" className="shrink-0" disabled={!!busyKey} onClick={() => void equip(null)}>
+                  Bỏ
                 </Button>
               ) : (
                 <Button
                   variant="secondary"
-                  disabled={busy || (data?.balance ?? 0) < title.price}
-                  onClick={() => void handleBuy(title)}
+                  className="shrink-0"
+                  disabled={!!busyKey}
+                  onClick={() => void equip(title.key)}
                 >
-                  {busy ? "Đang mở…" : "Mở khoá"}
+                  Dùng
                 </Button>
-              )}
-            </div>
-          );
-        })}
+              ))}
+          </div>
+        ))}
       </div>
-
-      {error && (
-        <div className="mt-4">
-          <ErrorNote>{error}</ErrorNote>
-        </div>
-      )}
-    </Wrapper>
+      {error && <ErrorNote>{error}</ErrorNote>}
+    </div>
   );
 }

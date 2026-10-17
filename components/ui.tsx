@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { Icon, type IconName } from "./icon";
@@ -245,9 +246,15 @@ export function EmptyState({
 }) {
   return (
     <Card className="py-12 text-center">
-      <span className="icon-tile mx-auto mb-4">
-        <Icon name="book" />
-      </span>
+      {/* Cáo Hanni chỉ còn ở 3 vai: chào mừng, chúc mừng và trạng thái rỗng như ở đây. */}
+      <Image
+        src="/anhloading.png"
+        alt=""
+        width={120}
+        height={100}
+        sizes="120px"
+        className="mx-auto mb-4 h-24 w-auto"
+      />
       <h2 className="font-semibold">{title}</h2>
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted">
         {description}

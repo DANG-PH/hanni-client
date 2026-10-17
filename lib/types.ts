@@ -280,7 +280,6 @@ export interface VideoCard {
   thumbnailUrl: string | null;
   author: string | null;
   isFree: boolean;
-  isOwner: boolean;
   progressPct: number;
   completed: boolean;
   likeCount: number;
@@ -321,7 +320,6 @@ export interface VideoDetail {
   kind: VideoKind;
   sentenceCount: number;
   author: string | null;
-  isOwner: boolean;
   lines: VideoLine[];
   progress: { lastLineIndex: number; linesRead: number; completed: boolean };
   likeCount: number;
@@ -346,8 +344,6 @@ export interface VideoComment {
 
 export type NotificationType =
   | "COMMENT_REPLY"
-  | "VIDEO_COMMENT"
-  | "VIDEO_LIKE"
   | "NEW_FOLLOWER"
   | "ACHIEVEMENT_UNLOCKED";
 
@@ -403,24 +399,6 @@ export interface GrammarDetail extends GrammarListItem {
   examples: GrammarExample[];
 }
 
-export interface ExamAttempt {
-  id: string;
-  hskLevel: number;
-  totalCount: number;
-  correctCount: number;
-  durationSec: number | null;
-  createdAt: string;
-}
-
-export interface ExamHistory {
-  attempts: ExamAttempt[];
-  summary: {
-    count: number;
-    avgAccuracy: number | null;
-    best: { hskLevel: number; correctCount: number; totalCount: number } | null;
-  };
-}
-
 export type LeaderboardMetricKey =
   | "learned"
   | "streak"
@@ -439,6 +417,8 @@ export interface LeaderboardRow {
   userId: string;
   displayName: string;
   avatarUrl: string | null;
+  /** Danh hiệu đang dùng (mở theo huy hiệu đã đạt). */
+  title?: string | null;
   value: number;
   currentStreak: number;
   isMe: boolean;
@@ -515,32 +495,31 @@ export interface EquippedFrame {
   colors: [string, string];
 }
 
+/** Khung avatar — chỉ còn khung Phượng Hoàng, quyền lợi Premium. */
 export interface AvatarFrame {
   key: string;
   name: string;
-  price: number;
   colors: [string, string];
-  premiumOnly: boolean;
   owned: boolean;
   equipped: boolean;
 }
 
 export interface ShopCatalog {
   frames: AvatarFrame[];
-  balance: number;
 }
 
+/** Danh hiệu mở khi đạt huy hiệu `requirement`. */
 export interface Title {
   key: string;
   label: string;
-  price: number;
+  achievementCode: string;
+  requirement: string;
   owned: boolean;
   equipped: boolean;
 }
 
 export interface TitleShopCatalog {
   titles: Title[];
-  balance: number;
 }
 
 export interface PremiumPlan {

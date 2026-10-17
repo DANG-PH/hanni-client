@@ -169,17 +169,6 @@ export default async function MockExamHubPage() {
               ))}
             </ol>
           </section>
-          <Link
-            href="/exams"
-            className="panel flex items-center gap-3 p-4 text-sm transition-colors hover:border-primary/40"
-          >
-            <Icon name="clock" size={18} className="text-primary" />
-            <span className="flex-1">
-              <strong>Luyện nhanh từ vựng</strong>
-              <span className="block text-xs text-muted">Trắc nghiệm tính giờ từng câu, 5 phút</span>
-            </span>
-            <Icon name="arrow" size={16} className="text-muted" />
-          </Link>
         </aside>
       </div>
 

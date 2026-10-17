@@ -27,11 +27,11 @@ export function LoginShell({ children }: { children: ReactNode }) {
             className="flex items-center gap-2.5"
           >
             <Image
-              src="/favicon.ico"
+              src="/brand/hanni.png"
               alt=""
               width={42}
               height={42}
-              unoptimized
+              sizes="42px"
               priority
               className="h-[42px] w-[42px] rounded-xl"
             />

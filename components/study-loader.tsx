@@ -1,7 +1,9 @@
 import Image from "next/image";
 import styles from "./study-loader.module.css";
 
-/** Branding for real loading states; no artificial delay or simulated progress. */
+/** Trạng thái đang tải thật (không giả tiến độ). Dùng logo chữ 汉 chứ không dùng
+ * cáo Hanni: vòng tải hiện ở mọi lần mở app, mở bài, mở đề — user thấy cáo "xuất
+ * hiện quá nhiều" (2026-10-17), cáo chỉ còn ở chào mừng, chúc mừng, trạng thái rỗng. */
 export function StudyLoader({
   label = "Đang mở góc học tập…",
   variant = "page",
@@ -15,18 +17,17 @@ export function StudyLoader({
         <span className={styles.halo} />
         <span className={styles.orbit} />
         <span className={styles.innerOrbit} />
-        <span className={styles.shadow} />
         <span className={styles.sparkle} />
         <span className={styles.smallSparkle} />
         <Image
-          src="/anhloading.png"
+          src="/brand/hanni.png"
           alt=""
-          width={1367}
-          height={1150}
-          sizes={variant === "compact" ? "96px" : "(max-width: 639px) 200px, 240px"}
+          width={1254}
+          height={1254}
+          sizes={variant === "compact" ? "44px" : "96px"}
           loading="eager"
           fetchPriority={variant === "startup" ? "high" : "auto"}
-          className={styles.mascot}
+          className={styles.logo}
         />
       </div>
       <div className={styles.copy}>

@@ -16,10 +16,6 @@ import type { AppNotification } from "@/lib/types";
 const MESSAGE: Record<AppNotification["type"], (n: AppNotification) => string> = {
   COMMENT_REPLY: (n) =>
     `${n.actor?.displayName ?? "Ai đó"} đã trả lời bình luận của bạn`,
-  VIDEO_COMMENT: (n) =>
-    `${n.actor?.displayName ?? "Ai đó"} đã bình luận video "${n.video?.title ?? ""}"`,
-  VIDEO_LIKE: (n) =>
-    `${n.actor?.displayName ?? "Ai đó"} đã thích video "${n.video?.title ?? ""}"`,
   NEW_FOLLOWER: (n) =>
     `${n.actor?.displayName ?? "Ai đó"} đã bắt đầu theo dõi bạn`,
   ACHIEVEMENT_UNLOCKED: (n) =>

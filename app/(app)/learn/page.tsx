@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { mutate } from "swr";
-import Image from "next/image";
 import Link from "next/link";
 import { DailyQuestCard } from "@/components/daily-quest-card";
 import { Icon } from "@/components/icon";
@@ -112,17 +111,7 @@ function LearnHome() {
       <NotificationNudge />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <section className="panel tint-primary relative flex flex-col gap-5 overflow-hidden p-5 sm:flex-row sm:items-center sm:p-6 md:pr-44" aria-labelledby="next-lesson">
-          {/* Cáo Hanni — mascot vốn chỉ hiện ở màn tải trang; các app học khác
-           * (Hanbeego, Hanpeak) dùng mascot khắp nơi để tạo cảm giác thân thiện. */}
-          <Image
-            src="/anhloading.png"
-            alt=""
-            width={190}
-            height={160}
-            priority
-            className="pointer-events-none absolute -right-3 bottom-0 hidden h-40 w-auto md:block"
-          />
+        <section className="panel tint-primary relative flex flex-col gap-5 overflow-hidden p-5 sm:flex-row sm:items-center sm:p-6" aria-labelledby="next-lesson">
           {error ? (
             <div className="space-y-3">
               <ErrorNote>Chưa tải được lộ trình. Vui lòng thử lại.</ErrorNote>
@@ -252,10 +241,10 @@ function LearnHome() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <DailyQuestCard />
         <WeeklyLeagueCard />
-        <WordOfTheDayCard />
+        <WordOfTheDayCard level={courseLevel} />
       </div>
 
-      <VideoShelf limit={8} />
+      <VideoShelf limit={8} maxLevel={(courseLevel ?? 1) + 1} />
     </div>
   );
 }

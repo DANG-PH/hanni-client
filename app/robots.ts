@@ -39,7 +39,6 @@ export default function robots(): MetadataRoute.Robots {
         "/listening",
         "/pronunciation",
         "/writing",
-        "/exams",
         "/leaderboard",
         "/progress",
         "/watch",

@@ -10,7 +10,6 @@ import type {
   AssistantSession,
   DayActivity,
   CurrentLesson,
-  ExamHistory,
   Leaderboard,
   LeaderboardMetric,
   LeaderboardMetricKey,
@@ -137,11 +136,10 @@ export function useWords(params: {
   return useSWR<Paginated<Word>>(`/words?${qs.toString()}`, fetcher);
 }
 
-export function useVideos(params: { level?: number; kind?: string; mine?: boolean } = {}) {
+export function useVideos(params: { level?: number; kind?: string } = {}) {
   const qs = new URLSearchParams();
   if (params.level) qs.set("level", String(params.level));
   if (params.kind) qs.set("kind", params.kind);
-  if (params.mine) qs.set("mine", "true");
   const q = qs.toString();
   return useSWR<VideoCard[]>(`/videos${q ? `?${q}` : ""}`, fetcher, {
     keepPreviousData: true,
@@ -231,10 +229,6 @@ export function useGrammar(level?: number) {
 
 export function useGrammarPoint(slug: string | null) {
   return useSWR<GrammarDetail>(slug ? `/grammar/${slug}` : null, fetcher);
-}
-
-export function useExamHistory() {
-  return useSWR<ExamHistory>("/exams/attempts", fetcher);
 }
 
 export function useLeaderboardMetrics() {
