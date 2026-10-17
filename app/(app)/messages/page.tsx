@@ -500,7 +500,9 @@ function MessagesInner() {
     <div className={`page-wrap ${styles.page}`}>
       <FeatureTour tourKey="messages" steps={MESSAGES_TOUR_STEPS} />
       <h1 className={`text-xl font-bold ${activeId ? "max-md:sr-only" : ""}`}>Tin nhắn</h1>
-      <nav className={`${styles.tabs} ${activeId ? "max-md:hidden" : ""}`} aria-label="Khu vực tin nhắn">
+      {/* Bọc ngoài: `display: flex` của .tabs (CSS module) thắng lớp ẩn của Tailwind. */}
+      <div className={activeId ? "max-md:hidden" : undefined}>
+      <nav className={styles.tabs} aria-label="Khu vực tin nhắn">
         {(
           [
             { key: "chats", label: "Trò chuyện", icon: "message" },
@@ -521,6 +523,7 @@ function MessagesInner() {
           </button>
         ))}
       </nav>
+      </div>
 
       {tab === "connect" ? (
         <div className={styles.connectionsPanel}>
