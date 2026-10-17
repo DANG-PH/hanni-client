@@ -1041,6 +1041,23 @@ export interface MockReviewItem {
   words?: MockWord[];
 }
 
+/** `GET /mock-exams/practice` — 1 bộ "luyện từng dạng bài": cùng 1 phần đề
+ * chính thức gom từ mọi đề cùng cấp. */
+export interface MockPracticeSetMeta {
+  slug: string;
+  level: number;
+  section: MockSectionKind;
+  part: number;
+  type: MockPartType;
+  count: number;
+}
+
+/** `GET /mock-exams/practice/:slug` — các phần đề theo từng đề (không kèm đáp án). */
+export interface MockPracticeSet extends MockPracticeSetMeta {
+  showPinyin: boolean;
+  groups: { examSlug: string; examTitle: string; part: MockPart }[];
+}
+
 /** `GET /mock-exams/analysis/me` — tỉ lệ đúng từng phần đề qua mọi lượt làm. */
 export interface MockPartStat {
   level: number;

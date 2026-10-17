@@ -490,6 +490,7 @@ export function ExamItem({
   flagged,
   onFlag,
   onAsk,
+  id,
 }: {
   part: MockPart;
   item: MockItem;
@@ -503,6 +504,8 @@ export function ExamItem({
   onFlag?: () => void;
   /** Có thì hiện nút hỏi trợ lý AI dưới phần chữa bài. */
   onAsk?: () => void;
+  /** Mặc định `q-<số câu>`; trang luyện từng dạng gom nhiều đề nên số câu trùng. */
+  id?: string;
 }) {
   const listening = section === "listening";
   const labels = review?.pictureLabels;
@@ -521,7 +524,7 @@ export function ExamItem({
 
   return (
     <article
-      id={`q-${item.no}`}
+      id={id ?? `q-${item.no}`}
       className="scroll-mt-28 rounded-3xl border border-border bg-surface p-4 sm:p-5"
     >
       <div className="flex items-start gap-3">

@@ -14,11 +14,13 @@ import { useAuth } from "@/lib/auth";
 import { addWordToSrs } from "@/lib/hooks";
 import { hasChineseVoice, playListening, stopListening } from "@/lib/listening-audio";
 import {
+  assistantPrompt,
   clearSaved,
   isRightAnswer,
   officialIndexes,
   partInfo,
   partScores,
+  practiceHref,
   readSaved,
   SECTION_VI,
   weakest,
@@ -627,41 +629,17 @@ function Result({
         const item = part.items.find((it) => it.no === no);
         const r = review.get(no);
         if (!item || !r) continue;
-        const describe = (v: MockAnswer | null) => {
-          if (v === null) return "bỏ trống";
-          if (typeof v === "string") return `"${v}"`;
-          if (typeof v === "boolean")
-            return part.type === "judge"
-              ? v
-                ? "✓ (khớp với tranh)"
-                : "✗ (không khớp tranh)"
-              : v
-                ? "✓ (câu ★ đúng)"
-                : "✗ (câu ★ sai)";
-          if (item.choices) return `chữ ${item.choices[v]}`;
-          const option = item.options?.[v] ?? part.options?.[v];
-          const picture = r.pictureLabels?.[v];
-          return `${LETTERS[v]}${option ? ` (${option.zh})` : picture ? ` (tranh: ${picture})` : ""}`;
-        };
-        const sentence = r.transcript?.length
-          ? `Lời thoại: ${r.transcript.map((l) => l.zh).join(" ")}`
-          : item.pieces
-            ? `Các từ cần sắp xếp: ${item.pieces.map((x) => x.zh).join(" / ")}`
-            : item.blank
-              ? `Câu: ${item.blank.before.zh}（${item.pinyin ?? " "}）${item.blank.after.zh}`
-              : item.text
-                ? `Đoạn: ${item.text.zh}`
-                : "";
-        const star = item.statement ?? item.question;
-        const lines = [
-          `Giải thích giúp mình câu ${no} — ${paper.title}, phần ${SECTION_SHORT[section.kind]} ${officialIndexes(section.parts)[pi] + 1} (${partInfo(section.kind, part.type).label}).`,
-          sentence.slice(0, 400),
-          star ? `★ ${star.zh}` : "",
-          part.type === "judge" && r.pictureLabels?.[0] ? `Tranh: ${r.pictureLabels[0]}.` : "",
-          `Đáp án đúng: ${describe(r.answer)}. Mình chọn: ${describe(picked)}.`,
-          "Vì sao đáp án đúng là vậy, dựa vào từ khoá nào? Ngắn gọn thôi nhé.",
-        ];
-        askAssistant(lines.filter(Boolean).join("\n"));
+        askAssistant(
+          assistantPrompt({
+            title: paper.title,
+            section: section.kind,
+            officialPart: officialIndexes(section.parts)[pi] + 1,
+            part,
+            item,
+            review: r,
+            picked,
+          }),
+        );
         return;
       }
   }
@@ -842,11 +820,20 @@ function Result({
                       {SECTION_SHORT[p.section]} {p.part} · {info.label} — đúng {p.correct}/{p.total}
                     </p>
                     <p className="mt-1 leading-6 text-muted">{info.tip}</p>
-                    {!isGuest && (
-                      <Link href={info.href} className="mt-1.5 inline-flex items-center gap-1 font-semibold text-primary hover:underline">
-                        {info.cta} <Icon name="arrow" size={14} />
+                    <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
+                      {/* Luyện đúng dạng câu này, gom từ mọi đề cùng cấp — khách làm được. */}
+                      <Link
+                        href={practiceHref(paper.level, p.section, p.part)}
+                        className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
+                      >
+                        Luyện riêng dạng này <Icon name="arrow" size={14} />
                       </Link>
-                    )}
+                      {!isGuest && (
+                        <Link href={info.href} className="inline-flex items-center gap-1 font-semibold text-muted hover:text-primary">
+                          {info.cta} <Icon name="arrow" size={14} />
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 );
               })}

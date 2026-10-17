@@ -8,8 +8,8 @@ import { Icon } from "@/components/icon";
 import { LinkButton } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import { parseSnapshot, partInfo, savedSnapshot, weakest } from "@/lib/mock-exam";
-import type { MockAnalysis, MockAttempt, MockExamMeta } from "@/lib/types";
+import { parseSnapshot, partInfo, practiceHref, savedSnapshot, weakest } from "@/lib/mock-exam";
+import type { MockAnalysis, MockAttempt, MockExamMeta, MockPracticeSetMeta } from "@/lib/types";
 
 /** Danh sách đề render sẵn từ server (Google đọc được), rồi tải lại kèm cookie
  * để gắn điểm cao nhất của người đang đăng nhập. Cùng khoá SWR với màn kết quả
@@ -42,7 +42,14 @@ const ALL_LEVELS = [1, 2, 3, 4, 5, 6];
 const SECTION_ICON = { listening: "headphones", reading: "book", writing: "pencil" } as const;
 const SECTION_VI = { listening: "nghe", reading: "đọc", writing: "viết" } as const;
 
-export function MockExamList({ exams: initial }: { exams: MockExamMeta[] }) {
+export function MockExamList({
+  exams: initial,
+  sets = [],
+}: {
+  exams: MockExamMeta[];
+  /** Bộ "luyện từng dạng bài" — hiện theo cấp đang chọn. */
+  sets?: MockPracticeSetMeta[];
+}) {
   const exams = useExams(initial);
   const inProgress = useInProgress(exams);
   const levels = new Set(exams.map((e) => e.level));
@@ -161,6 +168,44 @@ export function MockExamList({ exams: initial }: { exams: MockExamMeta[] }) {
         <p className="rounded-3xl border border-border bg-surface p-6 text-center text-sm text-muted">
           Chưa tải được danh sách đề. Bạn thử tải lại trang nhé.
         </p>
+      )}
+
+      {/* Luyện từng dạng bài của cấp đang chọn. Mọi cấp đều nằm sẵn trong HTML
+       * (cấp khác chỉ `hidden`) — Google đọc được hết các trang dạng bài. */}
+      {sets.length > 0 && (
+        <section aria-labelledby="practice-sets" className="rounded-3xl border border-border bg-surface p-4 sm:p-5">
+          <h3 id="practice-sets" className="text-sm font-bold">
+            Luyện từng dạng bài
+          </h3>
+          <p className="mt-0.5 text-xs text-muted">
+            Chỉ luyện đúng dạng câu mình hay sai — gom từ mọi đề cùng cấp, làm câu nào chữa câu đó.
+          </p>
+          {[...new Set(sets.map((x) => x.level))].map((l) => (
+            <div key={l} hidden={l !== level}>
+              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                {sets
+                  .filter((x) => x.level === l)
+                  .map((x) => (
+                    <li key={x.slug}>
+                      <Link
+                        href={`/thi-thu-hsk/dang-bai/${x.slug}`}
+                        className="flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm transition-colors hover:border-primary/40 hover:bg-primary/5"
+                      >
+                        <Icon name={SECTION_ICON[x.section]} size={15} className="shrink-0 text-primary" />
+                        <span className="min-w-0 flex-1 truncate">
+                          <span className="font-semibold">
+                            {SECTION_SHORT[x.section]} {x.part}
+                          </span>{" "}
+                          · {partInfo(x.section, x.type).label}
+                        </span>
+                        <span className="shrink-0 text-[11px] text-muted">{x.count} câu</span>
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          ))}
+        </section>
       )}
     </div>
   );
@@ -307,12 +352,20 @@ export function MockExamInsights({ exams: initial }: { exams: MockExamMeta[] }) 
             {SECTION_SHORT[weak.section]} {weak.part} · {partInfo(weak.section, weak.type).label}
           </p>
           <p className="mt-1 leading-6 text-muted">{partInfo(weak.section, weak.type).tip}</p>
-          <Link
-            href={partInfo(weak.section, weak.type).href}
-            className="mt-1.5 inline-flex items-center gap-1 font-semibold text-primary hover:underline"
-          >
-            {partInfo(weak.section, weak.type).cta} <Icon name="arrow" size={14} />
-          </Link>
+          <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
+            <Link
+              href={practiceHref(weak.level, weak.section, weak.part)}
+              className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
+            >
+              Luyện riêng dạng này <Icon name="arrow" size={14} />
+            </Link>
+            <Link
+              href={partInfo(weak.section, weak.type).href}
+              className="inline-flex items-center gap-1 font-semibold text-muted hover:text-primary"
+            >
+              {partInfo(weak.section, weak.type).cta} <Icon name="arrow" size={14} />
+            </Link>
+          </div>
         </div>
       ) : (
         <p className="mt-4 text-sm font-semibold text-good">Phần nào cũng đúng từ 80% trở lên — đều tay!</p>

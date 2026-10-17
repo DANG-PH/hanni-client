@@ -442,6 +442,16 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   câu, nhận `alternatives`). Câu ★ (xét đúng/sai hoặc câu hỏi phần đọc) dùng chung `StarLine`; câu
   điền từ 56–60 là hội thoại 2 dòng "A：/B：" → `whitespace-pre-line`. Lời thoại trong chữa bài: nhãn
   "Nam:/Nữ:" nằm CÙNG dòng với lời (tách cột thì đoạn nghe dài bị dồn vào ~180px ở màn 360).
+  **Luyện từng dạng bài (2026-10-17, như Migii HSK)**: `/thi-thu-hsk/dang-bai/[slug]` (`app/(site)/
+  thi-thu-hsk/dang-bai`, trong `(site)` nên người đăng nhập giữ sidebar; slug `hsk3-viet-1` cùng server)
+  — 1 phần đề gom từ mọi đề cùng cấp (25 trang cho HSK 1–3), đề render sẵn từ server (Google đọc được),
+  `components/mock-exam/practice-runner.tsx` làm câu nào chấm câu đó qua `POST /mock-exams/practice/
+  check` (không đồng hồ, không lưu lượt làm), thanh tiến độ dính trên cùng, "Làm lại". `ExamItem` nhận
+  `id` riêng (`<đề>-q-<số>`) vì số câu trùng giữa các đề. Lối vào: mục "Luyện từng dạng bài" dưới
+  danh sách đề ở `/thi-thu-hsk` (đổi theo tab cấp; mọi cấp nằm sẵn trong HTML, cấp khác chỉ `hidden`),
+  nút **"Luyện riêng dạng này"** ở ô "Nên luyện thêm" màn kết quả + ô "Yếu nhất" (khách cũng thấy —
+  trang công khai; `practiceHref()`), sitemap. Câu hỏi gửi trợ lý AI dùng chung `assistantPrompt()`
+  (`lib/mock-exam.ts`) cho màn kết quả đề lẫn trang luyện dạng.
 - **Bảng phiên âm `/phien-am`** (`app/(site)/phien-am`, `components/pinyin/`, `lib/pinyin.ts`,
   2026-10-15) — bước 拼/声 của dải "Sáu chặng" ở trang chủ trước đó trỏ sang `/tu-dien` và
   `/pronunciation` (hứa "làm quen phiên âm", "nghe mā má mǎ mà" mà không có chỗ nào dạy). Công khai,

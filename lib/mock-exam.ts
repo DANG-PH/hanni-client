@@ -1,7 +1,9 @@
 import type {
   MockAnswer,
   MockExamMeta,
+  MockItem,
   MockPaper,
+  MockPart,
   MockPartType,
   MockReviewItem,
   MockSectionKind,
@@ -105,6 +107,73 @@ const PART_INFO: Record<string, PartInfo> = {
     cta: "Luyện viết chữ",
   },
 };
+
+export const SECTION_SHORT: Record<MockSectionKind, string> = { listening: "Nghe", reading: "Đọc", writing: "Viết" };
+const SECTION_SLUG: Record<MockSectionKind, string> = { listening: "nghe", reading: "doc", writing: "viet" };
+
+/** Trang "luyện từng dạng bài" của 1 phần đề (cùng slug với server). */
+export function practiceHref(level: number, section: MockSectionKind, part: number): string {
+  return `/thi-thu-hsk/dang-bai/hsk${level}-${SECTION_SLUG[section]}-${part}`;
+}
+
+/** Câu hỏi soạn sẵn gửi trợ lý AI cho 1 câu đã chữa (màn kết quả đề + luyện
+ * từng dạng): nội dung câu, đáp án đúng và đáp án mình chọn — trợ lý trả lời
+ * đúng chỗ vướng, khỏi phải hỏi lại. */
+export function assistantPrompt({
+  title,
+  section,
+  officialPart,
+  part,
+  item,
+  review,
+  picked,
+}: {
+  title: string;
+  section: MockSectionKind;
+  /** Phần đề chính thức (1-based). */
+  officialPart: number;
+  part: MockPart;
+  item: MockItem;
+  review: MockReviewItem;
+  picked: MockAnswer | null;
+}): string {
+  const describe = (v: MockAnswer | null) => {
+    if (v === null) return "bỏ trống";
+    if (typeof v === "string") return `"${v}"`;
+    if (typeof v === "boolean")
+      return part.type === "judge"
+        ? v
+          ? "✓ (khớp với tranh)"
+          : "✗ (không khớp tranh)"
+        : v
+          ? "✓ (câu ★ đúng)"
+          : "✗ (câu ★ sai)";
+    if (item.choices) return `chữ ${item.choices[v]}`;
+    const option = item.options?.[v] ?? part.options?.[v];
+    const picture = review.pictureLabels?.[v];
+    return `${String.fromCharCode(65 + v)}${option ? ` (${option.zh})` : picture ? ` (tranh: ${picture})` : ""}`;
+  };
+  const sentence = review.transcript?.length
+    ? `Lời thoại: ${review.transcript.map((l) => l.zh).join(" ")}`
+    : item.pieces
+      ? `Các từ cần sắp xếp: ${item.pieces.map((x) => x.zh).join(" / ")}`
+      : item.blank
+        ? `Câu: ${item.blank.before.zh}（${item.pinyin ?? " "}）${item.blank.after.zh}`
+        : item.text
+          ? `Đoạn: ${item.text.zh}`
+          : "";
+  const star = item.statement ?? item.question;
+  return [
+    `Giải thích giúp mình câu ${item.no} — ${title}, phần ${SECTION_SHORT[section]} ${officialPart} (${partInfo(section, part.type).label}).`,
+    sentence.slice(0, 400),
+    star ? `★ ${star.zh}` : "",
+    part.type === "judge" && review.pictureLabels?.[0] ? `Tranh: ${review.pictureLabels[0]}.` : "",
+    `Đáp án đúng: ${describe(review.answer)}. Mình chọn: ${describe(picked)}.`,
+    "Vì sao đáp án đúng là vậy, dựa vào từ khoá nào? Ngắn gọn thôi nhé.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
 
 export function partInfo(section: MockSectionKind, type: MockPartType): PartInfo {
   return (

@@ -79,6 +79,23 @@ async function mockExamEntries(): Promise<MetadataRoute.Sitemap> {
   }
 }
 
+/** Trang "luyện từng dạng bài" (1 phần đề gom từ mọi đề cùng cấp). */
+async function practiceEntries(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const res = await fetch(`${API_BASE}/mock-exams/practice`, { next: { revalidate } });
+    if (!res.ok) return [];
+    const rows = (await res.json()) as { slug: string }[];
+    return rows.map((e) => ({
+      url: `${siteUrl}/thi-thu-hsk/dang-bai/${e.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const staticPages: MetadataRoute.Sitemap = [
@@ -97,10 +114,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/nguon-du-lieu`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${siteUrl}/install`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
   ];
-  const [dict, grammar, exams] = await Promise.all([
+  const [dict, grammar, exams, practice] = await Promise.all([
     dictionaryEntries(),
     grammarEntries(),
     mockExamEntries(),
+    practiceEntries(),
   ]);
-  return [...staticPages, ...exams, ...grammar, ...dict];
+  return [...staticPages, ...exams, ...practice, ...grammar, ...dict];
 }

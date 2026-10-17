@@ -10,7 +10,7 @@ import { Icon } from "@/components/icon";
 import { MockExamInsights, MockExamList, MockExamProgress } from "@/components/mock-exam/exam-list";
 import { ExamStructure } from "@/components/mock-exam/exam-structure";
 import { API_BASE } from "@/lib/api";
-import type { MockExamMeta } from "@/lib/types";
+import type { MockExamMeta, MockPracticeSetMeta } from "@/lib/types";
 
 export const revalidate = 3600;
 
@@ -28,6 +28,16 @@ async function fetchExams(): Promise<MockExamMeta[]> {
     const res = await fetch(`${API_BASE}/mock-exams`, { next: { revalidate } });
     if (!res.ok) return [];
     return (await res.json()) as MockExamMeta[];
+  } catch {
+    return [];
+  }
+}
+
+async function fetchPracticeSets(): Promise<MockPracticeSetMeta[]> {
+  try {
+    const res = await fetch(`${API_BASE}/mock-exams/practice`, { next: { revalidate } });
+    if (!res.ok) return [];
+    return (await res.json()) as MockPracticeSetMeta[];
   } catch {
     return [];
   }
@@ -72,7 +82,7 @@ const FAQ: [string, string][] = [
 ];
 
 export default async function MockExamHubPage() {
-  const exams = await fetchExams();
+  const [exams, sets] = await Promise.all([fetchExams(), fetchPracticeSets()]);
 
   return (
     <div className="page-wrap max-w-6xl! space-y-8 py-8!">
@@ -103,7 +113,7 @@ export default async function MockExamHubPage() {
           <h2 id="exam-list" className="text-lg font-extrabold tracking-tight">
             Chọn đề
           </h2>
-          <MockExamList exams={exams} />
+          <MockExamList exams={exams} sets={sets} />
           <div className="pt-3">
             <MockExamInsights exams={exams} />
           </div>
