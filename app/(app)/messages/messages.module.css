@@ -459,7 +459,7 @@
   }
 
   .threadPane[data-active="true"] {
-    height: max(420px, calc(100dvh - var(--bottom-nav-h, 0px) - 13rem));
+    height: max(400px, calc(100dvh - var(--bottom-nav-h, 0px) - 8.5rem));
   }
 
   .translateButton {

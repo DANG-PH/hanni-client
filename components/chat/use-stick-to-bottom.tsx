@@ -56,6 +56,10 @@ export function useStickToBottom(
     if (firstKey.current || lastIsMine || atBottomRef.current) {
       firstKey.current = false;
       requestAnimationFrame(() => scrollToBottom(false));
+      // Phần vẽ muộn (nút dịch, dòng "Đã xem", phông chữ) làm khung dài thêm sau
+      // lần cuộn đầu — cuộn bù 1 nhịp nếu vẫn đang bám đáy.
+      const late = setTimeout(() => atBottomRef.current && scrollToBottom(false), 250);
+      return () => clearTimeout(late);
     } else {
       setUnseen((n) => n + 1);
     }

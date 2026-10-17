@@ -373,7 +373,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
                     <div
                       className={`${styles.messageBubble} ${
                         mine ? styles.messageMine : styles.messageOther
-                      } max-w-[75%] break-words`}
+                      } max-w-[75%] break-words whitespace-pre-wrap`}
                     >
                       {m.content}
                       <MessageTranslation content={m.content} mine={mine} />
@@ -416,7 +416,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
           }
         }}
         onSubmit={() => void send()}
-        placeholder="Nhắn gì đó… (tiếng Việt hoặc tiếng Trung đều được)"
+        placeholder="Nhắn gì đó…"
         disabled={translating}
         busy={sending}
         after={
@@ -499,8 +499,8 @@ function MessagesInner() {
   return (
     <div className={`page-wrap ${styles.page}`}>
       <FeatureTour tourKey="messages" steps={MESSAGES_TOUR_STEPS} />
-      <h1 className="text-xl font-bold">Tin nhắn</h1>
-      <nav className={styles.tabs} aria-label="Khu vực tin nhắn">
+      <h1 className={`text-xl font-bold ${activeId ? "max-md:sr-only" : ""}`}>Tin nhắn</h1>
+      <nav className={`${styles.tabs} ${activeId ? "max-md:hidden" : ""}`} aria-label="Khu vực tin nhắn">
         {(
           [
             { key: "chats", label: "Trò chuyện", icon: "message" },

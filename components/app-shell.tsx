@@ -138,7 +138,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </footer>
       </div>
       <BottomNav onMore={() => drawer.current?.showModal()} />
-      {user && <AssistantWidget />}
+      {/* Trang chat (tin nhắn, luyện nói AI) có ô soạn ở đáy — bong bóng trợ lý đè đúng nút Gửi. */}
+      {user && !/^\/(messages|roleplay)(\/|$)/.test(pathname) && <AssistantWidget />}
       {user && <StreakCelebration />}
     </div>
   );
