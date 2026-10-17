@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
       { source: "/exams/results", destination: "/thi-thu-hsk", permanent: true },
       // Kết nối đã là 1 tab của Tin nhắn; chuyển hướng ở server thay vì trang chờ.
       { source: "/connections", destination: "/messages?tab=connect", permanent: true },
+      // Tự thêm video đã bỏ (2026-10-17); không có dòng này thì /watch/add rơi vào /watch/[id].
+      { source: "/watch/add", destination: "/watch", permanent: true },
     ];
   },
 

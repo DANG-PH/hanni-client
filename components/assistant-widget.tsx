@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { mutate as revalidate } from "swr";
+import { ChatComposer } from "./chat/chat-composer";
+import { JumpToLatest, useStickToBottom } from "./chat/use-stick-to-bottom";
 import { Icon } from "./icon";
 import { MarkdownLite } from "./markdown-lite";
 import { useAuth } from "@/lib/auth";
@@ -33,6 +35,14 @@ function HanniLogo({ size }: { size: number }) {
 }
 
 const ASK_EVENT = "hanni:ask-assistant";
+
+/** Câu hỏi gợi ý khi chưa nói gì — người mới thường không biết hỏi trợ lý cái gì. */
+const STARTERS = [
+  "Phân biệt 的, 地, 得 giúp mình",
+  "Đặt 3 câu đơn giản với từ 学习",
+  "Khi nào dùng 了?",
+  "Mình nên bắt đầu học HSK mấy?",
+];
 
 /** Mở trợ lý và hỏi ngay 1 câu soạn sẵn từ chỗ khác trong app (nút "Hỏi trợ
  * lý về câu này" ở màn chữa bài thi thử — lớp "chat với trợ giảng AI" của
@@ -100,9 +110,14 @@ export function AssistantWidget() {
   const listRef = useRef<HTMLDivElement>(null);
   const closeStreamRef = useRef<(() => void) | null>(null);
 
-  useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
-  }, [messages.length, sending]);
+  // Tin mới: đang ở cuối thì tự cuộn, đang đọc lại câu trả lời cũ thì hiện nút
+  // "Xuống tin mới"; câu trả lời đang hiện dần (stream) chỉ kéo theo khi đang ở cuối.
+  const last = messages.at(-1);
+  const stick = useStickToBottom(listRef, {
+    lastItemKey: open && view === "chat" ? (last?.id ?? "empty") : undefined,
+    lastIsMine: last?.role === "USER",
+    contentKey: last?.text.length,
+  });
 
   // Dữ liệu thật từ server đã phản ánh tin nhắn vừa gửi -> bỏ bản tạm để
   // tránh hiện trùng lặp.
@@ -115,11 +130,12 @@ export function AssistantWidget() {
   // Đóng kết nối SSE dở dang nếu component gỡ bỏ giữa chừng (vd đăng xuất).
   useEffect(() => () => closeStreamRef.current?.(), []);
 
-  /** `preset`: câu hỏi gửi từ nơi khác (`askAssistant`) vào 1 phiên vừa tạo —
-   * không đọc ô nhập, không chờ lượt trước (lượt trước đã bị đóng). */
-  function send(preset?: { text: string; sessionId: string }) {
+  /** `preset`: câu hỏi soạn sẵn — từ nơi khác (`askAssistant`, vào 1 phiên vừa
+   * tạo, không chờ lượt trước vì lượt trước đã bị đóng) hoặc câu hỏi gợi ý
+   * (`starter`, gửi vào phiên đang mở). Không đọc ô nhập. */
+  function send(preset?: { text: string; sessionId?: string; starter?: boolean }) {
     const text = (preset?.text ?? input).trim();
-    if (!text || (sending && !preset)) return;
+    if (!text || (sending && (!preset || preset.starter))) return;
     if (!preset) setInput("");
     const requestSessionId = preset?.sessionId ?? effectiveSessionId ?? undefined;
     setSending(true);
@@ -175,7 +191,7 @@ export function AssistantWidget() {
             if (action) setLastAction({ text: accumulated, action });
             if (newSessionId && requestSessionId !== newSessionId) {
               setSessionId(newSessionId);
-            } else if (preset) {
+            } else if (preset?.sessionId) {
               // `mutate` của lần render này còn trỏ phiên cũ.
               void revalidate(`/assistant/sessions/${preset.sessionId}/messages`);
             } else {
@@ -271,7 +287,7 @@ export function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Đóng trợ lý Hanni" : "Mở trợ lý Hanni"}
         aria-expanded={open}
-        className={`motion-button fixed right-5 z-40 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90 ${promptDialogVisible ? "bottom-[calc(var(--bottom-nav-h,0px)_+_14rem)]" : "bottom-[calc(var(--bottom-nav-h,0px)_+_1.25rem)]"}`}
+        className={`motion-button fixed right-5 z-40 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90 ${open ? "max-sm:hidden" : ""} ${promptDialogVisible ? "bottom-[calc(var(--bottom-nav-h,0px)_+_14rem)]" : "bottom-[calc(var(--bottom-nav-h,0px)_+_1.25rem)]"}`}
       >
         {open ? <Icon name="close" size={24} /> : <HanniLogo size={56} />}
       </button>
@@ -280,7 +296,7 @@ export function AssistantWidget() {
         <div
           role="dialog"
           aria-label="Trợ lý Hanni"
-          className={`fixed right-5 z-40 flex h-[min(32rem,calc(100dvh_-_var(--bottom-nav-h,0px)_-_11rem))] w-[min(23rem,90vw)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl ${promptDialogVisible ? "bottom-[calc(var(--bottom-nav-h,0px)_+_18rem)]" : "bottom-[calc(var(--bottom-nav-h,0px)_+_6rem)]"}`}
+          className={`fixed z-40 flex flex-col overflow-hidden bg-surface max-sm:inset-0 max-sm:pt-[env(safe-area-inset-top)] max-sm:pb-[env(safe-area-inset-bottom)] sm:right-5 sm:h-[min(32rem,calc(100dvh_-_var(--bottom-nav-h,0px)_-_11rem))] sm:w-[min(23rem,90vw)] sm:rounded-2xl sm:border sm:border-border sm:shadow-2xl ${promptDialogVisible ? "sm:bottom-[calc(var(--bottom-nav-h,0px)_+_18rem)]" : "sm:bottom-[calc(var(--bottom-nav-h,0px)_+_6rem)]"}`}
         >
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
             <div className="flex items-center gap-2">
@@ -309,6 +325,14 @@ export function AssistantWidget() {
                 className={`flex h-8 w-8 items-center justify-center rounded-lg hover:bg-surface-2 ${view === "history" ? "text-primary" : "text-muted hover:text-foreground"}`}
               >
                 <Icon name="clock" size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Đóng trợ lý"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-foreground sm:hidden"
+              >
+                <Icon name="close" size={16} />
               </button>
             </div>
           </div>
@@ -354,20 +378,38 @@ export function AssistantWidget() {
             </div>
           ) : (
             <>
+              <div className="relative min-h-0 flex-1">
               <div
                 ref={listRef}
-                className="flex-1 space-y-3 overflow-y-auto px-4 py-4"
+                className="h-full space-y-3 overflow-y-auto px-4 py-4"
               >
                 {isLoading && messages.length === 0 ? (
                   <p className="text-center text-xs text-muted">Đang tải…</p>
                 ) : messages.length === 0 ? (
                   <div className="flex items-start gap-2.5">
                     <HanniLogo size={28} />
-                    <p className="rounded-xl bg-surface-2 px-3 py-2.5 text-sm leading-6">
-                      Chào {user?.displayName ?? "bạn"}! Mình là Hanni 👋 Mình
-                      có thể giúp gì cho bạn hôm nay — hỏi về từ vựng, ngữ
-                      pháp, phát âm, hay lộ trình học đều được nhé.
-                    </p>
+                    <div className="min-w-0 space-y-2.5">
+                      <p className="rounded-xl bg-surface-2 px-3 py-2.5 text-sm leading-6">
+                        Chào {user?.displayName ?? "bạn"}! Mình là Hanni 👋 Mình
+                        có thể giúp gì cho bạn hôm nay — hỏi về từ vựng, ngữ
+                        pháp, phát âm, hay lộ trình học đều được nhé.
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {STARTERS.map((q) => (
+                          <button
+                            key={q}
+                            type="button"
+                            onClick={() =>
+                              send({ text: q, sessionId: effectiveSessionId ?? undefined, starter: true })
+                            }
+                            disabled={sending}
+                            className="rounded-full border border-primary/25 bg-primary/5 px-3 py-1.5 text-left text-xs font-medium text-primary hover:bg-primary/10 disabled:opacity-50"
+                          >
+                            {q}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   messages.map((m) => (
@@ -414,29 +456,19 @@ export function AssistantWidget() {
                 )}
               </div>
 
-              <form
-                className="flex items-center gap-2 border-t border-border p-3"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  send();
-                }}
-              >
-                <input
-                  value={input}
-                  onChange={(event) => setInput(event.target.value)}
-                  placeholder="Nhập câu hỏi…"
-                  disabled={sending}
-                  className="field flex-1"
-                />
-                <button
-                  type="submit"
-                  disabled={!input.trim() || sending}
-                  aria-label="Gửi"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-fg disabled:opacity-50"
-                >
-                  <Icon name="arrow" size={18} />
-                </button>
-              </form>
+              {!stick.atBottom && (
+                <JumpToLatest unseen={stick.unseen} onClick={() => stick.scrollToBottom(true)} />
+              )}
+              </div>
+              {/* Server nhận tối đa 1.000 ký tự (MaxLength ở ask-assistant.dto.ts). */}
+              <ChatComposer
+                value={input}
+                onChange={setInput}
+                onSubmit={() => send()}
+                maxLength={1000}
+                placeholder="Nhập câu hỏi…"
+                busy={sending}
+              />
             </>
           )}
         </div>

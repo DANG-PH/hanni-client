@@ -49,7 +49,15 @@ function CommentForm({
         maxLength={2000}
         className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none"
       />
-      <div className="flex justify-end gap-2">
+      <div className="flex items-center justify-end gap-2">
+        {value.length > 0 && (
+          <span
+            aria-live="polite"
+            className={`mr-auto text-[11px] tabular-nums ${value.length >= 2000 ? "text-danger" : value.length >= 1800 ? "text-warn" : "text-muted"}`}
+          >
+            {value.length.toLocaleString("vi-VN")}/2.000 ký tự
+          </span>
+        )}
         {onCancel && (
           <Button variant="ghost" onClick={onCancel} disabled={busy}>
             Huỷ

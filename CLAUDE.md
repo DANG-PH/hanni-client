@@ -347,6 +347,16 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   nên người HSK 1–2 không thấy kệ); "Từ vựng hôm nay" theo đúng cấp (`?level=`); bộ lọc `/watch` chỉ hiện
   cấp có video. `/settings` ẩn hẳn mục email tuần khi máy chủ email chưa cấu hình (trước đó lộ dòng lỗi
   nội bộ). Thanh vị trí có tên cho `/settings`, `/achievements`, `/u/[id]` (`OTHER_PAGES` ở `lib/nav.ts`).
+- **Chat theo app chat phổ biến (vấn đề 3)** — `components/chat/`: `ChatComposer` dùng chung cho `/messages`,
+  trợ lý AI, `/roleplay` (ô tự giãn tới ~5 dòng; Enter gửi, Shift+Enter xuống dòng, không gửi khi đang gõ
+  dở bằng bộ gõ; `maxLength` ĐÚNG giới hạn server — tin nhắn 2.000, trợ lý/luyện nói 1.000 — trước đó ô không
+  giới hạn nên gõ dài là ăn lỗi 400; bộ đếm "x/y ký tự" hiện khi bắt đầu gõ, vàng ở 90%, đỏ khi chạm giới
+  hạn). `useStickToBottom` + `JumpToLatest`: đang ở cuối thì tự cuộn theo tin mới (và theo câu trả lời AI đang
+  hiện dần); đang đọc tin cũ thì KHÔNG kéo tuột xuống mà hiện nút "Xuống tin mới" kèm số tin mới; tin mình
+  gửi luôn kéo xuống; tải tin cũ ở trên không làm giật (khoá theo id tin CUỐI). Trợ lý trên điện thoại mở
+  toàn màn hình (nút đóng trong header), có 4 câu hỏi gợi ý lúc chưa nói gì. Bình luận video có bộ đếm.
+  `/messages` bỏ khối tiêu đề to (còn tiêu đề "Tin nhắn" gọn), khung phải lúc chưa chọn hội thoại không lặp
+  nút "Tìm bạn học" nữa. `/watch/add` chuyển hướng về `/watch`.
 
 ### Lộ trình một nút bấm (tái cấu trúc 2026-10-05 — đọc mục này TRƯỚC)
 User báo: flashcard "tự nhảy vào HSK4 khi muốn học HSK1, không theo chủ đề", web "nhiều chức

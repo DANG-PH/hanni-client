@@ -6,6 +6,8 @@ import styles from "./messages.module.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/avatar";
+import { ChatComposer } from "@/components/chat/chat-composer";
+import { JumpToLatest, useStickToBottom } from "@/components/chat/use-stick-to-bottom";
 import { ConnectionsPanel } from "@/components/connections-panel";
 import { Icon } from "@/components/icon";
 import { ErrorNote, Spinner } from "@/components/ui";
@@ -188,7 +190,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const otherTypingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingEmit = useRef(0);
   const lastMessageId = data?.items.at(-1)?.id;
@@ -221,12 +223,11 @@ function ChatThread({ conversationId }: { conversationId: string }) {
     [],
   );
 
-  // Chỉ tự cuộn xuống cuối khi có tin nhắn MỚI (id cuối cùng đổi) — không
-  // cuộn khi tải thêm tin nhắn cũ ở trên (xử lý riêng trong loadOlder()),
-  // tránh giật màn hình về cuối ngay khi vừa bấm "Xem tin nhắn cũ hơn".
-  useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
-  }, [lastMessageId]);
+  // Tin MỚI (id cuối đổi): đang ở cuối thì tự cuộn theo, đang đọc tin cũ thì
+  // hiện nút "Xuống tin mới" thay vì kéo tuột xuống. Tải thêm tin cũ ở trên
+  // không đổi id cuối nên không làm giật khung (xem loadOlder()).
+  const lastIsMine = !!data?.items.at(-1) && data.items.at(-1)!.senderId !== otherUserId;
+  const stick = useStickToBottom(listRef, { lastItemKey: lastMessageId, lastIsMine });
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -320,10 +321,8 @@ function ChatThread({ conversationId }: { conversationId: string }) {
           </div>
         </div>
       )}
-      <div
-        ref={listRef}
-        className={`space-y-2.5 overflow-y-auto p-4 ${styles.messageList}`}
-      >
+      <div className={`relative ${styles.messageList}`}>
+      <div ref={listRef} className="h-full space-y-2.5 overflow-y-auto p-4">
         {!data ? (
           <Spinner />
         ) : (
@@ -396,51 +395,42 @@ function ChatThread({ conversationId }: { conversationId: string }) {
           </>
         )}
       </div>
+      {!stick.atBottom && <JumpToLatest unseen={stick.unseen} onClick={() => stick.scrollToBottom(true)} />}
+      </div>
       {(sendError || translateError) && (
         <div className="px-3 pt-2">
           <ErrorNote>{sendError || translateError}</ErrorNote>
         </div>
       )}
-      <form
-        className={styles.composeForm}
-        onSubmit={(e) => {
-          e.preventDefault();
-          void send();
+      {/* Server nhận tối đa 2.000 ký tự (MaxLength ở messages.dto.ts). */}
+      <ChatComposer
+        value={input}
+        inputRef={inputRef}
+        maxLength={2000}
+        onChange={(value) => {
+          setInput(value);
+          const now = Date.now();
+          if (otherUserId && now - lastTypingEmit.current > 2000) {
+            lastTypingEmit.current = now;
+            emitTyping(conversationId, otherUserId);
+          }
         }}
-      >
-        <input
-          ref={inputRef}
-          value={input}
-          onChange={(e) => {
-            setInput(e.target.value);
-            const now = Date.now();
-            if (otherUserId && now - lastTypingEmit.current > 2000) {
-              lastTypingEmit.current = now;
-              emitTyping(conversationId, otherUserId);
-            }
-          }}
-          placeholder="Nhắn gì đó… (gõ tiếng Việt hoặc tiếng Trung đều được)"
-          disabled={sending || translating}
-          className={`field ${styles.composeInput}`}
-        />
-        <button
-          type="button"
-          onClick={() => void translateInput()}
-          disabled={!input.trim() || sending || translating}
-          title="Dịch nội dung đang gõ sang ngôn ngữ còn lại trước khi gửi"
-          className={styles.translateButton}
-        >
-          {translating ? "Đang dịch…" : "Dịch"}
-        </button>
-        <button
-          type="submit"
-          disabled={!input.trim() || sending || translating}
-          aria-label="Gửi"
-          className={styles.sendButton}
-        >
-          <Icon name="arrow" size={18} />
-        </button>
-      </form>
+        onSubmit={() => void send()}
+        placeholder="Nhắn gì đó… (tiếng Việt hoặc tiếng Trung đều được)"
+        disabled={translating}
+        busy={sending}
+        after={
+          <button
+            type="button"
+            onClick={() => void translateInput()}
+            disabled={!input.trim() || sending || translating}
+            title="Dịch nội dung đang gõ sang ngôn ngữ còn lại trước khi gửi"
+            className={`${styles.translateButton} h-11`}
+          >
+            {translating ? "Đang dịch…" : "Dịch"}
+          </button>
+        }
+      />
     </div>
   );
 }
@@ -468,63 +458,16 @@ const MESSAGES_TOUR_STEPS: TourStep[] = [
   },
 ];
 
-function MessagesHero({ onConnect }: { onConnect: () => void }) {
-  return (
-    <section className={styles.hero} aria-labelledby="messages-title">
-      <div className={styles.heroIdentity}>
-        <span className={styles.heroIcon}>
-          <Icon name="message" size={28} />
-        </span>
-        <p className={styles.heroEyebrow}>Góc kết nối</p>
-        <h1 id="messages-title" className={styles.heroTitle}>
-          Học cùng nhau, tiến bộ mỗi ngày
-        </h1>
-        <p className={styles.heroDescription}>
-          Trò chuyện với người học khác, hỏi bài và cùng giữ nhịp học tiếng
-          Trung trên Hanni.
-        </p>
-      </div>
-      <button type="button" onClick={onConnect} className={styles.heroRoute}>
-        <span className={styles.routeItem}>
-          <strong>01</strong>
-          Tìm bạn học
-        </span>
-        <span className={styles.routeArrow}>→</span>
-        <span className={styles.routeItem}>
-          <strong>02</strong>
-          Cùng luyện tập
-        </span>
-      </button>
-    </section>
-  );
-}
-
-function MessagesWelcome({ onConnect }: { onConnect: () => void }) {
+function MessagesWelcome() {
   return (
     <div className={styles.threadWelcome}>
       <div className={styles.welcomeIcon}>
         <Icon name="message" size={25} />
       </div>
-      <p className={styles.welcomeKicker}>KHÔNG GIAN HỌC CÙNG NHAU</p>
       <h2 className={styles.welcomeTitle}>Chọn một cuộc trò chuyện</h2>
       <p className={styles.welcomeDescription}>
-        Chọn người học ở bên trái để tiếp tục, hoặc tìm một người bạn mới để
-        cùng luyện tiếng Trung.
+        Chọn người học ở hộp thư bên trái để đọc và trả lời tin nhắn.
       </p>
-      <button
-        type="button"
-        onClick={onConnect}
-        className={styles.welcomeAction}
-      >
-        <Icon name="search" size={15} />
-        Tìm bạn học
-        <Icon name="arrow" size={15} />
-      </button>
-      <div className={styles.welcomeSteps} aria-label="Các bước bắt đầu">
-        <span>Chọn người học</span>
-        <span>→</span>
-        <span>Gửi lời chào</span>
-      </div>
     </div>
   );
 }
@@ -556,7 +499,7 @@ function MessagesInner() {
   return (
     <div className={`page-wrap ${styles.page}`}>
       <FeatureTour tourKey="messages" steps={MESSAGES_TOUR_STEPS} />
-      <MessagesHero onConnect={() => switchTab("connect")} />
+      <h1 className="text-xl font-bold">Tin nhắn</h1>
       <nav className={styles.tabs} aria-label="Khu vực tin nhắn">
         {(
           [
@@ -624,7 +567,7 @@ function MessagesInner() {
               </>
             ) : (
               <div className="hidden h-full md:flex">
-                <MessagesWelcome onConnect={() => switchTab("connect")} />
+                <MessagesWelcome />
               </div>
             )}
           </div>

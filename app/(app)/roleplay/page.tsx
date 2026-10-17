@@ -5,7 +5,9 @@ import {
   TourButton,
   type TourStep,
 } from "@/components/feature-tour";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { ChatComposer } from "@/components/chat/chat-composer";
+import { JumpToLatest, useStickToBottom } from "@/components/chat/use-stick-to-bottom";
 import { Icon } from "@/components/icon";
 import { MarkdownLite } from "@/components/markdown-lite";
 import { NextStep } from "@/components/next-step";
@@ -198,9 +200,11 @@ function ChatView({
   } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages]);
+  // Đang ở cuối thì tự cuộn theo lượt mới, đang đọc lại lượt cũ thì hiện nút "Xuống tin mới".
+  const stick = useStickToBottom(scrollRef, {
+    lastItemKey: messages?.at(-1)?.id,
+    lastIsMine: messages?.at(-1)?.role === "USER",
+  });
 
   async function getHint() {
     if (hinting) return;
@@ -343,7 +347,8 @@ function ChatView({
         </div>
       ) : (
         <>
-          <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto p-4">
+          <div className="relative min-h-0 flex-1">
+          <div ref={scrollRef} className="h-full space-y-4 overflow-y-auto p-4">
             {!messages ? (
               <Spinner />
             ) : (
@@ -371,6 +376,8 @@ function ChatView({
                 </div>
               ))
             )}
+          </div>
+          {!stick.atBottom && <JumpToLatest unseen={stick.unseen} onClick={() => stick.scrollToBottom(true)} />}
           </div>
 
           {hint && (
@@ -410,38 +417,27 @@ function ChatView({
             </div>
           )}
 
-          <form
-            className="flex items-center gap-2 border-t border-border p-3"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void send();
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => void getHint()}
-              disabled={hinting || sending}
-              title="Gợi ý câu trả lời"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-accent disabled:opacity-50"
-            >
-              <Icon name="spark" size={18} />
-            </button>
-            <input
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              placeholder="Nhập câu trả lời bằng tiếng Trung…"
-              disabled={sending}
-              className="field flex-1"
-            />
-            <button
-              type="submit"
-              disabled={!input.trim() || sending}
-              aria-label="Gửi"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-fg disabled:opacity-50"
-            >
-              <Icon name="arrow" size={18} />
-            </button>
-          </form>
+          {/* Server nhận tối đa 1.000 ký tự mỗi lượt (MaxLength ở roleplay.dto.ts). */}
+          <ChatComposer
+            value={input}
+            onChange={setInput}
+            onSubmit={() => void send()}
+            maxLength={1000}
+            placeholder="Nhập câu trả lời bằng tiếng Trung…"
+            busy={sending}
+            before={
+              <button
+                type="button"
+                onClick={() => void getHint()}
+                disabled={hinting || sending}
+                title="Gợi ý câu trả lời"
+                aria-label="Gợi ý câu trả lời"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-accent disabled:opacity-50"
+              >
+                <Icon name="spark" size={18} />
+              </button>
+            }
+          />
         </>
       )}
     </Card>
