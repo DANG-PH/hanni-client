@@ -111,6 +111,11 @@ export default async function TuDienPage({
           className="field flex-1"
         />
         <Button type="submit">Tìm</Button>
+        {/* Tra bằng ảnh như "Dịch ảnh" của Hanzii/Google Dịch — chụp thực đơn, biển hiệu. */}
+        <LinkButton href="/tu-dien/quet" variant="secondary" className="px-3.5!">
+          <Icon name="camera" size={18} />
+          <span className="sr-only sm:not-sr-only">Quét ảnh</span>
+        </LinkButton>
       </form>
 
       <nav aria-label="Lọc theo cấp HSK" className="flex flex-wrap gap-2">

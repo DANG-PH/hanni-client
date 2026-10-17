@@ -11,6 +11,8 @@
   --border: #e7e9ef;
   --primary: #dc3526;
   --primary-fg: #ffffff;
+  /* Cột biểu đồ — đã qua bộ kiểm màu (độ sáng, tương phản ≥3:1 trên --surface). */
+  --chart-bar: #dc3526;
   --accent: #b5852f;
   --good: #2f8f5b;
   --warn: #b5761b;
@@ -32,6 +34,7 @@
     --border: #303a4a;
     --primary: #ff796b;
     --primary-fg: #26110d;
+    --chart-bar: #ec5d50;
     --accent: #d8a24e;
     --good: #55c489;
     --warn: #e0a04a;
@@ -52,6 +55,7 @@
   --border: #303a4a;
   --primary: #ff796b;
   --primary-fg: #26110d;
+  --chart-bar: #ec5d50;
   --accent: #d8a24e;
   --good: #55c489;
   --warn: #e0a04a;
@@ -1434,5 +1438,29 @@ body:has(.mobile-drawer[open]) {
 @media (prefers-reduced-motion: reduce) {
   .flip-card-inner {
     transition: none;
+  }
+}
+
+/* Vệt quét chạy dọc ảnh trong lúc Hanni đang đọc (`/tu-dien/quet`). */
+.scan-sweep {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--primary) 30%, transparent),
+    transparent
+  );
+  animation: scan-sweep 1.6s ease-in-out infinite alternate;
+}
+@keyframes scan-sweep {
+  from {
+    transform: translateY(-20%);
+  }
+  to {
+    transform: translateY(220%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scan-sweep {
+    animation: none;
   }
 }

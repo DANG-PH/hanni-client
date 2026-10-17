@@ -7,16 +7,18 @@ import { ApiError } from "@/lib/api";
 import { createPremiumCheckout, useTopUpConfigured } from "@/lib/payments";
 import type { PremiumPlan } from "@/lib/types";
 
-/** Quyền lợi Premium — CHỈ liệt kê đúng những gì THẬT SỰ đã cài (không hứa
- * suông) — xem `hanni-server/CLAUDE.md` mục Premium cho chi tiết kỹ thuật
- * từng dòng. Dòng cuối nhắc lại rõ KHÔNG khoá nội dung học, tránh hiểu lầm
- * "mua Premium mới học được HSK cao" như một số app tham khảo khác. */
-const BENEFITS = [
-  "Nhận GẤP ĐÔI xu từ minigame và nhiệm vụ hàng ngày — mua khung/danh hiệu nhanh hơn nhiều",
-  "Trợ lý AI Hanni hỏi không giới hạn lượt/ngày (bản miễn phí giới hạn 15 lượt/ngày)",
-  "Khung avatar “Phượng Hoàng” độc quyền, không mua được bằng xu",
-  "Huy hiệu Premium hiện cạnh tên trên hồ sơ công khai",
-  "Toàn bộ 9 cấp HSK, từ vựng, ngữ pháp vẫn MIỄN PHÍ như hiện tại",
+/** Bản thường so với Premium — CHỈ ghi đúng những gì THẬT SỰ đã có code
+ * (không hứa suông), xem `hanni-server/CLAUDE.md` mục Premium. Dòng cuối nhắc
+ * rõ KHÔNG khoá nội dung học, tránh hiểu lầm "mua Premium mới học được HSK
+ * cao" như một số app tham khảo khác. */
+const COMPARE: { label: string; free: string; premium: string }[] = [
+  { label: "Hanni Coach — AI nhận xét tuần/tháng/quý, mẹo nhớ từ hay quên", free: "Không", premium: "Có" },
+  { label: "Quét ảnh học từ (thực đơn, biển hiệu, món ăn…)", free: "3/ngày", premium: "100/ngày" },
+  { label: "Trợ lý AI Hanni (lượt hỏi)", free: "15/ngày", premium: "Không giới hạn" },
+  { label: "Luyện nói với AI (lượt nói)", free: "15/ngày", premium: "Không giới hạn" },
+  { label: "Xu từ minigame, nhiệm vụ", free: "x1", premium: "x2" },
+  { label: "Khung avatar Phượng Hoàng, huy hiệu Premium", free: "Không", premium: "Có" },
+  { label: "9 cấp HSK, từ vựng, ngữ pháp, đề thi thử", free: "Miễn phí", premium: "Miễn phí" },
 ];
 
 function formatVnd(n: number): string {
@@ -139,19 +141,25 @@ export function PremiumModal({
             </div>
 
             <div className="rounded-2xl bg-surface-2/60 p-4">
-              <h3 className="text-sm font-semibold">Quyền lợi Premium</h3>
-              <ul className="mt-3 space-y-2.5">
-                {BENEFITS.map((b) => (
-                  <li key={b} className="flex items-start gap-2 text-xs leading-5">
-                    <Icon
-                      name="check"
-                      size={15}
-                      className="mt-0.5 shrink-0 text-good"
-                    />
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
+              <h3 className="text-sm font-semibold">Bản thường và Premium</h3>
+              <table className="mt-2 w-full text-xs">
+                <thead>
+                  <tr className="text-muted">
+                    <th className="pb-2 text-left font-medium">Tiện ích</th>
+                    <th className="pb-2 pl-2 text-right font-medium">Thường</th>
+                    <th className="pb-2 pl-2 text-right font-semibold text-accent">Premium</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARE.map((r) => (
+                    <tr key={r.label} className="border-t border-border align-top">
+                      <td className="py-2 leading-5">{r.label}</td>
+                      <td className="whitespace-nowrap py-2 pl-2 text-right leading-5 text-muted">{r.free}</td>
+                      <td className="whitespace-nowrap py-2 pl-2 text-right font-semibold leading-5">{r.premium}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
 

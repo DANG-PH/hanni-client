@@ -6,6 +6,7 @@ import type { PremiumStatus } from "./types";
 
 const fetcher = <T>(path: string) => apiFetch<T>(path);
 
-export function usePremiumStatus() {
-  return useSWR<PremiumStatus>("/premium/status", fetcher);
+/** `enabled=false` khi chưa đăng nhập (route cần auth). */
+export function usePremiumStatus(enabled = true) {
+  return useSWR<PremiumStatus>(enabled ? "/premium/status" : null, fetcher);
 }

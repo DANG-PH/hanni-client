@@ -54,6 +54,7 @@ export const PRACTICE_SECTIONS: { title: string; items: PracticeLink[] }[] = [
     items: [
       { href: "/phien-am", label: "Bảng phiên âm", description: "Thanh điệu, phụ âm, vần — bấm nghe từng âm", icon: "sound" },
       { href: "/ngu-phap", label: "Ngữ pháp & mẫu câu", description: "235 điểm ngữ pháp giải thích bằng tiếng Việt", icon: "book" },
+      { href: "/tu-dien/quet", label: "Quét ảnh học từ", description: "Chụp thực đơn, biển hiệu, đồ vật — ra từ kèm Hán Việt", icon: "camera" },
       { href: "/tu-da-biet", label: "Từ bạn đã biết sẵn", description: "Từ trùng nghĩa với tiếng Việt nhờ âm Hán Việt", icon: "heart" },
       { href: "/kiem-tra-trinh-do", label: "Kiểm tra trình độ", description: "Vài phút biết nên học HSK cấp mấy", icon: "chart" },
     ],
@@ -66,16 +67,23 @@ export function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-/** Mục menu đang sáng: trang công cụ trong `/luyen-tap` thì sáng mục "Luyện tập". */
+/** Mục menu đang sáng: trang công cụ trong `/luyen-tap` thì sáng mục "Luyện tập" — trừ công cụ nằm
+ * dưới một mục khác (`/tu-dien/quet` thuộc "Từ điển"), để không sáng 2 mục cùng lúc. */
 export function isNavActive(pathname: string, href: string) {
-  if (href === "/luyen-tap") return PRACTICE_LINKS.some((l) => isActive(pathname, l.href)) || isActive(pathname, href);
+  if (href === "/luyen-tap")
+    return (
+      isActive(pathname, href) ||
+      (PRACTICE_LINKS.some((l) => isActive(pathname, l.href)) &&
+        !NAV_MAIN.some((m) => m.href !== href && isActive(pathname, m.href)))
+    );
   return isActive(pathname, href);
 }
 
-/** Tên trang cho thanh trên (app-shell). */
+/** Tên trang cho thanh trên (app-shell) — khớp đường dẫn dài nhất (`/tu-dien/quet` trước `/tu-dien`). */
 export function pageLabel(pathname: string) {
   return (
-    [...NAV_MAIN, ...NAV_MORE, ACCOUNT_LINK, ...PRACTICE_LINKS].find((l) => isActive(pathname, l.href))?.label ??
-    "Góc học tập"
+    [...NAV_MAIN, ...NAV_MORE, ACCOUNT_LINK, ...PRACTICE_LINKS]
+      .filter((l) => isActive(pathname, l.href))
+      .sort((a, b) => b.href.length - a.href.length)[0]?.label ?? "Góc học tập"
   );
 }

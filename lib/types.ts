@@ -1121,3 +1121,110 @@ export interface LessonCompleteResult {
   currentStreak: number;
   nextLesson: { id: string; title: string; orderIndex: number } | null;
 }
+
+// ---- Báo cáo học tập tuần/tháng/quý + Hanni Coach (`/insights`) ----
+
+export type InsightsPeriod = "week" | "month" | "quarter";
+
+export interface PeriodStats {
+  daysStudied: number;
+  minutes: number;
+  /** Mọi lượt chấm thẻ (học mới + ôn). */
+  reviews: number;
+  newWords: number;
+  /** % lượt ôn nhớ được — null khi chưa đủ lượt ôn. */
+  retention: number | null;
+  lessons: number;
+  listening: { total: number; correct: number };
+  speaking: number;
+  mockExams: { count: number; bestPercent: number | null };
+}
+
+export interface InsightsReport {
+  period: InsightsPeriod;
+  offset: 0 | 1;
+  startIso: string;
+  endIso: string;
+  periodEndIso: string;
+  prevStartIso: string;
+  prevEndIso: string;
+  current: PeriodStats;
+  previous: PeriodStats;
+  series: { startIso: string; endIso: string; minutes: number; reviews: number }[];
+  weakParts: {
+    level: number;
+    section: MockSectionKind;
+    part: number;
+    type: MockPartType;
+    correct: number;
+    total: number;
+    slug: string;
+  }[];
+  hardWords: {
+    id: string;
+    simplified: string;
+    pinyin: string;
+    hanViet: string | null;
+    meaningVi: string | null;
+    forgot: number;
+  }[];
+  familiar: { count: number; examples: { simplified: string; hanViet: string }[] };
+  streak: { current: number; longest: number };
+  dueNow: number;
+  leechCount: number;
+  courseLevel: number | null;
+  ai: { premium: boolean; enabled: boolean };
+}
+
+export interface CoachSummary {
+  overview: string;
+  wins: string[];
+  watch: string[];
+  mnemonics: { zh: string; tip: string }[];
+  plan: string[];
+}
+
+export interface CoachResult {
+  summary: CoachSummary | null;
+  generatedAt: string | null;
+}
+
+// ---- Quét ảnh học từ (`/scan`) ----
+
+export interface ScanWord {
+  id: string;
+  simplified: string;
+  traditional: string | null;
+  pinyin: string;
+  hanViet: string | null;
+  meaningVi: string | null;
+  hskLevel: number;
+  audioUrl: string | null;
+  /** Âm Hán Việt trùng nghĩa tiếng Việt — người Việt gần như biết sẵn. */
+  familiar: boolean;
+  /** Đã có trong danh sách ôn tập. */
+  saved: boolean;
+}
+
+export interface ScanLine {
+  zh: string;
+  vi: string;
+  tokens: { text: string; wordId: string | null; pinyin: string | null }[];
+}
+
+export interface ScanUsage {
+  used: number;
+  limit: number;
+  premium: boolean;
+  enabled?: boolean;
+}
+
+export interface ScanResult {
+  kind: string;
+  /** Các dòng chữ Hán đọc được (kèm câu dịch). */
+  lines: ScanLine[];
+  /** Món ăn, đồ vật — chỉ khi ảnh chủ yếu chụp đồ vật; `vi` là tên tiếng Việt. */
+  objects: ScanLine[];
+  words: ScanWord[];
+  usage: ScanUsage;
+}

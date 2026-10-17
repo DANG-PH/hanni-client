@@ -361,7 +361,9 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
     `hanni:sidebar-collapsed` qua `useSyncExternalStore` — Wikimedia đo: ai thu gọn thì giữ luôn).
   - **Trang `/luyen-tap`** (`app/(app)/luyen-tap`) gom nghe/phát âm/nói AI/viết · video/trò chơi ·
     phiên âm/ngữ pháp/từ đã biết/kiểm tra trình độ (`PRACTICE_SECTIONS`), mỗi ô 1 dòng mô tả, kèm
-    ô tra từ gửi sang `/tu-dien?q=`. Đang ở trang công cụ nào trong đó thì mục "Luyện tập" sáng.
+    ô tra từ gửi sang `/tu-dien?q=`. Đang ở trang công cụ nào trong đó thì mục "Luyện tập" sáng —
+    TRỪ công cụ nằm dưới 1 mục khác (`/tu-dien/quet` thuộc "Từ điển": `isNavActive` không sáng 2 mục
+    cùng lúc, `pageLabel` lấy đường dẫn khớp dài nhất).
   - **Điện thoại/máy tính bảng (< lg)**: thanh tab dưới đáy `components/bottom-nav.tsx` (Trang chủ,
     Ôn tập, Luyện thi, Luyện tập, **Thêm** = mở ngăn kéo menu đầy đủ; bỏ nút ☰ trên thanh trên).
     Chiều cao thanh là biến CSS `--bottom-nav-h` (0 từ lg) — nội dung app chừa đáy theo biến này,
@@ -465,6 +467,34 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   nhóm "Từ vựng & ngữ pháp", menu khách "Phát âm" (thay "Luyện tập" → `/listening` cần đăng nhập),
   trợ lý AI (`pinyin`). Nút CTA cuối trang: khách → `/bat-dau?level=1`, đã đăng nhập → `/learn`
   (KHÔNG `/bat-dau?level=1`: trang đó lưu luôn cấp 1, người đang học HSK 3 sẽ bị đổi cấp).
+- **Quét ảnh học từ `/tu-dien/quet`** (`components/scan/scan-tool.tsx`, `lib/scan.ts`, 2026-10-17) —
+  user muốn "AI quét chụp ảnh, OCR" như app đếm calo chụp bữa ăn. Trang CÔNG KHAI (SEO "dịch tiếng
+  Trung qua ảnh"), công cụ cần đăng nhập (thường 3 ảnh/ngày, Premium 100 — khách thấy lời mời tạo
+  tài khoản). Chụp (`capture="environment"`), chọn, kéo thả hoặc dán (Ctrl+V) ảnh → thu về ≤1600px
+  JPEG ở trình duyệt (`prepareImage`, ảnh điện thoại 4–12MB còn vài trăm KB) → `POST /scan`. Kết quả
+  có 2 phần: "Trong ảnh có" (món ăn, đồ vật — tên tiếng Việt + chữ Hán) và "Chữ trong ảnh" (từng
+  dòng + câu dịch); mỗi từ khớp từ điển bấm được → thẻ từ ngay dưới (Hán Việt, nhãn "Trùng nghĩa
+  tiếng Việt", nghĩa TỪ ĐIỂN Hanni chứ không phải câu dịch máy, audio, lưu ôn tập, link từ điển);
+  danh sách "Từ vựng trong ảnh" + nút "Lưu N từ vào ôn tập" (`addWordToSrs` từng từ); "Hỏi trợ lý
+  Hanni về ảnh này" gửi nội dung quét sang trợ lý. Pinyin của đoạn ngoài từ điển chỉ đặt lên chữ
+  Hán (`splitPlain`). Lối vào: nút camera cạnh ô tìm ở `/tu-dien`, ô "Quét ảnh học từ" ở
+  `/luyen-tap`, trợ lý AI (`scan`), bảng Premium. Ảnh không lưu ở đâu cả.
+- **Báo cáo tuần/tháng/quý + Hanni Coach ở `/progress`** (`components/insights/`, `lib/insights.ts`,
+  2026-10-17) — `PeriodReport` chèn sau 4 ô tổng: chọn Tuần/Tháng/Quý + kỳ này/kỳ trước (1 hàng
+  lọc phía trên, mọi thứ bên dưới theo cùng kỳ), 4 ô KPI có ▲/▼ so với CÙNG SỐ NGÀY đầu kỳ trước,
+  biểu đồ "Phút học mỗi ngày/tuần" (`activity-bars.tsx`, làm theo skill dataviz: 1 chuỗi nên không
+  chú thích màu; cột ≤24px bo 4px đầu; lưới mảnh; chỉ ghi số cột cao nhất; rê/chạm hoặc focus +
+  phím ←/→ hiện chú giải; bảng số liệu trong `<details>`; màu `--chart-bar` đã chạy bộ kiểm màu —
+  nền tối dùng `#ec5d50` vì `--primary` tối quá sáng, trượt dải độ sáng). Thẻ Hanni Coach: Premium
+  thấy nhận xét AI (tổng quan, làm tốt, cần chú ý, kế hoạch kỳ tới; mẹo nhớ ghép vào thẻ "từ hay
+  quên"), bản thường thấy mô tả + ví dụ làm mờ + nút mở Premium; "Việc nên làm ngay" (phần thi yếu
+  → luyện từng dạng bài, từ đến hạn, từ khó, học tiếp) tính thẳng từ số liệu nên AI ai cũng có.
+  AI viết mất ~10–15 giây (đo thật; tắt "suy nghĩ" của model thì 3 giây nhưng câu bị cụt) nên có
+  trạng thái chờ; server cache theo số liệu.
+- **Popup Premium = bảng "Bản thường và Premium"** (`components/premium-modal.tsx`, 2026-10-17 — user
+  nhận xét "Premium không có đặc quyền gì so với thường"): chỉ ghi quyền lợi có code thật — Hanni
+  Coach, quét ảnh 3 → 100/ngày, trợ lý AI và luyện nói 15/ngày → không giới hạn, xu x2, khung
+  Phượng Hoàng; dòng cuối nhắc 9 cấp HSK + đề thi thử vẫn miễn phí.
 - **Được công cụ tìm kiếm biết tới (2026-10-15)** — đo 9 ngày sau khi ra đề thi thử: 0 người dùng
   mới, công cụ tìm kiếm chưa thấy trang nào của site. `scripts/indexnow.mjs` báo URL qua IndexNow
   (Bing — nguồn của ChatGPT Search/DuckDuckGo —, Yandex…; khoá = `public/<KEY>.txt`) — chạy lại

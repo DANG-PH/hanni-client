@@ -22,6 +22,7 @@ import {
   Stat,
 } from "@/components/ui";
 import { Icon } from "@/components/icon";
+import { PeriodReport } from "@/components/insights/period-report";
 import { useRequireAuth } from "@/lib/auth";
 import {
   suspendWord,
@@ -43,6 +44,12 @@ const PROGRESS_TOUR_STEPS: TourStep[] = [
     title: "Bốn con số nói bốn chuyện khác nhau",
     description:
       '"Đang học" là vốn từ bạn đã chạm tới; "Đến hạn ôn" là việc cần làm hôm nay; "Sắp quên" là những từ sắp rơi; "Đã thuộc" chỉ tính từ đã ôn đúng khoảng 21 ngày nên tăng chậm nhất.',
+  },
+  {
+    icon: "spark",
+    title: "Báo cáo tuần, tháng, quý",
+    description:
+      "Đổi giữa tuần/tháng/quý để so với cùng kỳ trước. Hanni Coach (Premium) đọc số liệu đó và viết nhận xét, mẹo nhớ từ hay quên theo âm Hán Việt và kế hoạch kỳ tới.",
   },
   {
     icon: "flame",
@@ -217,6 +224,7 @@ export default function ProgressPage() {
                 hint="Ưu tiên củng cố thêm"
               />
             </div>
+            <PeriodReport />
             <section>
               <SectionHeading
                 icon="clock"

@@ -82,8 +82,8 @@ export function PremiumSection() {
               <div>
                 <h2 className="font-semibold">Nâng cấp Premium</h2>
                 <p className="mt-1 text-sm text-muted">
-                  Trợ lý AI không giới hạn + khung avatar độc quyền — không
-                  khoá bài học nào.
+                  Hanni Coach nhận xét bằng AI, quét ảnh 100 lượt/ngày, trợ lý
+                  AI không giới hạn — không khoá bài học nào.
                 </p>
               </div>
             </div>
