@@ -56,15 +56,19 @@ export default function RoleplayPage() {
   return (
     <div className="page-wrap space-y-6">
       <FeatureTour tourKey="roleplay" steps={ROLEPLAY_TOUR_STEPS} />
-      <PageHeading
-        icon="message"
-        tone="accent"
-        eyebrow="Luyện phản xạ"
-        title="Luyện nói với AI"
-        description="Chọn 1 tình huống đời thường, AI đóng vai để bạn luyện phản xạ tiếng Trung — không giải thích ngữ pháp giữa chừng, đúng như hội thoại thật."
-      >
-        <TourButton tourKey="roleplay" />
-      </PageHeading>
+      {/* Đang trong buổi luyện trên điện thoại: ẩn khối tiêu đề để khung chat và ô soạn
+       * vừa màn hình (trước đó ô soạn nằm dưới mép, bị thanh tab che). */}
+      <div className={activeSessionId ? "max-md:hidden" : undefined}>
+        <PageHeading
+          icon="message"
+          tone="accent"
+          eyebrow="Luyện phản xạ"
+          title="Luyện nói với AI"
+          description="Chọn 1 tình huống đời thường, AI đóng vai để bạn luyện phản xạ tiếng Trung — không giải thích ngữ pháp giữa chừng, đúng như hội thoại thật."
+        >
+          <TourButton tourKey="roleplay" />
+        </PageHeading>
+      </div>
       {activeSessionId ? (
         <ChatView
           sessionId={activeSessionId}
@@ -294,7 +298,7 @@ function ChatView({
   }
 
   return (
-    <Card className="flex h-[70vh] flex-col p-0">
+    <Card className="flex h-[70vh] flex-col p-0 max-md:h-[calc(100dvh_-_var(--bottom-nav-h,0px)_-_6.5rem)]">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <button
           type="button"
