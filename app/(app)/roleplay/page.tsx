@@ -347,8 +347,8 @@ function ChatView({
         </div>
       ) : (
         <>
-          <div className="relative min-h-0 flex-1">
-          <div ref={scrollRef} className="h-full space-y-4 overflow-y-auto p-4">
+          <div className="relative flex min-h-0 flex-1 flex-col">
+          <div ref={scrollRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
             {!messages ? (
               <Spinner />
             ) : (

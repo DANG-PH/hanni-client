@@ -378,10 +378,10 @@ export function AssistantWidget() {
             </div>
           ) : (
             <>
-              <div className="relative min-h-0 flex-1">
+              <div className="relative flex min-h-0 flex-1 flex-col">
               <div
                 ref={listRef}
-                className="h-full space-y-3 overflow-y-auto px-4 py-4"
+                className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4"
               >
                 {isLoading && messages.length === 0 ? (
                   <p className="text-center text-xs text-muted">Đang tải…</p>

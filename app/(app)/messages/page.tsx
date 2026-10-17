@@ -321,8 +321,8 @@ function ChatThread({ conversationId }: { conversationId: string }) {
           </div>
         </div>
       )}
-      <div className={`relative ${styles.messageList}`}>
-      <div ref={listRef} className="h-full space-y-2.5 overflow-y-auto p-4">
+      <div className={`relative flex flex-col ${styles.messageList}`}>
+      <div ref={listRef} className="min-h-0 flex-1 space-y-2.5 overflow-y-auto p-4">
         {!data ? (
           <Spinner />
         ) : (
