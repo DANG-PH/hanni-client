@@ -204,7 +204,8 @@ function CoachCard({ report, name, next }: { report: InsightsReport; name: strin
   const premium = usePremiumStatus();
   const [upgrade, setUpgrade] = useState(false);
   const summary = coach.data?.summary ?? null;
-  const tips = summary?.mnemonics ?? [];
+  const tipFor = (zh: string) => summary?.mnemonics.find((t) => t.zh === zh)?.tip;
+  const hasTips = report.hardWords.some((w) => tipFor(w.simplified));
 
   return (
     <Card>
@@ -301,11 +302,11 @@ function CoachCard({ report, name, next }: { report: InsightsReport; name: strin
           {report.hardWords.length > 0 && (
             <div>
               <h4 className="mb-2 text-sm font-semibold">
-                {tips.length ? "Mẹo nhớ từ bạn hay quên" : `Từ bạn hay quên ${name.toLowerCase()}`}
+                {hasTips ? "Mẹo nhớ từ bạn hay quên" : `Từ bạn hay quên ${name.toLowerCase()}`}
               </h4>
               <div className="space-y-2">
                 {report.hardWords.map((w) => {
-                  const tip = tips.find((t) => t.zh === w.simplified)?.tip;
+                  const tip = tipFor(w.simplified);
                   return (
                     <Link
                       key={w.id}
