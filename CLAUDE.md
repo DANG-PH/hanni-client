@@ -416,6 +416,18 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   âm) — dữ liệu gộp 7–9 vào cấp 7 nên chip HSK 8, 9 luôn trống; `/tu-dien?level=8|9` → 308 sang `level=7`; điện
   thoại 1 hàng cuộn ngang. Dữ liệu (phồn thể, âm Hán Việt, nghĩa HSK 4, từ loại): xem `hanni-server/CLAUDE.md`.
 
+### Trang chủ khách làm lại (audit S13/G4, 2026-10-19 — user: "tham khảo các web khác làm như thế nào")
+Xem thật trang chủ Hanzii, Hanbeego, Duolingo, SuperChinese, Migii (khổ 1440 + 390, như khách) trước khi làm:
+Hanzii = công cụ trước tiên (ô tra cứu to đầu trang + "Từ khóa hot", trang chỉ cao ~1.600px); Hanbeego = nội dung
+thật + "Kho học liệu" bằng con số + 1 nút "Bắt đầu học ngay"; Duolingo = 1 nút chính; SuperChinese = cho thử phương
+pháp ngay + khu trợ giảng AI riêng. Áp vào `app/(site)/page.tsx`: hero giữ thông điệp Hán Việt + `DictionarySearch`
+(micro, quét ảnh) + từ khoá gợi ý bấm được; dải "Kho học liệu" (số từ + số từ có Hán Việt lấy từ API); 1 lưới 6 lối
+vào khách dùng được ngay (học bài 1, thi thử, từ điển, quét ảnh, phiên âm, kiểm tra trình độ) thay 2 khối trùng ý dẫn
+vào trang bắt đăng nhập; thử chấm thanh điệu 你好 ngay trên trang (`ToneCheck`, khách dùng được); khối luyện thi HSK;
+khối trợ giảng AI trỏ đúng chỗ từng tính năng; câu hỏi thường gặp viết lại đúng hiện trạng. Bỏ khối "Thói quen nhỏ"
+(chỉ lặp nút học) + CSS `.discovery-*`/`.habit-*`. Điện thoại: ẩn hình minh hoạ hero (cao 370px) để màn đầu thấy
+ngay nút học + ô tra (như Hanbeego/Hanzii). Footer pháp lý (Hanzii/Hanbeego đều có, kèm dấu Bộ Công Thương) chờ Q6.
+
 ### Gỡ 2026-10-19 (audit X2/X3, Q2/Q4 — user duyệt "triển khai nhé")
 - **Đấu 1v1** khỏi `/minigame` (tab, nhãn "Đấu 1v1" ở thẻ trò chơi, luật chơi, bước hướng dẫn, bảng ELO + bậc rank +
   đếm ngược mùa), tab **ELO** ở bảng xếp hạng (`LEADERBOARD_METRICS`), mục menu đổi tên "Trò chơi luyện từ".

@@ -379,34 +379,6 @@
     ),
     linear-gradient(110deg, var(--surface) 20%, var(--hero-from));
 }
-.discovery-card {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 19px;
-}
-.discovery-card::after {
-  content: "";
-  pointer-events: none;
-  position: absolute;
-  width: 180px;
-  height: 180px;
-  border: 1px solid currentColor;
-  opacity: 0.08;
-  border-radius: 50%;
-  top: 22px;
-  right: -65px;
-  box-shadow: 0 0 0 25px currentColor;
-}
-.discovery-red {
-  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
-  color: var(--primary);
-}
-.discovery-gold {
-  background: color-mix(in srgb, var(--accent) 11%, var(--surface));
-  color: var(--accent);
-}
 .skill-character {
   transition: transform 350ms var(--motion-ease);
 }
@@ -421,21 +393,6 @@
 }
 .faq-item[open] p {
   animation: page-in 240ms ease;
-}
-.habit-illustration {
-  position: relative;
-  width: 300px;
-  height: 220px;
-  align-items: center;
-  justify-content: center;
-}
-.habit-orbit {
-  position: absolute;
-  width: 180px;
-  height: 180px;
-  border: 1px dashed color-mix(in srgb, var(--primary) 25%, transparent);
-  border-radius: 50%;
-  transform: rotate(-25deg);
 }
 
 /* Cảnh sách được dựng trực tiếp bằng CSS, không tải tài nguyên ngoài. */

@@ -79,13 +79,15 @@ function verdict(score: number | null): { label: string; cls: string } {
   return { label: "Cần luyện thêm", cls: "text-danger" };
 }
 
-function syllableNote(tone: Tone, score: number | null, guess: Tone | null): string {
+function syllableNote(tone: Tone, written: Tone, score: number | null, guess: Tone | null): string {
   if (tone === 5) return "Thanh nhẹ — đọc ngắn và nhẹ.";
-  if (score === null) return "Chưa nghe rõ âm tiết này.";
+  // 你好: viết nǐ (thanh 3) nhưng đọc thanh 2 — nói rõ, kẻo người học tưởng chấm nhầm.
+  const sandhi = written !== tone ? `Biến điệu: viết thanh ${written}, đọc thành thanh ${tone}. ` : "";
+  if (score === null) return `${sandhi}Chưa nghe rõ âm tiết này.`;
   const t = TONES[tone - 1];
-  if (score >= 75) return `Đúng thanh ${tone}.`;
-  if (guess && guess !== tone) return `Nghe giống thanh ${guess}. ${t.name}: ${t.desc} ${t.vi}`;
-  return `Gần đúng — ${t.desc.charAt(0).toLowerCase()}${t.desc.slice(1)}`;
+  if (score >= 75) return `${sandhi}Đúng thanh ${tone}.`;
+  if (guess && guess !== tone) return `${sandhi}Nghe giống thanh ${guess}. ${t.name}: ${t.desc} ${t.vi}`;
+  return `${sandhi}Gần đúng — ${t.desc.charAt(0).toLowerCase()}${t.desc.slice(1)}`;
 }
 
 /** Biểu đồ đường cao độ: giọng chuẩn (nét đứt, xám) và giọng bạn (đỏ), mỗi âm tiết 1 ô. */
@@ -167,7 +169,9 @@ export function ToneResultView({
   recordingUrl: string | null;
 }) {
   const parts = pinyin.trim().split(/\s+/);
-  const labels = parts.length === result.user.length ? parts : pinyinNumeric.trim().split(/\s+/);
+  const numeric = pinyinNumeric.trim().split(/\s+/);
+  const labels = parts.length === result.user.length ? parts : numeric;
+  const written = numeric.map((s) => Number(/[1-5]$/.exec(s)?.[0] ?? 5) as Tone);
   const v = verdict(result.overall);
   return (
     <div className="rounded-2xl border border-border bg-surface p-4 text-left">
@@ -183,7 +187,7 @@ export function ToneResultView({
         {result.tones.map((t, i) => (
           <li key={i} className="flex items-start gap-2 text-sm leading-6">
             <span className={`w-14 shrink-0 font-semibold ${TONE_CLASS[String(t)] ?? ""}`}>{labels[i]}</span>
-            <span className="min-w-0 flex-1 text-muted">{syllableNote(t, result.scores[i], result.guesses[i])}</span>
+            <span className="min-w-0 flex-1 text-muted">{syllableNote(t, written[i] ?? t, result.scores[i], result.guesses[i])}</span>
             {result.scores[i] !== null && <span className="shrink-0 font-semibold tabular-nums">{result.scores[i]}</span>}
           </li>
         ))}
