@@ -21,6 +21,7 @@ import {
   PracticeTips,
 } from "@/components/practice/practice-library";
 import { useWordAudio } from "@/components/practice/use-word-audio";
+import { useAuth } from "@/lib/auth";
 import { recordPracticeAttempt, usePracticeStats } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
 
@@ -95,6 +96,7 @@ export default function PronunciationPage() {
 function PronunciationSession({ words }: { words: Word[] }) {
   const [index, setIndex] = useState(0);
   const stats = usePracticeStats("PRONUNCIATION");
+  const { user } = useAuth();
   const speechSupported = useSpeechRecognitionSupport();
   const word = words[index];
 
@@ -116,13 +118,15 @@ function PronunciationSession({ words }: { words: Word[] }) {
             key={word.id}
             word={word}
             speechSupported={speechSupported}
-            onRecorded={(isCorrect) =>
-              void recordPracticeAttempt(
-                word.id,
-                "PRONUNCIATION",
-                isCorrect,
-              ).then(() => stats.mutate())
-            }
+            onRecorded={(isCorrect) => {
+              // Khách luyện thử — không có tài khoản để lưu lượt luyện.
+              if (user)
+                void recordPracticeAttempt(
+                  word.id,
+                  "PRONUNCIATION",
+                  isCorrect,
+                ).then(() => stats.mutate());
+            }}
           />
         </Card>
         <div className="flex items-center justify-between gap-3">

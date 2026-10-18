@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Icon } from "@/components/icon";
 import { Spinner } from "@/components/ui";
-import { useRequireAuth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { PRACTICE_SECTIONS } from "@/lib/nav";
 
 /**
@@ -12,8 +12,9 @@ import { PRACTICE_SECTIONS } from "@/lib/nav";
  * Hanzii: mỗi công cụ một ô có tên + một dòng nói rõ làm gì, bấm là vào.
  */
 export default function PracticeHubPage() {
-  const { user, loading } = useRequireAuth();
-  if (loading || !user) return <Spinner />;
+  // Khách dùng được (2026-10-18) — chỉ lưu tiến độ mới cần tài khoản.
+  const { loading } = useAuth();
+  if (loading) return <Spinner />;
 
   return (
     <div className="page-wrap space-y-7">

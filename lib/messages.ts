@@ -17,7 +17,8 @@ export function useConversations() {
 }
 
 export function useUnreadMessageCount() {
-  return useSWR<{ count: number }>(UNREAD_KEY, fetcher, {
+  const { user } = useAuth();
+  return useSWR<{ count: number }>(user ? UNREAD_KEY : null, fetcher, {
     refreshInterval: 30_000,
   });
 }

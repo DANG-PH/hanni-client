@@ -17,6 +17,7 @@ import {
   PracticeTips,
 } from "@/components/practice/practice-library";
 import { useWordAudio } from "@/components/practice/use-word-audio";
+import { useAuth } from "@/lib/auth";
 import { recordPracticeAttempt, usePracticeStats } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
 
@@ -54,6 +55,7 @@ function ListeningSession({ words }: { words: Word[] }) {
     Record<string, { value: string; correct: boolean }>
   >({});
   const stats = usePracticeStats("LISTENING");
+  const { user } = useAuth();
   const completed = Object.keys(answers).length;
   const correct = Object.values(answers).filter(
     (answer) => answer.correct,
@@ -84,9 +86,11 @@ function ListeningSession({ words }: { words: Word[] }) {
                 ...current,
                 [word.id]: { value, correct: isCorrect },
               }));
-              void recordPracticeAttempt(word.id, "LISTENING", isCorrect).then(
-                () => stats.mutate(),
-              );
+              // Khách luyện thử — không có tài khoản để lưu lượt luyện.
+              if (user)
+                void recordPracticeAttempt(word.id, "LISTENING", isCorrect).then(
+                  () => stats.mutate(),
+                );
             }}
           />
         </Card>

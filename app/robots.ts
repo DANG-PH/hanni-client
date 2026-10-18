@@ -4,8 +4,10 @@ const siteUrl =
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : "http://localhost:3000");
-/** Chỉ cho index các trang công khai — mọi thứ dưới (app) cần đăng nhập,
- * không có giá trị SEO và không nên bị crawl.
+/** Chỉ cho index các trang công khai render sẵn HTML ở server. Trang dưới (app)
+ * — kể cả trang khách đã vào được từ 2026-10-18 (/learn, /watch, /minigame…) —
+ * vẽ ở trình duyệt, HTML server trả về chỉ có vòng tải nên không có gì cho
+ * Google đọc, không mời crawl.
  *
  * `/tu-dien` là NGOẠI LỆ quan trọng: đây là bản công khai (không cần đăng
  * nhập) của kho từ vựng, cố tình mở cho Google index. Trước đây toàn bộ nội

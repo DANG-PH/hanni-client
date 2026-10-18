@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import useSWR, { mutate } from "swr";
 import { api, apiFetch, API_BASE } from "./api";
+import { useAuth } from "./auth";
 import type {
   Achievement,
   AssistantAction,
@@ -61,8 +62,12 @@ export function useProgress() {
   return useSWR<ProgressOverview>("/progress/overview", fetcher);
 }
 
+/** Các hook dưới đây dùng ở trang/khung KHÁCH cũng xem được (2026-10-18) —
+ * khách không gọi API cần đăng nhập (mỗi lần gọi là 1 lượt 401 + làm mới
+ * token + SWR tự thử lại). */
 export function useStreak() {
-  return useSWR<StreakInfo>("/streak", fetcher);
+  const { user } = useAuth();
+  return useSWR<StreakInfo>(user ? "/streak" : null, fetcher);
 }
 
 /** "Từ khó nhớ" (leech) — từ đã sai đủ nhiều lần trong SRS (xem
@@ -89,7 +94,8 @@ export function useStreakHistory(days = 30) {
 }
 
 export function useStudyStats() {
-  return useSWR<StudyStats>("/study/stats", fetcher, {
+  const { user } = useAuth();
+  return useSWR<StudyStats>(user ? "/study/stats" : null, fetcher, {
     refreshInterval: 60_000,
   });
 }
@@ -110,10 +116,11 @@ export function useLearnPath(level?: number) {
   );
 }
 
-/** Bài đang học dở. `enabled=false` khi chưa đăng nhập (tránh gọi API cần auth). */
+/** Bài đang học dở — khách không có (trả `undefined`). */
 export function useCurrentLesson(enabled = true) {
+  const { user } = useAuth();
   return useSWR<CurrentLesson | null>(
-    enabled ? "/learn/current" : null,
+    enabled && user ? "/learn/current" : null,
     fetcher,
   );
 }
@@ -265,7 +272,11 @@ export function useTodayQuests() {
 }
 
 export function usePracticeStats(skill: PracticeSkill) {
-  return useSWR<PracticeStats>(`/practice/stats?skill=${skill}`, fetcher);
+  const { user } = useAuth();
+  return useSWR<PracticeStats>(
+    user ? `/practice/stats?skill=${skill}` : null,
+    fetcher,
+  );
 }
 
 /** Ghi 1 lượt luyện nghe/phát âm lên server — không chặn UI nếu lỗi mạng. */

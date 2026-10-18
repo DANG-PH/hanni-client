@@ -724,7 +724,8 @@ export interface MinigameResult {
   score: number;
   totalAsked: number;
   coinsEarned: number;
-  balance: number;
+  /** null = khách chơi thử (không có ví xu). */
+  balance: number | null;
 }
 
 export interface MinigameLeaderboardRow {

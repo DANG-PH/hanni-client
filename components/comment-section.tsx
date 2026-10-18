@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Avatar } from "./avatar";
 import { Icon } from "./icon";
@@ -165,12 +166,19 @@ export function CommentSection({
         </h2>
       </div>
 
-      {user && (
+      {user ? (
         <CommentForm
           placeholder="Viết bình luận của bạn…"
           submitLabel="Gửi"
           onSubmit={submitTop}
         />
+      ) : (
+        <p className="text-sm text-muted">
+          <Link href={`/login?next=/watch/${videoId}`} className="font-semibold text-primary hover:underline">
+            Đăng nhập
+          </Link>{" "}
+          để bình luận, hỏi đáp về video.
+        </p>
       )}
 
       {error && <ErrorNote>Không tải được bình luận.</ErrorNote>}

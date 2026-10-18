@@ -383,6 +383,24 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   chiếm trọn màn đầu (giờ ẩn, thay bằng 1 dòng mục đích trong thẻ); `.shell` đổi `overflow: clip` (vòng
   trang trí rộng 598px trong màn 390 — `hidden` vẫn bị cuộn bằng code làm cả trang lệch ngang); lưới 2 cột
   ở màn ≤350px. Thẻ đứng yên mép trên khi chuyển câu (`align-items: start`).
+- **Khách xem + dùng thử app không cần đăng nhập (S1, 2026-10-18 — user: "các web khác có cần đăng nhập đâu
+  vẫn xem được")**: `/learn`, `/learn/[id]`, `/luyen-tap`, `/writing`, `/listening`, `/pronunciation`,
+  `/watch`, `/watch/[id]`, `/minigame` (4 trò 1 mình), `/leaderboard` đổi `useRequireAuth()` → `useAuth()`.
+  Vẫn cần tài khoản: `/study`, `/progress`, `/achievements`, `/messages`, `/roleplay`, `/account`,
+  `/settings`, `/u/[id]` (vào là chuyển `/login?next=`). Khung app cho khách: thanh trên có "Đăng nhập" +
+  "Tạo tài khoản" (thay chuông/avatar), chân sidebar có 2 mục đó (thay Tài khoản/Đăng xuất). Hook gọi API
+  cần đăng nhập ở trang/khung khách vào được tự bỏ qua khi chưa đăng nhập (`useStreak`, `useStudyStats`,
+  `useCurrentLesson`, `usePracticeStats`, `useUnreadMessageCount`, `useRankTiers`) — mỗi lần gọi là 1 lượt
+  401 + làm mới token + SWR tự thử lại. Mời tạo tài khoản ĐÚNG LÚC cần lưu: `/learn` cột phải là thẻ "lưu
+  tiến độ" (đếm bài đã học trong phiên), bài khách học xong (`pendingLessonIds()`, sessionStorage) tính là
+  xong nên "Học tiếp" đúng bài kế; thẻ nhiệm vụ/giải đấu thay bằng "Thử ngay, chưa cần tài khoản"; luyện
+  nghe/phát âm có dải "kết quả chưa được lưu" và KHÔNG gửi `practice/attempts`; video: thích/bình luận dẫn
+  sang đăng ký/đăng nhập, "Lưu để ôn tập" giữ tạm (`addPendingWord`) rồi tự vào hàng đợi khi đăng ký;
+  minigame: hết ván hiện lời mời nhận xu (`balance: null`), không có tab Đấu 1v1; bảng xếp hạng: ô "Vị trí
+  của bạn" thành lời mời, ẩn theo dõi/nhắn tin + "So với bạn bè". Tab mặc định bảng xếp hạng đổi sang
+  "Chuỗi hiện tại" ("Từ đã thuộc" cần ~21 ngày nên đang trống với mọi người). Server: xem mục "Khách xem +
+  dùng thử" ở `hanni-server/CLAUDE.md`. `robots.ts` vẫn KHÔNG mời index các trang này (vẽ ở trình duyệt,
+  HTML server chỉ có vòng tải).
 
 ### Lộ trình một nút bấm (tái cấu trúc 2026-10-05 — đọc mục này TRƯỚC)
 User báo: flashcard "tự nhảy vào HSK4 khi muốn học HSK1, không theo chủ đề", web "nhiều chức

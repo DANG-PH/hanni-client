@@ -14,7 +14,7 @@ import {
   PageHeading,
   SectionHeading,
 } from "@/components/ui";
-import { useRequireAuth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { useVideos } from "@/lib/hooks";
 import styles from "@/components/video-library.module.css";
 import { NextStep } from "@/components/next-step";
@@ -28,7 +28,8 @@ const KINDS = [
 ] as const;
 
 export default function WatchPage() {
-  const { user, loading } = useRequireAuth();
+  // Khách xem được kho video (2026-10-18); tiến độ xem dở chỉ có khi đã đăng nhập.
+  const { loading } = useAuth();
   const [kind, setKind] = useState("");
   const [level, setLevel] = useState<number | undefined>();
   const [query, setQuery] = useState("");
@@ -75,7 +76,7 @@ export default function WatchPage() {
         </span>
       </PageHeading>
 
-      {user && xemTiep && !error && (
+      {xemTiep && !error && (
         <Link href={`/watch/${xemTiep.id}`} className={styles.continueWatching}>
           <span className={styles.continueIcon}>
             <Icon name="play" size={20} />
@@ -167,7 +168,7 @@ export default function WatchPage() {
           aria-busy={isLoading || loading}
           data-updating={dangCapNhat || undefined}
         >
-          {user && error && (
+          {error && (
             <div className={styles.loadError}>
               <ErrorNote>
                 {data
@@ -183,7 +184,7 @@ export default function WatchPage() {
               </ErrorNote>
             </div>
           )}
-          {loading || !user || (isLoading && !data) ? (
+          {loading || (isLoading && !data) ? (
             <div
               className={styles.grid}
               role="status"

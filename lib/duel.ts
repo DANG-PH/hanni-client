@@ -34,7 +34,9 @@ export function useDuelSeason() {
 /** Bảng ngưỡng rank — tĩnh, gần như không đổi giữa các lần deploy, nên
  * không cần refresh tự động (mặc định SWR vẫn cache lại bình thường). */
 export function useRankTiers() {
-  return useSWR<RankTiersInfo>("/duel/rank-tiers", fetcher);
+  // Bảng xếp hạng mở cho khách (2026-10-18) mà API đấu 1v1 cần đăng nhập.
+  const { user } = useAuth();
+  return useSWR<RankTiersInfo>(user ? "/duel/rank-tiers" : null, fetcher);
 }
 
 /** Poll nhẹ trong lúc đang xếp hàng chờ ghép trận, cho người chơi thấy có

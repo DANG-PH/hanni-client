@@ -18,7 +18,8 @@ import { VideoLikeButton } from "@/components/video-like-button";
 import { YoutubePlayer } from "@/components/youtube-player";
 import styles from "@/components/video-learning.module.css";
 import { api } from "@/lib/api";
-import { useRequireAuth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
+import { addPendingWord } from "@/lib/pending-words";
 import { addWordToSrs, useVideo } from "@/lib/hooks";
 import { hskBand } from "@/lib/hsk";
 import type { LineToken, VideoLine } from "@/lib/types";
@@ -76,7 +77,8 @@ const WATCH_TOUR_STEPS: TourStep[] = [
 ];
 
 export default function WatchDetailPage() {
-  const { user, loading } = useRequireAuth();
+  // Khách xem được video + bản chép (2026-10-18); thích, bình luận, tiến độ cần tài khoản.
+  const { user, loading } = useAuth();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, error, mutate } = useVideo(id);
 
@@ -165,6 +167,7 @@ export default function WatchDetailPage() {
   const saveProgress = useCallback(
     (index: number, read: number, force = false) => {
       const now = Date.now();
+      if (!user) return;
       if (!force && now - savedAt.current < 2500) return;
       savedAt.current = now;
       void api
@@ -174,7 +177,7 @@ export default function WatchDetailPage() {
         })
         .catch(() => undefined);
     },
-    [id],
+    [id, user],
   );
 
   const goToLine = useCallback(
@@ -203,7 +206,7 @@ export default function WatchDetailPage() {
     [times, goToLine],
   );
 
-  if (loading || !user || isLoading) return <Spinner />;
+  if (loading || isLoading) return <Spinner />;
   if (error || !data)
     return (
       <div className="page-wrap max-w-xl space-y-4">
@@ -233,6 +236,12 @@ export default function WatchDetailPage() {
   }
 
   async function saveWord(wordId: string) {
+    if (!user) {
+      // Khách: giữ tạm, đăng ký xong tự vào hàng đợi ôn (auth-form-card nạp lên).
+      addPendingWord(wordId);
+      setSavedWordIds((prev) => new Set(prev).add(wordId));
+      return;
+    }
     setSavingWord(true);
     try {
       await addWordToSrs(wordId);
@@ -276,17 +285,28 @@ export default function WatchDetailPage() {
              * bấm từ trong bản chép) — cho mở lại hướng dẫn thay vì chỉ hiện
              * đúng một lần rồi thôi. */}
             <TourButton tourKey="watch-detail" />
-            <VideoLikeButton
-              videoId={id}
-              liked={data.likedByMe}
-              count={data.likeCount}
-              onChange={(likedByMe, likeCount) =>
-                void mutate(
-                  { ...data, likedByMe, likeCount },
-                  { revalidate: false },
-                )
-              }
-            />
+            {user ? (
+              <VideoLikeButton
+                videoId={id}
+                liked={data.likedByMe}
+                count={data.likeCount}
+                onChange={(likedByMe, likeCount) =>
+                  void mutate(
+                    { ...data, likedByMe, likeCount },
+                    { revalidate: false },
+                  )
+                }
+              />
+            ) : (
+              <Link
+                href={`/register?next=/watch/${id}`}
+                title="Tạo tài khoản để thích video"
+                className="motion-button flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1.5 text-sm font-semibold text-muted hover:text-foreground"
+              >
+                <Icon name="heart" size={16} />
+                {data.likeCount}
+              </Link>
+            )}
           </div>
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted">
@@ -532,12 +552,22 @@ export default function WatchDetailPage() {
                 onClick={() => void saveWord(wordPopup.word!.id)}
               >
                 {savedWordIds.has(wordPopup.word.id)
-                  ? "Đã lưu"
+                  ? user
+                    ? "Đã lưu"
+                    : "Đã ghi nhớ"
                   : savingWord
                     ? "Đang lưu…"
                     : "Lưu để ôn tập"}
               </Button>
             </div>
+            {!user && savedWordIds.has(wordPopup.word.id) && (
+              <p className="mt-3 text-xs leading-5 text-muted">
+                <Link href={`/register?next=/watch/${id}`} className="font-semibold text-primary hover:underline">
+                  Tạo tài khoản
+                </Link>{" "}
+                để giữ các từ đã ghi nhớ — Hanni nhắc ôn đúng lúc sắp quên.
+              </p>
+            )}
           </div>
         </div>
       )}

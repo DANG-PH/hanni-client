@@ -10,7 +10,7 @@ import { Card, EmptyState, PageHeading, Spinner } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { HanziWriterCanvas } from "@/components/hanzi-writer-canvas";
 import { NextStep } from "@/components/next-step";
-import { useRequireAuth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { useCurrentLesson, useLesson } from "@/lib/hooks";
 
 interface HanziEntry {
@@ -43,7 +43,8 @@ const WRITING_TOUR_STEPS: TourStep[] = [
 ];
 
 export default function WritingPage() {
-  const { user, loading } = useRequireAuth();
+  // Khách dùng được (2026-10-18) — chỉ lưu tiến độ mới cần tài khoản.
+  const { loading } = useAuth();
   const [index, setIndex] = useState<HanziEntry[] | null>(null);
   const [indexError, setIndexError] = useState(false);
   const [level, setLevel] = useState<number | undefined>(1);
@@ -144,7 +145,7 @@ export default function WritingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtered, activeIdx]);
 
-  if (loading || !user) return <Spinner />;
+  if (loading) return <Spinner />;
 
   return (
     <div className="page-wrap space-y-7">

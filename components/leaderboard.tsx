@@ -7,6 +7,7 @@ import { Icon, type IconName } from "@/components/icon";
 import { MessageIconButton } from "@/components/message-icon-button";
 import { RankEmblem } from "@/components/rank-emblem";
 import { LinkButton, SectionHeading } from "@/components/ui";
+import { useAuth } from "@/lib/auth";
 import { useRankTiers } from "@/lib/duel";
 import type {
   Leaderboard,
@@ -91,7 +92,8 @@ export function LeaderboardOverview({
   user,
 }: {
   board: Leaderboard;
-  user: Me;
+  /** null = khách xem — ô "Vị trí của bạn" thành lời mời tạo tài khoản. */
+  user: Me | null;
 }) {
   const leaders = board.rows
     .filter((row) => row.rank >= 1 && row.rank <= 3)
@@ -185,6 +187,23 @@ export function LeaderboardOverview({
         </section>
       )}
 
+      {!user ? (
+        <section
+          className={`panel order-first min-w-0 border-primary/15 p-5 xl:order-last xl:flex xl:flex-col xl:p-6 ${leaders.length === 0 ? "xl:col-span-2" : ""}`}
+          aria-labelledby="your-rank-title"
+        >
+          <h2 id="your-rank-title" className="text-sm font-semibold">
+            Muốn có tên trên bảng?
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            Tạo tài khoản miễn phí — mỗi bài học, mỗi lượt ôn đều được tính, học đều là lên hạng.
+          </p>
+          <LinkButton href="/register?next=/leaderboard" className="mt-4 w-full xl:mt-auto">
+            Tạo tài khoản
+            <Icon name="arrow" size={16} />
+          </LinkButton>
+        </section>
+      ) : (
       <section
         className={`panel order-first min-w-0 border-primary/15 p-5 xl:order-last xl:flex xl:flex-col xl:p-6 ${leaders.length === 0 ? "xl:col-span-2" : ""}`}
         aria-labelledby="your-rank-title"
@@ -236,6 +255,7 @@ export function LeaderboardOverview({
           <Icon name="arrow" size={16} />
         </LinkButton>
       </section>
+      )}
     </div>
   );
 }
@@ -249,6 +269,7 @@ export function LeaderboardRankings({
 }) {
   const limited = board.rows.length < board.me.totalRanked;
   const tiersInfo = useRankTiers();
+  const { user } = useAuth();
 
   return (
     <section className="panel overflow-hidden" aria-labelledby="rankings-title">
@@ -335,7 +356,7 @@ export function LeaderboardRankings({
                         Chuỗi {number(row.currentStreak)} ngày
                       </span>
                     )}
-                    {!row.isMe && (
+                    {user && !row.isMe && (
                       <div className="mt-1.5 flex items-center gap-1.5">
                         <FollowButton
                           userId={row.userId}

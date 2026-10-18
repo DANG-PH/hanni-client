@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from "react";
 import { mutate } from "swr";
 import Link from "next/link";
 import { DailyQuestCard } from "@/components/daily-quest-card";
-import { Icon } from "@/components/icon";
+import { Icon, type IconName } from "@/components/icon";
 import { TodayCard } from "@/components/learn/today-card";
 import { TopicExplorer } from "@/components/learn/topic-explorer";
 import { NotificationNudge } from "@/components/pwa/notification-nudge";
@@ -14,8 +14,10 @@ import { VideoShelf } from "@/components/video-shelf";
 import { WeeklyLeagueCard } from "@/components/weekly-league-card";
 import { WordOfTheDayCard } from "@/components/word-of-the-day";
 import { api } from "@/lib/api";
-import { useRequireAuth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { useLearnPath, useLevels } from "@/lib/hooks";
+import { pendingLessonIds } from "@/lib/pending-lessons";
+import type { LearnPath } from "@/lib/types";
 import { lessonMinutes, toUnits } from "@/lib/units";
 
 /**
@@ -58,16 +60,92 @@ function ProgressRing({ value }: { value: number }) {
   );
 }
 
+/** Khách (chưa đăng nhập) — tài khoản chỉ để LƯU, mời ở cột phải. */
+function GuestSaveCard({ learned }: { learned: number }) {
+  return (
+    <section className="panel flex flex-col p-5">
+      <span className="icon-tile">
+        <Icon name="flame" size={22} />
+      </span>
+      <h2 className="mt-3 text-base font-bold">
+        {learned > 0 ? `Bạn đã học ${learned} bài — lưu lại nhé` : "Học thử thoải mái, lưu khi bạn muốn"}
+      </h2>
+      <p className="mt-1.5 text-sm leading-6 text-muted">
+        Tạo tài khoản miễn phí để giữ chuỗi ngày học, ôn lại từ đúng lúc sắp quên và học tiếp trên mọi thiết bị.
+      </p>
+      <div className="mt-4 flex flex-wrap gap-2 lg:mt-auto">
+        <LinkButton href="/register?next=/learn">Tạo tài khoản</LinkButton>
+        <LinkButton href="/login?next=/learn" variant="secondary">
+          Đăng nhập
+        </LinkButton>
+      </div>
+    </section>
+  );
+}
+
+const GUEST_TRY: { href: string; label: string; hint: string; icon: IconName }[] = [
+  { href: "/minigame", label: "Trò chơi từ vựng", hint: "60 giây, dịch nhanh, ghép cặp", icon: "trophy" },
+  { href: "/watch", label: "Học qua video", hint: "Phụ đề song ngữ, bấm từ để tra", icon: "play" },
+  { href: "/thi-thu-hsk", label: "Đề thi thử HSK", hint: "Đúng cấu trúc đề thật, chấm ngay", icon: "target" },
+  { href: "/writing", label: "Luyện viết chữ Hán", hint: "Xem thứ tự nét rồi tự tô", icon: "pencil" },
+];
+
+/** Thay thẻ nhiệm vụ + giải đấu (cần dữ liệu cá nhân) khi khách xem. */
+function GuestTryCard() {
+  return (
+    <section className="panel p-5">
+      <h2 className="text-base font-bold">Thử ngay, chưa cần tài khoản</h2>
+      <ul className="mt-3 space-y-1.5">
+        {GUEST_TRY.map((t) => (
+          <li key={t.href}>
+            <Link href={t.href} className="flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-surface-2">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary">
+                <Icon name={t.icon} size={18} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold">{t.label}</span>
+                <span className="block text-xs text-muted">{t.hint}</span>
+              </span>
+              <Icon name="arrow" size={15} className="text-muted" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/** Khách: bài đã học trong phiên (lưu tạm, chưa có tài khoản) tính là xong. */
+function withGuestProgress(path: LearnPath, done: Set<string>): LearnPath {
+  if (done.size === 0) return path;
+  const lessons = path.lessons.map((l) =>
+    done.has(l.id) ? { ...l, status: "COMPLETED" as const } : l,
+  );
+  return {
+    ...path,
+    lessons,
+    completedLessons: lessons.filter((l) => l.status === "COMPLETED").length,
+    currentLessonId: lessons.find((l) => l.status !== "COMPLETED")?.id ?? null,
+  };
+}
+
 function LearnHome() {
-  const { user, loading } = useRequireAuth();
-  const [viewLevel, setViewLevel] = useState<number | undefined>(undefined);
-  const { data, error, mutate: reload } = useLearnPath(viewLevel);
+  // Khách xem được (2026-10-18) — như Hanzii/Hanbeego; chỉ lưu tiến độ mới cần tài khoản.
+  const { user, loading } = useAuth();
+  const params = useSearchParams();
+  const wanted = Number(params.get("level"));
+  const [viewLevel, setViewLevel] = useState<number | undefined>(() =>
+    !user && Number.isInteger(wanted) && wanted >= 1 ? Math.min(wanted, 7) : undefined,
+  );
+  const { data: rawData, error, mutate: reload } = useLearnPath(viewLevel);
   const course = useLearnPath();
   const levels = useLevels();
   const [switching, setSwitching] = useState(false);
-  const params = useSearchParams();
   const router = useRouter();
-  const wanted = Number(params.get("level"));
+  const [guestDone] = useState(
+    () => new Set(typeof window === "undefined" || user ? [] : pendingLessonIds()),
+  );
+  const data = rawData && !user ? withGuestProgress(rawData, guestDone) : rawData;
 
   async function chooseLevel(lvl: number) {
     setSwitching(true);
@@ -93,9 +171,10 @@ function LearnHome() {
     router.replace("/learn");
   }, [user, course.data, wanted, router]);
 
-  if (loading || !user) return <Spinner />;
+  if (loading) return <Spinner />;
 
-  const courseLevel = course.data?.level;
+  // Khách không có "cấp đang học" — xem cấp nào là cấp đó.
+  const courseLevel = user ? course.data?.level : undefined;
   const viewing = data?.level;
   const isCourse = viewing === courseLevel;
   const current = data?.lessons.find((l) => l.id === data.currentLessonId) ?? null;
@@ -108,7 +187,7 @@ function LearnHome() {
 
   return (
     <div className="page-wrap space-y-5">
-      <NotificationNudge />
+      {user && <NotificationNudge />}
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section className="panel tint-primary relative flex flex-col gap-5 overflow-hidden p-5 sm:flex-row sm:items-center sm:p-6" aria-labelledby="next-lesson">
@@ -153,7 +232,7 @@ function LearnHome() {
                           Học phát âm trước (10 phút)
                         </LinkButton>
                       )}
-                      {!isCourse && (
+                      {user && !isCourse && (
                         <Button variant="secondary" disabled={switching} onClick={() => void chooseLevel(data.level)}>
                           Chọn học HSK {data.level === 7 ? "7–9" : data.level}
                         </Button>
@@ -169,7 +248,11 @@ function LearnHome() {
                       Từ đã học vẫn quay lại ở phần Ôn tập để bạn nhớ lâu.
                     </p>
                     {nextLevel && (
-                      <Button className="mt-4" disabled={switching} onClick={() => void chooseLevel(nextLevel)}>
+                      <Button
+                        className="mt-4"
+                        disabled={switching}
+                        onClick={() => (user ? void chooseLevel(nextLevel) : setViewLevel(nextLevel))}
+                      >
                         Lên HSK {nextLevel === 7 ? "7–9" : nextLevel}
                         <Icon name="arrow" size={16} />
                       </Button>
@@ -180,7 +263,7 @@ function LearnHome() {
             </>
           )}
         </section>
-        <TodayCard />
+        {user ? <TodayCard /> : <GuestSaveCard learned={guestDone.size} />}
       </div>
 
       {data && (
@@ -211,7 +294,7 @@ function LearnHome() {
                   type="button"
                   role="tab"
                   aria-selected={selected}
-                  onClick={() => setViewLevel(l === courseLevel ? undefined : l)}
+                  onClick={() => setViewLevel(user && l === courseLevel ? undefined : l)}
                   className={`motion-button flex shrink-0 items-center gap-1.5 rounded-full border-2 px-4 py-2 text-sm font-bold ${
                     selected
                       ? "border-primary bg-primary text-primary-fg shadow-[0_3px_0_0_color-mix(in_srgb,var(--primary)_62%,#000)]"
@@ -238,13 +321,20 @@ function LearnHome() {
 
       {/* Kéo 3 thẻ cao bằng nhau — để `items-start` thì đáy lệch nhau, thẻ ngắn
        * chừa mảng trống bên dưới. */}
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <DailyQuestCard />
-        <WeeklyLeagueCard />
-        <WordOfTheDayCard level={courseLevel} />
-      </div>
+      {user ? (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <DailyQuestCard />
+          <WeeklyLeagueCard />
+          <WordOfTheDayCard level={courseLevel} />
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          <GuestTryCard />
+          <WordOfTheDayCard level={viewing} />
+        </div>
+      )}
 
-      <VideoShelf limit={8} maxLevel={(courseLevel ?? 1) + 1} />
+      <VideoShelf limit={8} maxLevel={(courseLevel ?? viewing ?? 1) + 1} />
     </div>
   );
 }

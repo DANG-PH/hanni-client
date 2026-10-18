@@ -22,7 +22,7 @@ import {
   PageHeading,
   Spinner,
 } from "@/components/ui";
-import { useRequireAuth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { useLeaderboard, useLeaderboardMetrics } from "@/lib/hooks";
 import type { LeaderboardMetricKey } from "@/lib/types";
 
@@ -48,11 +48,14 @@ const LEADERBOARD_TOUR_STEPS: TourStep[] = [
 ];
 
 export default function LeaderboardPage() {
-  const { user, loading } = useRequireAuth();
+  // Khách xem được bảng chung (2026-10-18); "So với bạn bè", theo dõi, hạng của mình cần tài khoản.
+  const { user, loading } = useAuth();
   const metrics = useLeaderboardMetrics();
-  const [selectedMetric, setMetric] = useState<LeaderboardMetricKey>("learned");
+  // Mặc định "Chuỗi hiện tại": "Từ đã thuộc" cần ôn đều ~21 ngày mới tính nên
+  // đang trống với mọi người — trang mở ra (giờ cả khách xem) là một bảng rỗng.
+  const [selectedMetric, setMetric] = useState<LeaderboardMetricKey>("streak");
   const [focusedMetric, setFocusedMetric] =
-    useState<LeaderboardMetricKey>("learned");
+    useState<LeaderboardMetricKey>("streak");
   const tablist = useRef<HTMLDivElement>(null);
   const availableTabs = metrics.data?.filter((tab) =>
     LEADERBOARD_METRICS.some((supported) => supported.key === tab.key),
@@ -85,7 +88,7 @@ export default function LeaderboardPage() {
       [next]?.focus();
   }
 
-  if (loading || !user) return <Spinner />;
+  if (loading) return <Spinner />;
 
   return (
     <div className="page-wrap space-y-6">
@@ -104,7 +107,7 @@ export default function LeaderboardPage() {
         <TourButton tourKey="leaderboard" />
       </PageHeading>
 
-      <FriendsLeaderboard />
+      {user && <FriendsLeaderboard />}
 
       <div className="space-y-3">
         <div

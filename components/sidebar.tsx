@@ -90,7 +90,7 @@ export function Sidebar({
   onToggle?: () => void;
 }) {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const [busy, setBusy] = useState(false);
   const { due, unread } = useNavBadges();
   const pwa = usePwaState();
@@ -155,8 +155,15 @@ export function Sidebar({
       <div className="mt-auto pt-6">
         <div className="space-y-0.5 border-t border-border/70 pt-3">
           {canInstall && item(INSTALL_LINK, true)}
-          {item(ACCOUNT_LINK, true)}
-          <button
+          {!user && (
+            // Khách: lối đăng nhập/tạo tài khoản thay cho Tài khoản/Đăng xuất.
+            <>
+              {item({ href: `/login?next=${encodeURIComponent(pathname)}`, label: "Đăng nhập", icon: "user" }, true)}
+              {item({ href: `/register?next=${encodeURIComponent(pathname)}`, label: "Tạo tài khoản miễn phí", icon: "plus" }, true)}
+            </>
+          )}
+          {user && item(ACCOUNT_LINK, true)}
+          {user && <button
             disabled={busy}
             title={collapsed ? "Đăng xuất" : undefined}
             onClick={async () => {
@@ -171,7 +178,7 @@ export function Sidebar({
           >
             <Icon name="logout" size={16} />
             <span className={collapsed ? "sr-only" : ""}>{busy ? "Đang đăng xuất…" : "Đăng xuất"}</span>
-          </button>
+          </button>}
           {onToggle && (
             <button
               type="button"

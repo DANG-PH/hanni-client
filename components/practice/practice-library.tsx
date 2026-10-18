@@ -10,7 +10,7 @@ import {
   PageHeading,
   Spinner,
 } from "@/components/ui";
-import { useRequireAuth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { useCurrentLesson, useLesson, useWords } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
 import { LevelFilter } from "@/components/learning-library";
@@ -35,9 +35,31 @@ type LibraryProps = {
 
 /** Dùng cùng bộ từ vựng và phân trang với thư viện hiện có. */
 export function PracticeLibrary(props: LibraryProps) {
-  const { user, loading } = useRequireAuth();
-  if (loading || !user) return <Spinner />;
-  return <LibraryContent {...props} />;
+  // Khách luyện được (2026-10-18), chỉ không lưu lượt luyện — xem GuestNote.
+  const { user, loading } = useAuth();
+  if (loading) return <Spinner />;
+  return (
+    <>
+      {!user && <GuestNote />}
+      <LibraryContent {...props} />
+    </>
+  );
+}
+
+/** Mời lưu đúng lúc: khách đang luyện thử, kết quả chưa được lưu. */
+function GuestNote() {
+  return (
+    <div className="page-wrap pb-0!">
+      <p className="flex flex-col gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm sm:flex-row sm:items-center">
+        <span className="min-w-0 flex-1">
+          Bạn đang luyện thử — kết quả chưa được lưu. Tạo tài khoản miễn phí để Hanni ghi lại từ bạn hay sai và nhắc ôn đúng lúc.
+        </span>
+        <Link href="/register?next=/learn" className="shrink-0 font-semibold text-primary hover:underline">
+          Tạo tài khoản
+        </Link>
+      </p>
+    </div>
+  );
 }
 
 function LibraryContent({

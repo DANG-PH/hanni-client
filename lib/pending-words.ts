@@ -20,6 +20,18 @@ export function savePendingWords(wordIds: string[]) {
   }
 }
 
+/** Thêm 1 từ khách bấm "Lưu để ôn tập" (vd trong bản chép video) — giữ các
+ * từ đã ghi trước đó, không ghi đè như `savePendingWords`. */
+export function addPendingWord(wordId: string) {
+  try {
+    const parsed: unknown = JSON.parse(sessionStorage.getItem(KEY) ?? "[]");
+    const ids = Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string") : [];
+    if (!ids.includes(wordId)) savePendingWords([...ids, wordId]);
+  } catch {
+    savePendingWords([wordId]);
+  }
+}
+
 /** Đọc rồi XOÁ luôn: chỉ đưa vào hàng đợi đúng một lần. */
 export function drainPendingWords(): string[] {
   try {

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   FeatureTour,
   TourButton,
@@ -19,7 +20,7 @@ import {
   Spinner,
 } from "@/components/ui";
 import { mediaUrl } from "@/lib/api";
-import { useAuth, useRequireAuth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import {
   getActiveDuelMatch,
   joinDuelQueue,
@@ -114,6 +115,24 @@ const GAMES: GameDef[] = [
     supportsDuel: false,
   },
 ];
+
+/** Xu thưởng sau ván — khách chơi được nhưng không có ví (`balance: null`), mời tạo tài khoản. */
+function RewardLine({ result }: { result: MinigameResult }) {
+  if (result.balance === null)
+    return (
+      <p className="mx-auto mt-2 max-w-sm text-sm text-muted">
+        <Link href="/register?next=/minigame" className="font-semibold text-primary hover:underline">
+          Tạo tài khoản
+        </Link>{" "}
+        để nhận xu cho mỗi câu đúng và có tên trên bảng xếp hạng.
+      </p>
+    );
+  return (
+    <p className="mt-2 text-sm text-good">
+      +{result.coinsEarned} xu — số dư hiện tại: {result.balance.toLocaleString("vi-VN")} xu
+    </p>
+  );
+}
 
 // ------------------------------ Sảnh chọn game ------------------------------
 
@@ -413,10 +432,7 @@ function SoloMinigame({ game }: { game: GameDef }) {
                 <p className="text-2xl font-bold">
                   {result.score}/{result.totalAsked} câu đúng
                 </p>
-                <p className="mt-2 text-sm text-good">
-                  +{result.coinsEarned} xu — số dư hiện tại:{" "}
-                  {result.balance.toLocaleString("vi-VN")} xu
-                </p>
+                <RewardLine result={result} />
                 <Button className="mt-5" onClick={() => setPhase("idle")}>
                   Chơi lại
                 </Button>
@@ -691,10 +707,7 @@ function MatchMinigame() {
                 <p className="mt-2 text-sm text-muted">
                   Sai {mistakes} lần · {Math.floor(elapsedMs / 1000)} giây
                 </p>
-                <p className="mt-2 text-sm text-good">
-                  +{result.coinsEarned} xu — số dư hiện tại:{" "}
-                  {result.balance.toLocaleString("vi-VN")} xu
-                </p>
+                <RewardLine result={result} />
                 <Button className="mt-5" onClick={playAgain}>
                   Chơi lại
                 </Button>
@@ -1229,10 +1242,12 @@ function GameWorkspace({
   game: GameDef;
   onBack: () => void;
 }) {
+  const { user } = useAuth();
   const [sub, setSub] = useState<SubMode>("solo");
   const tabs: { key: SubMode; label: string; icon: IconName }[] = [
     { key: "solo", label: "Luyện tập", icon: "clock" },
-    ...(game.supportsDuel
+    // Đấu 1v1 ghép trận qua socket đã đăng nhập — khách chỉ chơi 1 mình.
+    ...(game.supportsDuel && user
       ? [{ key: "duel" as const, label: "Đấu 1v1", icon: "flame" as const }]
       : []),
   ];
@@ -1284,10 +1299,11 @@ type View =
   | { stage: "play"; game: GameDef };
 
 export default function MinigamePage() {
-  const { user, loading } = useRequireAuth();
+  // Khách chơi được 4 trò 1 mình (2026-10-18) — không xu, không lên bảng xếp hạng.
+  const { loading } = useAuth();
   const [view, setView] = useState<View>({ stage: "hub" });
 
-  if (loading || !user) return <Spinner />;
+  if (loading) return <Spinner />;
 
   return (
     <div className="page-wrap space-y-6">

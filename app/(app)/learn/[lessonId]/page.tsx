@@ -16,17 +16,18 @@ import {
   Spinner,
 } from "@/components/ui";
 import { ApiError } from "@/lib/api";
-import { useRequireAuth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { useLesson } from "@/lib/hooks";
 
 export default function LessonDetailPage() {
-  const { user, loading } = useRequireAuth();
+  // Khách xem được từ của bài + học luôn qua /bai-hoc (2026-10-18).
+  const { loading } = useAuth();
   const { lessonId } = useParams<{ lessonId: string }>();
   const { data, isLoading, error, mutate } = useLesson(lessonId);
   const [tab, setTab] = useState<"words" | "examples">("words");
   const [showMeanings, setShowMeanings] = useState(true);
 
-  if (loading || !user) return <Spinner />;
+  if (loading) return <Spinner />;
   if (error)
     return (
       <div className="page-wrap space-y-5">

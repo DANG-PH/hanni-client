@@ -38,6 +38,12 @@ export function hasPendingLessons(): boolean {
   return read().length > 0;
 }
 
+/** Bài khách đã học xong trong phiên (chưa lưu) — trang chủ đánh dấu xong và
+ * "Học tiếp" đúng bài kế, thay vì mời học lại bài 1. */
+export function pendingLessonIds(): string[] {
+  return read().map((l) => l.lessonId);
+}
+
 /** Cấp mà bài kiểm tra trình độ đề xuất cho KHÁCH — không lưu thì người vừa
  * làm bài ra "HSK3" rồi bấm đăng ký luôn sẽ vào lộ trình HSK1 mặc định. */
 const LEVEL_KEY = "hanni:pending-course-level";

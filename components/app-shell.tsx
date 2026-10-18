@@ -112,22 +112,37 @@ export function AppShell({ children }: { children: ReactNode }) {
                 )}
               </Link>
             )}
-            <NotificationBell />
+            {user && <NotificationBell />}
             <ThemeToggle />
-            <Link
-              href="/account"
-              aria-label="Mở tài khoản"
-              className={`flex min-w-0 items-center gap-2 rounded-xl p-1 pr-2 hover:bg-surface-2 ${styles.account}`}
-            >
-              {user ? (
+            {user ? (
+              <Link
+                href="/account"
+                aria-label="Mở tài khoản"
+                className={`flex min-w-0 items-center gap-2 rounded-xl p-1 pr-2 hover:bg-surface-2 ${styles.account}`}
+              >
                 <Avatar user={user} size={36} />
-              ) : (
-                <span className="h-9 w-9 shrink-0 rounded-full bg-surface-2" />
-              )}
-              <span className="hidden max-w-40 truncate text-xs font-medium md:block">
-                {user?.displayName}
-              </span>
-            </Link>
+                <span className="hidden max-w-40 truncate text-xs font-medium md:block">
+                  {user.displayName}
+                </span>
+              </Link>
+            ) : (
+              // Khách xem/dùng thử app không cần đăng nhập (2026-10-18) — tài
+              // khoản chỉ để LƯU tiến độ, mời ở đây và đúng lúc cần lưu.
+              <>
+                <Link
+                  href={`/login?next=${encodeURIComponent(pathname)}`}
+                  className="hidden rounded-lg px-2.5 py-2 text-xs font-semibold text-muted hover:text-foreground sm:block"
+                >
+                  Đăng nhập
+                </Link>
+                <Link
+                  href={`/register?next=${encodeURIComponent(pathname)}`}
+                  className="rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-primary-fg shadow-[0_2px_0_0_color-mix(in_srgb,var(--primary)_62%,#000)] hover:brightness-105"
+                >
+                  Tạo tài khoản
+                </Link>
+              </>
+            )}
           </div>
         </header>
         <main className="flex-1">{children}</main>
