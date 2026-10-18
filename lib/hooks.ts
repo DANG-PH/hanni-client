@@ -253,7 +253,7 @@ export function useLeaderboard(
   );
 }
 
-/** Giải đấu học tập theo tuần — khác ELO đấu 1v1, xem hanni-server/CLAUDE.md. */
+/** Giải đấu học tập theo tuần, xem hanni-server/CLAUDE.md. */
 export function useWeeklyLeague() {
   return useSWR<WeeklyLeague>("/leaderboard/league", fetcher);
 }

@@ -31,7 +31,7 @@ const LEADERBOARD_TOUR_STEPS: TourStep[] = [
     icon: "trophy",
     title: "Năm cách xếp hạng khác nhau",
     description:
-      "Từ đã thuộc, chuỗi hiện tại, chuỗi dài nhất, bài đã xong và ELO đấu 1v1. Đổi tab để xem bảng tương ứng — mỗi bảng đo một kiểu nỗ lực khác nhau.",
+      "Từ đã thuộc, chuỗi hiện tại, chuỗi dài nhất và bài đã xong. Đổi tab để xem bảng tương ứng — mỗi bảng đo một kiểu nỗ lực khác nhau.",
   },
   {
     icon: "user",

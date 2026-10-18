@@ -416,6 +416,16 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   âm) — dữ liệu gộp 7–9 vào cấp 7 nên chip HSK 8, 9 luôn trống; `/tu-dien?level=8|9` → 308 sang `level=7`; điện
   thoại 1 hàng cuộn ngang. Dữ liệu (phồn thể, âm Hán Việt, nghĩa HSK 4, từ loại): xem `hanni-server/CLAUDE.md`.
 
+### Gỡ 2026-10-19 (audit X2/X3, Q2/Q4 — user duyệt "triển khai nhé")
+- **Đấu 1v1** khỏi `/minigame` (tab, nhãn "Đấu 1v1" ở thẻ trò chơi, luật chơi, bước hướng dẫn, bảng ELO + bậc rank +
+  đếm ngược mùa), tab **ELO** ở bảng xếp hạng (`LEADERBOARD_METRICS`), mục menu đổi tên "Trò chơi luyện từ".
+  `lib/duel.ts`, `components/rank-emblem.tsx` + kiểu `Duel*`/`RankTier*` ở `lib/types.ts` còn nằm lại vì bộ phân
+  loại auto mode chặn xoá file — không nơi nào import nên không vào bundle; xoá tay khi được phép.
+- **Khung avatar Phượng Hoàng**: nút bật khung ở thẻ Premium, viền khung ở `/u/[id]`, prop `frameColors` của `Avatar`,
+  `useFrameShop`/`equipFrame`. Danh hiệu theo huy hiệu giữ nguyên.
+- **Nạp xu bằng tiền thật CHƯA gỡ** (bộ phân loại chặn sửa luồng thanh toán ở server) — khối "Nạp thêm xu" ở
+  `/account` vẫn tự ẩn vì payOS chưa cấu hình.
+
 ### Tính năng tạo khác biệt + AI (2026-10-18 — user: "thêm tính năng hay, tạo sự khác biệt, thêm AI")
 Đều GẮN vào luồng học có sẵn, không thêm trang hay mục menu mới.
 - **Chấm thanh điệu bằng đồ thị cao độ** (`lib/pitch.ts`, `components/tone/tone-check.tsx`) — không app học tiếng

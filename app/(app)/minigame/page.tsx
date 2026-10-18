@@ -7,11 +7,9 @@ import {
   type TourStep,
 } from "@/components/feature-tour";
 import { useEffect, useRef, useState } from "react";
-import { Avatar } from "@/components/avatar";
 import { AudioButton } from "@/components/audio-button";
 import { Icon, type IconName } from "@/components/icon";
 import { NextStep } from "@/components/next-step";
-import { RankEmblem } from "@/components/rank-emblem";
 import {
   Button,
   Card,
@@ -22,27 +20,12 @@ import {
 import { mediaUrl } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import {
-  getActiveDuelMatch,
-  joinDuelQueue,
-  leaveDuelQueue,
-  submitDuelAnswer,
-  useDuelLeaderboard,
-  useDuelQueueSize,
-  useDuelRating,
-  useDuelSeason,
-  useDuelSocket,
-  useRankTiers,
-} from "@/lib/duel";
-import {
   finishMatchMinigame,
   finishMinigame,
   startMinigame,
   useMinigameLeaderboard,
 } from "@/lib/minigame";
 import type {
-  DuelFinished,
-  DuelOpponent,
-  DuelRoundQuestion,
   GameMode,
   MatchCard,
   MinigameQuestion,
@@ -58,7 +41,6 @@ interface GameDef {
   tileClass: string;
   tagline: string;
   rules: string[];
-  supportsDuel: boolean;
 }
 
 const GAMES: GameDef[] = [
@@ -71,9 +53,7 @@ const GAMES: GameDef[] = [
       "Chọn nghĩa tiếng Việt đúng cho từ tiếng Trung hiện ra — chạy đua với đồng hồ.",
     rules: [
       "Luyện tập 1 mình: 60 giây, trả lời càng nhiều câu càng tốt, mỗi câu đúng thưởng 1 xu.",
-      "Đấu 1v1: 8 câu hỏi, ai trả lời đúng nhiều hơn thắng, điểm ELO tăng/giảm theo kết quả.",
     ],
-    supportsDuel: true,
   },
   {
     mode: "LISTENING",
@@ -84,9 +64,7 @@ const GAMES: GameDef[] = [
       "Nghe phát âm rồi chọn đúng nghĩa — không nhìn chữ, luyện phản xạ nghe thật.",
     rules: [
       "Luyện tập 1 mình: 60 giây, chỉ nghe âm thanh (Hán tự/pinyin được ẩn), mỗi câu đúng thưởng 1 xu.",
-      "Chưa có chế độ Đấu 1v1 — sẽ thêm sau khi chế độ luyện tập ổn định.",
     ],
-    supportsDuel: false,
   },
   {
     mode: "MATCH",
@@ -99,7 +77,6 @@ const GAMES: GameDef[] = [
       "8 cặp thẻ (16 ô) — lật 2 thẻ mỗi lượt, khớp đúng cặp thì giữ nguyên, sai thì úp lại.",
       "Hoàn thành càng ít lần lật sai càng được nhiều xu (tối đa 8 xu nếu không sai lần nào).",
     ],
-    supportsDuel: false,
   },
   {
     mode: "PINYIN",
@@ -110,9 +87,7 @@ const GAMES: GameDef[] = [
       "Nhìn Hán tự, chọn đúng pinyin — luyện phát âm/thanh điệu thay vì nghĩa.",
     rules: [
       "Luyện tập 1 mình: 60 giây, trả lời càng nhiều câu càng tốt, mỗi câu đúng thưởng 1 xu.",
-      "Chưa có chế độ Đấu 1v1 — sẽ thêm sau khi chế độ luyện tập ổn định.",
     ],
-    supportsDuel: false,
   },
 ];
 
@@ -144,16 +119,10 @@ const MINIGAME_TOUR_STEPS: TourStep[] = [
       "Dịch tốc độ, Nghe đoán từ, Ghép cặp và Chọn pinyin đúng — mỗi ván 60 giây. Bấm vào một trò sẽ xem luật trước rồi mới bắt đầu.",
   },
   {
-    icon: "trophy",
-    title: "Đấu 1v1 với người thật",
-    description:
-      "Tab đấu 1v1 ghép bạn với người đang online, 8 câu, ai đúng nhiều hơn thì thắng và được cộng ELO. Rank từ Sắt tới Thách Đấu, reset theo mùa mỗi tháng.",
-  },
-  {
     icon: "plus",
     title: "Chơi được cộng xu",
     description:
-      "Mỗi câu đúng đổi thành xu, tiêu ở cửa hàng khung avatar, danh hiệu hoặc lá chắn giữ chuỗi ngày trong mục Tài khoản.",
+      "Mỗi câu đúng đổi thành xu, dùng mua lá chắn giữ chuỗi ngày học trong mục Tài khoản.",
   },
 ];
 
@@ -171,11 +140,6 @@ function GameHub({ onSelect }: { onSelect: (game: GameDef) => void }) {
             <span className={`icon-tile ${g.tileClass} shadow-2xs`}>
               <Icon name={g.icon} size={22} />
             </span>
-            {g.supportsDuel && (
-              <span className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-[10px] font-bold text-primary">
-                Đấu 1v1
-              </span>
-            )}
           </div>
           <h3 className="mb-2 text-base font-bold text-foreground">
             {g.title}
@@ -767,473 +731,7 @@ function MatchMinigame() {
   );
 }
 
-// ------------------------------ Đấu 1v1 ------------------------------
-
-type DuelPhase =
-  "idle" | "queueing" | "matched" | "playing" | "round-result" | "finished";
-
-function SeasonCountdown() {
-  const season = useDuelSeason();
-  if (!season.data) return null;
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted">
-      <Icon name="clock" size={13} />
-      Mùa {season.data.number} — còn {season.data.daysRemaining} ngày
-    </span>
-  );
-}
-
-/** Bảng chú giải ngưỡng ELO từng bậc — gấp lại mặc định để không chiếm chỗ
- * màn hình chính, bung ra khi người chơi thật sự muốn biết "ELO này là bậc
- * gì". Thách Đấu ghi rõ luật riêng (giới hạn top N) thay vì chỉ 1 con số
- * ELO, vì bậc này không thuần theo ngưỡng như các bậc còn lại. */
-function RankTiersLegend() {
-  const tiersInfo = useRankTiers();
-  const [open, setOpen] = useState(false);
-  if (!tiersInfo.data) return null;
-  const { tiers, challengerTopN } = tiersInfo.data;
-
-  return (
-    <div className="mb-4">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
-      >
-        <Icon name="info" size={13} />
-        {open ? "Ẩn các bậc rank" : "Xem các bậc rank"}
-      </button>
-      {open && (
-        <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
-          {tiers.map((t, i) => {
-            const isTop = i === tiers.length - 1;
-            const max = tiers[i + 1] ? tiers[i + 1].min - 1 : null;
-            return (
-              <div
-                key={t.name}
-                className="flex items-center gap-3 rounded-xl border border-border p-2.5"
-              >
-                <RankEmblem
-                  tierName={t.name}
-                  color={t.color}
-                  tiers={tiers}
-                  size={32}
-                />
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold">{t.name}</p>
-                  <p className="text-xs text-muted">
-                    {isTop
-                      ? `Top ${challengerTopN} điểm cao nhất, tối thiểu ${t.min} ELO`
-                      : `${t.min} – ${max} ELO`}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function DuelMinigame() {
-  const { user } = useAuth();
-  const rating = useDuelRating();
-  const leaderboard = useDuelLeaderboard();
-  const tiersInfo = useRankTiers();
-  const [phase, setPhase] = useState<DuelPhase>("idle");
-  const [matchId, setMatchId] = useState<string | null>(null);
-  const [opponent, setOpponent] = useState<DuelOpponent | null>(null);
-  const [totalRounds, setTotalRounds] = useState(0);
-  const [round, setRound] = useState(0);
-  const [question, setQuestion] = useState<DuelRoundQuestion | null>(null);
-  const [deadline, setDeadline] = useState(0);
-  const [timeLeftMs, setTimeLeftMs] = useState(0);
-  const [scores, setScores] = useState<Record<string, number>>({});
-  const [myAnswer, setMyAnswer] = useState<number | null>(null);
-  const [roundCorrectIndex, setRoundCorrectIndex] = useState<number | null>(
-    null,
-  );
-  const [finishResult, setFinishResult] = useState<DuelFinished | null>(null);
-  const [introSecondsLeft, setIntroSecondsLeft] = useState<number | null>(null);
-  const [queueElapsedS, setQueueElapsedS] = useState(0);
-  const queueStartedAtRef = useRef(0);
-  const [resumeChecked, setResumeChecked] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const introTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const queueSize = useDuelQueueSize(phase === "queueing");
-
-  // Vừa mở trang/refresh — kiểm tra có trận đang dở không, tự phục hồi UI
-  // thay vì để người chơi tưởng mất trận trong khi server vẫn đang chạy.
-  useEffect(() => {
-    let cancelled = false;
-    void getActiveDuelMatch().then((active) => {
-      if (cancelled) return;
-      setResumeChecked(true);
-      if (!active) return;
-      setMatchId(active.matchId);
-      setOpponent(active.opponent);
-      setTotalRounds(active.totalRounds);
-      setRound(active.round);
-      setScores(active.scores);
-      if (active.question) {
-        setQuestion(active.question);
-        // -1: sentinel "đã trả lời nhưng không rõ đã chọn ô nào" — chỉ cần đủ
-        // để khoá nút bấm, không khớp bất kỳ index thật nào nên không tô sai màu.
-        setMyAnswer(active.myAnswered ? -1 : null);
-        setPhase("playing");
-      } else {
-        setPhase("matched");
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useDuelSocket({
-    onMatched: (p) => {
-      setMatchId(p.matchId);
-      setOpponent(p.opponent);
-      setTotalRounds(p.totalRounds);
-      setScores({});
-      setPhase("matched");
-      setIntroSecondsLeft(Math.ceil(p.introMs / 1000));
-      if (introTimerRef.current) clearInterval(introTimerRef.current);
-      introTimerRef.current = setInterval(() => {
-        setIntroSecondsLeft((s) => (s === null || s <= 1 ? 0 : s - 1));
-      }, 1000);
-    },
-    onRound: (p) => {
-      if (introTimerRef.current) clearInterval(introTimerRef.current);
-      setRound(p.round);
-      setQuestion(p.question);
-      setMyAnswer(null);
-      setRoundCorrectIndex(null);
-      setDeadline(Date.now() + p.deadlineMs);
-      setPhase("playing");
-    },
-    onRoundResult: (p) => {
-      setRoundCorrectIndex(p.correctIndex);
-      setScores(p.scores);
-      setPhase("round-result");
-    },
-    onFinished: (p) => {
-      setFinishResult(p);
-      setPhase("finished");
-      void rating.mutate();
-      void leaderboard.mutate();
-    },
-  });
-
-  useEffect(() => {
-    if (phase !== "playing" || !deadline) return;
-    timerRef.current = setInterval(() => {
-      setTimeLeftMs(Math.max(0, deadline - Date.now()));
-    }, 200);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [phase, deadline]);
-
-  useEffect(() => {
-    if (phase !== "queueing") return;
-    const t = setInterval(() => {
-      setQueueElapsedS(
-        Math.floor((Date.now() - queueStartedAtRef.current) / 1000),
-      );
-    }, 1000);
-    return () => clearInterval(t);
-  }, [phase]);
-
-  function startQueue() {
-    queueStartedAtRef.current = Date.now();
-    setQueueElapsedS(0);
-    setPhase("queueing");
-    joinDuelQueue();
-  }
-
-  function cancelQueue() {
-    leaveDuelQueue();
-    setPhase("idle");
-  }
-
-  function choose(index: number) {
-    if (myAnswer !== null || !matchId) return;
-    setMyAnswer(index);
-    submitDuelAnswer(matchId, index);
-  }
-
-  function playAgain() {
-    setPhase("idle");
-    setMatchId(null);
-    setOpponent(null);
-    setFinishResult(null);
-    setScores({});
-  }
-
-  const myId = user?.id ?? "";
-  const myScore = scores[myId] ?? 0;
-  const opponentScore = opponent ? (scores[opponent.id] ?? 0) : 0;
-
-  if (!resumeChecked) return <Spinner />;
-
-  return (
-    <>
-      <Card>
-        {phase === "idle" && (
-          <div className="py-8 text-center">
-            {rating.data ? (
-              <div className="mb-5 flex flex-col items-center gap-2">
-                <RankEmblem
-                  tierName={rating.data.tier}
-                  color={rating.data.tierColor}
-                  tiers={tiersInfo.data?.tiers}
-                  size={64}
-                />
-                <p className="text-sm text-muted">
-                  <strong className="text-foreground">
-                    {rating.data.tier}
-                  </strong>
-                  {" · "}
-                  {rating.data.elo} ELO
-                </p>
-                <p className="text-xs text-muted">
-                  {rating.data.wins}T / {rating.data.losses}B /{" "}
-                  {rating.data.draws}H
-                </p>
-              </div>
-            ) : (
-              <Icon
-                name="flame"
-                size={36}
-                className="mx-auto mb-4 text-danger"
-              />
-            )}
-            <p className="mx-auto mb-5 max-w-md text-sm leading-6 text-muted">
-              Đối đầu trực tiếp với 1 người chơi khác qua {8} câu hỏi — ai trả
-              lời đúng nhiều hơn thắng, điểm ELO thay đổi theo kết quả.
-            </p>
-            <Button onClick={startQueue}>Tìm đối thủ</Button>
-          </div>
-        )}
-
-        {phase === "queueing" && (
-          <div className="py-10 text-center">
-            <Icon
-              name="refresh"
-              size={32}
-              className="mx-auto mb-4 animate-spin text-primary"
-            />
-            <p className="text-sm font-semibold tabular-nums text-foreground">
-              Đang tìm đối thủ… {queueElapsedS}s
-            </p>
-            <p className="mt-1.5 text-xs text-muted">
-              {queueSize.data
-                ? `${queueSize.data.size} người khác đang trong hàng chờ`
-                : "Đang kết nối hàng chờ…"}
-            </p>
-            <Button variant="ghost" className="mt-4" onClick={cancelQueue}>
-              Huỷ
-            </Button>
-          </div>
-        )}
-
-        {phase === "matched" && opponent && (
-          <div className="py-8 text-center">
-            <p className="mb-6 text-sm font-semibold text-primary">
-              Đã tìm thấy đối thủ!
-            </p>
-            <div className="flex items-center justify-center gap-6">
-              <div className="flex flex-col items-center gap-2">
-                <Avatar user={user ?? {}} size={56} />
-                <span className="max-w-24 truncate text-sm font-medium">
-                  Bạn
-                </span>
-              </div>
-              <span className="text-lg font-bold text-muted">VS</span>
-              <div className="flex flex-col items-center gap-2">
-                <Avatar user={opponent} size={56} />
-                <span className="max-w-24 truncate text-sm font-medium">
-                  {opponent.displayName}
-                </span>
-              </div>
-            </div>
-            <p className="mt-6 text-3xl font-bold tabular-nums text-primary">
-              {introSecondsLeft ?? "…"}
-            </p>
-            <p className="mt-1 text-xs text-muted">Trận đấu sắp bắt đầu</p>
-          </div>
-        )}
-
-        {(phase === "playing" || phase === "round-result") &&
-          question &&
-          opponent && (
-            <div>
-              <div className="mb-4 flex items-center justify-between text-sm">
-                <span className="flex items-center gap-2">
-                  <Avatar user={opponent} size={24} />
-                  {opponent.displayName}
-                </span>
-                <span className="font-semibold">
-                  {myScore} - {opponentScore}
-                </span>
-              </div>
-              <div className="mb-4 flex items-center justify-between text-xs text-muted">
-                <span>
-                  Câu {round + 1}/{totalRounds}
-                </span>
-                {phase === "playing" && (
-                  <span
-                    className={`font-bold tabular-nums ${timeLeftMs < 3000 ? "text-danger" : "text-primary"}`}
-                  >
-                    {Math.ceil(timeLeftMs / 1000)}s
-                  </span>
-                )}
-              </div>
-              <p className="hanzi mb-2 text-center text-5xl">
-                {question.prompt}
-              </p>
-              <p className="mb-6 text-center text-sm text-muted">
-                {question.pinyin}
-              </p>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {question.options.map((opt, i) => {
-                  const isCorrect =
-                    phase === "round-result" && roundCorrectIndex === i;
-                  const isWrongChosen =
-                    phase === "round-result" &&
-                    myAnswer === i &&
-                    roundCorrectIndex !== i;
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      disabled={phase === "round-result" || myAnswer !== null}
-                      onClick={() => choose(i)}
-                      className={`motion-button rounded-xl border p-4 text-left text-sm font-medium ${
-                        isCorrect
-                          ? "border-good bg-good/10"
-                          : isWrongChosen
-                            ? "border-danger bg-danger/10"
-                            : myAnswer === i
-                              ? "border-primary/40 bg-primary/5"
-                              : "border-border hover:border-primary/40 hover:bg-primary/5"
-                      }`}
-                    >
-                      {opt}
-                    </button>
-                  );
-                })}
-              </div>
-              {phase === "playing" && myAnswer !== null && (
-                <p className="mt-4 text-center text-xs text-muted">
-                  Đã trả lời — đợi đối thủ…
-                </p>
-              )}
-            </div>
-          )}
-
-        {phase === "finished" && finishResult && (
-          <div className="py-6 text-center">
-            <Icon
-              name="trophy"
-              size={40}
-              className="mx-auto mb-3 text-primary"
-            />
-            <p className="text-2xl font-bold">
-              {finishResult.winnerId === myId
-                ? "Bạn thắng!"
-                : finishResult.winnerId === null
-                  ? "Hoà!"
-                  : "Bạn thua"}
-            </p>
-            <p className="mt-2 text-sm text-muted">
-              {finishResult.myScore} - {finishResult.opponentScore} với{" "}
-              {finishResult.opponent.displayName}
-            </p>
-            {finishResult.forfeitedBy === "me" && (
-              <p className="mt-2 text-xs text-danger">
-                Bạn bị xử thua do mất kết nối quá lâu giữa trận.
-              </p>
-            )}
-            {finishResult.forfeitedBy === "opponent" && (
-              <p className="mt-2 text-xs text-muted">
-                Đối thủ đã rớt mạng quá lâu nên xử thắng cho bạn.
-              </p>
-            )}
-            <p
-              className={`mt-2 text-sm font-semibold ${finishResult.eloChange >= 0 ? "text-good" : "text-danger"}`}
-            >
-              ELO {finishResult.eloChange >= 0 ? "+" : ""}
-              {finishResult.eloChange} → {finishResult.newElo}
-            </p>
-            <Button className="mt-5" onClick={playAgain}>
-              Chơi tiếp
-            </Button>
-          </div>
-        )}
-      </Card>
-
-      <EloLeaderboardSection />
-    </>
-  );
-}
-
-/** Dùng chung cho cả Đấu 1v1 và Đấu đôi — 2 chế độ đều đọc/ghi CÙNG 1
- * `UserRating`/rank tier/mùa giải (xem `TeamDuelService` phía server), nên
- * chỉ cần 1 bảng xếp hạng ELO duy nhất thay vì lặp lại cho từng chế độ. */
-function EloLeaderboardSection() {
-  const leaderboard = useDuelLeaderboard();
-  const tiersInfo = useRankTiers();
-  return (
-    <section className="mt-8">
-      <SectionHeading
-        icon="flame"
-        tone="primary"
-        title="Bảng xếp hạng ELO"
-        className="mb-4"
-      >
-        <SeasonCountdown />
-      </SectionHeading>
-      <RankTiersLegend />
-      <Card className="divide-y divide-border p-0!">
-        {leaderboard.data?.length ? (
-          leaderboard.data.map((row) => (
-            <div
-              key={row.userId}
-              className="flex items-center justify-between gap-3 px-5 py-3.5"
-            >
-              <span className="flex items-center gap-3 text-sm">
-                <span className="w-5 shrink-0 text-center text-xs font-semibold text-muted">
-                  {row.rank}
-                </span>
-                <RankEmblem
-                  tierName={row.tier}
-                  color={row.tierColor}
-                  tiers={tiersInfo.data?.tiers}
-                  size={26}
-                />
-                {row.displayName}
-              </span>
-              <span className="text-sm font-semibold text-primary">
-                {row.elo} ELO · {row.wins}T/{row.losses}B/{row.draws}H
-              </span>
-            </div>
-          ))
-        ) : (
-          <p className="px-5 py-8 text-center text-sm text-muted">
-            Chưa có ai đấu — vào tìm đối thủ đầu tiên nào!
-          </p>
-        )}
-      </Card>
-    </section>
-  );
-}
-
 // ------------------------------ Trang chính ------------------------------
-
-type SubMode = "solo" | "duel";
 
 function GameWorkspace({
   game,
@@ -1242,15 +740,6 @@ function GameWorkspace({
   game: GameDef;
   onBack: () => void;
 }) {
-  const { user } = useAuth();
-  const [sub, setSub] = useState<SubMode>("solo");
-  const tabs: { key: SubMode; label: string; icon: IconName }[] = [
-    { key: "solo", label: "Luyện tập", icon: "clock" },
-    // Đấu 1v1 ghép trận qua socket đã đăng nhập — khách chỉ chơi 1 mình.
-    ...(game.supportsDuel && user
-      ? [{ key: "duel" as const, label: "Đấu 1v1", icon: "flame" as const }]
-      : []),
-  ];
   return (
     <div className="space-y-6">
       <button
@@ -1260,35 +749,7 @@ function GameWorkspace({
       >
         <Icon name="back" size={15} /> Chọn minigame khác
       </button>
-      {tabs.length > 1 && (
-        <div className="flex gap-1 border-b border-border">
-          {tabs.map((m) => (
-            <button
-              key={m.key}
-              type="button"
-              aria-pressed={sub === m.key}
-              onClick={() => setSub(m.key)}
-              className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
-                sub === m.key
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted hover:text-foreground"
-              }`}
-            >
-              <Icon name={m.icon} size={16} />
-              {m.label}
-            </button>
-          ))}
-        </div>
-      )}
-      {sub === "solo" ? (
-        game.mode === "MATCH" ? (
-          <MatchMinigame />
-        ) : (
-          <SoloMinigame game={game} />
-        )
-      ) : (
-        <DuelMinigame />
-      )}
+      {game.mode === "MATCH" ? <MatchMinigame /> : <SoloMinigame game={game} />}
     </div>
   );
 }
@@ -1313,7 +774,7 @@ export default function MinigamePage() {
         tone="accent"
         eyebrow="Vừa học vừa chơi"
         title="Minigame"
-        description="Chọn 1 trò chơi để luyện phản xạ từ vựng — 1 mình hoặc đấu trực tiếp với người khác."
+        description="Chọn 1 trò chơi để luyện phản xạ từ vựng — mỗi ván 60 giây, càng nhanh càng nhiều xu."
       >
         <TourButton tourKey="minigame" />
       </PageHeading>

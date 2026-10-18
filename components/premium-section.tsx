@@ -1,14 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Avatar } from "@/components/avatar";
 import { Button, Card } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { PremiumModal } from "@/components/premium-modal";
-import { useAuth } from "@/lib/auth";
 import { getTopUpStatus } from "@/lib/payments";
 import { usePremiumStatus } from "@/lib/premium";
-import { equipFrame, useFrameShop } from "@/lib/shop";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("vi-VN", {
@@ -75,7 +72,6 @@ export function PremiumSection() {
                   : `Còn hiệu lực đến ${formatDate(data.until!)}.`}
               </p>
             </div>
-            <PremiumFrame />
           </div>
         ) : (
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -104,35 +100,5 @@ export function PremiumSection() {
         <PremiumModal plans={data.plans} onClose={() => setOpen(false)} />
       )}
     </>
-  );
-}
-
-/** Khung avatar Phượng Hoàng — quyền lợi Premium duy nhất về trang trí (khung mua
- * bằng xu đã bỏ). Bật/tắt ngay tại thẻ Premium. */
-function PremiumFrame() {
-  const { user } = useAuth();
-  const { data, mutate } = useFrameShop();
-  const [busy, setBusy] = useState(false);
-  const frame = data?.frames[0];
-  if (!user || !frame?.owned) return null;
-
-  async function toggle() {
-    if (busy || !frame) return;
-    setBusy(true);
-    try {
-      await equipFrame(frame.equipped ? null : frame.key);
-      await mutate();
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div className="ml-auto flex items-center gap-2">
-      <Avatar user={user} size={36} frameColors={frame.colors} />
-      <Button variant="secondary" disabled={busy} onClick={() => void toggle()}>
-        {frame.equipped ? "Bỏ khung" : `Dùng khung ${frame.name}`}
-      </Button>
-    </div>
   );
 }

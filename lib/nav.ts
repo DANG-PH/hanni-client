@@ -50,7 +50,7 @@ export const PRACTICE_SECTIONS: { title: string; items: PracticeLink[] }[] = [
     title: "Học mà chơi",
     items: [
       { href: "/watch", label: "Học qua video", description: "Phim ngắn, phụ đề song ngữ, bấm từ để tra", icon: "play" },
-      { href: "/minigame", label: "Trò chơi & Đấu 1v1", description: "Dịch tốc độ, ghép cặp, đấu với người khác", icon: "trophy" },
+      { href: "/minigame", label: "Trò chơi luyện từ", description: "Dịch tốc độ, nghe đoán từ, ghép cặp, chọn pinyin", icon: "trophy" },
     ],
   },
   {

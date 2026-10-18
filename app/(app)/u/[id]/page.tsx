@@ -86,7 +86,7 @@ export default function PublicProfilePage() {
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Avatar user={p} size={64} frameColors={p.equippedFrame?.colors ?? null} />
+            <Avatar user={p} size={64} />
             <div>
               <h1 className="flex flex-wrap items-center gap-1.5 text-lg font-bold">
                 {p.displayName}
