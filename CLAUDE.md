@@ -129,7 +129,7 @@ mà HSK 7-9 có 357 bài thì lật từng trang 6 bài để tìm "Thành ngữ
 tên chủ đề, `normalize()` bỏ dấu tiếng Việt (gõ "do an" ra "Đồ ăn & thức uống"). (2)
 `/learn/[lessonId]` hiện "Đã học X/Y từ" (đếm `word.progressState !== "NEW"`) và nhãn nút đổi
 "Bắt đầu học" ↔ "Học tiếp" — nhảy vào bài bất kỳ thì trang bài phải tự nói được mình đang ở
-đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK2-9) thay vì hiện số 0 rồi bấm vào ra
+đâu; tab "Ví dụ" ẩn hẳn khi bài chưa có câu ví dụ nào (HSK4-9, HSK 1–3 đã có từ 2026-10-19) thay vì hiện số 0 rồi bấm vào ra
 màn trống.
 
 **Học thử xong đăng ký thì từ vừa học phải THEO VÀO (sửa 2026-09-22)** — màn kết `/hoc-thu` có
