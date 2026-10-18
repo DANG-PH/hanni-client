@@ -21,6 +21,7 @@ import type {
   LeechWord,
   SuspendedWord,
   LessonDetail,
+  OnboardingPlan,
   OnboardingProfile,
   Paginated,
   PracticeSkill,
@@ -298,7 +299,11 @@ export function submitOnboarding(input: SubmitOnboardingInput) {
  * khảo sát ẩn danh xem kết quả NGAY rồi mới quyết định có đăng ký hay không.
  * Xem `OnboardingService.preview` ở server cho lý do đầy đủ. */
 export function previewOnboarding(input: SubmitOnboardingInput) {
-  return api.post<{ recommendedLevel: number; recommendationVi: string }>(
+  return api.post<{
+    recommendedLevel: number;
+    recommendationVi: string;
+    plan?: OnboardingPlan;
+  }>(
     "/onboarding/preview",
     input,
   );

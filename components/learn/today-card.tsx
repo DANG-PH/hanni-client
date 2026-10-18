@@ -43,7 +43,7 @@ export function TodayCard() {
           <div className="mb-1.5 flex items-center justify-between text-xs">
             <span className="font-semibold">Mục tiêu hôm nay</span>
             <span className={s.goal.met ? "font-semibold text-good" : "text-muted"}>
-              {s.goal.met ? "Đã đạt" : `${s.goal.progress}/${s.goal.value} ${s.goal.type === "MINUTES" ? "phút" : "từ"}`}
+              {s.goal.met ? "Đã đạt" : `${Math.floor(s.goal.progress)}/${s.goal.value} ${s.goal.type === "MINUTES" ? "phút" : "từ"}`}
             </span>
           </div>
           <ProgressBar value={goalPct} label="Mục tiêu hôm nay" color={s.goal.met ? "bg-good" : "bg-primary"} />

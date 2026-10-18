@@ -2,6 +2,9 @@
   position: relative;
   min-height: 100svh;
   overflow: hidden;
+  /* Vòng trang trí rộng hơn màn hình: `hidden` vẫn cuộn được bằng code (focus,
+   * scrollIntoView) làm cả trang lệch ngang trên điện thoại — `clip` thì không. */
+  overflow: clip;
   background:
     radial-gradient(circle at 10% 12%, color-mix(in srgb, var(--primary) 7%, transparent), transparent 28rem),
     radial-gradient(circle at 92% 78%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 24rem),
@@ -120,7 +123,8 @@
 .layout {
   display: grid;
   grid-template-columns: minmax(280px, 0.86fr) minmax(540px, 1.14fr);
-  align-items: center;
+  /* Mép trên đứng yên khi chuyển câu (căn giữa thì thẻ nhảy theo chiều cao từng câu). */
+  align-items: start;
   gap: clamp(28px, 6vw, 92px);
   min-height: calc(100svh - 168px);
 }
@@ -328,14 +332,9 @@
   text-transform: uppercase;
 }
 
-.progressHint,
-.progressPercent {
+.progressHint {
   color: var(--muted);
   font-size: 12px;
-}
-
-.progressPercent {
-  font-weight: 700;
 }
 
 .progressTrack {
@@ -413,10 +412,18 @@
   line-height: 1.65;
 }
 
-.choiceGrid {
+.choiceList {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
+}
+
+/* Trên điện thoại khối giới thiệu bên trái bị ẩn — mục đích khảo sát nói gọn ở đây. */
+.mobilePurpose {
+  display: none;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 .choice,
@@ -519,7 +526,7 @@
 
 .levelGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 9px;
 }
 
@@ -537,6 +544,7 @@
 .levelNumber {
   font-size: 13px;
   font-weight: 750;
+  white-space: nowrap;
 }
 
 .levelDescription {
@@ -594,19 +602,6 @@
   line-height: 1.35;
 }
 
-.dateField {
-  max-width: 230px;
-  margin-top: 4px;
-}
-
-.fieldLabel {
-  display: block;
-  margin-bottom: 7px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
-}
-
 .wizardFooter {
   display: flex;
   align-items: center;
@@ -617,11 +612,8 @@
   border-top: 1px solid var(--border);
 }
 
-.footerHint {
-  max-width: 25ch;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.45;
+.wizardFooterEnd {
+  justify-content: flex-end;
 }
 
 .nextButton {
@@ -652,15 +644,6 @@
   box-shadow: 0 12px 24px -18px color-mix(in srgb, var(--good) 70%, transparent);
 }
 
-.resultEyebrow {
-  margin: 0 0 8px;
-  color: var(--good);
-  font-size: 11px;
-  font-weight: 750;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
 .resultTitle {
   margin: 0;
   color: var(--foreground);
@@ -673,12 +656,75 @@
   color: var(--primary);
 }
 
-.resultDescription {
-  max-width: 48ch;
-  margin: 11px auto 0;
+.planList {
+  display: grid;
+  gap: 10px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.planRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 14px 15px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.planIcon {
+  display: grid;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--primary) 9%, var(--surface));
+  color: var(--primary);
+}
+
+.planCopy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.planTitle {
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.planDetail {
+  margin-top: 3px;
   color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.planLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 7px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.planLink:hover {
+  text-decoration: underline;
+}
+
+.resultNote {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .recommendation {
@@ -748,44 +794,11 @@
   }
 
   .introPanel {
-    min-height: 0;
-    margin-bottom: 18px;
-    padding: 24px;
-    border-radius: 24px;
+    display: none;
   }
 
-  .introKicker {
-    margin-bottom: 18px;
-  }
-
-  .introTitle {
-    max-width: 15ch;
-    font-size: clamp(31px, 9vw, 44px);
-  }
-
-  .introDescription {
-    max-width: 46ch;
-    margin-top: 15px;
-  }
-
-  .benefitList {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    margin-top: 22px;
-  }
-
-  .benefit {
+  .mobilePurpose {
     display: block;
-    font-size: 11px;
-    line-height: 1.4;
-  }
-
-  .benefitIcon {
-    margin-bottom: 7px;
-  }
-
-  .introQuote {
-    margin-top: 22px;
   }
 
   .wizardCard {
@@ -809,7 +822,6 @@
     font-size: 12px;
   }
 
-  .choiceGrid,
   .goalGrid {
     grid-template-columns: 1fr;
   }
@@ -840,16 +852,16 @@
 
   .levelButton {
     min-height: 54px;
-    padding: 9px 10px;
+    padding: 9px 8px;
+  }
+
+  .levelNumber {
+    font-size: 12px;
   }
 
   .wizardFooter {
     align-items: stretch;
     flex-direction: column;
-  }
-
-  .footerHint {
-    max-width: none;
   }
 
   .nextButton {
@@ -867,6 +879,13 @@
 
   .resultActions > button:last-child {
     flex-basis: auto;
+  }
+}
+
+/* Máy rất nhỏ (320px): 4 cột không đủ chỗ cho "HSK 7–9", "6 tháng". */
+@media (max-width: 350px) {
+  .levelGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

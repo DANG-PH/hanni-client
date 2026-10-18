@@ -586,15 +586,33 @@ export interface OnboardingProfile {
   recommendedLevel: number;
   recommendationVi: string;
   completedAt: string;
+  /** Tuỳ chọn: server trước 2026-10-18 chưa trả. */
+  plan?: OnboardingPlan;
+}
+
+/** Lộ trình tính từ câu trả lời khảo sát — xem `OnboardingPlan` ở server. */
+export interface OnboardingPlan {
+  /** null = đã học nhưng chưa chắc cấp nào → làm kiểm tra trình độ. */
+  startLevel: number | null;
+  firstLesson: { id: string; title: string } | null;
+  dailyMinutes: number | null;
+  exam: {
+    level: number;
+    lessons: number | null;
+    words: number | null;
+    weeksLeft: number | null;
+  } | null;
 }
 
 export interface SubmitOnboardingInput {
   hasStudiedBefore: boolean;
+  /** Bỏ trống khi đã học mà chưa chắc cấp nào. */
   selfAssessedLevel?: number;
   goal: OnboardingGoal;
   plansToTakeExam: boolean;
   targetLevel?: number;
   targetDate?: string;
+  dailyMinutes?: number;
 }
 
 export type ChatRole = "USER" | "MODEL";

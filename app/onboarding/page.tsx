@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/icon";
-import { Button, ErrorNote, Spinner } from "@/components/ui";
+import { Button, ErrorNote, LinkButton, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
 import {
   previewOnboarding,
@@ -14,81 +13,85 @@ import {
 } from "@/lib/hooks";
 import type {
   OnboardingGoal,
-  OnboardingProfile,
+  OnboardingPlan,
   SubmitOnboardingInput,
 } from "@/lib/types";
 import styles from "./onboarding.module.css";
 
-const GOALS: {
-  key: OnboardingGoal;
-  label: string;
-  hint: string;
-  icon: IconName;
-}[] = [
-  {
-    key: "TRAVEL",
-    label: "Du lịch, giao tiếp",
-    hint: "Tự tin dùng câu cơ bản",
-    icon: "route",
-  },
-  {
-    key: "WORK",
-    label: "Phục vụ công việc",
-    hint: "Trao đổi và làm việc tốt hơn",
-    icon: "chart",
-  },
-  {
-    key: "EXAM",
-    label: "Thi chứng chỉ HSK",
-    hint: "Ôn tập theo mốc rõ ràng",
-    icon: "trophy",
-  },
-  {
-    key: "ACADEMIC",
-    label: "Du học",
-    hint: "Xây nền tảng học thuật",
-    icon: "book",
-  },
-  {
-    key: "INTEREST",
-    label: "Văn hoá & sở thích",
-    hint: "Học vì niềm vui mỗi ngày",
-    icon: "heart",
-  },
-  {
-    key: "OTHER",
-    label: "Mục tiêu khác",
-    hint: "Tạo nhịp học riêng cho bạn",
-    icon: "spark",
-  },
+/**
+ * Khảo sát 3 câu (làm lại 2026-10-18 — user: "mục đích, câu hỏi, luồng trả lời
+ * rõ ràng, dễ điền"). Mỗi câu hỏi có tác dụng THẬT và hiện thành 1 dòng ở màn
+ * kết quả: trình độ → bài bắt đầu; mục tiêu → lộ trình tới kỳ thi hoặc cách
+ * luyện nên thử; thời gian mỗi ngày → mục tiêu ngày (phút). Trước đó câu "mục
+ * tiêu" không đổi gì trong app, còn mục tiêu ngày lại không được hỏi.
+ */
+
+const GOALS: { key: OnboardingGoal; label: string; hint: string; icon: IconName }[] = [
+  { key: "EXAM", label: "Thi chứng chỉ HSK", hint: "Chia lộ trình theo ngày thi", icon: "trophy" },
+  { key: "TRAVEL", label: "Giao tiếp, du lịch", hint: "Nói được câu thường ngày", icon: "route" },
+  { key: "WORK", label: "Công việc", hint: "Trao đổi với đối tác, đồng nghiệp", icon: "chart" },
+  { key: "ACADEMIC", label: "Du học", hint: "Cần chứng chỉ HSK để nộp hồ sơ", icon: "book" },
+  { key: "INTEREST", label: "Phim ảnh, văn hoá", hint: "Học vì thích", icon: "heart" },
+  { key: "OTHER", label: "Lý do khác", hint: "Chỉ cần học đều mỗi ngày", icon: "spark" },
 ];
 
-const LEVELS = Array.from({ length: 9 }, (_, i) => i + 1);
-const LEVEL_DESCRIPTIONS = [
-  "Nhập môn",
-  "Nền tảng",
-  "Giao tiếp",
-  "Trung cấp",
-  "Mở rộng",
-  "Khá tốt",
-  "Nâng cao",
-  "Thành thạo",
-  "Chuyên sâu",
+/** Gợi ý cách luyện theo mục tiêu (mục tiêu thi HSK có dòng lộ trình riêng). */
+const GOAL_SUGGESTION: Record<
+  Exclude<OnboardingGoal, "EXAM">,
+  { label: string; detail: string; href: string; guest: boolean }
+> = {
+  TRAVEL: { label: "Luyện nói với AI", detail: "gọi món, hỏi đường, mua sắm như thật", href: "/roleplay", guest: false },
+  WORK: { label: "Luyện nói với AI", detail: "luyện phản xạ trao đổi bằng tiếng Trung", href: "/roleplay", guest: false },
+  ACADEMIC: { label: "Đề thi thử HSK", detail: "làm thử 1 đề để biết mình đang ở đâu", href: "/thi-thu-hsk", guest: true },
+  INTEREST: { label: "Học qua video", detail: "phim ngắn có phụ đề song ngữ, bấm từ để tra", href: "/watch", guest: false },
+  OTHER: { label: "Luyện tập", detail: "nghe, nói, viết, trò chơi — chọn cách bạn thích", href: "/luyen-tap", guest: false },
+};
+
+/** Cấp 7 = HSK 7–9 (dữ liệu bài học gộp 3 cấp này). */
+const LEVELS: { value: number; label: string; hint: string }[] = [
+  { value: 1, label: "HSK 1", hint: "Nhập môn" },
+  { value: 2, label: "HSK 2", hint: "Nền tảng" },
+  { value: 3, label: "HSK 3", hint: "Giao tiếp" },
+  { value: 4, label: "HSK 4", hint: "Trung cấp" },
+  { value: 5, label: "HSK 5", hint: "Mở rộng" },
+  { value: 6, label: "HSK 6", hint: "Khá tốt" },
+  { value: 7, label: "HSK 7–9", hint: "Nâng cao" },
 ];
+
+const EXAM_WINDOWS: { value: number; label: string; hint: string }[] = [
+  { value: 3, label: "3 tháng", hint: "≈ 13 tuần" },
+  { value: 6, label: "6 tháng", hint: "≈ 26 tuần" },
+  { value: 12, label: "1 năm", hint: "≈ 52 tuần" },
+  { value: 0, label: "Chưa rõ", hint: "chưa có ngày" },
+];
+
+const DAILY_MINUTES: { value: number; label: string; hint: string }[] = [
+  { value: 5, label: "5 phút", hint: "Nhẹ nhàng" },
+  { value: 10, label: "10 phút", hint: "Vừa phải" },
+  { value: 15, label: "15 phút", hint: "Chăm chỉ" },
+  { value: 20, label: "20 phút", hint: "Tăng tốc" },
+];
+
+const levelName = (level: number) => (level >= 7 ? "7–9" : String(level));
 
 /** Khảo sát làm xong TRƯỚC khi có tài khoản (kiểu Duolingo) được giữ tạm ở
  * đây, đăng ký xong quay lại trang này thì tự nộp — xem hàm submit() trong
  * OnboardingWizard và effect tự nộp trong OnboardingPage. */
 const PENDING_KEY = "hanni:pending-onboarding";
 
+/** Đủ để vẽ màn kết quả — cả hồ sơ đã lưu lẫn kết quả tính thử của khách. */
+type ResultData = {
+  recommendedLevel: number;
+  recommendationVi: string;
+  goal: OnboardingGoal;
+  plan?: OnboardingPlan;
+};
+
 export default function OnboardingPage() {
   const { user, loading: authLoading } = useAuth();
   const onboarding = useOnboarding(Boolean(user));
-  const [result, setResult] = useState<OnboardingProfile | null>(null);
-  const [preview, setPreview] = useState<{
-    recommendedLevel: number;
-    recommendationVi: string;
-  } | null>(null);
+  const [result, setResult] = useState<ResultData | null>(null);
+  const [preview, setPreview] = useState<ResultData | null>(null);
   const [redo, setRedo] = useState(false);
   const [autoSubmitting, setAutoSubmitting] = useState(false);
   const [autoSubmitError, setAutoSubmitError] = useState<string | null>(null);
@@ -143,7 +146,7 @@ export default function OnboardingPage() {
     <OnboardingShell authenticated={Boolean(user)}>
       {finalProfile ? (
         <ResultScreen
-          profile={finalProfile}
+          data={finalProfile}
           onRedo={() => {
             setResult(null);
             setRedo(true);
@@ -151,7 +154,7 @@ export default function OnboardingPage() {
         />
       ) : preview ? (
         <ResultScreen
-          profile={preview}
+          data={preview}
           guest
           onRedo={() => {
             setPreview(null);
@@ -220,51 +223,57 @@ function OnboardingShell({
         <div className={styles.layout}>
           <aside
             className={styles.introPanel}
-            aria-label="Giới thiệu lộ trình Hanni"
+            aria-label="Khảo sát này để làm gì"
           >
             <div className={styles.introContent}>
               <p className={styles.introKicker}>
                 <span className={styles.introKickerDot} aria-hidden="true" />
-                Hanni learning path
+                Thiết lập lộ trình
               </p>
               <h1 className={styles.introTitle}>
-                Học đúng nhịp.
+                3 câu hỏi,
                 <br />
-                <em>Tiến bộ đều.</em>
+                <em>chưa tới 1 phút.</em>
               </h1>
               <p className={styles.introDescription}>
-                Trả lời vài câu hỏi ngắn để Hanni hiểu mục tiêu, chọn đúng điểm
-                bắt đầu và đồng hành cùng bạn lâu dài.
+                Câu trả lời của bạn quyết định 3 thứ trong Hanni:
               </p>
               <div className={styles.benefitList}>
                 <div className={styles.benefit}>
                   <span className={styles.benefitIcon}>
                     <Icon name="target" size={17} />
                   </span>
-                  <span>Chọn đúng cấp độ</span>
+                  <span>Bài bắt đầu vừa sức</span>
+                </div>
+                <div className={styles.benefit}>
+                  <span className={styles.benefitIcon}>
+                    <Icon name="trophy" size={17} />
+                  </span>
+                  <span>Lộ trình tới kỳ thi HSK (nếu có)</span>
                 </div>
                 <div className={styles.benefit}>
                   <span className={styles.benefitIcon}>
                     <Icon name="clock" size={17} />
                   </span>
-                  <span>Nhịp học vừa sức</span>
-                </div>
-                <div className={styles.benefit}>
-                  <span className={styles.benefitIcon}>
-                    <Icon name="chart" size={17} />
-                  </span>
-                  <span>Tiến bộ thấy rõ</span>
+                  <span>Mục tiêu học mỗi ngày</span>
                 </div>
               </div>
               <div className={styles.introQuote}>
                 <span className={styles.quoteBadge} aria-hidden="true">
-                  HSK
-                  <br />
-                  3.0
+                  <Icon name="check" size={18} />
                 </span>
                 <span className={styles.quoteCopy}>
-                  <strong>Lộ trình bám sát mục tiêu</strong>
-                  <span>Cá nhân hoá theo câu trả lời của bạn</span>
+                  {authenticated ? (
+                    <>
+                      <strong>Đổi lại được bất cứ lúc nào</strong>
+                      <span>Mục tiêu ngày chỉnh trong Cài đặt</span>
+                    </>
+                  ) : (
+                    <>
+                      <strong>Chưa cần tài khoản</strong>
+                      <span>Làm xong vào học bài 1 ngay, lưu tiến độ sau</span>
+                    </>
+                  )}
                 </span>
               </div>
             </div>
@@ -277,6 +286,7 @@ function OnboardingShell({
 }
 
 type Step = 1 | 2 | 3;
+type LevelChoice = "new" | "unsure" | "studied";
 
 function OnboardingWizard({
   authenticated,
@@ -286,78 +296,82 @@ function OnboardingWizard({
 }: {
   authenticated: boolean;
   errorBanner: string | null;
-  onDone: (profile: OnboardingProfile) => void;
+  onDone: (profile: ResultData) => void;
   /** Khách chưa đăng nhập: chỉ có kết quả tính thử, chưa lưu gì. */
-  onPreview: (preview: {
-    recommendedLevel: number;
-    recommendationVi: string;
-  }) => void;
+  onPreview: (preview: ResultData) => void;
 }) {
   const [step, setStep] = useState<Step>(1);
-  const [hasStudiedBefore, setHasStudiedBefore] = useState<boolean | null>(
-    null,
-  );
-  const [selfAssessedLevel, setSelfAssessedLevel] = useState<number | null>(
-    null,
-  );
+  const [levelChoice, setLevelChoice] = useState<LevelChoice | null>(null);
+  const [selfAssessedLevel, setSelfAssessedLevel] = useState<number | null>(null);
   const [goal, setGoal] = useState<OnboardingGoal | null>(null);
-  const [plansToTakeExam, setPlansToTakeExam] = useState<boolean | null>(null);
   const [targetLevel, setTargetLevel] = useState<number | null>(null);
-  const [targetDate, setTargetDate] = useState("");
+  const [examWindow, setExamWindow] = useState<number | null>(null);
+  const [dailyMinutes, setDailyMinutes] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const step1Ready =
+    levelChoice === "new" ||
+    levelChoice === "unsure" ||
+    (levelChoice === "studied" && selfAssessedLevel !== null);
+  const step2Ready = goal !== null && (goal !== "EXAM" || targetLevel !== null);
+
   async function submit() {
-    if (hasStudiedBefore === null || !goal || plansToTakeExam === null) return;
+    if (!levelChoice || !goal || dailyMinutes === null) return;
+    const plansToTakeExam = goal === "EXAM";
+    let targetDate: string | undefined;
+    if (plansToTakeExam && examWindow) {
+      const d = new Date();
+      d.setMonth(d.getMonth() + examWindow);
+      targetDate = d.toISOString().slice(0, 10);
+    }
     const input: SubmitOnboardingInput = {
-      hasStudiedBefore,
-      selfAssessedLevel: hasStudiedBefore
-        ? (selfAssessedLevel ?? undefined)
-        : undefined,
+      hasStudiedBefore: levelChoice !== "new",
+      selfAssessedLevel:
+        levelChoice === "studied" ? (selfAssessedLevel ?? undefined) : undefined,
       goal,
       plansToTakeExam,
       targetLevel: plansToTakeExam ? (targetLevel ?? undefined) : undefined,
-      targetDate: plansToTakeExam && targetDate ? targetDate : undefined,
+      targetDate,
+      dailyMinutes,
     };
     setBusy(true);
     setError(null);
     try {
       if (authenticated) {
-        const profile = await submitOnboarding(input);
-        onDone(profile);
+        onDone(await submitOnboarding(input));
       } else {
         // Chưa có tài khoản: TÍNH và HIỆN kết quả ngay, chỉ lưu tạm câu trả
         // lời để đăng ký xong thì tự nộp (xem effect trong OnboardingPage).
-        //
-        // Trước đây bước này đẩy thẳng sang /register — trả lời xong 3 câu mà
-        // chưa nhận lại gì, đúng chỗ dễ rời đi nhất trong cả luồng. Giờ xem
-        // lộ trình trước, rồi mới mời tạo tài khoản để LƯU nó.
         const preview = await previewOnboarding(input);
         try {
           sessionStorage.setItem(PENDING_KEY, JSON.stringify(input));
         } catch {
           /* trình duyệt có thể chặn sessionStorage — vẫn xem được kết quả */
         }
-        onPreview(preview);
+        onPreview({ ...preview, goal });
       }
     } catch {
-      setError("Chưa lưu được khảo sát. Bạn thử lại nhé.");
+      setError("Chưa tính được lộ trình. Bạn thử lại nhé.");
       setBusy(false);
     }
   }
 
   const progress = Math.round((step / 3) * 100);
-  const progressHint =
-    step === 1 ? "Còn 2 bước" : step === 2 ? "Còn 1 bước" : "Sắp hoàn tất";
 
   return (
     <div className={styles.wizardColumn}>
       <section className={styles.wizardCard} aria-label="Khảo sát lộ trình học">
+        <p className={styles.mobilePurpose}>
+          3 câu hỏi để Hanni chọn bài bắt đầu, lộ trình thi và mục tiêu mỗi ngày
+          {authenticated ? "." : " — chưa cần tài khoản."}
+        </p>
         <div className={styles.progressHeader}>
           <div className={styles.progressMeta}>
-            <span className={styles.progressLabel}>Bước {step} / 3</span>
-            <span className={styles.progressHint}>{progressHint}</span>
-            <span className={styles.progressPercent}>{progress}%</span>
+            <span className={styles.progressLabel}>Câu {step} / 3</span>
+            <span className={styles.progressHint}>
+              {step === 3 ? "Câu cuối" : `Còn ${3 - step} câu`}
+            </span>
           </div>
           <div
             className={styles.progressTrack}
@@ -385,61 +399,53 @@ function OnboardingWizard({
             <>
               <QuestionHeading
                 icon="book"
-                eyebrow="Điểm bắt đầu"
-                title="Bạn đã học tiếng Trung/HSK trước đây chưa?"
-                description="Hanni sẽ dùng thông tin này để chọn bài học vừa sức với bạn."
+                eyebrow="Để chọn bài bắt đầu"
+                title="Bạn biết tiếng Trung tới đâu?"
+                description="Không lặp lại thứ bạn đã biết, cũng không nhảy quá xa."
               />
-              <div className={styles.choiceGrid}>
-                <ChoiceButton
-                  icon="book"
-                  title="Rồi, có học qua"
-                  description="Mình muốn học tiếp từ nền tảng hiện có"
-                  active={hasStudiedBefore === true}
-                  onClick={() => setHasStudiedBefore(true)}
-                />
+              <div className={styles.choiceList}>
                 <ChoiceButton
                   icon="spark"
-                  title="Chưa, mới bắt đầu"
-                  description="Mình muốn làm quen từ những điều cơ bản"
-                  active={hasStudiedBefore === false}
+                  title="Chưa biết gì"
+                  description="Bắt đầu từ bài 1 HSK 1 — không cần biết trước chữ Hán"
+                  active={levelChoice === "new"}
                   onClick={() => {
-                    setHasStudiedBefore(false);
+                    setLevelChoice("new");
                     setSelfAssessedLevel(null);
                   }}
                 />
+                <ChoiceButton
+                  icon="chart"
+                  title="Biết một chút, chưa chắc cấp nào"
+                  description="Cuối khảo sát làm bài kiểm tra khoảng 3 phút để xếp đúng cấp"
+                  active={levelChoice === "unsure"}
+                  onClick={() => {
+                    setLevelChoice("unsure");
+                    setSelfAssessedLevel(null);
+                  }}
+                />
+                <ChoiceButton
+                  icon="book"
+                  title="Đang học một cấp HSK"
+                  description="Chọn cấp bạn đang học, học dở cũng được"
+                  active={levelChoice === "studied"}
+                  onClick={() => setLevelChoice("studied")}
+                />
               </div>
-              {hasStudiedBefore && (
+              {levelChoice === "studied" && (
                 <div>
-                  <p className={styles.subQuestion}>
-                    Bạn tự đánh giá đã học tới khoảng cấp nào?
-                  </p>
-                  <LevelGrid
+                  <p className={styles.subQuestion}>Bạn đang học cấp nào?</p>
+                  <OptionGrid
+                    options={LEVELS}
                     value={selfAssessedLevel}
                     onChange={setSelfAssessedLevel}
                   />
-                  <p className="mt-3 text-sm text-muted">
-                    Không chắc?{" "}
-                    <Link
-                      href="/kiem-tra-trinh-do"
-                      className="font-semibold text-primary hover:underline"
-                    >
-                      Làm bài kiểm tra trình độ 2–5 phút
-                    </Link>
-                  </p>
                 </div>
               )}
-              <div className={styles.wizardFooter}>
-                <p className={styles.footerHint}>
-                  {hasStudiedBefore
-                    ? "Chọn cấp gần nhất với trình độ hiện tại của bạn."
-                    : "Không cần biết trước Hán tự — Hanni sẽ hướng dẫn từ đầu."}
-                </p>
+              <div className={`${styles.wizardFooter} ${styles.wizardFooterEnd}`}>
                 <Button
                   className={styles.nextButton}
-                  disabled={
-                    hasStudiedBefore === null ||
-                    (hasStudiedBefore && !selfAssessedLevel)
-                  }
+                  disabled={!step1Ready}
                   onClick={() => setStep(2)}
                 >
                   Tiếp tục <Icon name="arrow" size={16} />
@@ -452,16 +458,22 @@ function OnboardingWizard({
             <>
               <QuestionHeading
                 icon="target"
-                eyebrow="Mục tiêu của bạn"
-                title="Bạn muốn học tiếng Trung để làm gì?"
-                description="Một mục tiêu rõ ràng giúp Hanni sắp xếp nội dung và nhịp học phù hợp hơn."
+                eyebrow="Để gợi ý cách luyện hợp với bạn"
+                title="Bạn học tiếng Trung để làm gì?"
+                description="Nếu định thi HSK, Hanni tính số bài còn lại tới cấp thi và chia theo ngày thi."
               />
               <div className={styles.goalGrid}>
                 {GOALS.map((g) => (
                   <button
                     key={g.key}
                     type="button"
-                    onClick={() => setGoal(g.key)}
+                    onClick={() => {
+                      setGoal(g.key);
+                      if (g.key !== "EXAM") {
+                        setTargetLevel(null);
+                        setExamWindow(null);
+                      }
+                    }}
                     aria-pressed={goal === g.key}
                     className={`${styles.goalCard} ${goal === g.key ? styles.goalActive : ""}`}
                   >
@@ -473,13 +485,31 @@ function OnboardingWizard({
                   </button>
                 ))}
               </div>
+              {goal === "EXAM" && (
+                <div>
+                  <p className={styles.subQuestion}>Bạn định thi cấp nào?</p>
+                  <OptionGrid
+                    options={LEVELS}
+                    value={targetLevel}
+                    onChange={setTargetLevel}
+                  />
+                  <p className={styles.subQuestion}>
+                    Bao lâu nữa thì thi? <span className="font-normal">(không bắt buộc)</span>
+                  </p>
+                  <OptionGrid
+                    options={EXAM_WINDOWS}
+                    value={examWindow}
+                    onChange={setExamWindow}
+                  />
+                </div>
+              )}
               <div className={styles.wizardFooter}>
                 <Button variant="secondary" onClick={() => setStep(1)}>
                   <Icon name="back" size={16} /> Quay lại
                 </Button>
                 <Button
                   className={styles.nextButton}
-                  disabled={!goal}
+                  disabled={!step2Ready}
                   onClick={() => setStep(3)}
                 >
                   Tiếp tục <Icon name="arrow" size={16} />
@@ -491,72 +521,27 @@ function OnboardingWizard({
           {step === 3 && (
             <>
               <QuestionHeading
-                icon="trophy"
-                eyebrow="Đích đến"
-                title="Bạn có dự định thi HSK không?"
-                description="Nếu có, Hanni sẽ giúp bạn chia nhỏ mục tiêu thành các mốc dễ theo dõi."
+                icon="clock"
+                eyebrow="Để đặt mục tiêu mỗi ngày"
+                title="Mỗi ngày bạn học được bao lâu?"
+                description="Hanni tính cả học bài mới, ôn thẻ và làm đề, rồi nhắc bạn giữ chuỗi ngày học. Đổi lại được trong Cài đặt."
               />
-              <div className={styles.choiceGrid}>
-                <ChoiceButton
-                  icon="trophy"
-                  title="Có, đang nhắm tới"
-                  description="Mình muốn học theo một mốc thi cụ thể"
-                  active={plansToTakeExam === true}
-                  onClick={() => setPlansToTakeExam(true)}
-                />
-                <ChoiceButton
-                  icon="clock"
-                  title="Chưa, học từ từ thôi"
-                  description="Mình ưu tiên duy trì thói quen đều đặn"
-                  active={plansToTakeExam === false}
-                  onClick={() => {
-                    setPlansToTakeExam(false);
-                    setTargetLevel(null);
-                    setTargetDate("");
-                  }}
-                />
-              </div>
-              {plansToTakeExam && (
-                <div>
-                  <p className={styles.subQuestion}>Bạn muốn thi cấp nào?</p>
-                  <LevelGrid value={targetLevel} onChange={setTargetLevel} />
-                  <div className="mt-5">
-                    <label
-                      htmlFor="onboarding-target-date"
-                      className={styles.fieldLabel}
-                    >
-                      Hạn thi dự kiến{" "}
-                      <span className="font-normal">(không bắt buộc)</span>
-                    </label>
-                    <input
-                      id="onboarding-target-date"
-                      type="date"
-                      value={targetDate}
-                      onChange={(e) => setTargetDate(e.target.value)}
-                      className={`field ${styles.dateField}`}
-                    />
-                  </div>
-                </div>
-              )}
+              <OptionGrid
+                options={DAILY_MINUTES}
+                value={dailyMinutes}
+                onChange={setDailyMinutes}
+              />
               <div className={styles.wizardFooter}>
                 <Button variant="secondary" onClick={() => setStep(2)}>
                   <Icon name="back" size={16} /> Quay lại
                 </Button>
                 <Button
                   className={styles.nextButton}
-                  disabled={
-                    plansToTakeExam === null ||
-                    (plansToTakeExam && !targetLevel) ||
-                    busy
-                  }
+                  disabled={dailyMinutes === null || busy}
                   onClick={() => void submit()}
                 >
-                  {busy
-                    ? "Đang lưu…"
-                    : authenticated
-                      ? "Xem lộ trình đề xuất"
-                      : "Tạo tài khoản để xem lộ trình"}
-                  <Icon name={authenticated ? "check" : "arrow"} size={16} />
+                  {busy ? "Đang tính…" : "Xem lộ trình"}
+                  <Icon name="arrow" size={16} />
                 </Button>
               </div>
             </>
@@ -626,102 +611,199 @@ function ChoiceButton({
   );
 }
 
-function LevelGrid({
+/** Lưới nút chọn 1 (cấp HSK, thời điểm thi, số phút mỗi ngày). */
+function OptionGrid({
+  options,
   value,
   onChange,
 }: {
+  options: { value: number; label: string; hint: string }[];
   value: number | null;
-  onChange: (level: number) => void;
+  onChange: (value: number) => void;
 }) {
   return (
     <div className={styles.levelGrid}>
-      {LEVELS.map((lv) => (
+      {options.map((o) => (
         <button
-          key={lv}
+          key={o.value}
           type="button"
-          onClick={() => onChange(lv)}
-          aria-pressed={value === lv}
-          className={`${styles.levelButton} ${value === lv ? styles.levelActive : ""}`}
+          onClick={() => onChange(o.value)}
+          aria-pressed={value === o.value}
+          className={`${styles.levelButton} ${value === o.value ? styles.levelActive : ""}`}
         >
-          <span className={styles.levelNumber}>HSK {lv}</span>
-          <span className={styles.levelDescription}>
-            {LEVEL_DESCRIPTIONS[lv - 1]}
-          </span>
+          <span className={styles.levelNumber}>{o.label}</span>
+          <span className={styles.levelDescription}>{o.hint}</span>
         </button>
       ))}
     </div>
   );
 }
 
+function PlanRow({
+  icon,
+  title,
+  detail,
+  link,
+}: {
+  icon: IconName;
+  title: string;
+  detail: string;
+  link?: { href: string; label: string };
+}) {
+  return (
+    <li className={styles.planRow}>
+      <span className={styles.planIcon}>
+        <Icon name={icon} size={18} />
+      </span>
+      <span className={styles.planCopy}>
+        <span className={styles.planTitle}>{title}</span>
+        <span className={styles.planDetail}>{detail}</span>
+        {link && (
+          <Link href={link.href} className={styles.planLink}>
+            {link.label} <Icon name="arrow" size={13} />
+          </Link>
+        )}
+      </span>
+    </li>
+  );
+}
+
 function ResultScreen({
-  profile,
+  data,
   guest = false,
   onRedo,
 }: {
-  /** Chỉ cần 2 field này — khách chưa đăng nhập không có hồ sơ đầy đủ. */
-  profile: { recommendedLevel: number; recommendationVi: string };
+  data: ResultData;
   /** true = kết quả tính thử, CHƯA lưu (chưa có tài khoản). */
   guest?: boolean;
   onRedo: () => void;
 }) {
-  const router = useRouter();
+  const plan = data.plan;
+  // Server cũ (trước khi có `plan`) — vẫn hiện được đề xuất dạng chữ.
+  if (!plan) {
+    return (
+      <div className={styles.wizardColumn}>
+        <section className={styles.resultCard}>
+          <h2 className={styles.resultTitle}>
+            Bắt đầu từ <strong>HSK {levelName(data.recommendedLevel)}</strong>
+          </h2>
+          <p className={styles.recommendation}>{data.recommendationVi}</p>
+          <div className={styles.resultActions}>
+            <LinkButton href={guest ? `/bat-dau?level=${Math.min(data.recommendedLevel, 7)}` : "/learn"}>
+              Vào học <Icon name="arrow" size={16} />
+            </LinkButton>
+            <Button variant="ghost" onClick={onRedo}>
+              Làm lại khảo sát
+            </Button>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  const start = plan.startLevel;
+  const exam = plan.exam;
+  const goal = GOALS.find((g) => g.key === data.goal) ?? GOALS[GOALS.length - 1];
+
+  let examDetail = "";
+  if (exam) {
+    if (exam.lessons === null) {
+      examDetail = "Làm bài kiểm tra xong, Hanni biết bạn còn bao nhiêu bài tới cấp thi.";
+    } else if (exam.lessons === 0) {
+      examDetail = "Bạn đã học tới cấp này — làm đề thi thử để quen dạng bài và thời gian.";
+    } else {
+      const span =
+        start === Math.min(exam.level, 7)
+          ? `Cả HSK ${levelName(exam.level)}`
+          : `Từ HSK ${levelName(start ?? 1)} tới hết HSK ${levelName(exam.level)}`;
+      examDetail = `${span}: ${exam.lessons} bài (~${(exam.words ?? 0).toLocaleString("vi-VN")} từ)`;
+      if (exam.weeksLeft) {
+        examDetail += ` — khoảng ${Math.ceil(exam.lessons / exam.weeksLeft)} bài mỗi tuần`;
+      }
+      examDetail += ".";
+    }
+  }
+  const suggestion = data.goal !== "EXAM" ? GOAL_SUGGESTION[data.goal] : null;
+
   return (
     <div className={styles.wizardColumn}>
       <section className={styles.resultCard}>
         <span className={styles.resultIcon}>
-          <Icon name="check" size={28} />
+          <Icon name={start ? "check" : "chart"} size={28} />
         </span>
-        <p className={styles.resultEyebrow}>Lộ trình dành riêng cho bạn</p>
         <h2 className={styles.resultTitle}>
-          Bắt đầu từ <strong>HSK {profile.recommendedLevel}</strong>
+          {start ? "Lộ trình của bạn đã sẵn sàng" : "Còn 1 bước: kiểm tra trình độ"}
         </h2>
-        <p className={styles.resultDescription}>
-          {guest
-            ? "Đây là điểm bắt đầu vừa sức với câu trả lời của bạn. Tạo tài khoản để Hanni lưu lộ trình này và theo dõi tiến độ mỗi ngày."
-            : "Hanni đã ghép câu trả lời của bạn thành một điểm bắt đầu vừa sức. Bạn có thể làm lại khảo sát bất cứ lúc nào."}
-        </p>
-        <p className={styles.recommendation}>{profile.recommendationVi}</p>
-        <div className={styles.resultActions}>
-          {guest ? (
-            <>
-              {/* Học bài 1 NGAY rồi mới mời đăng ký (kiểu Duolingo) — ép
-               * đăng ký ở đây là chỗ rời đi nhiều nhất của cả phễu. Câu trả
-               * lời khảo sát vẫn được giữ và nộp lúc đăng ký. */}
-              <Button
-                onClick={() =>
-                  router.push(`/bat-dau?level=${Math.min(profile.recommendedLevel, 7)}`)
-                }
-              >
-                Học bài 1 HSK {profile.recommendedLevel} ngay
-                <Icon name="arrow" size={16} />
-              </Button>
-              <Link
-                href="/register?next=/learn"
-                className="motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-surface-2"
-              >
-                Tạo tài khoản để lưu lộ trình
-              </Link>
-            </>
+        <ul className={styles.planList}>
+          {start ? (
+            <PlanRow
+              icon="target"
+              title={`Bắt đầu từ HSK ${levelName(start)}`}
+              detail={
+                plan.firstLesson
+                  ? `Bài đầu tiên: ${plan.firstLesson.title}. Không khoá bài nào — muốn học chủ đề khác cứ chọn.`
+                  : "Không khoá bài nào — muốn học chủ đề khác cứ chọn."
+              }
+            />
           ) : (
-            <>
-              <Button
-                onClick={() => router.push("/learn")}
-              >
-                Bắt đầu học HSK {profile.recommendedLevel}
-                <Icon name="arrow" size={16} />
-              </Button>
-              <Link
-                href="/learn"
-                className="motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-surface-2"
-              >
-                Vào trang chủ
-              </Link>
-            </>
+            <PlanRow
+              icon="target"
+              title="Cấp bắt đầu: xếp sau bài kiểm tra"
+              detail="Khoảng 3 phút, đúng thì lên cấp, sai thì dừng — bạn được xếp vào cấp thấp nhất chưa vững."
+            />
+          )}
+          {exam ? (
+            <PlanRow
+              icon="trophy"
+              title={`Thi HSK ${levelName(exam.level)}${exam.weeksLeft ? ` · còn ${exam.weeksLeft} tuần` : ""}`}
+              detail={examDetail}
+              link={
+                // Đề thi thử hiện có HSK 1–3 (công khai, khách làm được).
+                exam.level <= 3
+                  ? { href: `/thi-thu-hsk/hsk${exam.level}-de-1`, label: `Làm thử đề HSK ${exam.level}` }
+                  : undefined
+              }
+            />
+          ) : (
+            <PlanRow
+              icon={goal.icon}
+              title={`Mục tiêu: ${goal.label}`}
+              detail={suggestion ? `Nên thử thêm: ${suggestion.label} — ${suggestion.detail}.` : goal.hint}
+              link={suggestion && (!guest || suggestion.guest) ? { href: suggestion.href, label: suggestion.label } : undefined}
+            />
+          )}
+          {plan.dailyMinutes && (
+            <PlanRow
+              icon="clock"
+              title={`Mỗi ngày ${plan.dailyMinutes} phút`}
+              detail={
+                guest
+                  ? "Thành mục tiêu ngày khi bạn lưu tiến độ — tính cả học bài, ôn thẻ và làm đề."
+                  : "Đã đặt làm mục tiêu ngày — tính cả học bài, ôn thẻ và làm đề. Đổi lại trong Cài đặt."
+              }
+            />
+          )}
+        </ul>
+        <div className={styles.resultActions}>
+          {start ? (
+            <LinkButton href={guest ? `/bat-dau?level=${start}` : "/learn"}>
+              {guest ? "Vào bài 1" : `Vào học HSK ${levelName(start)}`}
+              <Icon name="arrow" size={16} />
+            </LinkButton>
+          ) : (
+            <LinkButton href="/kiem-tra-trinh-do">
+              Làm bài kiểm tra trình độ <Icon name="arrow" size={16} />
+            </LinkButton>
           )}
           <Button variant="ghost" onClick={onRedo}>
             Làm lại khảo sát
           </Button>
         </div>
+        <p className={styles.resultNote}>
+          {guest
+            ? "Chưa cần tài khoản — học xong bài 1, Hanni mới mời bạn lưu tiến độ."
+            : "Đã lưu vào tài khoản của bạn."}
+        </p>
       </section>
     </div>
   );

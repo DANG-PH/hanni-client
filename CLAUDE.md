@@ -370,6 +370,19 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   vào cố định: mục "Cài ứng dụng" cuối menu (`INSTALL_LINK`, chỉ hiện khi máy chưa cài) → `/install`
   (`InstallCard` cũng có nhánh trình duyệt trong app). Manifest/worker đã đủ điều kiện cài (start_url
   `/learn`, icon 192/512/maskable, `display: standalone`, worker có `fetch`).
+- **Khảo sát `/onboarding` làm lại (vấn đề 1, 2026-10-18)** — mỗi câu có tác dụng THẬT, ghi rõ "để làm gì"
+  ngay trên câu hỏi, và hiện thành 1 dòng ở màn kết quả (`plan` từ server): (1) "Bạn biết tiếng Trung tới
+  đâu?" — Chưa biết gì / Biết một chút, chưa chắc cấp nào (→ màn kết quả mời làm kiểm tra trình độ, gộp
+  luôn lối vào đó) / Đang học một cấp HSK (7 nút, cấp 7 = HSK 7–9) → bài bắt đầu; (2) "Học để làm gì?" —
+  Thi HSK (hiện thêm cấp thi + "bao lâu nữa": 3/6/12 tháng/chưa rõ, thay ô chọn ngày) → số bài + số từ còn
+  lại tới cấp thi, bài/tuần; mục tiêu khác → 1 cách luyện nên thử (luyện nói AI, video, đề thi thử...);
+  (3) "Mỗi ngày học bao lâu?" 5/10/15/20 phút → mục tiêu ngày theo phút (thẻ `/learn` làm tròn phút, trước
+  đó hiện số thập phân). Kết quả có ĐÚNG 1 nút chính (khách "Vào bài 1", đã đăng nhập "Vào học HSK N", chưa
+  chắc cấp "Làm bài kiểm tra trình độ"). Sửa kèm: nút cuối của khách từng ghi "Tạo tài khoản để xem lộ
+  trình" dù không cần tài khoản; nhãn tiếng Anh "Hanni learning path"; trên điện thoại khối giới thiệu
+  chiếm trọn màn đầu (giờ ẩn, thay bằng 1 dòng mục đích trong thẻ); `.shell` đổi `overflow: clip` (vòng
+  trang trí rộng 598px trong màn 390 — `hidden` vẫn bị cuộn bằng code làm cả trang lệch ngang); lưới 2 cột
+  ở màn ≤350px. Thẻ đứng yên mép trên khi chuyển câu (`align-items: start`).
 
 ### Lộ trình một nút bấm (tái cấu trúc 2026-10-05 — đọc mục này TRƯỚC)
 User báo: flashcard "tự nhảy vào HSK4 khi muốn học HSK1, không theo chủ đề", web "nhiều chức
