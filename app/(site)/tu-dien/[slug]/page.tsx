@@ -14,10 +14,13 @@ import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AudioButton } from "@/components/audio-button";
+import { SentencePractice } from "@/components/ai/sentence-practice";
+import { WordMnemonic } from "@/components/ai/word-mnemonic";
 import { DictionarySearch, RememberWord } from "@/components/dictionary/dictionary-search";
 import { StrokeOrder } from "@/components/dictionary/stroke-order";
 import { Icon } from "@/components/icon";
 import { SaveWordButton } from "@/components/save-word-button";
+import { ToneCheck } from "@/components/tone/tone-check";
 import { LinkButton } from "@/components/ui";
 import { hskLabel, POS_VI } from "@/lib/pos";
 import { fetchPublic } from "@/lib/public-fetch";
@@ -236,6 +239,10 @@ export default async function TuDienPage({
                   )}
                 </section>
 
+                <div className="mt-4">
+                  <WordMnemonic wordId={w.id} initial={w.mnemonicVi ?? null} />
+                </div>
+
                 {/* Ảnh minh hoạ (Wikimedia Commons — giấy phép tự do, xem
                  * hanni-server/CLAUDE.md). Dùng <img> thường chứ không next/image:
                  * ảnh đến từ domain ngoài và chỉ là minh hoạ phụ. */}
@@ -251,6 +258,12 @@ export default async function TuDienPage({
 
                 <div className="mt-5">
                   <SaveWordButton wordId={w.id} simplified={w.simplified} />
+                </div>
+                <div className="mt-4 max-w-md">
+                  <ToneCheck hanzi={w.simplified} pinyin={w.pinyin} pinyinNumeric={w.pinyinNumeric} audioUrl={w.audioUrl} align="start" />
+                </div>
+                <div className="mt-4">
+                  <SentencePractice word={{ id: w.id, simplified: w.simplified, meaningVi: w.meaningVi }} />
                 </div>
 
                 {w.examples && w.examples.length > 0 && (

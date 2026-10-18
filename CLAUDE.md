@@ -416,6 +416,39 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   âm) — dữ liệu gộp 7–9 vào cấp 7 nên chip HSK 8, 9 luôn trống; `/tu-dien?level=8|9` → 308 sang `level=7`; điện
   thoại 1 hàng cuộn ngang. Dữ liệu (phồn thể, âm Hán Việt, nghĩa HSK 4, từ loại): xem `hanni-server/CLAUDE.md`.
 
+### Tính năng tạo khác biệt + AI (2026-10-18 — user: "thêm tính năng hay, tạo sự khác biệt, thêm AI")
+Đều GẮN vào luồng học có sẵn, không thêm trang hay mục menu mới.
+- **Chấm thanh điệu bằng đồ thị cao độ** (`lib/pitch.ts`, `components/tone/tone-check.tsx`) — không app học tiếng
+  Trung nào cho người Việt có. Ghi âm (tự dừng khi nói xong: đo ồn nền 150 ms đầu, lặng 0,7 s), dò cao độ bằng YIN
+  ngay trong trình duyệt (giải mã về 16 kHz, ~10 ms/từ), vẽ đường giọng bạn chồng lên ghi âm chuẩn của từ đó (file
+  `/media/audio` có header CORS), chấm từng âm tiết + "Nghe giống thanh X" + mẹo theo dấu tiếng Việt (`TONES` ở
+  `lib/pinyin.ts`). Chấm theo ĐẶC TRƯNG thanh (phẳng / lên / võng / rơi, biên độ cần đạt lấy theo giọng chuẩn) chứ
+  không so khoảng cách đường thẳng — so đường thẳng thì thanh 2 với thanh 3 vẫn 97 điểm. Âm tiết mà chính giọng
+  chuẩn không mang đặc trưng điển hình (biến điệu, thanh nhẹ) thì so thẳng đường với giọng chuẩn. Bẫy đã gặp khi
+  chỉnh trên ghi âm thật: (1) sửa lỗi quãng tám theo trung vị CẢ TỪ làm hỏng thanh 4 (汉 rơi thật 385→197 Hz) — sửa
+  theo khung liền trước + mốc theo khung "chắc"; (2) cuối thanh 4 / đáy thanh 3 là giọng RÈ (to nhưng tuần hoàn
+  kém) — dò có dẫn hướng quanh cao độ khung trước, ±1,5 nửa cung/khung (nới 28% thì 骂 tụt xuống 80 Hz); (3) chuẩn
+  hoá thời gian giữ khe trống thay vì dồn điểm (dồn thì mất đáy thanh 3). Đo trên 21 âm tiết: đúng thanh 94 điểm,
+  sai thanh 12, đoán đúng 20/21. Biến điệu 3-3, 一, 不 tính sẵn (`surfaceTones`). Kiểm thử: Chromium
+  `--use-file-for-fake-audio-capture=<wav>` (micro giả đọc file) — 烫 đọc 烫 = 100, đọc 糖 = 0 "giống thanh 2".
+  Có ở: thẻ giới thiệu từ trong phiên học (khách cũng dùng được), trang từ điển, `/pronunciation` (chấm luôn bản vừa
+  ghi, `ToneAnalysis`). Giọng không gửi đi đâu, không tốn lượt AI.
+- **Luyện nói bằng giọng** (`/roleplay`): micro cạnh ô nhập (`lib/speech.ts` — dùng chung với ô tra từ điển), chữ
+  hiện dần, nói xong tự gửi; câu trả lời AI tự đọc to bằng giọng tiếng Trung (`speakChinese()` ở
+  `lib/listening-audio.ts`), nút bật/tắt nhớ `localStorage` `hanni:roleplay-speak`, mỗi câu AI có "Nghe".
+- **AI trong từ điển** (`components/ai/`, `lib/ai-tools.ts`; server: mục "Tiện ích AI"): **mẹo nhớ** theo âm Hán
+  Việt (`WordMnemonic` — đã có thì ai cũng thấy, cả trong thẻ giới thiệu từ; chưa có thì người đã đăng nhập bấm tạo,
+  tạo 1 lần dùng chung), **đặt câu với từ này** (`SentencePractice` — gõ hoặc nói, AI chấm điểm + câu đã sửa + nhận
+  xét tiếng Việt), **phân tích/dịch cả câu** ngay ở `/tu-dien?q=` (`SentenceAnalysis` — hiện khi gõ câu, hoặc cụm
+  2 chữ/2 từ không trùng mục từ nào; câu tiếng Việt thì dịch sang tiếng Trung; từng từ kèm Hán Việt, bấm sang trang
+  từ). Chung hạn mức 10 lượt/ngày (Premium 200) — dòng mới trong popup Premium.
+- **Popup Premium làm lại** (vấn đề 6 — `components/premium-modal.tsx`): 2 bước (chọn gói → xác nhận rồi mới sang
+  payOS), quyền lợi dạng thẻ có "thường → Premium" ngay trong thẻ, 3 gói chính có giá quy theo tháng + % tiết kiệm
+  (gói khác thu vào 1 hàng), câu hỏi thường gặp, bước xác nhận ghi sẵn ngày hết hạn (mua thêm thì cộng nối tiếp,
+  khớp `addMonthsClamped` của server) + cách thanh toán 3 bước + "không lưu thẻ, không tự gia hạn". payOS chưa cấu
+  hình thì thanh dưới là "Sắp mở bán". Điện thoại: dạng tấm trượt từ đáy, Esc/bấm nền để đóng. CHƯA có chính sách
+  hoàn tiền / kênh hỗ trợ (chờ thông tin pháp lý từ user) nên không ghi.
+
 ### Lộ trình một nút bấm (tái cấu trúc 2026-10-05 — đọc mục này TRƯỚC)
 User báo: flashcard "tự nhảy vào HSK4 khi muốn học HSK1, không theo chủ đề", web "nhiều chức
 năng nhưng rời rạc", và giao toàn quyền định hướng lại sản phẩm. Research (Duolingo làm lại màn

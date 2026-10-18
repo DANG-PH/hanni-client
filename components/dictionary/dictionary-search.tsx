@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Icon } from "@/components/icon";
 import { LinkButton } from "@/components/ui";
 import { API_BASE } from "@/lib/api";
+import { recognizerCtor, useCanRecognize, type Recognizer } from "@/lib/speech";
 import type { Paginated, Word } from "@/lib/types";
 
 /** Từ đã mở gần đây (trang từ ghi qua `rememberWord`) — chỉ trong trình duyệt này. */
@@ -36,24 +37,6 @@ export function rememberWord(item: HistoryItem) {
   }
 }
 
-type Recognizer = {
-  lang: string;
-  interimResults: boolean;
-  maxAlternatives: number;
-  start: () => void;
-  abort: () => void;
-  onresult: ((e: { results: { [i: number]: { [j: number]: { transcript: string } } } }) => void) | null;
-  onerror: (() => void) | null;
-  onend: (() => void) | null;
-};
-type RecognizerCtor = new () => Recognizer;
-
-function recognizerCtor(): RecognizerCtor | null {
-  const w = window as unknown as { SpeechRecognition?: RecognizerCtor; webkitSpeechRecognition?: RecognizerCtor };
-  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
-}
-const noSubscription = () => () => {};
-
 const shortMeaning = (m: string | null) => (m ? m.split(";")[0].trim() : null);
 
 /**
@@ -79,7 +62,7 @@ export function DictionarySearch({
   const [listening, setListening] = useState(false);
   const recognizer = useRef<Recognizer | null>(null);
   const seq = useRef(0);
-  const canSpeak = useSyncExternalStore(noSubscription, () => recognizerCtor() !== null, () => false);
+  const canSpeak = useCanRecognize();
 
   const term = q.trim();
   const items = term && result.term === term ? result.items : [];

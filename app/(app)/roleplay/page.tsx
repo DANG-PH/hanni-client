@@ -5,7 +5,7 @@ import {
   TourButton,
   type TourStep,
 } from "@/components/feature-tour";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatComposer } from "@/components/chat/chat-composer";
 import { JumpToLatest, useStickToBottom } from "@/components/chat/use-stick-to-bottom";
 import { Icon } from "@/components/icon";
@@ -14,6 +14,7 @@ import { NextStep } from "@/components/next-step";
 import { Button, Card, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { ApiError } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
+import { speakChinese, stopListening } from "@/lib/listening-audio";
 import {
   deleteRoleplaySession,
   feedbackRoleplay,
@@ -24,7 +25,10 @@ import {
   useRoleplayScenarios,
   useRoleplaySessions,
 } from "@/lib/roleplay";
+import { recognizerCtor, useCanRecognize, type Recognizer } from "@/lib/speech";
 import type { RoleplayMessage } from "@/lib/types";
+
+const SPEAK_KEY = "hanni:roleplay-speak";
 
 const ROLEPLAY_TOUR_STEPS: TourStep[] = [
   {
@@ -32,6 +36,12 @@ const ROLEPLAY_TOUR_STEPS: TourStep[] = [
     title: "AI đóng vai, không dạy ngữ pháp",
     description:
       "Chọn một tình huống, AI sẽ giữ đúng vai đó và chỉ nói tiếng Trung — giống nói chuyện thật. Mỗi câu của AI đều có pinyin ngay bên dưới.",
+  },
+  {
+    icon: "mic",
+    title: "Nói bằng giọng, nghe bằng tai",
+    description:
+      "Bấm micro rồi nói tiếng Trung — Hanni ghi lại câu bạn nói và gửi luôn, AI đọc to câu trả lời. Thấy chữ ghi lại khác ý mình là dấu hiệu phát âm cần sửa. (Micro chạy trên Chrome, Edge, Safari.)",
   },
   {
     icon: "spark",
@@ -203,6 +213,79 @@ function ChatView({
     meaningVi: string;
   } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const canRecognize = useCanRecognize();
+  const [listening, setListening] = useState(false);
+  const recognizer = useRef<Recognizer | null>(null);
+  // Mặc định đọc to câu trả lời — luyện nói mà chỉ đọc chữ thì mất nửa bài tập nghe.
+  const [speakOn, setSpeakOn] = useState(() => {
+    try {
+      return localStorage.getItem(SPEAK_KEY) !== "0";
+    } catch {
+      return true;
+    }
+  });
+
+  useEffect(
+    () => () => {
+      recognizer.current?.abort();
+      stopListening();
+    },
+    [],
+  );
+
+  function toggleSpeak() {
+    const next = !speakOn;
+    setSpeakOn(next);
+    if (!next) stopListening();
+    try {
+      localStorage.setItem(SPEAK_KEY, next ? "1" : "0");
+    } catch {
+      /* chỉ là tuỳ chọn hiển thị */
+    }
+  }
+
+  /** Nói bằng giọng: chữ hiện dần trong ô nhập, nói xong (trình duyệt tự nhận
+   * ra lúc dừng nói) thì gửi luôn — hội thoại rảnh tay như gọi điện. */
+  function listen() {
+    if (listening) {
+      recognizer.current?.stop();
+      return;
+    }
+    const Ctor = recognizerCtor();
+    if (!Ctor) return;
+    stopListening(); // đang đọc câu AI thì dừng, kẻo micro thu lại giọng máy
+    const r = new Ctor();
+    r.lang = "zh-CN";
+    r.interimResults = true;
+    r.continuous = false;
+    r.maxAlternatives = 1;
+    let finalText = "";
+    r.onresult = (e) => {
+      let text = "";
+      let done = false;
+      for (let i = 0; i < e.results.length; i++) {
+        text += e.results[i][0]?.transcript ?? "";
+        if (e.results[i].isFinal) done = true;
+      }
+      setInput(text);
+      if (done) finalText = text;
+    };
+    r.onerror = (e) => {
+      if (e.error === "not-allowed" || e.error === "service-not-allowed")
+        setError("Trình duyệt chưa cho dùng micro — bật quyền micro cho trang này rồi thử lại.");
+      else if (e.error === "no-speech") setError("Chưa nghe thấy gì — nói to, rõ hơn một chút nhé.");
+    };
+    r.onend = () => {
+      setListening(false);
+      recognizer.current = null;
+      if (finalText.trim()) void send(finalText);
+    };
+    recognizer.current = r;
+    setError("");
+    setHint(null);
+    setListening(true);
+    r.start();
+  }
 
   // Đang ở cuối thì tự cuộn theo lượt mới, đang đọc lại lượt cũ thì hiện nút "Xuống tin mới".
   const stick = useStickToBottom(scrollRef, {
@@ -232,8 +315,8 @@ function ChatView({
     setHint(null);
   }
 
-  async function send() {
-    const text = input.trim();
+  async function send(spoken?: string) {
+    const text = (spoken ?? input).trim();
     if (!text || sending) return;
     setSending(true);
     setError("");
@@ -252,6 +335,7 @@ function ChatView({
       await mutate([...(messages ?? []), optimistic, reply], {
         revalidate: false,
       });
+      if (speakOn) void speakChinese(reply.text);
     } catch (err) {
       setInput(text);
       await mutate(messages, { revalidate: false });
@@ -303,19 +387,37 @@ function ChatView({
         <button
           type="button"
           onClick={onExit}
-          className="flex items-center gap-1.5 text-sm font-medium text-muted hover:text-foreground"
+          className="flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-muted hover:text-foreground"
         >
-          <Icon name="back" size={16} /> Chọn tình huống khác
+          <Icon name="back" size={16} />
+          <span className="max-sm:hidden">Chọn tình huống khác</span>
+          <span className="sm:hidden">Tình huống</span>
         </button>
         {feedback === null && (
-          <Button
-            variant="ghost"
-            disabled={ending}
-            onClick={() => void endSession()}
-          >
-            <Icon name="check" size={15} />
-            {ending ? "Đang tổng kết…" : "Kết thúc"}
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={toggleSpeak}
+              aria-pressed={speakOn}
+              aria-label={speakOn ? "Đọc to: bật" : "Đọc to: tắt"}
+              title={speakOn ? "Tắt đọc to câu trả lời" : "Bật đọc to câu trả lời"}
+              className={`inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 text-xs font-semibold transition-colors ${
+                speakOn ? "bg-primary/10 text-primary" : "text-muted hover:bg-surface-2"
+              }`}
+            >
+              <Icon name="sound" size={15} />
+              <span className="max-sm:hidden">{speakOn ? "Đọc to: bật" : "Đọc to: tắt"}</span>
+            </button>
+            <Button
+              variant="ghost"
+              className="whitespace-nowrap"
+              disabled={ending}
+              onClick={() => void endSession()}
+            >
+              <Icon name="check" size={15} />
+              {ending ? "Đang tổng kết…" : "Kết thúc"}
+            </Button>
+          </div>
         )}
       </div>
 
@@ -376,6 +478,15 @@ function ChatView({
                         {m.pinyin}
                       </p>
                     )}
+                    {m.role !== "USER" && (
+                      <button
+                        type="button"
+                        onClick={() => void speakChinese(m.text)}
+                        className="inline-flex items-center gap-1 pt-0.5 text-xs font-medium text-muted hover:text-primary"
+                      >
+                        <Icon name="sound" size={13} /> Nghe
+                      </button>
+                    )}
                   </div>
                 </div>
               ))
@@ -427,8 +538,8 @@ function ChatView({
             onChange={setInput}
             onSubmit={() => void send()}
             maxLength={1000}
-            placeholder="Nhập câu trả lời bằng tiếng Trung…"
-            busy={sending}
+            placeholder={listening ? "Đang nghe…" : canRecognize ? "Gõ hoặc nói…" : "Nhập tiếng Trung…"}
+            busy={sending || listening}
             before={
               <button
                 type="button"
@@ -440,6 +551,23 @@ function ChatView({
               >
                 <Icon name="spark" size={18} />
               </button>
+            }
+            after={
+              canRecognize ? (
+                <button
+                  type="button"
+                  onClick={listen}
+                  disabled={sending}
+                  aria-pressed={listening}
+                  aria-label={listening ? "Dừng nghe" : "Nói bằng giọng"}
+                  title={listening ? "Dừng nghe" : "Nói bằng giọng"}
+                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors disabled:opacity-50 ${
+                    listening ? "animate-pulse bg-primary text-primary-fg" : "bg-surface-2 text-primary"
+                  }`}
+                >
+                  <Icon name="mic" size={18} />
+                </button>
+              ) : undefined
             }
           />
         </>

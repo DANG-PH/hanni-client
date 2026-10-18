@@ -55,6 +55,8 @@ export interface Word {
   translationStatus: string;
   audioUrl: string | null;
   imageUrl?: string | null;
+  /** mẹo nhớ theo âm Hán Việt do AI viết (tạo 1 lần, dùng chung) */
+  mnemonicVi?: string | null;
   lessonId?: string | null;
   lessonOrder?: number | null;
   examples?: WordExample[];
@@ -892,6 +894,7 @@ export interface SessionWord {
   meaningEn: string | null;
   audioUrl: string | null;
   imageUrl: string | null;
+  mnemonicVi?: string | null;
   examples: { zh: string; pinyin: string | null; vi: string | null }[];
   toneHints: ToneHint[] | null;
 }

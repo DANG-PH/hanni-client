@@ -21,6 +21,7 @@ import {
   PracticeTips,
 } from "@/components/practice/practice-library";
 import { useWordAudio } from "@/components/practice/use-word-audio";
+import { ToneAnalysis } from "@/components/tone/tone-check";
 import { useAuth } from "@/lib/auth";
 import { recordPracticeAttempt, usePracticeStats } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
@@ -485,6 +486,13 @@ function PronunciationWord({
             >
               Tải bản ghi về máy
             </a>
+            <ToneAnalysis
+              recordingUrl={recording.url}
+              hanzi={word.simplified}
+              pinyin={word.pinyin}
+              pinyinNumeric={word.pinyinNumeric}
+              audioUrl={word.audioUrl}
+            />
             {heard && (
               <div
                 className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm ${

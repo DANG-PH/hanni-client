@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/icon";
 import { TONE_CLASS, TonePinyin } from "@/components/tone-pinyin";
+import { ToneCheck } from "@/components/tone/tone-check";
 import { mediaUrl } from "@/lib/api";
 import { TONE_RULE_TEXT } from "@/lib/tone-rules";
 import type { SessionStep, SessionWord } from "@/lib/types";
@@ -105,6 +106,16 @@ export function IntroStep({ word }: { word: SessionWord }) {
           )}
         </div>
       )}
+      {word.mnemonicVi && (
+        <p className="mt-3 w-full max-w-sm rounded-2xl border border-accent/25 bg-accent/5 px-4 py-2.5 text-left text-sm leading-6">
+          <span className="font-semibold text-accent">Mẹo nhớ: </span>
+          {word.mnemonicVi}
+        </p>
+      )}
+      {/* Vừa biết thanh (mẹo Hán Việt ở trên) thì đọc thử luôn — chấm ngay trên máy. */}
+      <div className="mt-4 w-full max-w-sm">
+        <ToneCheck key={word.id} hanzi={word.simplified} pinyin={word.pinyin} pinyinNumeric={word.pinyinNumeric} audioUrl={word.audioUrl} />
+      </div>
       {example && (
         <div className="mt-4 w-full max-w-sm rounded-2xl bg-surface-2 px-4 py-3 text-left">
           <p lang="zh" className="hanzi text-lg">

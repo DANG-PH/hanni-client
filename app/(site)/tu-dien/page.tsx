@@ -13,6 +13,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { permanentRedirect } from "next/navigation";
+import { SentenceAnalysis } from "@/components/ai/sentence-analysis";
 import { DictionarySearch } from "@/components/dictionary/dictionary-search";
 import { Icon } from "@/components/icon";
 import { LinkButton } from "@/components/ui";
@@ -65,6 +66,23 @@ async function fetchWords(
   return fetchPublic<Paginated<Word>>(`/words?${params}`, revalidate);
 }
 
+/** Gõ cả CÂU (hoặc cụm không có mục từ nào) thì mời phân tích/dịch bằng AI — như Hanzii
+ * dịch câu ngay trong ô tra. Câu: ≥ 5 chữ Hán, ≥ 3 chữ Hán có dấu câu/khoảng trắng, hoặc
+ * ≥ 3 từ tiếng Việt; cụm 2 chữ/2 từ chỉ mời khi không trùng mục từ nào. */
+function offerAnalysis(q: string, items: Word[]): boolean {
+  const han = (q.match(/\p{Script=Han}/gu) ?? []).length;
+  const words = q.split(/\s+/).filter(Boolean).length;
+  if (han >= 5 || (han >= 3 && /[，。！？、,.!?\s]/.test(q)) || (han === 0 && words >= 3)) return true;
+  const lower = q.toLowerCase();
+  const exact = items.some(
+    (w) =>
+      w.simplified === q ||
+      w.hanViet?.toLowerCase() === lower ||
+      w.meaningVi?.split(";")[0].trim().toLowerCase() === lower,
+  );
+  return !exact && (han >= 2 || (han === 0 && words >= 2));
+}
+
 export default async function TuDienPage({
   searchParams,
 }: {
@@ -107,6 +125,7 @@ export default async function TuDienPage({
 
       {/* Gợi ý khi gõ, lịch sử tra, giọng nói — vẫn là form GET nên không JS vẫn tra được. */}
       <DictionarySearch defaultValue={q ?? ""} showScan />
+      {q && offerAnalysis(q, data?.items ?? []) && <SentenceAnalysis key={q} text={q} />}
 
       {/* Điện thoại: 1 hàng cuộn ngang thay vì 2 hàng chip. */}
       <nav

@@ -118,6 +118,17 @@ export function stopListening() {
   if (speechSupported()) window.speechSynthesis.cancel();
 }
 
+/** Đọc 1 câu bằng giọng tiếng Trung (câu trả lời của AI ở luyện nói). Bấm câu
+ * khác là dừng câu đang đọc. Trả `false` nếu máy không có giọng tiếng Trung. */
+export async function speakChinese(text: string): Promise<boolean> {
+  stopListening();
+  const mine = token;
+  const voices = pickVoices(await loadVoices());
+  if (!voices) return false;
+  await speakOne(text, voices.F, mine);
+  return true;
+}
+
 export type PlayResult = "ended" | "cancelled" | "no-voice";
 
 /** Phát 1 câu nghe (đọc 2 lần). Trả "no-voice" nếu cần giọng máy mà thiết
