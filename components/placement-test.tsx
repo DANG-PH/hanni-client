@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/icon";
+import { signalInstallMoment } from "@/components/pwa/install-prompt";
 import { ChoiceStep, playWord, shortMeaning } from "@/components/lesson-session/steps";
 import { ShareButton } from "@/components/share-button";
 import { Brand } from "@/components/sidebar";
@@ -320,6 +321,7 @@ function Result({
   isGuest: boolean;
   onRetry: () => void;
 }) {
+  useEffect(() => signalInstallMoment(), []);
   const failed = scores.find((s) => !s.passed);
   const level = recommendedLevel(scores);
   const passed = scores.filter((s) => s.passed);

@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/icon";
+import { signalInstallMoment } from "@/components/pwa/install-prompt";
 import { ShareButton } from "@/components/share-button";
 import { LinkButton } from "@/components/ui";
 import type { LessonCompleteResult, LessonSession } from "@/lib/types";
@@ -28,6 +30,8 @@ export function SessionComplete({
   saveError: boolean;
   isGuest: boolean;
 }) {
+  // Vừa xong bài là lúc dễ đồng ý cài app nhất.
+  useEffect(() => signalInstallMoment(), []);
   const next = result?.nextLesson ?? session.nextLesson;
   const total = session.words.length;
   const pct = Math.round(accuracy * 100);

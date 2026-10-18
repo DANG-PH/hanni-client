@@ -8,6 +8,7 @@ import useSWR, { mutate } from "swr";
 import { Icon } from "@/components/icon";
 import { ShareButton } from "@/components/share-button";
 import { StudyLoader } from "@/components/study-loader";
+import { signalInstallMoment } from "@/components/pwa/install-prompt";
 import { Button, LinkButton } from "@/components/ui";
 import { api, apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -599,6 +600,7 @@ function Result({
   isGuest: boolean;
   onRetry: () => void;
 }) {
+  useEffect(() => signalInstallMoment(), []);
   const [filter, setFilter] = useState<"all" | "wrong">("wrong");
   const [mode, setMode] = useState<"review" | "practice">("review");
   const [practice, setPractice] = useState<Record<number, MockAnswer>>({});

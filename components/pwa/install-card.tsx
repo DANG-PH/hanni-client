@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button, Card, ErrorNote, LinkButton } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { getPwaState, updatePwaState, usePwaState } from "@/lib/pwa/store";
+import { inAppBrowser } from "./install-prompt";
 
 /** Chỉ mở lời mời cài đặt từ sự kiện thật do trình duyệt cung cấp. */
 export function InstallCard() {
@@ -144,6 +145,15 @@ export function InstallCard() {
             <Icon name="plus" size={17} />
             {busy === "install" ? "Đang mở cài đặt…" : "Cài ứng dụng Hanni"}
           </Button>
+        ) : inAppBrowser() ? (
+          <div className="space-y-2 text-sm leading-7">
+            <h3 className="font-semibold">Mở bằng Safari hoặc Chrome để cài</h3>
+            <p className="text-muted">
+              Trình duyệt bên trong Zalo, Facebook không cài được ứng dụng. Bấm{" "}
+              <strong className="text-foreground">⋯</strong> ở góc trên, chọn{" "}
+              <strong className="text-foreground">Mở bằng trình duyệt</strong> rồi cài từ đó.
+            </p>
+          </div>
         ) : state.ios ? (
           <div className="space-y-2 text-sm leading-7">
             <h3 className="font-semibold">Cài trên iPhone hoặc iPad</h3>

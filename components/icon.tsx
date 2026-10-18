@@ -56,6 +56,10 @@ const paths = {
   crown: "M4 18h16M4 18 3 8l5 4 4-6 4 6 5-4-1 10",
   grid: "M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z",
   sidebar: "M4 4h16v16H4V4Zm5 0v16",
+  download: "M12 4v11m-4-4 4 4 4-4M5 20h14",
+  /** Nút Chia sẻ của Safari (ô vuông + mũi tên lên) — dùng trong hướng dẫn cài app trên iOS. */
+  "share-ios":
+    "M12 3v12m-4-8 4-4 4 4M7 10H5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2",
   camera:
     "M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Zm8 3a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z",
 } as const;

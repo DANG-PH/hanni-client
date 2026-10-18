@@ -31,6 +31,10 @@ export const NAV_MORE: NavLink[] = [
 
 export const ACCOUNT_LINK: NavLink = { href: "/account", label: "Tài khoản", icon: "user" };
 
+/** Cuối menu, chỉ hiện khi máy này chưa cài Hanni (`sidebar.tsx`) — lối vào cố định
+ * cho ai đã tắt lời mời cài nổi. */
+export const INSTALL_LINK: NavLink = { href: "/install", label: "Cài ứng dụng", icon: "download" };
+
 /** Các cách luyện thêm ngoài lộ trình — trang `/luyen-tap`. */
 export const PRACTICE_SECTIONS: { title: string; items: PracticeLink[] }[] = [
   {
@@ -90,7 +94,7 @@ export function isNavActive(pathname: string, href: string) {
 /** Tên trang cho thanh trên (app-shell) — khớp đường dẫn dài nhất (`/tu-dien/quet` trước `/tu-dien`). */
 export function pageLabel(pathname: string) {
   return (
-    [...NAV_MAIN, ...NAV_MORE, ACCOUNT_LINK, ...PRACTICE_LINKS, ...OTHER_PAGES]
+    [...NAV_MAIN, ...NAV_MORE, ACCOUNT_LINK, INSTALL_LINK, ...PRACTICE_LINKS, ...OTHER_PAGES]
       .filter((l) => isActive(pathname, l.href))
       .sort((a, b) => b.href.length - a.href.length)[0]?.label ?? "Góc học tập"
   );

@@ -357,6 +357,19 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   toàn màn hình (nút đóng trong header), có 4 câu hỏi gợi ý lúc chưa nói gì. Bình luận video có bộ đếm.
   `/messages` bỏ khối tiêu đề to (còn tiêu đề "Tin nhắn" gọn), khung phải lúc chưa chọn hội thoại không lặp
   nút "Tìm bạn học" nữa. `/watch/add` chuyển hướng về `/watch`.
+- **Gợi ý cài ứng dụng trên điện thoại (vấn đề 8)** — trước đó `InstallPrompt` chỉ nằm trong khung app
+  (người đã đăng nhập) và chỉ hiện từ ngày ghé thứ hai, nên người mới vào từ Google không bao giờ thấy.
+  Giờ gắn ở `app/layout.tsx` (mọi trang, kể cả công khai), hiện ĐÚNG LÚC: ngay sau khoảnh khắc vui
+  (`signalInstallMoment()` ở màn xong bài, kết quả kiểm tra trình độ, kết quả thi thử) hoặc khi đã xem 4
+  trang (`hanni-page-views`, dồn qua các lần ghé); KHÔNG hiện ở đăng nhập/đăng ký, phiên học, khảo sát,
+  đang làm đề (`QUIET_PATHS`); tắt thì 14 ngày sau mới mời lại. Là thanh mảnh ngay trên thanh tab dưới
+  đáy (không phải popup che màn): Android Chrome/Edge có `beforeinstallprompt` → nút "Cài" 1 chạm; iOS
+  Safari → "Cách cài" mở 2 bước Chia sẻ → Thêm vào MH chính; trình duyệt trong Zalo/Facebook/Instagram
+  (link Hanni hay được chia sẻ qua đó, KHÔNG cài được PWA) → hướng dẫn mở bằng Safari/Chrome + nút
+  "Chép liên kết"; trình duyệt Android khác → menu ⋮. Máy tính chỉ mời khi có lời mời 1 chạm thật. Lối
+  vào cố định: mục "Cài ứng dụng" cuối menu (`INSTALL_LINK`, chỉ hiện khi máy chưa cài) → `/install`
+  (`InstallCard` cũng có nhánh trình duyệt trong app). Manifest/worker đã đủ điều kiện cài (start_url
+  `/learn`, icon 192/512/maskable, `display: standalone`, worker có `fetch`).
 
 ### Lộ trình một nút bấm (tái cấu trúc 2026-10-05 — đọc mục này TRƯỚC)
 User báo: flashcard "tự nhảy vào HSK4 khi muốn học HSK1, không theo chủ đề", web "nhiều chức
@@ -538,9 +551,8 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
   Trước 2026-10-15 layout đặt cứng nên link nào chia sẻ lên Facebook/Zalo cũng hiện "Hanni — Học tiếng
   Trung theo HSK 3.0". Trang nào tự khai `openGraph` là thay HẲN của layout → phải tự gắn lại ảnh
   (xem `tu-dien/[slug]`).
-- **Popup mời cài PWA chỉ hiện từ lần ghé THỨ HAI** (`returningVisitor()` +
-  `hanni-first-seen` trong `components/pwa/install-prompt.tsx`) — lần đầu tới chỉ để học thử,
-  popup che màn đầu tiên là thêm ma sát.
+- **Lời mời cài PWA** (`components/pwa/install-prompt.tsx`): xem mục "Audit UI/UX 2026-10-17" —
+  bản cũ "chỉ hiện từ lần ghé thứ hai, chỉ trong khung app" đã thay.
 
 Đủ luồng core: auth (email + Google), dashboard, buổi ôn flashcard (lật 3D, chạm cả thẻ — mặt
 sau hiện thêm badge **"Hán Việt: ..."** nếu `word.hanViet` có dữ liệu, xem `hanni-server/
@@ -856,7 +868,7 @@ trước đó bấm "Đã hiểu" một lần là mất vĩnh viễn, không có
 màn đang làm bài — popup chắn ngang giữa lúc đồng hồ đang chạy).
 
 **PWA** (`docs/pwa.md`): manifest + service worker (chỉ cache màn mất mạng), trang `/install`,
-thẻ cài trong `/settings`, popup mời cài nổi góc phải dưới (`components/pwa/`). Test: `npm run test:pwa`.
+thẻ cài trong `/settings`, thanh mời cài ở đáy màn hình (`components/pwa/`, xem mục Audit 2026-10-17). Test: `npm run test:pwa`.
 Lời mời cài thật chỉ chạy ở bản production/HTTPS, không đăng ký worker ở `npm run dev`.
 **Icon app/favicon = cáo Hanni trên nền đỏ** (2026-10-15, user chọn): dựng từ mascot
 `public/anhloading.png` bằng `python3 scripts/make-icons.py` (mặt cáo căn giữa, viền kem để cáo đỏ

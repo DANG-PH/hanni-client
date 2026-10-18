@@ -7,7 +7,8 @@ import { useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/lib/auth";
 import { useStudyStats } from "@/lib/hooks";
 import { useMessagesSocket, useUnreadMessageCount } from "@/lib/messages";
-import { ACCOUNT_LINK, isNavActive, NAV_MAIN, NAV_MORE, type NavLink } from "@/lib/nav";
+import { ACCOUNT_LINK, INSTALL_LINK, isNavActive, NAV_MAIN, NAV_MORE, type NavLink } from "@/lib/nav";
+import { usePwaState } from "@/lib/pwa/store";
 import { Icon } from "./icon";
 
 const COLLAPSE_KEY = "hanni:sidebar-collapsed";
@@ -92,6 +93,8 @@ export function Sidebar({
   const { logout } = useAuth();
   const [busy, setBusy] = useState(false);
   const { due, unread } = useNavBadges();
+  const pwa = usePwaState();
+  const canInstall = pwa.initialized && !pwa.standalone && !pwa.installed;
   // Sidebar nằm trong app-shell nên luôn mount ở mọi trang — nghe socket ở
   // đây để badge chưa đọc cập nhật realtime dù đang không mở /messages
   // (trang /messages tự nghe thêm 1 lần nữa cho đúng hội thoại đang xem,
@@ -151,6 +154,7 @@ export function Sidebar({
       </nav>
       <div className="mt-auto pt-6">
         <div className="space-y-0.5 border-t border-border/70 pt-3">
+          {canInstall && item(INSTALL_LINK, true)}
           {item(ACCOUNT_LINK, true)}
           <button
             disabled={busy}

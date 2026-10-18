@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 import { PwaRuntime } from "@/components/pwa/pwa-runtime";
 import { ConnectivityNotice } from "@/components/pwa/connectivity-notice";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({
@@ -89,6 +90,8 @@ export default function RootLayout({
       <body className="min-h-full font-sans">
         <PwaRuntime />
         <ConnectivityNotice />
+        {/* Ở mọi trang (cả trang công khai) — xem lý do trong install-prompt.tsx. */}
+        <InstallPrompt />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
