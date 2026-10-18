@@ -12,14 +12,17 @@
  */
 import type { Metadata } from "next";
 import Link from "next/link";
+import { permanentRedirect } from "next/navigation";
+import { DictionarySearch } from "@/components/dictionary/dictionary-search";
 import { Icon } from "@/components/icon";
-import { Button, LinkButton } from "@/components/ui";
+import { LinkButton } from "@/components/ui";
+import { HSK_LEVELS, hskLabel } from "@/lib/pos";
 import { fetchPublic } from "@/lib/public-fetch";
 import type { Paginated, Word } from "@/lib/types";
 
 export const revalidate = 86400;
 
-const LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const LEVELS: readonly number[] = HSK_LEVELS;
 
 export async function generateMetadata({
   searchParams,
@@ -36,8 +39,8 @@ export async function generateMetadata({
   }
   if (LEVELS.includes(lv)) {
     return {
-      title: `Từ vựng HSK ${lv} — Danh sách đầy đủ kèm âm Hán Việt | Hanni`,
-      description: `Tra toàn bộ từ vựng HSK ${lv} theo chuẩn HSK 3.0: Hán tự, pinyin, âm Hán Việt, nghĩa tiếng Việt và audio phát âm chuẩn. Miễn phí, không cần đăng nhập.`,
+      title: `Từ vựng ${hskLabel(lv)} — Danh sách đầy đủ kèm âm Hán Việt | Hanni`,
+      description: `Tra toàn bộ từ vựng ${hskLabel(lv)} theo chuẩn HSK 3.0: Hán tự, pinyin, âm Hán Việt, nghĩa tiếng Việt và audio phát âm chuẩn. Miễn phí, không cần đăng nhập.`,
       alternates: { canonical: `/tu-dien?level=${lv}` },
     };
   }
@@ -68,6 +71,8 @@ export default async function TuDienPage({
   searchParams: Promise<{ level?: string; q?: string; page?: string }>;
 }) {
   const sp = await searchParams;
+  // Dữ liệu gộp HSK 7–9 thành cấp 7 — link cũ ?level=8/9 từng là trang rỗng.
+  if (sp.level === "8" || sp.level === "9") permanentRedirect("/tu-dien?level=7");
   const q = sp.q?.trim() || undefined;
   const lvNum = Number(sp.level);
   const level = LEVELS.includes(lvNum) ? lvNum : q ? undefined : 1;
@@ -90,7 +95,7 @@ export default async function TuDienPage({
           {q
             ? `Kết quả cho "${q}"`
             : level
-              ? `Từ vựng HSK ${level}`
+              ? `Từ vựng ${hskLabel(level)}`
               : "Tra từ vựng tiếng Trung"}
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-muted">
@@ -100,37 +105,26 @@ export default async function TuDienPage({
         </p>
       </section>
 
-      {/* form GET: submit là điều hướng thật nên không cần JS phía client */}
-      <form action="/tu-dien" method="get" className="flex gap-2">
-        <input
-          type="search"
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder="Tìm Hán tự, pinyin, nghĩa hoặc âm Hán Việt…"
-          aria-label="Tìm từ vựng"
-          className="field flex-1"
-        />
-        <Button type="submit">Tìm</Button>
-        {/* Tra bằng ảnh như "Dịch ảnh" của Hanzii/Google Dịch — chụp thực đơn, biển hiệu. */}
-        <LinkButton href="/tu-dien/quet" variant="secondary" className="px-3.5!">
-          <Icon name="camera" size={18} />
-          <span className="sr-only sm:not-sr-only">Quét ảnh</span>
-        </LinkButton>
-      </form>
+      {/* Gợi ý khi gõ, lịch sử tra, giọng nói — vẫn là form GET nên không JS vẫn tra được. */}
+      <DictionarySearch defaultValue={q ?? ""} showScan />
 
-      <nav aria-label="Lọc theo cấp HSK" className="flex flex-wrap gap-2">
+      {/* Điện thoại: 1 hàng cuộn ngang thay vì 2 hàng chip. */}
+      <nav
+        aria-label="Lọc theo cấp HSK"
+        className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0"
+      >
         {LEVELS.map((lv) => (
           <Link
             key={lv}
             href={`/tu-dien?level=${lv}`}
             aria-current={level === lv ? "page" : undefined}
-            className={`rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors ${
+            className={`shrink-0 rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors ${
               level === lv
                 ? "border-primary bg-primary/10 text-primary"
                 : "border-border text-muted hover:border-primary/40 hover:text-primary"
             }`}
           >
-            HSK {lv}
+            {hskLabel(lv)}
           </Link>
         ))}
       </nav>
@@ -145,7 +139,7 @@ export default async function TuDienPage({
         </p>
       ) : (
         <>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {data.items.map((w) => (
               <li key={w.id}>
                 <Link
@@ -157,7 +151,7 @@ export default async function TuDienPage({
                       {w.simplified}
                     </span>
                     <span className="shrink-0 rounded-full bg-surface-2 px-2 py-0.5 text-[10px] text-muted">
-                      HSK {w.hskLevel}
+                      {hskLabel(w.hskLevel)}
                     </span>
                   </div>
                   {/* Ảnh minh hoạ nếu có (danh từ cụ thể HSK1-5) — vừa dễ
@@ -222,7 +216,7 @@ export default async function TuDienPage({
         </h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted">
           Tra từ là bước đầu. Hanni xếp{" "}
-          {level ? `HSK ${level}` : "toàn bộ 9 cấp"} thành bài học theo chủ đề
+          {level ? hskLabel(level) : "toàn bộ 9 cấp"} thành bài học theo chủ đề
           và nhắc bạn ôn đúng lúc sắp quên — miễn phí toàn bộ nội dung học.
         </p>
         <LinkButton href="/bat-dau" className="mt-4">

@@ -42,7 +42,7 @@ const MODES: {
   },
 ];
 
-function cssVar(name: string): string {
+export function cssVar(name: string): string {
   if (typeof window === "undefined") return "#555555";
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#555555";
 }

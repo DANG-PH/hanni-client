@@ -5,13 +5,15 @@ import {
   TourButton,
   type TourStep,
 } from "@/components/feature-tour";
-import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Card, EmptyState, PageHeading, Spinner } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { HanziWriterCanvas } from "@/components/hanzi-writer-canvas";
 import { NextStep } from "@/components/next-step";
 import { useAuth } from "@/lib/auth";
 import { useCurrentLesson, useLesson } from "@/lib/hooks";
+import { HSK_LEVELS, hskLabel } from "@/lib/pos";
 
 interface HanziEntry {
   c: string;
@@ -19,7 +21,6 @@ interface HanziEntry {
   pinyin: string;
 }
 
-const LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const WRITING_TOUR_STEPS: TourStep[] = [
   {
@@ -42,7 +43,17 @@ const WRITING_TOUR_STEPS: TourStep[] = [
   },
 ];
 
-export default function WritingPage() {
+export default function WritingRoute() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <WritingPage />
+    </Suspense>
+  );
+}
+
+function WritingPage() {
+  // `?c=字` — từ nút "Luyện viết" ở trang từ điển: mở thẳng đúng chữ đó.
+  const wanted = useSearchParams().get("c");
   // Khách dùng được (2026-10-18) — chỉ lưu tiến độ mới cần tài khoản.
   const { loading } = useAuth();
   const [index, setIndex] = useState<HanziEntry[] | null>(null);
@@ -83,13 +94,20 @@ export default function WritingPage() {
       })
       .then((data: HanziEntry[]) => {
         setIndex(data);
+        const target = wanted ? data.find((d) => d.c === wanted) : undefined;
+        if (target) {
+          setByLesson(false);
+          setLevel(target.level);
+          setActive(target.c);
+          return;
+        }
         setActive(
           (prev) =>
             prev ?? data.find((d) => d.level === 1)?.c ?? data[0]?.c ?? null,
         );
       })
       .catch(() => setIndexError(true));
-  }, []);
+  }, [wanted]);
 
   const filtered = useMemo(() => {
     if (!index) return [];
@@ -260,14 +278,14 @@ export default function WritingPage() {
             aria-label="Lọc theo cấp HSK"
             hidden={lessonScope}
           >
-            {LEVELS.map((l) => (
+            {HSK_LEVELS.map((l) => (
               <button
                 key={l}
                 onClick={() => setLevel(l)}
                 aria-pressed={level === l}
                 className={`motion-button min-h-8 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-colors ${level === l ? "border-primary bg-primary text-primary-fg" : "border-border bg-surface text-muted hover:border-primary/40 hover:text-primary"}`}
               >
-                HSK {l}
+                {hskLabel(l)}
               </button>
             ))}
           </div>

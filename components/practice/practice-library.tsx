@@ -10,6 +10,7 @@ import {
   PageHeading,
   Spinner,
 } from "@/components/ui";
+import { HSK_LEVELS, hskLabel } from "@/lib/pos";
 import { useAuth } from "@/lib/auth";
 import { useCurrentLesson, useLesson, useWords } from "@/lib/hooks";
 import type { Word } from "@/lib/types";
@@ -206,10 +207,7 @@ function LibraryContent({
               <div className={styles.levelPicker}>
                 <h3>Chọn cấp độ HSK</h3>
                 <LevelFilter
-                  options={Array.from({ length: 9 }, (_, i) => ({
-                    value: i + 1,
-                    label: `HSK ${i + 1}`,
-                  }))}
+                  options={HSK_LEVELS.map((l) => ({ value: l, label: hskLabel(l) }))}
                   value={level}
                   onChange={(value) => {
                     setLevel(value ?? 1);

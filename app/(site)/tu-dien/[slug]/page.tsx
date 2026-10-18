@@ -13,12 +13,32 @@ import type { Metadata } from "next";
 import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AudioButton } from "@/components/audio-button";
+import { DictionarySearch, RememberWord } from "@/components/dictionary/dictionary-search";
+import { StrokeOrder } from "@/components/dictionary/stroke-order";
 import { Icon } from "@/components/icon";
 import { SaveWordButton } from "@/components/save-word-button";
 import { LinkButton } from "@/components/ui";
-import { API_BASE } from "@/lib/api";
+import { hskLabel, POS_VI } from "@/lib/pos";
 import { fetchPublic } from "@/lib/public-fetch";
 import type { Word } from "@/lib/types";
+
+/** Tách nghĩa thành từng nét theo dấu ";" ngoài ngoặc ("đánh; gọi (điện); chơi (bóng)"). */
+function senses(meaning: string): string[] {
+  const out: string[] = [];
+  let depth = 0;
+  let cur = "";
+  for (const ch of meaning) {
+    if (ch === "(" || ch === "（") depth += 1;
+    if (ch === ")" || ch === "）") depth = Math.max(0, depth - 1);
+    if (ch === ";" && depth === 0) {
+      out.push(cur.trim());
+      cur = "";
+    } else cur += ch;
+  }
+  out.push(cur.trim());
+  return out.filter(Boolean);
+}
 
 interface RelatedWord {
   simplified: string;
@@ -137,7 +157,10 @@ export default async function TuDienPage({
   const related = data?.related ?? [];
 
   return (
-    <div className="page-wrap max-w-3xl! space-y-6 py-10!">
+    <div className="page-wrap max-w-6xl! space-y-6 py-8!">
+      {/* Tra tiếp ngay trên trang từ như Hanzii — trước đó phải quay về /tu-dien mới gõ được. */}
+      <DictionarySearch />
+      <RememberWord s={main.simplified} p={main.pinyin} m={main.meaningVi} />
       <nav className="text-xs text-muted">
         <Link href="/" className="hover:text-primary">
           Hanni
@@ -149,251 +172,262 @@ export default async function TuDienPage({
         › <span className="text-foreground">{main.simplified}</span>
       </nav>
 
-      {words.map((w) => (
-        <article key={w.id} className="panel p-6 sm:p-8">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h1 lang="zh" className="hanzi text-6xl text-primary">
-                {w.simplified}
-              </h1>
-              {w.traditional && w.traditional !== w.simplified && (
-                <p className="mt-2 text-xs text-muted">
-                  Phồn thể:{" "}
-                  <span lang="zh" className="hanzi text-sm">
-                    {w.traditional}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
+        <div className="min-w-0 space-y-6">
+          {words.map((w, wi) => {
+            const Title = wi === 0 ? "h1" : "h2";
+            const list = senses(w.meaningVi ?? w.meaningEn ?? "");
+            return (
+              <article key={w.id} className="panel p-6 sm:p-8">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <Title lang="zh" className="hanzi text-6xl text-primary">
+                      {w.simplified}
+                    </Title>
+                    {w.traditional && w.traditional !== w.simplified && (
+                      <p className="mt-2 text-xs text-muted">
+                        Phồn thể:{" "}
+                        <span lang="zh" className="hanzi text-sm">
+                          {w.traditional}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                  <span className="rounded-full bg-primary/10 px-3 py-1.5 text-[11px] font-semibold text-primary">
+                    {hskLabel(w.hskLevel)}
                   </span>
-                </p>
-              )}
-            </div>
-            <span className="rounded-full bg-primary/10 px-3 py-1.5 text-[11px] font-semibold text-primary">
-              HSK {w.hskLevel}
-            </span>
-          </div>
+                </div>
 
-          <dl className="mt-6 space-y-3 text-sm">
-            <div className="flex gap-3">
-              <dt className="w-28 shrink-0 text-muted">Phiên âm</dt>
-              <dd className="font-semibold">{w.pinyin}</dd>
-            </div>
-            {w.hanViet && (
-              <div className="flex gap-3">
-                <dt className="w-28 shrink-0 text-muted">Âm Hán Việt</dt>
-                <dd className="font-bold text-primary">{w.hanViet}</dd>
-              </div>
-            )}
-            <div className="flex gap-3">
-              <dt className="w-28 shrink-0 text-muted">Nghĩa</dt>
-              <dd className="font-semibold">
-                {w.meaningVi ?? w.meaningEn ?? "Đang cập nhật"}
-              </dd>
-            </div>
-            {w.pos.length > 0 && (
-              <div className="flex gap-3">
-                <dt className="w-28 shrink-0 text-muted">Từ loại</dt>
-                <dd>{w.pos.join(" · ")}</dd>
-              </div>
-            )}
-          </dl>
+                <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <span className="text-xl font-semibold">{w.pinyin}</span>
+                  {w.audioUrl && (
+                    <AudioButton
+                      src={w.audioUrl}
+                      size={19}
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/15"
+                    />
+                  )}
+                  {w.hanViet && (
+                    <span className="rounded-full bg-primary/8 px-3 py-1 text-sm">
+                      <span className="text-muted">Hán Việt </span>
+                      <strong className="text-primary">{w.hanViet}</strong>
+                    </span>
+                  )}
+                </div>
 
-          {/* Ảnh minh hoạ (Wikimedia Commons — giấy phép tự do, xem
-           * hanni-server/CLAUDE.md). Dùng <img> thường chứ không next/image:
-           * ảnh đến từ domain ngoài và chỉ là minh hoạ phụ, thêm domain vào
-           * cấu hình next/image cho 2 host Wikimedia là phức tạp thừa. */}
-          {w.imageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={w.imageUrl}
-              alt={`Ảnh minh hoạ cho từ ${w.simplified} (${w.meaningVi ?? ""})`}
-              loading="lazy"
-              className="mt-5 max-h-56 w-full rounded-xl object-cover"
-            />
-          )}
+                <section className="mt-6" aria-label="Nghĩa">
+                  {w.pos.length > 0 && (
+                    <div className="mb-2.5 flex flex-wrap gap-1.5">
+                      {w.pos.map((p) => (
+                        <span key={p} className="rounded-md bg-surface-2 px-2 py-0.5 text-xs font-semibold text-muted">
+                          {POS_VI[p] ?? p}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {list.length > 1 ? (
+                    <ol className="list-decimal space-y-1 pl-5 text-base font-medium marker:text-sm marker:text-muted">
+                      {list.map((m) => (
+                        <li key={m}>{m}</li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <p className="text-base font-medium">{list[0] ?? "Đang cập nhật"}</p>
+                  )}
+                </section>
 
-          {w.audioUrl && (
-            <audio
-              controls
-              preload="none"
-              src={`${API_BASE.replace(/\/api\/?$/, "")}${w.audioUrl}`}
-              className="mt-5 h-9 w-full max-w-xs"
-            >
-              Trình duyệt của bạn không hỗ trợ phát audio.
-            </audio>
-          )}
+                {/* Ảnh minh hoạ (Wikimedia Commons — giấy phép tự do, xem
+                 * hanni-server/CLAUDE.md). Dùng <img> thường chứ không next/image:
+                 * ảnh đến từ domain ngoài và chỉ là minh hoạ phụ. */}
+                {w.imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={w.imageUrl}
+                    alt={`Ảnh minh hoạ cho từ ${w.simplified} (${w.meaningVi ?? ""})`}
+                    loading="lazy"
+                    className="mt-5 max-h-56 w-full rounded-xl object-cover"
+                  />
+                )}
 
-          <div className="mt-5">
-            <SaveWordButton wordId={w.id} simplified={w.simplified} />
-          </div>
+                <div className="mt-5">
+                  <SaveWordButton wordId={w.id} simplified={w.simplified} />
+                </div>
 
-          {w.examples && w.examples.length > 0 && (
-            <div className="mt-6 border-t border-border pt-5">
-              <h2 className="text-sm font-semibold">Câu ví dụ</h2>
-              <ul className="mt-3 space-y-3">
-                {w.examples.map((ex) => (
-                  <li key={ex.id} className="text-sm">
-                    <p lang="zh" className="hanzi text-base">
-                      {ex.zh}
-                    </p>
-                    {ex.pinyin && (
-                      <p className="mt-0.5 text-xs text-muted">{ex.pinyin}</p>
-                    )}
-                    {(ex.vi || ex.en) && (
-                      <p className="mt-0.5 text-muted">{ex.vi ?? ex.en}</p>
-                    )}
+                {w.examples && w.examples.length > 0 && (
+                  <div className="mt-6 border-t border-border pt-5">
+                    <h2 className="text-sm font-semibold">Câu ví dụ</h2>
+                    <ul className="mt-3 space-y-3">
+                      {w.examples.map((ex) => (
+                        <li key={ex.id} className="text-sm">
+                          <p lang="zh" className="hanzi text-base">
+                            {ex.zh}
+                          </p>
+                          {ex.pinyin && <p className="mt-0.5 text-xs text-muted">{ex.pinyin}</p>}
+                          {(ex.vi || ex.en) && <p className="mt-0.5 text-muted">{ex.vi ?? ex.en}</p>}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </article>
+            );
+          })}
+
+          {/* Phân tích từng chữ — chỗ khai thác sâu nhất lợi thế Hán Việt: đọc
+           * "điện + não" là người Việt đoán ra 电脑 = máy tính, không cần học
+           * thuộc. Cũng làm trang dày hơn hẳn cho SEO. */}
+          {characters.length > 0 && (
+            <section className="panel p-6">
+              <h2 className="text-sm font-semibold">
+                Phân tích từng chữ
+                {main.hanViet && (
+                  <span className="ml-2 font-normal text-muted">
+                    — {main.simplified} đọc là &quot;{main.hanViet}&quot;
+                  </span>
+                )}
+              </h2>
+              <ul className="mt-4 space-y-3">
+                {characters.map((c, i) => (
+                  <li
+                    key={`${c.char}-${i}`}
+                    className="flex items-start gap-4 border-b border-border pb-3 last:border-0 last:pb-0"
+                  >
+                    <Link
+                      href={`/tu-dien/${encodeURIComponent(c.char)}`}
+                      lang="zh"
+                      className="hanzi shrink-0 text-3xl text-primary hover:underline"
+                    >
+                      {c.char}
+                    </Link>
+                    <div className="min-w-0 text-sm">
+                      {c.hanViet && (
+                        <p className="font-semibold text-primary">{c.hanViet}</p>
+                      )}
+                      {c.pinyin && <p className="text-xs text-muted">{c.pinyin}</p>}
+                      <p className="mt-0.5">
+                        {c.meaningVi ?? (
+                          <span className="text-muted">
+                            (chữ này không đứng riêng thành từ)
+                          </span>
+                        )}
+                      </p>
+                    </div>
                   </li>
                 ))}
               </ul>
-            </div>
+            </section>
           )}
-        </article>
-      ))}
 
-      {/* Phân tích từng chữ — chỗ khai thác sâu nhất lợi thế Hán Việt: đọc
-       * "điện + não" là người Việt đoán ra 电脑 = máy tính, không cần học
-       * thuộc. Cũng làm trang dày hơn hẳn cho SEO. */}
-      {characters.length > 0 && (
-        <section className="panel p-6">
-          <h2 className="text-sm font-semibold">
-            Phân tích từng chữ
-            {main.hanViet && (
-              <span className="ml-2 font-normal text-muted">
-                — {main.simplified} đọc là &quot;{main.hanViet}&quot;
-              </span>
-            )}
-          </h2>
-          <ul className="mt-4 space-y-3">
-            {characters.map((c, i) => (
-              <li
-                key={`${c.char}-${i}`}
-                className="flex items-start gap-4 border-b border-border pb-3 last:border-0 last:pb-0"
-              >
-                <Link
-                  href={`/tu-dien/${encodeURIComponent(c.char)}`}
-                  lang="zh"
-                  className="hanzi shrink-0 text-3xl text-primary hover:underline"
-                >
-                  {c.char}
-                </Link>
-                <div className="min-w-0 text-sm">
-                  {c.hanViet && (
-                    <p className="font-semibold text-primary">{c.hanViet}</p>
-                  )}
-                  {c.pinyin && <p className="text-xs text-muted">{c.pinyin}</p>}
-                  <p className="mt-0.5">
-                    {c.meaningVi ?? (
-                      <span className="text-muted">
-                        (chữ này không đứng riêng thành từ)
+          {compounds.length > 0 && (
+            <section>
+              <h2 className="text-sm font-semibold">
+                Từ khác chứa chữ{" "}
+                <span lang="zh" className="hanzi text-primary">
+                  {Array.from(main.simplified)[0]}
+                </span>
+              </h2>
+              <p className="mt-1 text-xs text-muted">
+                Gặp lại cùng một chữ trong nhiều từ là cách nhớ chắc nhất — và đoán
+                được nghĩa của từ mới.
+              </p>
+              <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {compounds.map((c) => (
+                  <li key={c.simplified}>
+                    <Link
+                      href={`/tu-dien/${encodeURIComponent(c.simplified)}`}
+                      className="panel hover-card flex items-center gap-3 px-4 py-3 text-sm"
+                    >
+                      <span lang="zh" className="hanzi text-xl text-primary">
+                        {c.simplified}
                       </span>
-                    )}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {compounds.length > 0 && (
-        <section>
-          <h2 className="text-sm font-semibold">
-            Từ khác chứa chữ{" "}
-            <span lang="zh" className="hanzi text-primary">
-              {Array.from(main.simplified)[0]}
-            </span>
-          </h2>
-          <p className="mt-1 text-xs text-muted">
-            Gặp lại cùng một chữ trong nhiều từ là cách nhớ chắc nhất — và đoán
-            được nghĩa của từ mới.
-          </p>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {compounds.map((c) => (
-              <li key={c.simplified}>
-                <Link
-                  href={`/tu-dien/${encodeURIComponent(c.simplified)}`}
-                  className="panel hover-card flex items-center gap-3 px-4 py-3 text-sm"
-                >
-                  <span lang="zh" className="hanzi text-xl text-primary">
-                    {c.simplified}
-                  </span>
-                  <span className="min-w-0">
-                    {c.hanViet && (
-                      <span className="block text-xs font-semibold text-primary">
-                        {c.hanViet}
+                      <span className="min-w-0">
+                        {c.hanViet && (
+                          <span className="block text-xs font-semibold text-primary">
+                            {c.hanViet}
+                          </span>
+                        )}
+                        <span className="block truncate">{c.meaningVi}</span>
                       </span>
-                    )}
-                    <span className="block truncate">{c.meaningVi}</span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
-      {/* Nghe từ trong ngữ cảnh thật. Cố tình KHÔNG trích câu thoại ra làm
-       * ví dụ — phụ đề là dịch máy từ phim tu tiên, trích ra sẽ dạy sai. */}
-      {videos.length > 0 && (
-        <section>
-          <h2 className="text-sm font-semibold">
-            Nghe {main.simplified} trong video
-          </h2>
-          <p className="mt-1 text-xs text-muted">
-            Gặp từ trong câu thoại thật, có giọng bản ngữ và phụ đề chạy theo.
-          </p>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-3">
-            {videos.map((v) => (
-              <li key={v.id}>
-                <Link
-                  href={`/watch/${v.id}`}
-                  className="panel hover-card block overflow-hidden"
-                >
-                  {v.thumbnailUrl && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={v.thumbnailUrl}
-                      alt=""
-                      loading="lazy"
-                      className="h-24 w-full object-cover"
-                    />
-                  )}
-                  <span className="block p-3">
-                    <span className="line-clamp-2 text-xs font-medium">
-                      {v.title}
-                    </span>
-                    <span className="mt-1 block text-[11px] text-muted">
-                      {v.lineCount} câu có từ này
-                    </span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+          {/* Nghe từ trong ngữ cảnh thật. Cố tình KHÔNG trích câu thoại ra làm
+           * ví dụ — phụ đề là dịch máy từ phim tu tiên, trích ra sẽ dạy sai. */}
+          {videos.length > 0 && (
+            <section>
+              <h2 className="text-sm font-semibold">
+                Nghe {main.simplified} trong video
+              </h2>
+              <p className="mt-1 text-xs text-muted">
+                Gặp từ trong câu thoại thật, có giọng bản ngữ và phụ đề chạy theo.
+              </p>
+              <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                {videos.map((v) => (
+                  <li key={v.id}>
+                    <Link
+                      href={`/watch/${v.id}`}
+                      className="panel hover-card block overflow-hidden"
+                    >
+                      {v.thumbnailUrl && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={v.thumbnailUrl}
+                          alt=""
+                          loading="lazy"
+                          className="h-24 w-full object-cover"
+                        />
+                      )}
+                      <span className="block p-3">
+                        <span className="line-clamp-2 text-xs font-medium">
+                          {v.title}
+                        </span>
+                        <span className="mt-1 block text-[11px] text-muted">
+                          {v.lineCount} câu có từ này
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
-      <section className="panel tint-primary p-6 text-center">
-        <h2 className="text-lg font-bold tracking-tight">
-          Học {main.simplified} cùng {main.hanViet ? "âm Hán Việt" : "Hanni"}
-        </h2>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted">
-          Hanni có 10.900+ từ vựng HSK 3.0 kèm âm Hán Việt — lợi thế riêng của
-          người Việt khi học tiếng Trung. Flashcard lặp lại ngắt quãng giúp bạn
-          nhớ lâu, miễn phí toàn bộ nội dung học.
-        </p>
-        {/* Mời HỌC THỬ trước, không mời đăng ký ngay: người từ Google vào đây
-         * chưa biết học ở Hanni ra sao mà đã bị đòi tạo tài khoản thì phần lớn
-         * rời đi. Cho nếm thử rồi mới mời, lúc đó lời mời mới có sức nặng. */}
-        <LinkButton href="/bat-dau" className="mt-4">
-          Học bài đầu tiên — không cần đăng ký
-          <Icon name="arrow" size={16} />
-        </LinkButton>
-      </section>
+        </div>
+
+        {/* Cột phải như trang từ của Hanzii: cách viết (hoạt hình thứ tự nét) + lời mời học. */}
+        <aside className="space-y-4 lg:sticky lg:top-24">
+          <section className="panel p-5">
+            <h2 className="mb-3 text-sm font-semibold">Cách viết</h2>
+            <StrokeOrder text={main.simplified} />
+          </section>
+          <section className="panel tint-primary p-5 text-center">
+            <h2 className="text-base font-bold tracking-tight">
+              Học {main.simplified} cùng {main.hanViet ? "âm Hán Việt" : "Hanni"}
+            </h2>
+            <p className="mx-auto mt-2 text-sm leading-6 text-muted">
+              10.900+ từ vựng HSK 3.0 kèm âm Hán Việt, ôn lặp lại ngắt quãng để nhớ lâu — miễn phí toàn bộ nội dung học.
+            </p>
+            {/* Mời HỌC THỬ trước, không mời đăng ký ngay: người từ Google vào đây
+             * chưa biết học ở Hanni ra sao mà đã bị đòi tạo tài khoản thì phần lớn
+             * rời đi. Cho nếm thử rồi mới mời, lúc đó lời mời mới có sức nặng. */}
+            <LinkButton href="/bat-dau" className="mt-4 w-full">
+              Học bài đầu tiên
+              <Icon name="arrow" size={16} />
+            </LinkButton>
+          </section>
+        </aside>
+      </div>
 
       {related.length > 0 && (
         <section>
           <h2 className="text-sm font-semibold">
-            Từ vựng HSK {main.hskLevel} khác
+            Từ vựng {hskLabel(main.hskLevel)} khác
           </h2>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+          <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((r) => (
               <li key={r.simplified}>
                 <Link

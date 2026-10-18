@@ -401,6 +401,20 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   "Chuỗi hiện tại" ("Từ đã thuộc" cần ~21 ngày nên đang trống với mọi người). Server: xem mục "Khách xem +
   dùng thử" ở `hanni-server/CLAUDE.md`. `robots.ts` vẫn KHÔNG mời index các trang này (vẽ ở trình duyệt,
   HTML server chỉ có vòng tải).
+- **Từ điển theo hướng Hanzii (vấn đề 2, 2026-10-18)** — `components/dictionary/`: `DictionarySearch` (dùng ở cả
+  `/tu-dien` lẫn trang từ — trước đó trang từ không có ô tra): gợi ý ngay khi gõ (`GET /words?q=&pageSize=6`, server
+  đã xếp hạng — bỏ dấu, pinyin viết liền, âm Hán Việt lên trước), ↑/↓/Enter chọn, "Tra gần đây" khi ô trống
+  (`RememberWord` ghi `localStorage` `hanni:dict-history` lúc mở trang từ), nút micro nói tiếng Trung để tra (chỉ
+  hiện khi trình duyệt có nhận dạng giọng nói); vẫn là `<form method="get">` nên không JS vẫn tra được.
+  `StrokeOrder`: hoạt hình thứ tự nét từng chữ (dùng lại `hanzi-writer` + dữ liệu nét tự host, `cssVar` export
+  từ `hanzi-writer-canvas.tsx`), số nét, "Luyện viết" → `/writing?c=字` (trang luyện viết đọc `?c=` qua
+  `useSearchParams`, mở đúng chữ + đúng cấp). Trang từ 2 cột từ `lg` (cột phải dính: cách viết + lời mời học), nút
+  nghe `AudioButton` thay `<audio controls>`, nghĩa tách từng nét đánh số (`senses()` — tách `;` ngoài ngoặc), từ
+  loại tiếng Việt (`lib/pos.ts` `POS_VI`). Lưới "từ cùng chữ"/"từ cùng cấp"/video thêm `grid-cols-1` — `grid` không
+  khai cột thì cột tự giãn theo `min-content` của chữ `truncate` (trang 打 rộng 860px ở màn 390). Chip cấp chỉ còn
+  HSK 1–6 + "HSK 7–9" (`HSK_LEVELS`/`hskLabel` ở `lib/pos.ts`, dùng chung `/tu-dien`, `/writing`, luyện nghe/phát
+  âm) — dữ liệu gộp 7–9 vào cấp 7 nên chip HSK 8, 9 luôn trống; `/tu-dien?level=8|9` → 308 sang `level=7`; điện
+  thoại 1 hàng cuộn ngang. Dữ liệu (phồn thể, âm Hán Việt, nghĩa HSK 4, từ loại): xem `hanni-server/CLAUDE.md`.
 
 ### Lộ trình một nút bấm (tái cấu trúc 2026-10-05 — đọc mục này TRƯỚC)
 User báo: flashcard "tự nhảy vào HSK4 khi muốn học HSK1, không theo chủ đề", web "nhiều chức
