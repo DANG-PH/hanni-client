@@ -438,6 +438,38 @@ ngay nút học + ô tra (như Hanbeego/Hanzii). Footer pháp lý (Hanzii/Hanbee
 - **Nạp xu bằng tiền thật CHƯA gỡ** (bộ phân loại chặn sửa luồng thanh toán ở server) — khối "Nạp thêm xu" ở
   `/account` vẫn tự ẩn vì payOS chưa cấu hình.
 
+### Lớp học, hợp tác, bài đọc AI, trang pháp lý (2026-10-19 — user: "thu hút người dùng", "dễ chào mời đối tác", "điểm cao")
+Rà toàn site trước khi làm (khách 33 trang × 390/1440, đã đăng nhập 23 trang × 390/1440/1920): 0 tràn ngang, 0 lỗi JS/request
+— lỗi thật là bảng xếp hạng công khai đầy tài khoản thử (đã lọc ở server), trang "Từ đã biết" dài 66.789px, thẻ trống ở `/learn`.
+- **Lớp học** (`lib/classrooms.ts`, `app/(app)/lop-hoc`, `app/(site)/lop/[code]`, `components/classrooms/`): tham khảo Duolingo
+  for Schools (lớp + giao bài + xem tiến độ, miễn phí, sẽ đóng 7/2027) — Hanbeego `/partners` chỉ bán sỉ Premium. `/lop-hoc`: lớp
+  tôi dạy (tạo lớp, mã) + lớp tôi học (vào bằng mã → sang `/lop/[mã]` xem trước). `/lop-hoc/[id]` giáo viên: mã to + "Gửi cho học
+  viên" (Web Share) / "Chép đường dẫn" / "Google Classroom" (`classroom.google.com/share?url=` — không cần khoá API), 4 ô tóm tắt,
+  giao bài (bài học theo cấp từ `useLearnPath`, hoặc đề từ `/mock-exams`, hạn nộp theo ngày giờ VN), danh sách bài giao + "Xem N bạn
+  chưa làm", bảng tiến độ (máy tính: bảng 8 cột; điện thoại: thẻ từng người, xếp LÊN TRƯỚC phần giao bài). Học viên: bài tập + "Làm
+  ngay", bảng phút học tuần của lớp, ghi rõ giáo viên thấy gì, "Rời lớp". `/lop/[mã]` công khai: khách thấy lớp + giáo viên rồi
+  "Tạo tài khoản để vào lớp" (`?next=` quay lại đúng trang). Trang chủ: thẻ `ClassAssignmentsCard` ngay dưới thẻ Học tiếp (chỉ khi
+  có bài chưa làm). Menu: **"Lớp học" thay chỗ "Tin nhắn"** (vẫn 8 mục); tin nhắn thành nút có số chưa đọc trên thanh trên
+  (`components/messages-button.tsx`), bỏ chấm đỏ tin nhắn ở nút "Thêm".
+- **Hợp tác `/hop-tac`** (Server Component, SEO; dàn ý theo Hanbeego `/partners`: 3 nhóm đối tác, 3 bước, FAQ) — nút chính "Tạo lớp
+  miễn phí" (dùng được ngay, không phải chờ báo giá), form liên hệ `components/partners/partner-lead-form.tsx` → `POST
+  /partners/leads` (ô ẩn `website` bẫy bot). Không công bố email/điện thoại cá nhân (chờ thông tin pháp lý từ user).
+- **Giới thiệu `/gioi-thieu`**, **Điều khoản `/dieu-khoan`**, **Chính sách bảo mật `/chinh-sach-bao-mat`** (`components/legal/legal-page.tsx`):
+  ghi ĐÚNG cách xử lý dữ liệu thật — chấm thanh điệu chạy trên máy; nhận dạng giọng nói của Chrome/Edge gửi âm thanh cho Google/Microsoft;
+  nội dung tính năng AI gửi qua Gemini API; ảnh quét không lưu; giáo viên thấy gì trong lớp. Chân trang khách thêm cột "VỀ HANNI",
+  chân trang app có dải liên kết. Sitemap + robots đã thêm các trang này (chặn `/lop-hoc`, `/lop/`, `/bai-doc`).
+- **Bài đọc AI `/bai-doc/[lessonId]`** (`lib/reading.ts`; server: mục "Bài đọc AI theo bài học"): kiểu Du Chinese — hội thoại 2 bên
+  (A trái, B phải), từ của bài tô đỏ bấm ra nghĩa + Hán Việt + loa, bật/tắt Pinyin (mặc định bật HSK 1–2) và Dịch, "Nghe cả bài"
+  (`speakSequence()` ở `lib/listening-audio.ts`: A giọng nữ, B giọng nam, câu đang đọc sáng lên), "Dùng 9/10 từ của bài". Chưa có
+  thì người đăng nhập bấm "Viết bài đọc cho bài này (1 lượt AI)" (~12 giây). Lối vào: màn xong bài ("Đọc hội thoại dùng N từ vừa
+  học") + trang chi tiết bài. Đo thật: bài 1 HSK 1 → "Chào hỏi qua điện thoại", 8 câu, mọi chữ thuộc HSK 1.
+- **Lịch học** (`components/calendar-reminder.tsx`, ở `/settings`): Google Calendar (đường dẫn TEMPLATE + `RRULE:FREQ=DAILY`) và
+  tệp `.ics` cho lịch iPhone/Outlook, giờ "trôi" theo máy, thời lượng = mục tiêu phút/ngày — trên iPhone thông báo đẩy chỉ chạy khi
+  đã cài app, lịch của máy thì luôn nhắc.
+- Sửa kèm: `/tu-da-biet` gom 969 từ theo cấp bằng `<details>` (vẫn đủ trong HTML cho Google; điện thoại 66.789px → 4.095px);
+  `/minigame` đổi tiêu đề "Minigame" → "Trò chơi luyện từ"; thẻ "Giải đấu tuần" khi bảng thưa hiện thang bậc + luật lên/xuống hạng;
+  thẻ "Từ vựng hôm nay" thêm âm Hán Việt + câu ví dụ (trước đó nửa thẻ trống ở 1920px).
+
 ### Tính năng tạo khác biệt + AI (2026-10-18 — user: "thêm tính năng hay, tạo sự khác biệt, thêm AI")
 Đều GẮN vào luồng học có sẵn, không thêm trang hay mục menu mới.
 - **Chấm thanh điệu bằng đồ thị cao độ** (`lib/pitch.ts`, `components/tone/tone-check.tsx`) — không app học tiếng

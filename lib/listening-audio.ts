@@ -131,6 +131,25 @@ export async function speakChinese(text: string): Promise<boolean> {
 
 export type PlayResult = "ended" | "cancelled" | "no-voice";
 
+/** Đọc lần lượt từng câu MỘT lần (bài đọc AI): A giọng nữ, B giọng nam, kể chuyện giọng thường.
+ * `onLine(i)` báo câu đang đọc để tô sáng; `stopListening()` dừng giữa chừng. */
+export async function speakSequence(
+  lines: { zh: string; s: Speaker }[],
+  onLine?: (index: number) => void,
+): Promise<PlayResult> {
+  stopListening();
+  const mine = token;
+  const voices = pickVoices(await loadVoices());
+  if (!voices) return "no-voice";
+  for (const [i, line] of lines.entries()) {
+    if (mine !== token) return "cancelled";
+    if (i > 0) await wait(GAP_LINE_MS);
+    onLine?.(i);
+    await speakOne(line.zh, voices[line.s], mine);
+  }
+  return mine === token ? "ended" : "cancelled";
+}
+
 /** Phát 1 câu nghe (đọc 2 lần). Trả "no-voice" nếu cần giọng máy mà thiết
  * bị không có giọng tiếng Trung — giao diện khi đó cho xem lời thoại. */
 export async function playListening(

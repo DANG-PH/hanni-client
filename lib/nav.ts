@@ -23,9 +23,10 @@ export const NAV_MAIN: NavLink[] = [
   { href: "/tu-dien", label: "Từ điển", icon: "search" },
 ];
 
+/** "Lớp học" thay chỗ "Tin nhắn" (2026-10-19) — tin nhắn thành nút có số chưa đọc ở thanh trên. */
 export const NAV_MORE: NavLink[] = [
   { href: "/leaderboard", label: "Xếp hạng", icon: "trophy" },
-  { href: "/messages", label: "Tin nhắn", icon: "message" },
+  { href: "/lop-hoc", label: "Lớp học", icon: "users" },
   { href: "/progress", label: "Tiến độ", icon: "chart" },
 ];
 
@@ -73,6 +74,9 @@ const OTHER_PAGES = [
   { href: "/settings", label: "Cài đặt" },
   { href: "/achievements", label: "Huy hiệu" },
   { href: "/u", label: "Hồ sơ" },
+  { href: "/messages", label: "Tin nhắn" },
+  { href: "/lop", label: "Vào lớp" },
+  { href: "/bai-doc", label: "Bài đọc" },
 ];
 
 export function isActive(pathname: string, href: string) {

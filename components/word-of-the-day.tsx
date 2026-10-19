@@ -40,6 +40,11 @@ export function WordOfTheDayCard({ level }: { level?: number }) {
             <span>{data.pinyin}</span>
             <AudioButton src={data.audioUrl} size={15} />
           </p>
+          {data.hanViet && (
+            <p className="text-xs text-muted">
+              Hán Việt: <b className="text-primary">{data.hanViet}</b>
+            </p>
+          )}
           <p className={styles.meaning}>{data.meaningVi}</p>
         </div>
         {data.imageUrl && (
@@ -51,6 +56,16 @@ export function WordOfTheDayCard({ level }: { level?: number }) {
           />
         )}
       </div>
+      {/* Câu ví dụ (HSK 1–3 đã có câu Hanni soạn) — lấp chỗ trống bằng cách dùng từ thật trong câu. */}
+      {data.examples?.[0] && (
+        <div className="mt-3 rounded-xl bg-surface-2/60 px-3.5 py-2.5">
+          <p lang="zh" className="hanzi text-base">
+            {data.examples[0].zh}
+          </p>
+          {data.examples[0].pinyin && <p className="text-xs text-muted">{data.examples[0].pinyin}</p>}
+          {data.examples[0].vi && <p className="mt-0.5 text-xs">{data.examples[0].vi}</p>}
+        </div>
+      )}
       {/* Thẻ đang khoe MỘT từ cụ thể thì lối đi tiếp phải là trang của CHÍNH
        * từ đó (âm Hán Việt, phân tích từng chữ, từ cùng chữ, video có từ
        * này) — trước đó lại dẫn ra danh sách cả cấp HSK, mất hẳn ngữ cảnh. */}

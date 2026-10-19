@@ -19,7 +19,7 @@ const IN_MORE = ["/tu-dien", ...NAV_MORE.map((l) => l.href), ACCOUNT_LINK.href, 
  */
 export function BottomNav({ onMore }: { onMore: () => void }) {
   const pathname = usePathname();
-  const { due, unread } = useNavBadges();
+  const { due } = useNavBadges();
   const moreActive = IN_MORE.some((href) => isNavActive(pathname, href));
 
   const cell = "relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 pt-1.5 pb-1 text-[10.5px] font-semibold";
@@ -63,12 +63,6 @@ export function BottomNav({ onMore }: { onMore: () => void }) {
             <Icon name="menu" size={21} />
           </span>
           <span>Thêm</span>
-          {unread > 0 && (
-            <span
-              aria-label={`${unread} tin nhắn chưa đọc`}
-              className="absolute top-1.5 left-1/2 ml-2.5 h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-surface"
-            />
-          )}
         </button>
       </div>
     </nav>

@@ -315,6 +315,9 @@ export default function LessonDetailPage() {
                     <Icon name="mic" size={16} /> Luyện phát âm
                   </LinkButton>
                 </div>
+                <LinkButton href={`/bai-doc/${lesson.id}`} variant="secondary" className="w-full">
+                  <Icon name="book" size={16} /> Bài đọc AI dùng từ của bài
+                </LinkButton>
               </div>
             )}
           </Card>

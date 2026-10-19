@@ -137,7 +137,12 @@ export function SessionComplete({
                   <Icon name="arrow" size={16} />
                 </LinkButton>
               )}
-              <LinkButton href="/learn" variant="secondary">
+              {/* Bài đọc AI chỉ dùng từ của bài vừa học — đọc ngay khi từ còn mới (2026-10-19). */}
+              <LinkButton href={`/bai-doc/${session.lesson.id}`} variant="secondary">
+                <Icon name="book" size={16} />
+                Đọc hội thoại dùng {total} từ vừa học
+              </LinkButton>
+              <LinkButton href="/learn" variant="ghost">
                 Về lộ trình
               </LinkButton>
             </>

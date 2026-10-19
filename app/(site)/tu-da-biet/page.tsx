@@ -133,30 +133,48 @@ export default async function TuDaBietPage() {
               Danh sách đầy đủ ({data.total} từ)
             </h2>
             <p className="mt-1 text-xs text-muted">
-              Bấm vào từ để nghe phát âm và xem chi tiết.
+              Bấm vào từ để nghe phát âm và xem chi tiết. Mỗi cấp gập gọn lại — bấm tên cấp để mở.
             </p>
-            <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {data.items.map((w) => (
-                <li key={`${w.simplified}-${w.pinyin}`}>
-                  <Link
-                    href={`/tu-dien/${encodeURIComponent(w.simplified)}`}
-                    className="panel hover-card flex items-center gap-3 px-3.5 py-2.5"
-                  >
-                    <span lang="zh" className="hanzi text-2xl text-primary">
-                      {w.simplified}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-sm font-semibold">
-                        {w.hanViet}
-                      </span>
-                      <span className="block text-[11px] text-muted">
-                        {w.pinyin} · HSK {w.hskLevel}
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/* Gom theo cấp bằng <details>: cả 969 từ vẫn nằm trong HTML cho Google, nhưng trang
+             * điện thoại không còn dài 66.000px (đo 2026-10-19). */}
+            <div className="mt-4 space-y-3">
+              {[...new Set(data.items.map((w) => w.hskLevel))]
+                .sort((a, b) => a - b)
+                .map((level, i) => {
+                  const words = data.items.filter((w) => w.hskLevel === level);
+                  return (
+                    <details key={level} open={i === 0} className="group rounded-2xl border border-border bg-surface">
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-semibold">
+                        <span>
+                          HSK {level >= 7 ? "7–9" : level}{" "}
+                          <span className="text-sm font-normal text-muted">· {words.length} từ</span>
+                        </span>
+                        <Icon name="chevron" size={16} className="shrink-0 text-muted transition-transform group-open:rotate-90" />
+                      </summary>
+                      <ul className="grid gap-2 px-3 pb-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {words.map((w) => (
+                          <li key={`${w.simplified}-${w.pinyin}`}>
+                            <Link
+                              href={`/tu-dien/${encodeURIComponent(w.simplified)}`}
+                              className="panel hover-card flex items-center gap-3 px-3.5 py-2.5"
+                            >
+                              <span lang="zh" className="hanzi text-2xl text-primary">
+                                {w.simplified}
+                              </span>
+                              <span className="min-w-0">
+                                <span className="block text-sm font-semibold">{w.hanViet}</span>
+                                <span className="block text-[11px] text-muted">
+                                  {w.pinyin} · HSK {w.hskLevel}
+                                </span>
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  );
+                })}
+            </div>
           </section>
 
           <section className="panel tint-primary p-6 text-center">

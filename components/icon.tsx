@@ -62,6 +62,10 @@ const paths = {
     "M12 3v12m-4-8 4-4 4 4M7 10H5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2",
   camera:
     "M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Zm8 3a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z",
+  users:
+    "M9 4a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM2 20v-2a7 4.5 0 0 1 14 0v2M16 4.2a3.5 3.5 0 0 1 0 6.6M18.5 14.6A6.5 4.3 0 0 1 22 18v2",
+  calendar: "M4 6h16v14H4V6Zm0 4h16M8 3v4m8-4v4",
+  copy: "M9 9h11v11H9V9ZM5 15H4V4h11v1",
 } as const;
 
 export type IconName = keyof typeof paths;

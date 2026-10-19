@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/lib/auth";
 import { useStudyStats } from "@/lib/hooks";
-import { useMessagesSocket, useUnreadMessageCount } from "@/lib/messages";
+import { useMessagesSocket } from "@/lib/messages";
 import { ACCOUNT_LINK, INSTALL_LINK, isNavActive, NAV_MAIN, NAV_MORE, type NavLink } from "@/lib/nav";
 import { usePwaState } from "@/lib/pwa/store";
 import { Icon } from "./icon";
@@ -71,11 +71,10 @@ export function Brand({ compact = false }: { compact?: boolean }) {
   );
 }
 
-/** Số nhỏ cạnh mục menu: từ cần ôn, tin nhắn chưa đọc. */
+/** Số nhỏ cạnh mục menu: từ cần ôn (tin nhắn chưa đọc nằm ở nút tin nhắn trên thanh trên). */
 export function useNavBadges() {
-  const { data: unread } = useUnreadMessageCount();
   const { data: stats } = useStudyStats();
-  return { due: stats?.dueNow ?? 0, unread: unread?.count ?? 0 };
+  return { due: stats?.dueNow ?? 0 };
 }
 
 export function Sidebar({
@@ -92,7 +91,7 @@ export function Sidebar({
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [busy, setBusy] = useState(false);
-  const { due, unread } = useNavBadges();
+  const { due } = useNavBadges();
   const pwa = usePwaState();
   const canInstall = pwa.initialized && !pwa.standalone && !pwa.installed;
   // Sidebar nằm trong app-shell nên luôn mount ở mọi trang — nghe socket ở
@@ -103,15 +102,13 @@ export function Sidebar({
   useMessagesSocket(null);
 
   function badge(href: string) {
-    const count = href === "/messages" ? unread : href === "/study" ? due : 0;
+    const count = href === "/study" ? due : 0;
     if (!count) return null;
-    const text = href === "/messages" ? (count > 9 ? "9+" : count) : count > 99 ? "99+" : count;
-    const tone =
-      href === "/messages" ? "bg-primary text-primary-fg shadow-2xs" : "bg-primary/12 text-primary";
+    const text = count > 99 ? "99+" : count;
     return (
       <span
-        title={href === "/study" ? `${count} từ cần ôn` : `${count} tin nhắn chưa đọc`}
-        className={`flex items-center justify-center rounded-full font-bold ${tone} ${
+        title={`${count} từ cần ôn`}
+        className={`flex items-center justify-center rounded-full font-bold bg-primary/12 text-primary ${
           collapsed
             ? "absolute top-1 right-1.5 h-4 min-w-4 px-1 text-[9px]"
             : "ml-auto h-5 min-w-5 px-1.5 text-[10px]"

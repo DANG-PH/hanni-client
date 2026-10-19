@@ -9,6 +9,7 @@ import { pageLabel } from "@/lib/nav";
 import { BottomNav } from "./bottom-nav";
 import { Brand, Sidebar, useSidebarCollapsed } from "./sidebar";
 import { AssistantWidget } from "./assistant-widget";
+import { MessagesButton } from "./messages-button";
 import { NotificationBell } from "./notification-bell";
 import { StreakCelebration } from "./streak-celebration";
 import { ThemeToggle } from "./theme-toggle";
@@ -112,6 +113,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 )}
               </Link>
             )}
+            {user && <MessagesButton />}
             {user && <NotificationBell />}
             <ThemeToggle />
             {user ? (
@@ -150,6 +152,19 @@ export function AppShell({ children }: { children: ReactNode }) {
           className={`mt-auto border-t border-border px-6 py-4 text-[10px] text-muted ${styles.footer}`}
         >
           <span>Hanni · Mỗi ngày một chút, tiến xa hơn.</span>
+          <nav aria-label="Về Hanni" className="mt-1 flex flex-wrap justify-start gap-x-3 gap-y-1 sm:justify-center">
+            {[
+              ["Giới thiệu", "/gioi-thieu"],
+              ["Hợp tác", "/hop-tac"],
+              ["Điều khoản", "/dieu-khoan"],
+              ["Bảo mật", "/chinh-sach-bao-mat"],
+              ["Nguồn dữ liệu", "/nguon-du-lieu"],
+            ].map(([label, href]) => (
+              <Link key={href} href={href} className="hover:text-primary">
+                {label}
+              </Link>
+            ))}
+          </nav>
         </footer>
       </div>
       <BottomNav onMore={() => drawer.current?.showModal()} />

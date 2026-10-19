@@ -113,6 +113,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/register`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${siteUrl}/onboarding`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${siteUrl}/nguon-du-lieu`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${siteUrl}/gioi-thieu`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${siteUrl}/hop-tac`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${siteUrl}/dieu-khoan`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${siteUrl}/chinh-sach-bao-mat`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
     { url: `${siteUrl}/install`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
   ];
   const [dict, grammar, exams, practice] = await Promise.all([

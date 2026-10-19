@@ -773,7 +773,7 @@ export default function MinigamePage() {
         icon="spark"
         tone="accent"
         eyebrow="Vừa học vừa chơi"
-        title="Minigame"
+        title="Trò chơi luyện từ"
         description="Chọn 1 trò chơi để luyện phản xạ từ vựng — mỗi ván 60 giây, càng nhanh càng nhiều xu."
       >
         <TourButton tourKey="minigame" />
@@ -786,7 +786,7 @@ export default function MinigamePage() {
            * tự nhiên là mở rộng vốn từ đó ra. */}
           <NextStep
             title="Chơi để phản xạ nhanh hơn — nhưng vốn từ mới là gốc"
-            description="Minigame luyện tốc độ trên những từ bạn đã gặp. Học thêm từ mới rồi quay lại sẽ thấy khác hẳn."
+            description="Trò chơi luyện tốc độ trên những từ bạn đã gặp. Học thêm từ mới rồi quay lại sẽ thấy khác hẳn."
             actions={[
               {
                 href: "/study",

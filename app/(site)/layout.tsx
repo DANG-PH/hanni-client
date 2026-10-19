@@ -21,7 +21,7 @@ function GuestFrame({ children }: { children: ReactNode }) {
         {children}
       </main>
       <footer className="border-t border-border bg-surface">
-        <div className="page-wrap grid gap-8 py-10! sm:grid-cols-[1.5fr_1fr_1fr]">
+        <div className="page-wrap grid gap-8 py-10! sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" aria-label="Hanni — trang chủ">
               <Brand />
@@ -50,6 +50,16 @@ function GuestFrame({ children }: { children: ReactNode }) {
                 ["Học qua video", "/watch"],
                 ["Cài ứng dụng Hanni", "/install"],
                 ["Câu hỏi thường gặp", "/#cau-hoi"],
+              ],
+            },
+            {
+              title: "VỀ HANNI",
+              links: [
+                ["Giới thiệu", "/gioi-thieu"],
+                ["Hợp tác: giáo viên, trung tâm", "/hop-tac"],
+                ["Lớp học", "/lop-hoc"],
+                ["Điều khoản sử dụng", "/dieu-khoan"],
+                ["Chính sách bảo mật", "/chinh-sach-bao-mat"],
                 ["Nguồn dữ liệu", "/nguon-du-lieu"],
               ],
             },

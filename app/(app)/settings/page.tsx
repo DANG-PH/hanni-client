@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { CalendarReminder } from "@/components/calendar-reminder";
 import { useState, type FormEvent } from "react";
 import useSWR from "swr";
 import { AvatarEditor } from "@/components/avatar-editor";
@@ -50,6 +51,11 @@ export default function SettingsPage() {
           });
           await mutate(next, { revalidate: false });
         }}
+      />
+      <CalendarReminder
+        key={data?.reminderHour ?? "chua-dat"}
+        defaultHour={data?.reminderHour ?? null}
+        minutes={data?.dailyGoalType === "MINUTES" ? Math.max(5, Math.round(data.dailyGoalValue)) : 15}
       />
 
       {error && !data ? (

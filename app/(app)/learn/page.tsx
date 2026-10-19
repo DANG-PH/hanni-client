@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { mutate } from "swr";
 import Link from "next/link";
+import { ClassAssignmentsCard } from "@/components/classrooms/class-assignments-card";
 import { DailyQuestCard } from "@/components/daily-quest-card";
 import { Icon, type IconName } from "@/components/icon";
 import { TodayCard } from "@/components/learn/today-card";
@@ -265,6 +266,8 @@ function LearnHome() {
         </section>
         {user ? <TodayCard /> : <GuestSaveCard learned={guestDone.size} />}
       </div>
+
+      {user && <ClassAssignmentsCard />}
 
       {data && (
         <section aria-labelledby="path-title" className="space-y-3">

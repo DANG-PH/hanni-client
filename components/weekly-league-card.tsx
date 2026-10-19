@@ -94,6 +94,34 @@ export function WeeklyLeagueCard() {
           ))}
         </ul>
       )}
+      {/* Bảng còn thưa (ít người cùng bậc) thì giải thích luật chơi thay cho khoảng trống — người
+       * mới không biết "lượt ôn" tính thế nào, lên hạng ra sao (2026-10-19). */}
+      {data && data.rows.length < 4 && (
+        <div className="mt-4 space-y-3 rounded-xl bg-surface-2/60 p-3.5 text-xs leading-5 text-muted">
+          <ol className="flex flex-wrap items-center gap-1" aria-label="Các bậc giải đấu">
+            {data.tiers.map((t, i) => (
+              <li
+                key={t.name}
+                title={t.name}
+                className={`h-2.5 flex-1 rounded-full ${i === data.tierIndex ? "" : "opacity-50"}`}
+                style={{
+                  backgroundColor: t.color,
+                  ...(i === data.tierIndex ? { boxShadow: `0 0 0 2px var(--surface), 0 0 0 4px ${t.color}` } : {}),
+                }}
+              />
+            ))}
+          </ol>
+          <p>
+            Bậc <b style={{ color: data.tier.color }}>{data.tier.name}</b> · {data.tierIndex + 1}/{data.tiers.length}
+            {data.tierIndex + 1 < data.tiers.length && <> — lên tiếp là {data.tiers[data.tierIndex + 1].name}</>}.
+          </p>
+          <ul className="list-disc space-y-1 pl-4">
+            <li>Mỗi lượt ôn từ (ôn tập, học bài mới) = 1 điểm tuần.</li>
+            <li>Hết tuần, nhóm đầu bảng lên bậc, cuối bảng xuống bậc (khi nhóm có từ 5 người).</li>
+            <li>Bạn chỉ đua với người cùng bậc — mời bạn bè cùng học để bảng sôi hơn.</li>
+          </ul>
+        </div>
+      )}
       <Link
         href="/study"
         className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
