@@ -64,7 +64,7 @@ export function StreakCelebration() {
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4"
     >
       <div
-        className="relative w-full max-w-sm rounded-3xl border border-border bg-surface p-7 text-center shadow-2xl"
+        className="relative w-full max-w-sm rounded-2xl border border-border bg-surface p-7 text-center shadow-2xl"
         style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
       >
         <button
@@ -83,7 +83,7 @@ export function StreakCelebration() {
           <Icon name="flame" size={40} />
         </span>
 
-        <p className="mt-5 text-[11px] font-bold uppercase tracking-wider text-danger">
+        <p className="mt-5 text-xs font-bold uppercase tracking-wider text-danger">
           {copy.eyebrow}
         </p>
         <h2 className="mt-1.5 text-2xl font-extrabold tracking-tight">

@@ -96,7 +96,7 @@ export default function LeaderboardPage() {
         tone="accent"
         eyebrow="Cùng học, cùng tiến bộ"
         title="Bảng xếp hạng"
-        description="Một chút nỗ lực mỗi ngày. Cùng nhau đi xa hơn trên hành trình học tiếng Trung."
+        description="Xếp theo chuỗi ngày học và số bài đã xong."
       >
         <TourButton tourKey="leaderboard" />
       </PageHeading>

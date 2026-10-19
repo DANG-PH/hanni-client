@@ -69,7 +69,7 @@ export default async function PracticeSetPage({ params }: { params: Promise<{ sl
       </nav>
 
       <header className="panel tint-primary p-6 sm:p-7">
-        <p className="text-[11px] font-bold tracking-wider text-primary">
+        <p className="text-xs font-bold tracking-wider text-primary">
           LUYỆN TỪNG DẠNG BÀI · HSK {set.level} · {SECTION_VI[set.section].vi.toUpperCase()}{" "}
           <span lang="zh" className="hanzi">
             {PART_ZH[set.part - 1]}
@@ -98,7 +98,7 @@ export default async function PracticeSetPage({ params }: { params: Promise<{ sl
               aria-current={s.slug === set.slug ? "page" : undefined}
               className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold ${
                 s.slug === set.slug
-                  ? "border-primary bg-primary text-primary-fg"
+                  ? "border-foreground bg-foreground text-background"
                   : "border-border bg-surface hover:border-primary/40"
               }`}
             >

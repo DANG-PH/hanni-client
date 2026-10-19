@@ -69,7 +69,7 @@
   gap: 8px;
   margin: 20px 0 12px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .levels {
   display: flex;
@@ -96,23 +96,21 @@
     box-shadow 200ms ease,
     transform 250ms var(--motion-ease);
 }
-.levels button:hover {
+.levels button:hover:not([aria-pressed="true"]) {
   border-color: var(--primary);
   color: var(--primary);
 }
 .levels button[aria-pressed="true"] {
-  border-color: var(--primary);
-  background: var(--primary);
-  color: var(--primary-fg);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--primary-fg) 20%, transparent),
-    0 4px 10px -4px color-mix(in srgb, var(--primary) 50%, transparent);
+  border-color: var(--foreground);
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--foreground) 45%, transparent);
 }
 .levels button > span {
   padding: 1px 5px;
   border-radius: 5px;
   background: color-mix(in srgb, currentColor 10%, transparent);
-  font-size: 10px;
+  font-size: 12px;
 }
 .info {
   margin-top: 18px;
@@ -149,7 +147,7 @@
   border-radius: 7px;
   background: var(--surface);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
 }
 .wordGrid {
@@ -189,12 +187,12 @@
   padding: 4px 7px;
   background: var(--library-tint);
   color: var(--primary);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
 }
 .wordNumber {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 .wordMain {
@@ -256,7 +254,7 @@
   gap: 4px;
   margin-top: 5px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .audioButton {
   width: 36px;
@@ -281,7 +279,7 @@
 }
 .wordMeaning > span {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .pagination {
   display: flex;
@@ -386,7 +384,7 @@
   border-radius: 9px;
   background: var(--library-tint);
   color: var(--primary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 650;
 }
 .steps strong {
@@ -557,7 +555,7 @@
   border-radius: 8px;
   background: var(--library-tint);
   color: var(--primary);
-  font-size: 11px;
+  font-size: 12px;
 }
 .examLevels {
   display: grid;
@@ -600,7 +598,7 @@
 .examLevel > small {
   display: block;
   margin-top: 7px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
 }
 .selectionMark {
@@ -654,7 +652,7 @@
   display: block;
   margin-top: 4px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .examFooter {
   display: flex;
@@ -673,7 +671,7 @@
   display: block;
   margin-top: 4px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
 }
 .historyStats {
@@ -697,7 +695,7 @@
 }
 .historyStats span {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .levels button:focus-visible,

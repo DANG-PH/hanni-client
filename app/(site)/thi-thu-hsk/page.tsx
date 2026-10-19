@@ -87,17 +87,18 @@ export default async function MockExamHubPage() {
   return (
     <div className="page-wrap max-w-6xl! space-y-8 py-8!">
       <section className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <div className="panel tint-primary p-6 sm:p-8">
-          <span className="eyebrow">LUYỆN THI HSK</span>
-          <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Đề thi thử HSK online
-          </h1>
-          <p className="mt-3 max-w-xl text-sm leading-7 text-muted">
-            Đúng cấu trúc đề thi HSK hiện hành: phần nghe có giọng đọc, phần đọc in pinyin như đề
-            HSK 1–2, HSK 3 có thêm phần viết. Nộp bài là có điểm ngay, kèm chữa bài từng câu bằng
-            tiếng Việt — lời thoại, bản dịch, chỗ dễ nhầm.
+        <div className="panel tint-primary p-5 sm:p-8">
+          <span className="eyebrow max-sm:hidden">LUYỆN THI HSK</span>
+          <h1 className="text-2xl font-extrabold tracking-tight sm:mt-3 sm:text-4xl">Đề thi thử HSK online</h1>
+          {/* Điện thoại: 1 câu — màn đầu phải thấy được danh sách đề (Hanzii đặt thẻ đề ngay đầu trang). */}
+          <p className="mt-2 max-w-xl text-sm leading-6 text-muted sm:mt-3 sm:leading-7">
+            Đúng cấu trúc đề thật, nộp bài là có điểm và chữa từng câu bằng tiếng Việt.
+            <span className="max-sm:hidden">
+              {" "}
+              Phần nghe có giọng đọc, phần đọc in pinyin như đề HSK 1–2, HSK 3 có thêm phần viết.
+            </span>
           </p>
-          <ul className="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
+          <ul className="mt-4 flex flex-wrap gap-2 text-xs font-semibold sm:mt-5">
             {["HSK 1 · HSK 2 · HSK 3", "Nghe · Đọc · Viết", "Chữa bài tiếng Việt", "Miễn phí"].map((t) => (
               <li key={t} className="rounded-full border border-primary/20 bg-surface/70 px-3 py-1.5">
                 {t}
@@ -161,7 +162,7 @@ export default async function MockExamHubPage() {
             <ol className="mt-3 space-y-2 text-sm leading-6">
               {TIPS.map((t, i) => (
                 <li key={t} className="flex gap-2">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                     {i + 1}
                   </span>
                   {t}

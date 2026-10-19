@@ -15,7 +15,7 @@ export function AuthShell({
 }) {
   return (
     <div className="auth-screen page-wrap grid min-h-[calc(100vh-170px)] items-center gap-12 py-5! md:py-10! lg:grid-cols-2 lg:gap-24">
-      <aside className="reveal relative hidden overflow-hidden rounded-3xl border border-primary/10 bg-primary/5 p-10 lg:block">
+      <aside className="reveal relative hidden overflow-hidden rounded-2xl border border-primary/10 bg-primary/5 p-10 lg:block">
         <Link href="/" aria-label="Hanni — trang chủ">
           <Brand />
         </Link>
@@ -57,7 +57,7 @@ export function AuthShell({
             <ThemeToggle />
             <span
               aria-label="Ngôn ngữ: Tiếng Việt"
-              className="rounded-md bg-primary/8 px-2 py-1 text-[10px] font-bold tracking-wider text-primary"
+              className="rounded-md bg-primary/8 px-2 py-1 text-xs font-bold tracking-wider text-primary"
             >
               VI
             </span>

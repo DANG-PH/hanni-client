@@ -78,7 +78,7 @@
   border-radius: 50%;
   background: color-mix(in srgb, var(--medal-color) 18%, var(--surface));
   color: var(--foreground);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -128,7 +128,7 @@
   border-block: 1px solid var(--border);
   background: color-mix(in srgb, var(--surface-2) 60%, var(--surface));
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .table thead th {

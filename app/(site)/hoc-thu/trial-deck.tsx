@@ -113,7 +113,7 @@ export function TrialDeck({ words }: { words: Word[] }) {
               {word.meaningVi ?? word.meaningEn ?? "Đang cập nhật"}
             </span>
             {word.hanViet && (
-              <span className="rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
+              <span className="rounded-lg bg-hanviet/10 px-3 py-1.5 text-xs font-semibold text-hanviet">
                 Âm Hán Việt: {word.hanViet}
               </span>
             )}

@@ -178,11 +178,13 @@ export function PageHeading({
     <header className={headingStyles.page} data-tone={tone}>
       <div className={headingStyles.identity}>
         <span className={headingStyles.pageIcon}>
-          <Icon name={icon} size={28} />
+          <Icon name={icon} size={22} />
         </span>
-        {eyebrow && <p className={headingStyles.eyebrow}>{eyebrow}</p>}
-        <h1 className={headingStyles.pageTitle}>{title}</h1>
-        <p className={headingStyles.pageDescription}>{description}</p>
+        <div className={headingStyles.copy}>
+          {eyebrow && <p className={headingStyles.eyebrow}>{eyebrow}</p>}
+          <h1 className={headingStyles.pageTitle}>{title}</h1>
+          <p className={headingStyles.pageDescription}>{description}</p>
+        </div>
       </div>
       {children && <div className={headingStyles.pageActions}>{children}</div>}
     </header>

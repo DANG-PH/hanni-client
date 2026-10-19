@@ -37,7 +37,7 @@ export function WordMnemonic({ wordId, initial }: { wordId: string; initial: str
           <Icon name="spark" size={14} /> Mẹo nhớ
         </p>
         <p className="mt-1 text-sm leading-6">{text}</p>
-        <p className="mt-1 text-[11px] text-muted">AI gợi ý từ âm Hán Việt và nghĩa từng chữ.</p>
+        <p className="mt-1 text-xs text-muted">AI gợi ý từ âm Hán Việt và nghĩa từng chữ.</p>
       </div>
     );
 

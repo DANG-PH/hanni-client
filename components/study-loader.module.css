@@ -84,7 +84,7 @@
 .copy p { margin-top: 7px; color: var(--muted); font-size: 13px; line-height: 1.7; }
 .dots { display: flex; justify-content: center; gap: 5px; margin-top: 15px; }
 .dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--primary); opacity: 0.4; }
-.caption { margin-top: 28px; color: var(--muted); font-size: 11px; letter-spacing: 0.02em; }
+.caption { margin-top: 28px; color: var(--muted); font-size: 12px; letter-spacing: 0.02em; }
 .compact .emblem { width: 96px; height: 96px; }
 .compact .logo { width: 44px; height: 44px; border-radius: 12px; }
 .compact .halo { inset: 8px; }

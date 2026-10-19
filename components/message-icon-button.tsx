@@ -58,7 +58,7 @@ export function MessageIconButton({ userId }: { userId: string }) {
       {error && (
         <span
           role="status"
-          className="absolute top-full right-0 z-10 mt-1 whitespace-nowrap rounded-lg bg-foreground px-2.5 py-1.5 text-[11px] font-medium text-background shadow-lg"
+          className="absolute top-full right-0 z-10 mt-1 whitespace-nowrap rounded-lg bg-foreground px-2.5 py-1.5 text-xs font-medium text-background shadow-lg"
         >
           {error}
         </span>

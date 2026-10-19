@@ -13,7 +13,7 @@ export function LevelCard({ level }: { level: LevelBucket }) {
         <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-primary/10 bg-primary/5 text-lg font-semibold text-primary">
           {String(level.level).padStart(2, "0")}
         </span>
-        <span className="rounded-lg bg-surface-2 px-2 py-1 text-[11px] text-muted">
+        <span className="rounded-lg bg-surface-2 px-2 py-1 text-xs text-muted">
           {level.level <= 3
             ? "Sơ cấp"
             : level.level <= 6

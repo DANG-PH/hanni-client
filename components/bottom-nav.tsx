@@ -22,7 +22,7 @@ export function BottomNav({ onMore }: { onMore: () => void }) {
   const { due } = useNavBadges();
   const moreActive = IN_MORE.some((href) => isNavActive(pathname, href));
 
-  const cell = "relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 pt-1.5 pb-1 text-[10.5px] font-semibold";
+  const cell = "relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 pt-1.5 pb-1 text-xs font-semibold";
   const pill = (active: boolean) =>
     `flex h-7 w-12 items-center justify-center rounded-full transition-colors ${active ? "bg-primary/12" : ""}`;
 

@@ -395,7 +395,7 @@ function Tokens({
           pinyin && part.pinyin ? (
             <ruby key={key}>
               {part.text}
-              <rt className="font-sans text-[11px] font-normal text-muted">{part.pinyin}</rt>
+              <rt className="font-sans text-xs font-normal text-muted">{part.pinyin}</rt>
             </ruby>
           ) : (
             <span key={key}>{part.text}</span>
@@ -454,13 +454,13 @@ function WordPanel({ word, saved, saving, onSave }: { word: ScanWord; saved: boo
         )}
         <span className="text-sm text-muted">{word.pinyin}</span>
         <AudioButton src={word.audioUrl} size={16} />
-        <span className="rounded-full bg-surface px-2 py-0.5 text-[10px] font-semibold text-muted">{hskLabel(word.hskLevel)}</span>
+        <span className="rounded-full bg-surface px-2 py-0.5 text-xs font-semibold text-muted">{hskLabel(word.hskLevel)}</span>
       </div>
       {word.hanViet && (
         <p className="mt-1.5 text-sm">
-          Hán Việt: <strong>{word.hanViet}</strong>
+          Hán Việt: <strong className="text-hanviet">{word.hanViet}</strong>
           {word.familiar && (
-            <span className="ml-2 rounded-full bg-good/10 px-2 py-0.5 text-[11px] font-semibold text-good">
+            <span className="ml-2 rounded-full bg-good/10 px-2 py-0.5 text-xs font-semibold text-good">
               Trùng nghĩa tiếng Việt
             </span>
           )}
@@ -487,8 +487,8 @@ function WordRow({ word, saved, saving, onSave }: { word: ScanWord; saved: boole
             {word.simplified}
           </span>
           <span className="text-xs text-muted">{word.pinyin}</span>
-          {word.hanViet && <span className="text-xs font-semibold">{word.hanViet}</span>}
-          {word.familiar && <span className="text-[11px] font-semibold text-good">· quen nhờ Hán Việt</span>}
+          {word.hanViet && <span className="text-xs font-semibold text-hanviet">{word.hanViet}</span>}
+          {word.familiar && <span className="text-xs font-semibold text-good">· quen nhờ Hán Việt</span>}
         </span>
         <span className="block truncate text-xs text-muted">
           {hskLabel(word.hskLevel)} · {word.meaningVi}

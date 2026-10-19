@@ -2,9 +2,11 @@
   /* Chiều cao thanh tab dưới đáy (điện thoại/máy tính bảng) — nội dung và các
    * nút nổi (trợ lý AI, mời cài app) chừa chỗ theo biến này. */
   --bottom-nav-h: calc(4rem + env(safe-area-inset-bottom));
-  --radius-section: 26px;
-  --radius-card: 20px;
-  --radius-inner: 14px;
+  /* Một thang bo góc cho cả app (2026-10-19): khối lớn = thẻ = 16px (= rounded-2xl của trang công khai),
+   * ô bên trong 12px, nút/ô nhập 12px — trước đó 26/20/14/12 cộng rounded-3xl lẻ tẻ, mỗi trang một kiểu. */
+  --radius-section: 16px;
+  --radius-card: 16px;
+  --radius-inner: 12px;
   --radius-control: 12px;
   --section-gap: 28px;
   --card-gap: 18px;
@@ -114,9 +116,9 @@
 }
 
 .workspace :global(.icon-tile) {
-  border: 1px solid color-mix(in srgb, var(--primary) 12%, transparent);
+  border: 1px solid var(--border);
   background-image: linear-gradient(145deg, color-mix(in srgb, var(--surface) 65%, transparent), transparent);
-  box-shadow: 0 3px 0 color-mix(in srgb, var(--primary) 10%, transparent), inset 0 1px 0 color-mix(in srgb, var(--surface) 80%, transparent);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--foreground) 5%, transparent), inset 0 1px 0 color-mix(in srgb, var(--surface) 80%, transparent);
 }
 
 .workspace :global(.motion-button) {
@@ -205,8 +207,8 @@
 
 @media (max-width: 639px) {
   .workspace {
-    --radius-section: 22px;
-    --radius-card: 18px;
+    --radius-section: 16px;
+    --radius-card: 16px;
     --radius-inner: 12px;
     --section-gap: 22px;
     --card-gap: 14px;

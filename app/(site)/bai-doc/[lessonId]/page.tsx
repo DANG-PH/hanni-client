@@ -199,7 +199,7 @@ export default function LessonReadingPage() {
                 <div className="min-w-0 flex-1">
                   <p className="text-sm">
                     {picked.pinyin}
-                    {picked.hanViet && <b className="ml-2 text-primary">{picked.hanViet}</b>}
+                    {picked.hanViet && <b className="ml-2 text-hanviet">{picked.hanViet}</b>}
                   </p>
                   <p className="text-sm text-muted">{picked.meaningVi}</p>
                 </div>
@@ -256,7 +256,7 @@ export default function LessonReadingPage() {
                 Về bài học
               </LinkButton>
             </div>
-            <p className="text-[11px] leading-5 text-muted">Bài đọc do AI viết, Hanni đã soát chữ theo cấp; pinyin theo từ điển Hanni.</p>
+            <p className="text-xs leading-5 text-muted">Bài đọc do AI viết, Hanni đã soát chữ theo cấp; pinyin theo từ điển Hanni.</p>
           </section>
         </>
       )}

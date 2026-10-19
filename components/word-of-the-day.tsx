@@ -42,7 +42,7 @@ export function WordOfTheDayCard({ level }: { level?: number }) {
           </p>
           {data.hanViet && (
             <p className="text-xs text-muted">
-              Hán Việt: <b className="text-primary">{data.hanViet}</b>
+              Hán Việt: <b className="text-hanviet">{data.hanViet}</b>
             </p>
           )}
           <p className={styles.meaning}>{data.meaningVi}</p>

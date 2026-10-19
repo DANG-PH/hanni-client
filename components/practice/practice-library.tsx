@@ -350,7 +350,7 @@ export function PracticeTips({
         <ol className="space-y-4">
           {tips.map((tip, i) => (
             <li key={tip} className="flex gap-3 text-sm leading-6 text-muted">
-              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/8 text-[11px] font-semibold text-primary">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/8 text-xs font-semibold text-primary">
                 {i + 1}
               </span>
               {tip}

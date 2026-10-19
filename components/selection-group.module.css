@@ -7,10 +7,11 @@
   position: absolute;
   inset: 0 auto auto 0;
   z-index: -1;
-  border: 1px solid var(--primary);
+  /* Mục đang chọn: màu chữ đậm trung tính — đỏ để dành cho nút chính (2026-10-19). */
+  border: 1px solid var(--foreground);
   border-radius: 10px;
-  background: var(--primary);
-  box-shadow: 0 3px 8px -4px color-mix(in srgb, var(--primary) 45%, transparent);
+  background: var(--foreground);
+  box-shadow: 0 3px 8px -4px color-mix(in srgb, var(--foreground) 45%, transparent);
   pointer-events: none;
   opacity: 0;
   transition:

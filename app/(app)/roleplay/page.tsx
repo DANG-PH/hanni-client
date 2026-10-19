@@ -74,7 +74,7 @@ export default function RoleplayPage() {
           tone="accent"
           eyebrow="Luyện phản xạ"
           title="Luyện nói với AI"
-          description="Chọn 1 tình huống đời thường, AI đóng vai để bạn luyện phản xạ tiếng Trung — không giải thích ngữ pháp giữa chừng, đúng như hội thoại thật."
+          description="Chọn một tình huống, nói chuyện với AI bằng tiếng Trung — gõ hoặc nói."
         >
           <TourButton tourKey="roleplay" />
         </PageHeading>
@@ -124,7 +124,7 @@ function ScenarioPicker({ onStart }: { onStart: (sessionId: string) => void }) {
               <span className="icon-tile bg-accent/10 text-accent">
                 <Icon name="message" size={18} />
               </span>
-              <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-bold text-muted">
+              <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-bold text-muted">
                 HSK{s.hskLevel}+
               </span>
             </div>

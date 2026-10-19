@@ -99,7 +99,7 @@ export function PartnerLeadForm() {
         <Button type="submit" disabled={state === "sending"}>
           {state === "sending" ? "Đang gửi…" : "Gửi thông tin"}
         </Button>
-        <p className="mt-2 text-[11px] leading-5 text-muted">Chỉ dùng để liên hệ lại về hợp tác, không chia sẻ cho bên khác.</p>
+        <p className="mt-2 text-xs leading-5 text-muted">Chỉ dùng để liên hệ lại về hợp tác, không chia sẻ cho bên khác.</p>
       </div>
     </form>
   );

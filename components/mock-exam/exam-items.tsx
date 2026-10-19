@@ -128,7 +128,7 @@ export function PictureTile({
       >
         {emoji}
       </span>
-      {label && <span className="max-w-28 text-center text-[11px] text-muted">{label}</span>}
+      {label && <span className="max-w-28 text-center text-xs text-muted">{label}</span>}
     </span>
   );
 }
@@ -457,7 +457,7 @@ function ReviewNotes({
                 {w.zh}
               </span>
               <span className="text-muted">{w.pinyin}</span>
-              {w.hanViet && <span className="font-semibold text-primary">{w.hanViet}</span>}
+              {w.hanViet && <span className="font-semibold text-hanviet">{w.hanViet}</span>}
               <span>· {w.vi}</span>
             </li>
           ))}
@@ -525,7 +525,7 @@ export function ExamItem({
   return (
     <article
       id={id ?? `q-${item.no}`}
-      className="scroll-mt-28 rounded-3xl border border-border bg-surface p-4 sm:p-5"
+      className="scroll-mt-28 rounded-2xl border border-border bg-surface p-4 sm:p-5"
     >
       <div className="flex items-start gap-3">
         {/* Nút đánh dấu nằm DƯỚI số câu (cột trái vốn có sẵn) — để riêng 1 cột

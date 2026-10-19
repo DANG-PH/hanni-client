@@ -10,7 +10,7 @@ import {
   SectionHeading,
   Spinner,
 } from "@/components/ui";
-import { Icon } from "@/components/icon";
+import { Icon, type IconName } from "@/components/icon";
 import { TitlePicker } from "@/components/title-shop";
 import { ShareButton } from "@/components/share-button";
 import { useRequireAuth } from "@/lib/auth";
@@ -23,6 +23,52 @@ const CAT_VI: Record<string, string> = {
   ACCURACY: "Độ chính xác",
   MILESTONE: "Cột mốc",
 };
+
+/** Màu + biểu tượng từng nhóm huy hiệu — mỗi nhóm một màu để bộ sưu tập nhìn ra được như huy chương. */
+const MEDAL: Record<string, { icon: IconName; color: string; unit: string }> = {
+  STREAK: { icon: "flame", color: "var(--danger)", unit: "ngày" },
+  MILESTONE: { icon: "cards", color: "var(--lavender)", unit: "lượt" },
+  VOLUME: { icon: "book", color: "var(--good)", unit: "từ" },
+  LEVEL: { icon: "route", color: "var(--accent)", unit: "" },
+  ACCURACY: { icon: "target", color: "var(--warn)", unit: "" },
+};
+
+/** Huy chương tròn (như huy hiệu Duolingo, vòng Apple Fitness): mốc ở giữa, chưa mở thì xám + vòng tiến độ. */
+function Medal({ code, category, unlocked, pct }: { code: string; category: string; unlocked: boolean; pct: number }) {
+  const m = MEDAL[category] ?? MEDAL.MILESTONE;
+  const level = /^HSK(\d)_/.exec(code)?.[1];
+  const n = /_(\d+)$/.exec(code)?.[1];
+  const label = level ? `HSK ${level === "7" ? "7–9" : level}` : n;
+  return (
+    <span
+      aria-hidden="true"
+      className="relative grid h-[72px] w-[72px] shrink-0 place-items-center rounded-full"
+      style={{
+        background: unlocked
+          ? m.color
+          : `conic-gradient(${m.color} ${Math.round(pct * 100)}%, var(--border) 0)`,
+      }}
+    >
+      <span
+        className="grid h-[62px] w-[62px] place-items-center rounded-full"
+        style={{
+          background: unlocked ? `color-mix(in srgb, ${m.color} 14%, var(--surface))` : "var(--surface-2)",
+          color: unlocked ? m.color : "var(--muted)",
+        }}
+      >
+        <span className="flex flex-col items-center leading-none">
+          <Icon name={m.icon} size={level ? 18 : 20} />
+          {label && <span className="mt-1 text-sm font-extrabold tabular-nums">{label}</span>}
+        </span>
+      </span>
+      {!unlocked && (
+        <span className="absolute -right-0.5 -bottom-0.5 grid h-6 w-6 place-items-center rounded-full border border-border bg-surface text-muted">
+          <Icon name="lock" size={12} />
+        </span>
+      )}
+    </span>
+  );
+}
 
 export default function AchievementsPage() {
   const { user, loading } = useRequireAuth();
@@ -59,7 +105,7 @@ export default function AchievementsPage() {
         tone="accent"
         eyebrow="Những cột mốc của bạn"
         title="Bộ sưu tập huy hiệu"
-        description="Ghi dấu sự kiên trì và những tiến bộ trên hành trình học tiếng Trung."
+        description="Đạt mốc là mở huy hiệu — mỗi huy hiệu mở thêm một danh hiệu."
       >
         <LinkButton href="/learn" variant="secondary">
           Tiếp tục học <Icon name="arrow" size={16} />
@@ -80,9 +126,9 @@ export default function AchievementsPage() {
       ) : (
         <>
           {!!data?.length && (
-            <div className="reveal flex flex-wrap items-center gap-5 rounded-2xl border border-primary/15 bg-primary/5 p-6">
-              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface text-primary">
-                <Icon name="trophy" size={32} />
+            <div className="panel reveal flex flex-wrap items-center gap-5 p-5">
+              <span className="icon-tile h-14! w-14! text-accent!">
+                <Icon name="trophy" size={28} />
               </span>
               <div className="min-w-0 flex-1">
                 <h2 className="font-semibold">
@@ -102,15 +148,6 @@ export default function AchievementsPage() {
               </div>
             </div>
           )}
-          <section className="space-y-4">
-            <SectionHeading
-              icon="trophy"
-              tone="accent"
-              title="Danh hiệu"
-              description="Mỗi danh hiệu mở khi bạn đạt một huy hiệu bên dưới — học thật mới có, không mua bằng xu."
-            />
-            <TitlePicker />
-          </section>
           {data?.length ? (
             <>
               <div className="flex flex-wrap gap-2.5" aria-label="Lọc huy hiệu">
@@ -132,93 +169,45 @@ export default function AchievementsPage() {
                     onClick={() => setFilter(option.value)}
                     className={`motion-button inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all ${
                       filter === option.value
-                        ? "border-primary/30 bg-primary/10 text-primary shadow-xs"
+                        ? "border-foreground bg-foreground text-background shadow-xs"
                         : "border-border/80 bg-surface text-muted hover:bg-surface-2 hover:text-foreground"
                     }`}
                   >
                     {option.label}
-                    <span className="rounded-md bg-surface-2/90 px-1.5 py-0.5 text-[11px] font-bold">
+                    <span
+                      className={`rounded-md px-1.5 py-0.5 text-xs font-bold ${filter === option.value ? "bg-background/20" : "bg-surface-2/90"}`}
+                    >
                       {option.count}
                     </span>
                   </button>
                 ))}
               </div>
               {visible.length ? (
-                <div className="reveal-group grid gap-4.5 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="reveal-group grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                   {visible.map((a) => (
                     <div
                       key={a.id}
-                      className={`reveal hover-card panel relative overflow-hidden p-6 transition-all duration-300 ${
-                        a.unlocked
-                          ? "border-accent/30 bg-gradient-to-b from-accent/5 via-surface to-surface shadow-md shadow-accent/5"
-                          : "opacity-80"
-                      }`}
+                      className={`reveal panel flex flex-col items-center p-4 text-center ${a.unlocked ? "" : "bg-surface/70"}`}
                     >
-                      <div className="flex items-start justify-between">
-                        <span
-                          className={`flex h-14 w-14 items-center justify-center rounded-2xl border shadow-2xs transition-transform hover:scale-105 ${
-                            a.unlocked
-                              ? "border-accent/30 bg-accent/12 text-accent"
-                              : "border-border/60 bg-surface-2 text-muted"
-                          }`}
-                        >
-                          <Icon
-                            name={a.unlocked ? "trophy" : "lock"}
-                            size={27}
-                          />
-                        </span>
-                        <span className="rounded-lg border border-border/60 bg-surface-2/80 px-2.5 py-1 text-[11px] font-medium text-muted">
-                          {CAT_VI[a.category] ?? a.category}
-                        </span>
-                      </div>
-                      <h2 className="mt-5 text-base font-bold text-foreground">
-                        {a.nameVi}
-                      </h2>
-                      <p className="mt-2 text-sm leading-relaxed text-muted">
-                        {a.descriptionVi}
+                      <Medal code={a.code} category={a.category} unlocked={a.unlocked} pct={ratio(a)} />
+                      <h2 className="mt-3 text-sm font-bold text-foreground">{a.nameVi}</h2>
+                      <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted">{a.descriptionVi}</p>
+                      <p className={`mt-auto pt-2 text-xs font-semibold ${a.unlocked ? "text-good" : "text-muted"}`}>
+                        {a.unlocked ? (
+                          <>
+                            <Icon name="check" size={12} className="mr-1 inline" />
+                            {a.unlockedAt && Number.isFinite(Date.parse(a.unlockedAt))
+                              ? new Date(a.unlockedAt).toLocaleDateString("vi-VN")
+                              : "Đã mở"}
+                          </>
+                        ) : a.progressTarget > 0 ? (
+                          `${Math.min(a.progressCurrent, a.progressTarget).toLocaleString("vi-VN")} / ${a.progressTarget.toLocaleString("vi-VN")} ${MEDAL[a.category]?.unit ?? ""}`
+                        ) : (
+                          CAT_VI[a.category] ?? a.category
+                        )}
                       </p>
-                      {!a.unlocked && a.progressTarget > 0 && (
-                        <div className="mt-4 space-y-1.5">
-                          <ProgressBar
-                            value={
-                              (Math.min(a.progressCurrent, a.progressTarget) /
-                                a.progressTarget) *
-                              100
-                            }
-                            label={a.nameVi}
-                          />
-                          <p className="text-xs text-muted font-medium text-right">
-                            {Math.min(a.progressCurrent, a.progressTarget)} /{" "}
-                            {a.progressTarget}
-                          </p>
-                        </div>
-                      )}
-                      <div
-                        className={`mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-border/70 pt-4 text-xs font-medium ${
-                          a.unlocked ? "text-good" : "text-muted"
-                        }`}
-                      >
-                        <span className="inline-flex items-center gap-1.5 font-bold">
-                          <Icon
-                            name={a.unlocked ? "check" : "lock"}
-                            size={14}
-                          />
-                          {a.unlocked ? "Đã mở khóa" : "Đang chinh phục"}
-                        </span>
-                        {a.unlockedAt &&
-                          Number.isFinite(Date.parse(a.unlockedAt)) && (
-                            <time
-                              dateTime={a.unlockedAt}
-                              className="text-muted text-[11px]"
-                            >
-                              {new Date(a.unlockedAt).toLocaleDateString(
-                                "vi-VN",
-                              )}
-                            </time>
-                          )}
-                      </div>
                       {a.unlocked && (
-                        <div className="mt-3 flex justify-end gap-2">
+                        <div className="mt-2">
                           <ShareButton
                             compact
                             title="Huy hiệu Hanni"
@@ -248,6 +237,16 @@ export default function AchievementsPage() {
                   </LinkButton>
                 </EmptyState>
               )}
+              {/* Danh hiệu xuống dưới lưới huy chương — trước đó 9 dòng danh hiệu đẩy huy chương khỏi màn đầu. */}
+              <section className="space-y-4">
+                <SectionHeading
+                  icon="trophy"
+                  tone="accent"
+                  title="Danh hiệu"
+                  description="Mỗi danh hiệu mở khi bạn đạt một huy hiệu ở trên — học thật mới có, không mua bằng xu."
+                />
+                <TitlePicker />
+              </section>
             </>
           ) : (
             <EmptyState

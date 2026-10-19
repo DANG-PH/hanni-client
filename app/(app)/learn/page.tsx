@@ -205,7 +205,7 @@ function LearnHome() {
             <>
               <ProgressRing value={pct} />
               <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-bold tracking-wider text-primary">
+                <p className="text-xs font-bold tracking-wider text-primary">
                   LỘ TRÌNH HSK {data.level === 7 ? "7–9" : data.level} · {levelName(data.level).toUpperCase()}
                 </p>
                 {current ? (
@@ -300,14 +300,14 @@ function LearnHome() {
                   onClick={() => setViewLevel(user && l === courseLevel ? undefined : l)}
                   className={`motion-button flex shrink-0 items-center gap-1.5 rounded-full border-2 px-4 py-2 text-sm font-bold ${
                     selected
-                      ? "border-primary bg-primary text-primary-fg shadow-[0_3px_0_0_color-mix(in_srgb,var(--primary)_62%,#000)]"
+                      ? "border-foreground bg-foreground text-background shadow-[0_3px_0_0_color-mix(in_srgb,var(--foreground)_55%,#000)]"
                       : "border-border bg-surface hover:border-primary/40"
                   }`}
                 >
                   HSK {l === 7 ? "7–9" : l}
                   {l === courseLevel && (
                     <span
-                      className={`rounded-full px-1.5 py-0.5 text-[9px] ${
+                      className={`rounded-full px-1.5 py-0.5 text-[10px] ${
                         selected ? "bg-primary-fg/20" : "bg-primary/10 text-primary"
                       }`}
                     >

@@ -48,7 +48,7 @@ export default function AccountPage() {
         tone="lavender"
         eyebrow="Không gian của bạn"
         title="Tài khoản của tôi"
-        description="Thông tin cá nhân và những lựa chọn cho hành trình học tập."
+        description="Hồ sơ, mật khẩu, Premium và mời bạn bè."
       >
         <LinkButton href="/settings" variant="secondary">
           <Icon name="settings" size={17} />
@@ -61,7 +61,7 @@ export default function AccountPage() {
             <div className="relative flex h-32 items-end justify-between overflow-hidden border-b border-primary/15 bg-gradient-to-r from-primary/15 via-primary/8 to-accent/10 px-7 py-3">
               {/* Nhãn ở góc TRÊN: góc dưới bên trái là chỗ avatar kéo lên đè. */}
               <div className="flex items-center gap-2 self-start">
-                <span className="rounded-full bg-surface/80 px-3 py-1 text-[11px] font-bold text-primary shadow-2xs">
+                <span className="rounded-full bg-surface/80 px-3 py-1 text-xs font-bold text-primary shadow-2xs">
                   HSK Student
                 </span>
               </div>

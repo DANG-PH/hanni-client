@@ -32,7 +32,7 @@ export function WeeklyLeagueCard() {
             Giải đấu tuần
             {data && (
               <span
-                className="ml-2 rounded-md px-1.5 py-0.5 text-[11px] font-semibold"
+                className="ml-2 rounded-md px-1.5 py-0.5 text-xs font-semibold"
                 style={{
                   color: data.tier.color,
                   backgroundColor: `${data.tier.color}1a`,
@@ -80,7 +80,7 @@ export function WeeklyLeagueCard() {
               </div>
               {row.zone !== "safe" && (
                 <span
-                  className={`shrink-0 text-[11px] font-semibold ${
+                  className={`shrink-0 text-xs font-semibold ${
                     row.zone === "promote" ? "text-good" : "text-danger"
                   }`}
                 >

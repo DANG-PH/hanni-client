@@ -105,10 +105,13 @@ export function TourButton({ tourKey }: { tourKey: string }) {
     <button
       type="button"
       onClick={() => openTour(tourKey)}
-      className="motion-button flex min-h-9 items-center gap-1.5 rounded-xl border border-border bg-surface px-3 text-xs font-medium text-muted hover:border-primary/40 hover:text-primary"
+      aria-label="Hướng dẫn"
+      title="Hướng dẫn"
+      className="motion-button flex min-h-9 items-center gap-1.5 rounded-xl border border-border bg-surface px-3 text-xs font-medium text-muted hover:border-primary/40 hover:text-primary max-sm:h-10 max-sm:w-10 max-sm:justify-center max-sm:px-0"
     >
-      <Icon name="info" size={15} />
-      Hướng dẫn
+      <Icon name="info" size={16} />
+      {/* Điện thoại: chỉ biểu tượng, nằm cùng hàng tiêu đề thay vì chiếm một hàng riêng. */}
+      <span className="max-sm:sr-only">Hướng dẫn</span>
     </button>
   );
 }

@@ -75,7 +75,7 @@ export default function LessonDetailPage() {
         icon="book"
         eyebrow={`Bài ${String(lesson.orderIndex).padStart(2, "0")} · HSK ${lesson.hskLevel === 7 ? "7–9" : lesson.hskLevel}`}
         title={lesson.title}
-        description="Làm quen với từ mới, lắng nghe cách đọc và khám phá cách dùng trong từng ví dụ."
+        description="Từ vựng của bài kèm âm Hán Việt, câu ví dụ và ngữ pháp liên quan."
       >
         {words.length > 0 && (
           <div className="flex flex-wrap gap-2">
@@ -175,7 +175,7 @@ export default function LessonDetailPage() {
                             className="bg-primary/6 text-primary!"
                           />
                           {word.pos.length > 0 && (
-                            <span className="rounded-lg bg-surface-2 px-2 py-1 text-[11px] text-muted">
+                            <span className="rounded-lg bg-surface-2 px-2 py-1 text-xs text-muted">
                               {word.pos.join(" · ")}
                             </span>
                           )}
@@ -185,7 +185,7 @@ export default function LessonDetailPage() {
                           {/* Âm Hán Việt hay để lộ luôn nghĩa (时间 = thời gian)
                            * nên ẩn cùng nghĩa khi tự ôn. */}
                           {showMeanings && word.hanViet && (
-                            <span className="rounded-md bg-primary/8 px-1.5 py-0.5 text-xs font-semibold">
+                            <span className="rounded-md bg-hanviet/10 px-1.5 py-0.5 text-xs font-semibold text-hanviet">
                               Hán Việt: {word.hanViet}
                             </span>
                           )}

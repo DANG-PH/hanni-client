@@ -161,7 +161,7 @@ export function PlacementTest() {
             </button>
             <div className="min-w-0 flex-1">
               <ProgressBar value={progress} label="Tiến độ bài kiểm tra" />
-              <p className="mt-1 text-[11px] text-muted">
+              <p className="mt-1 text-xs text-muted">
                 Kiểm tra trình độ · HSK {levelLabel(level.level)} · câu {qIdx + 1}
               </p>
             </div>
@@ -240,7 +240,7 @@ export function PlacementTest() {
         <span className="icon-tile mx-auto">
           <Icon name="chart" />
         </span>
-        <p className="mt-4 text-[11px] font-bold tracking-wider text-primary sm:mt-5">
+        <p className="mt-4 text-xs font-bold tracking-wider text-primary sm:mt-5">
           MIỄN PHÍ · KHÔNG CẦN ĐĂNG KÝ
         </p>
         <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight sm:text-3xl">
@@ -263,7 +263,7 @@ export function PlacementTest() {
                 onClick={() => setStartLevel(l)}
                 className={`rounded-full border px-3.5 py-1.5 text-sm font-semibold ${
                   startLevel === l
-                    ? "border-primary bg-primary text-primary-fg"
+                    ? "border-foreground bg-foreground text-background"
                     : "border-border bg-surface hover:border-primary/40"
                 }`}
               >
@@ -342,7 +342,7 @@ function Result({
           priority
           className="mx-auto h-32 w-auto"
         />
-        <p className="mt-5 text-[11px] font-bold tracking-wider text-primary">
+        <p className="mt-5 text-xs font-bold tracking-wider text-primary">
           KẾT QUẢ KIỂM TRA TRÌNH ĐỘ
         </p>
         <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight sm:text-3xl">

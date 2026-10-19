@@ -161,7 +161,7 @@ export function HanziWriterCanvas({
             onClick={() => runMode(m.key)}
             disabled={status !== "ready"}
             aria-pressed={mode === m.key}
-            className={`motion-button flex min-h-10 items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-medium transition-colors disabled:opacity-50 ${mode === m.key ? "border-primary bg-primary text-primary-fg" : "border-border bg-surface text-muted hover:border-primary/40 hover:text-primary"}`}
+            className={`motion-button flex min-h-10 items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-medium transition-colors disabled:opacity-50 ${mode === m.key ? "border-foreground bg-foreground text-background" : "border-border bg-surface text-muted hover:border-primary/40 hover:text-primary"}`}
           >
             <Icon name={m.icon} size={15} />
             {m.label}

@@ -50,7 +50,7 @@ export function SessionComplete({
           priority
           className="mx-auto h-36 w-auto"
         />
-        <p className="mt-5 text-[11px] font-bold tracking-wider text-primary">
+        <p className="mt-5 text-xs font-bold tracking-wider text-primary">
           HOÀN THÀNH BÀI {session.lesson.orderIndex}/{session.lesson.totalLessons}
         </p>
         <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight sm:text-3xl">
@@ -71,7 +71,7 @@ export function SessionComplete({
             { label: "Thời gian", value: formatDuration(durationMs) },
           ].map((s) => (
             <div key={s.label} className="panel px-2 py-4">
-              <dt className="text-[11px] text-muted">{s.label}</dt>
+              <dt className="text-xs text-muted">{s.label}</dt>
               <dd className="mt-1 text-xl font-bold">{s.value}</dd>
             </div>
           ))}

@@ -262,7 +262,7 @@ export default function Home() {
                 className="hover-card skill-card panel group flex overflow-hidden"
               >
                 <div className="relative flex w-28 shrink-0 items-center justify-center bg-primary/4 sm:w-32">
-                  <span className="absolute left-2.5 top-2.5 rounded-md border border-primary/10 bg-surface px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                  <span className="absolute left-2.5 top-2.5 rounded-md border border-primary/10 bg-surface px-1.5 py-0.5 text-xs font-medium text-primary">
                     {e.tag}
                   </span>
                   <span aria-hidden="true" className="hanzi skill-character text-5xl text-primary/65">
@@ -307,9 +307,9 @@ export default function Home() {
                 <p className="mt-1.5 text-xs text-muted">{ex.pinyin}</p>
                 <p className="mt-3 text-sm">
                   Hán Việt:{" "}
-                  <span className="font-bold text-primary">{ex.hanViet}</span>
+                  <span className="font-bold text-hanviet">{ex.hanViet}</span>
                 </p>
-                <p className="mt-1 text-[11px] text-muted">
+                <p className="mt-1 text-xs text-muted">
                   Trùng khớp nghĩa tiếng Việt: &quot;{ex.meaning}&quot;
                 </p>
               </div>

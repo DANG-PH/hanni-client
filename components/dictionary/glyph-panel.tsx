@@ -129,7 +129,7 @@ export function GlyphPanel({ glyphs }: { glyphs: Glyph[] }) {
             onClick={() => setIndex(i)}
             title={t.isTraditional ? "Chữ phồn thể" : undefined}
             className={`hanzi flex h-10 min-w-10 items-center justify-center rounded-xl px-2 text-xl ${
-              i === index ? "bg-primary text-primary-fg shadow-sm" : "bg-surface-2 hover:bg-primary/10 hover:text-primary"
+              i === index ? "bg-foreground text-background shadow-sm" : "bg-surface-2 hover:bg-primary/10 hover:text-primary"
             }`}
             lang="zh"
           >
@@ -153,7 +153,7 @@ export function GlyphPanel({ glyphs }: { glyphs: Glyph[] }) {
         {g.hanViet && (
           <>
             <dt className="text-muted">Hán Việt</dt>
-            <dd className="font-bold text-primary uppercase">{g.hanViet}</dd>
+            <dd className="font-bold text-hanviet uppercase">{g.hanViet}</dd>
           </>
         )}
         {g.pinyin && (

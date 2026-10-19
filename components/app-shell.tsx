@@ -104,7 +104,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {streak.data.streakFreezeCount > 0 && (
                   <span
                     title={`${streak.data.streakFreezeCount} lá chắn — giữ chuỗi nếu bạn lỡ nghỉ 1 ngày`}
-                    className="ml-0.5 flex items-center gap-0.5 border-l border-primary/20 pl-1.5 text-[11px]"
+                    className="ml-0.5 flex items-center gap-0.5 border-l border-primary/20 pl-1.5 text-xs"
                   >
                     <Icon name="heart" size={13} />
                     {streak.data.streakFreezeCount}
@@ -131,7 +131,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <>
                 <span
                   title="Bạn đang dùng thử không cần tài khoản — tiến độ chỉ được lưu khi tạo tài khoản"
-                  className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-semibold text-muted"
+                  className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 text-xs font-semibold text-muted"
                 >
                   <Icon name="user" size={12} />
                   <span className="sm:hidden">Khách</span>
@@ -155,7 +155,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </header>
         <main className="flex-1">{children}</main>
         <footer
-          className={`mt-auto border-t border-border px-6 py-4 text-[10px] text-muted ${styles.footer}`}
+          className={`mt-auto border-t border-border px-6 py-4 text-xs text-muted ${styles.footer}`}
         >
           <span>Hanni · Mỗi ngày một chút, tiến xa hơn.</span>
           <nav aria-label="Về Hanni" className="mt-1 flex flex-wrap justify-start gap-x-3 gap-y-1 sm:justify-center">

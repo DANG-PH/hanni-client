@@ -216,7 +216,7 @@ function CoachCard({ report, name, next }: { report: InsightsReport; name: strin
         <div className="min-w-0 flex-1">
           <h3 className="flex flex-wrap items-center gap-2 font-semibold">
             Hanni Coach
-            <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold text-accent">PREMIUM</span>
+            <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-bold text-accent">PREMIUM</span>
           </h3>
           <p className="text-xs text-muted">Nhận xét {name.toLowerCase()} bằng AI, dựa trên đúng số liệu của bạn</p>
         </div>
@@ -230,7 +230,7 @@ function CoachCard({ report, name, next }: { report: InsightsReport; name: strin
                 Hanni Coach đọc số liệu {name.toLowerCase()} rồi viết riêng cho bạn: điều làm tốt, điều cần chú ý, mẹo
                 nhớ những từ bạn hay quên theo <strong>âm Hán Việt</strong> và kế hoạch {next} có con số cụ thể.
               </p>
-              <p className="mt-3 text-[11px] font-semibold tracking-wide text-muted uppercase">Ví dụ</p>
+              <p className="mt-3 text-xs font-semibold tracking-wide text-muted uppercase">Ví dụ</p>
               <div aria-hidden className="mt-1 select-none space-y-1.5 rounded-xl bg-surface p-3 text-sm blur-[2.5px]">
                 <p>Tuần này bạn học 4/7 ngày, nhiều hơn 2 ngày so với tuần trước, thêm 32 từ mới.</p>
                 <p>便宜 (tiện nghi): đồ “tiện nghi” mà giá lại “rẻ” — nhớ ngay nghĩa rẻ.</p>
@@ -274,7 +274,7 @@ function CoachCard({ report, name, next }: { report: InsightsReport; name: strin
                 <ol className="space-y-2">
                   {summary.plan.map((x, i) => (
                     <li key={x} className="flex gap-2.5 text-sm leading-6">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                         {i + 1}
                       </span>
                       <span>{x}</span>
@@ -283,7 +283,7 @@ function CoachCard({ report, name, next }: { report: InsightsReport; name: strin
                 </ol>
               </div>
               {coach.data?.generatedAt && (
-                <p className="text-[11px] text-muted">
+                <p className="text-xs text-muted">
                   Viết lúc{" "}
                   {new Date(coach.data.generatedAt).toLocaleString("vi-VN", {
                     hour: "2-digit",
@@ -316,8 +316,8 @@ function CoachCard({ report, name, next }: { report: InsightsReport; name: strin
                       <span className="flex flex-wrap items-baseline gap-x-2">
                         <span className="hanzi text-xl">{w.simplified}</span>
                         <span className="text-xs text-muted">{w.pinyin}</span>
-                        {w.hanViet && <span className="text-xs font-semibold text-primary">{w.hanViet}</span>}
-                        <span className="ml-auto text-[11px] text-muted">quên {w.forgot} lần</span>
+                        {w.hanViet && <span className="text-xs font-semibold text-hanviet">{w.hanViet}</span>}
+                        <span className="ml-auto text-xs text-muted">quên {w.forgot} lần</span>
                       </span>
                       <span className="mt-0.5 block text-xs text-muted">{w.meaningVi}</span>
                       {tip && <span className="mt-1.5 block text-sm leading-6">{tip}</span>}

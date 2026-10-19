@@ -44,7 +44,7 @@ export function ShareButton({
       type="button"
       onClick={() => void share()}
       className={`motion-button inline-flex items-center gap-1.5 rounded-full bg-primary/10 font-semibold text-primary hover:bg-primary/15 ${
-        compact ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs"
+        compact ? "px-2.5 py-1 text-xs" : "px-3 py-1.5 text-xs"
       }`}
     >
       <Icon name={copied ? "check" : "share"} size={13} />

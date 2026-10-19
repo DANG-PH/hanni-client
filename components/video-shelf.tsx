@@ -142,7 +142,7 @@ export function VideoShelf({ limit = 8, maxLevel }: { limit?: number; maxLevel?:
   };
 
   return (
-    <section className="reveal overflow-hidden tint-good rounded-3xl border border-border p-5 sm:p-6">
+    <section className="reveal overflow-hidden tint-good rounded-2xl border border-border p-5 sm:p-6">
       <SectionHeading
         icon="play"
         tone="good"
@@ -150,7 +150,7 @@ export function VideoShelf({ limit = 8, maxLevel }: { limit?: number; maxLevel?:
         title={
           <span className="flex flex-wrap items-center gap-2.5">
             Học qua video
-            <span className="rounded-full bg-good/15 px-2 py-0.5 text-[11px] font-bold text-good">
+            <span className="rounded-full bg-good/15 px-2 py-0.5 text-xs font-bold text-good">
               MIỄN PHÍ
             </span>
           </span>
@@ -160,7 +160,7 @@ export function VideoShelf({ limit = 8, maxLevel }: { limit?: number; maxLevel?:
             {["Phụ đề đồng bộ", "Máy nhắc chữ", "Dịch tiếng Việt"].map((t) => (
               <span
                 key={t}
-                className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted"
+                className="rounded-full border border-border px-2 py-0.5 text-xs text-muted"
               >
                 {t}
               </span>
@@ -241,7 +241,7 @@ function ShelfCard({ v, dup }: { v: VideoCard; dup: boolean }) {
           </span>
         </span>
         {v.hskLevel != null && (
-          <span className="absolute left-1.5 top-1.5 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+          <span className="absolute left-1.5 top-1.5 rounded bg-black/60 px-1.5 py-0.5 text-xs font-semibold text-white">
             HSK {v.hskLevel}
           </span>
         )}

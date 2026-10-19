@@ -151,7 +151,7 @@ export function PracticeRunner({ set }: { set: MockPracticeSet }) {
         );
       })}
 
-      <div className="rounded-3xl border border-border bg-surface p-5 text-center">
+      <div className="rounded-2xl border border-border bg-surface p-5 text-center">
         {done === set.count ? (
           <p className="font-bold">
             Xong {set.count} câu — đúng {right}/{set.count}

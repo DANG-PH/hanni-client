@@ -9,9 +9,9 @@ export function SampleCard() {
     <div className="reveal relative mx-auto w-full max-w-sm">
       <div
         aria-hidden="true"
-        className="absolute inset-0 translate-x-3 translate-y-3 rotate-3 rounded-3xl border border-primary/15 bg-primary/5"
+        className="absolute inset-0 translate-x-3 translate-y-3 rotate-3 rounded-2xl border border-primary/15 bg-primary/5"
       />
-      <div className="hover-card relative rounded-3xl border border-border bg-surface p-7 text-center shadow-xl shadow-primary/5">
+      <div className="hover-card relative rounded-2xl border border-border bg-surface p-7 text-center shadow-xl shadow-primary/5">
         <div className="flex items-center justify-between text-xs text-muted">
           <span className="rounded-lg bg-primary/8 px-2.5 py-1.5 font-medium text-primary">
             THẺ HỌC THỬ

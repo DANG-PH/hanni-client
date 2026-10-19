@@ -74,7 +74,7 @@ function MessageTranslation({
             .then(setTranslation)
             .catch(() => setTranslation("error"));
         }}
-        className={`mt-1 block text-[11px] font-medium underline-offset-2 hover:underline ${mine ? "text-primary-fg/90" : "text-primary"}`}
+        className={`mt-1 block text-xs font-medium underline-offset-2 hover:underline ${mine ? "text-primary-fg/90" : "text-primary"}`}
       >
         Dịch
       </button>
@@ -82,14 +82,14 @@ function MessageTranslation({
   }
 
   if (translation === "loading") {
-    return <p className={`mt-1 text-[11px] ${dim}`}>Đang dịch…</p>;
+    return <p className={`mt-1 text-xs ${dim}`}>Đang dịch…</p>;
   }
   if (translation === "error") {
-    return <p className="mt-1 text-[11px] text-danger">Chưa dịch được.</p>;
+    return <p className="mt-1 text-xs text-danger">Chưa dịch được.</p>;
   }
   return (
     <div
-      className={`mt-1.5 border-t pt-1.5 text-[11px] leading-4 ${mine ? "border-primary-fg/20" : "border-border"} ${dim}`}
+      className={`mt-1.5 border-t pt-1.5 text-xs leading-4 ${mine ? "border-primary-fg/20" : "border-border"} ${dim}`}
     >
       <p className="italic">{translation.pinyin}</p>
       {translation.vi && <p>{translation.vi}</p>}
@@ -363,7 +363,7 @@ function ChatThread({ conversationId }: { conversationId: string }) {
               return (
                 <div key={m.id}>
                   {showDay && (
-                    <p className="my-3 text-center text-[11px] font-medium text-muted">
+                    <p className="my-3 text-center text-xs font-medium text-muted">
                       {dayLabel(m.createdAt)}
                     </p>
                   )}
@@ -378,14 +378,14 @@ function ChatThread({ conversationId }: { conversationId: string }) {
                       {m.content}
                       <MessageTranslation content={m.content} mine={mine} />
                       <p
-                        className={`mt-1 text-[10px] ${mine ? "text-primary-fg/70" : "text-muted"}`}
+                        className={`mt-1 text-xs ${mine ? "text-primary-fg/70" : "text-muted"}`}
                       >
                         {timeLabel(m.createdAt)}
                       </p>
                     </div>
                   </div>
                   {mine && isLast && (
-                    <p className="mt-0.5 text-right text-[10px] text-muted">
+                    <p className="mt-0.5 text-right text-xs text-muted">
                       {m.readAt ? "Đã xem" : "Đã gửi"}
                     </p>
                   )}

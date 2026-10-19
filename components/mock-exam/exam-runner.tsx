@@ -237,7 +237,7 @@ export function MockExamRunner({ slug }: { slug: string }) {
           </button>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-bold">{paper.title}</p>
-            <p className="text-[11px] text-muted">
+            <p className="text-xs text-muted">
               Đã làm {answered}/{total}
             </p>
           </div>
@@ -307,7 +307,7 @@ export function MockExamRunner({ slug }: { slug: string }) {
               ))}
             </section>
           ))}
-          <div className="rounded-3xl border border-border bg-surface p-5 text-center">
+          <div className="rounded-2xl border border-border bg-surface p-5 text-center">
             <p className="text-sm text-muted">
               Đã làm {answered}/{total} câu
               {flags.length > 0 && ` · ${flags.length} câu đánh dấu xem lại`}
@@ -346,7 +346,7 @@ export function MockExamRunner({ slug }: { slug: string }) {
 
       {confirm && (
         <div role="dialog" aria-modal className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-          <div className="w-full max-w-sm rounded-3xl bg-surface p-6 text-center shadow-2xl">
+          <div className="w-full max-w-sm rounded-2xl bg-surface p-6 text-center shadow-2xl">
             {confirm === "submit" ? (
               <>
                 <h2 className="text-lg font-bold">Nộp bài?</h2>
@@ -408,7 +408,7 @@ function Navigator({
   onJump: (no: number) => void;
 }) {
   return (
-    <div className="rounded-3xl border border-border bg-surface p-4">
+    <div className="rounded-2xl border border-border bg-surface p-4">
       <p className="text-sm font-bold">Danh sách câu</p>
       {paper.sections.map((s) => {
         const nos = s.parts.flatMap((p) => p.items.map((i) => i.no));
@@ -436,7 +436,7 @@ function Navigator({
           </div>
         );
       })}
-      <div className="mt-4 space-y-1.5 text-[11px] text-muted">
+      <div className="mt-4 space-y-1.5 text-xs text-muted">
         <p className="flex items-center gap-2">
           <span className="h-3 w-3 rounded bg-foreground" /> Đã làm
         </p>
@@ -481,8 +481,8 @@ function Intro({
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <div className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
-          <p className="text-[11px] font-bold tracking-wider text-primary">ĐỀ THI THỬ · ĐÚNG CẤU TRÚC ĐỀ THẬT</p>
+        <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8">
+          <p className="text-xs font-bold tracking-wider text-primary">ĐỀ THI THỬ · ĐÚNG CẤU TRÚC ĐỀ THẬT</p>
           <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight sm:text-3xl">{paper.title}</h1>
           <dl className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
@@ -492,7 +492,7 @@ function Intro({
               { k: "Điểm đạt", v: `${paper.passScore}` },
             ].map((s) => (
               <div key={s.k} className="rounded-2xl bg-surface-2 px-3 py-3">
-                <dt className="text-[11px] text-muted">{s.k}</dt>
+                <dt className="text-xs text-muted">{s.k}</dt>
                 <dd className="mt-0.5 text-lg font-bold">{s.v}</dd>
               </div>
             ))}
@@ -674,9 +674,9 @@ function Result({
         </div>
       </header>
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
-        <section className="rounded-3xl border border-border bg-surface p-6 text-center sm:p-8">
+        <section className="rounded-2xl border border-border bg-surface p-6 text-center sm:p-8">
           <Image src="/anhloading.png" alt="Cáo Hanni" width={150} height={125} className="mx-auto h-28 w-auto" />
-          <p className="mt-3 text-[11px] font-bold tracking-wider text-primary">KẾT QUẢ · {paper.title.toUpperCase()}</p>
+          <p className="mt-3 text-xs font-bold tracking-wider text-primary">KẾT QUẢ · {paper.title.toUpperCase()}</p>
           <p className="mt-2 text-5xl font-extrabold tracking-tight">
             {result.score}
             <span className="text-2xl text-muted">/{result.maxScore}</span>
@@ -699,14 +699,14 @@ function Result({
           <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {result.sections.map((s) => (
               <div key={s.kind} className="rounded-2xl bg-surface-2 px-3 py-3">
-                <dt className="text-[11px] text-muted">
+                <dt className="text-xs text-muted">
                   {SECTION_VI[s.kind].vi} · đúng {s.correct}/{s.total}
                 </dt>
                 <dd className="mt-0.5 text-xl font-bold">{s.score}/100</dd>
               </div>
             ))}
             <div className="col-span-2 rounded-2xl bg-surface-2 px-3 py-3 sm:col-span-1">
-              <dt className="text-[11px] text-muted">Thời gian làm</dt>
+              <dt className="text-xs text-muted">Thời gian làm</dt>
               <dd className="mt-0.5 text-xl font-bold">{mmss(usedSec)}</dd>
             </div>
           </dl>
@@ -746,10 +746,10 @@ function Result({
         </section>
 
         {/* Bảng đáp án: nhìn 1 lượt câu nào đúng/sai, bấm số để tới câu đó. */}
-        <section aria-labelledby="answer-grid" className="rounded-3xl border border-border bg-surface p-5">
+        <section aria-labelledby="answer-grid" className="rounded-2xl border border-border bg-surface p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 id="answer-grid" className="font-bold">Bảng đáp án</h2>
-            <p className="flex gap-3 text-[11px] text-muted">
+            <p className="flex gap-3 text-xs text-muted">
               <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-good" /> Đúng</span>
               <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-danger" /> Sai</span>
               <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-muted/30" /> Bỏ trống</span>
@@ -783,7 +783,7 @@ function Result({
           ))}
         </section>
 
-        <section aria-labelledby="part-analysis" className="rounded-3xl border border-border bg-surface p-5">
+        <section aria-labelledby="part-analysis" className="rounded-2xl border border-border bg-surface p-5">
           <h2 id="part-analysis" className="font-bold">Phân tích từng phần</h2>
           <ul className="mt-3 space-y-3">
             {parts.map((p) => {
@@ -894,7 +894,7 @@ function Result({
                   );
                 }),
               )}
-              <div className="rounded-3xl border border-border bg-surface p-5 text-center">
+              <div className="rounded-2xl border border-border bg-surface p-5 text-center">
                 {practiceDone === wrong ? (
                   <p className="font-bold">
                     Lần này đúng {practiceRight}/{wrong} câu{practiceRight === wrong ? " — sửa được hết rồi!" : "."}
@@ -928,7 +928,7 @@ function Result({
                       type="button"
                       onClick={() => setFilter(k)}
                       className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
-                        filter === k ? "border-primary bg-primary text-primary-fg" : "border-border bg-surface"
+                        filter === k ? "border-foreground bg-foreground text-background" : "border-border bg-surface"
                       }`}
                     >
                       {label}
@@ -974,7 +974,7 @@ function Result({
                 </div>
               )}
               {wrong === 0 && filter === "wrong" && (
-                <p className="rounded-3xl border border-border bg-surface p-6 text-center text-sm text-muted">
+                <p className="rounded-2xl border border-border bg-surface p-6 text-center text-sm text-muted">
                   Không sai câu nào — xuất sắc! Chọn &quot;Tất cả&quot; để xem lại lời thoại và bản dịch.
                 </p>
               )}

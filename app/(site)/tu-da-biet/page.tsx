@@ -88,8 +88,8 @@ export default async function TuDaBietPage() {
                     {w.simplified}
                   </p>
                   <p className="mt-1 text-xs text-muted">{w.pinyin}</p>
-                  <p className="mt-2 text-sm font-bold">{w.hanViet}</p>
-                  <p className="text-[11px] text-muted">
+                  <p className="mt-2 text-sm font-bold text-hanviet">{w.hanViet}</p>
+                  <p className="text-xs text-muted">
                     = đúng nghĩa tiếng Việt
                   </p>
                 </div>
@@ -162,8 +162,8 @@ export default async function TuDaBietPage() {
                                 {w.simplified}
                               </span>
                               <span className="min-w-0">
-                                <span className="block text-sm font-semibold">{w.hanViet}</span>
-                                <span className="block text-[11px] text-muted">
+                                <span className="block text-sm font-semibold text-hanviet">{w.hanViet}</span>
+                                <span className="block text-xs text-muted">
                                   {w.pinyin} · HSK {w.hskLevel}
                                 </span>
                               </span>

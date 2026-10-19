@@ -18,39 +18,27 @@
   --heading-accent: var(--lavender);
 }
 
+/* Đầu trang GỌN (2026-10-19): trước đây là một thẻ to (viền, nền chuyển màu, vòng tròn trang trí, ô biểu tượng
+ * 64px xoay nghiêng, đường kẻ ngăn nút) chiếm gần hết màn đầu điện thoại — mở trang ra chưa thấy nội dung.
+ * Giờ chỉ còn: biểu tượng nhỏ + tiêu đề + 1 câu mô tả + nút nhỏ bên phải, không khung. */
 .page {
-  position: relative;
-  isolation: isolate;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 24px 32px;
-  padding: clamp(24px, 3.2vw, 36px);
-  border: 1px solid color-mix(in srgb, var(--heading-accent) 18%, var(--border));
-  border-radius: 26px;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  box-shadow: 0 8px 32px -16px color-mix(in srgb, var(--heading-accent) 18%, transparent),
-    0 1px 3px -1px color-mix(in srgb, var(--foreground) 6%, transparent);
-}
-
-/* Một góc màu nhẹ để nhận diện từng không gian học. */
-.page::before {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(ellipse at 5% 0%, color-mix(in srgb, var(--heading-accent) 12%, transparent), transparent 70%),
-    linear-gradient(135deg, color-mix(in srgb, var(--heading-accent) 5%, var(--surface)), var(--surface));
-  content: "";
-  pointer-events: none;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 2px 0;
 }
 
 .identity {
-  display: grid;
-  flex: 1 1 440px;
-  grid-template-columns: 64px minmax(0, 1fr);
-  align-items: start;
-  column-gap: 20px;
+  display: flex;
+  flex: 1 1 380px;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.copy {
   min-width: 0;
 }
 
@@ -60,62 +48,51 @@
   flex-shrink: 0;
   place-items: center;
   color: var(--heading-accent);
-  border: 1px solid color-mix(in srgb, var(--heading-accent) 22%, var(--surface));
-  background: color-mix(in srgb, var(--heading-accent) 10%, var(--surface));
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+/* Biểu tượng tông chính (đỏ) để trung tính — đỏ dành cho nút chính; tông khác (xanh, vàng, tím) giữ màu nhận diện. */
+.page[data-tone="primary"] .pageIcon,
+.section[data-tone="primary"] .sectionIcon {
+  color: color-mix(in srgb, var(--foreground) 78%, transparent);
+  background: var(--surface-2);
 }
 
 .pageIcon {
-  grid-column: 1;
-  grid-row: 1 / span 3;
-  width: 64px;
-  height: 64px;
-  border-radius: 20px;
-  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--surface) 70%, transparent), 0 8px 18px -6px color-mix(in srgb, var(--heading-accent) 30%, transparent);
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--foreground) 5%, transparent);
 }
 
 .eyebrow {
-  display: flex;
-  grid-column: 2;
-  align-items: center;
-  gap: 7px;
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 0 9px;
+  margin: 0 0 2px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  line-height: 1.6;
-  letter-spacing: 0.025em;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
   overflow-wrap: anywhere;
 }
 
-.eyebrow::before {
-  flex: 0 0 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--heading-accent);
-  content: "";
-}
-
 .pageTitle {
-  grid-column: 2;
   margin: 0;
   color: var(--foreground);
-  font-size: clamp(25px, 2.4vw, 32px);
-  font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: -0.04em;
+  font-size: clamp(22px, 2.1vw, 28px);
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
 
 .pageDescription {
-  grid-column: 2;
   max-width: 62ch;
-  margin: 10px 0 0;
+  margin: 4px 0 0;
   color: var(--muted);
   font-size: 14px;
-  line-height: 1.75;
+  line-height: 1.6;
   text-wrap: pretty;
   overflow-wrap: anywhere;
 }
@@ -124,12 +101,12 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   max-width: 100%;
 }
 
 .pageActions > :is(a, button) {
-  min-height: 44px;
+  min-height: 40px;
   max-width: 100%;
 }
 
@@ -169,10 +146,10 @@
 .sectionEyebrow {
   margin-bottom: 4px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
-  line-height: 1.6;
-  letter-spacing: 0.035em;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
 }
 
 .sectionTitle {
@@ -200,125 +177,53 @@
   max-width: 100%;
 }
 
-/* These treatments belong to the learning workspace, never the public site. */
-:global(.app-workspace) .page {
-  border-radius: var(--radius-section);
-  padding: var(--section-padding);
-  overflow: hidden;
-  border-color: color-mix(in srgb, var(--heading-accent) 15%, var(--border));
-  background: linear-gradient(115deg, var(--surface) 40%, color-mix(in srgb, var(--heading-accent) 4%, var(--surface)));
-  box-shadow: var(--workspace-shadow), inset 0 1px 0 var(--surface);
-}
-
-:global(.app-workspace) .page::before {
-  background: radial-gradient(ellipse at 0% 0%, color-mix(in srgb, var(--heading-accent) 10%, transparent), transparent 58%);
-}
-
-:global(.app-workspace) .page::after {
-  position: absolute;
-  z-index: -1;
-  top: -95px;
-  right: -35px;
-  width: 270px;
-  height: 270px;
-  border: 1px solid color-mix(in srgb, var(--heading-accent) 9%, transparent);
-  border-radius: 50%;
-  box-shadow: 0 0 0 30px color-mix(in srgb, var(--heading-accent) 3%, transparent),
-    0 0 0 60px color-mix(in srgb, var(--heading-accent) 2%, transparent);
-  content: "";
-  pointer-events: none;
-}
-
-:global(.app-workspace) .pageIcon {
-  border-color: color-mix(in srgb, var(--heading-accent) 22%, var(--surface));
-  background: linear-gradient(145deg, color-mix(in srgb, var(--heading-accent) 4%, var(--surface)), color-mix(in srgb, var(--heading-accent) 15%, var(--surface)));
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--heading-accent) 18%, var(--surface)),
-    0 12px 18px -10px color-mix(in srgb, var(--heading-accent) 30%, transparent),
-    inset 0 2px 0 color-mix(in srgb, var(--surface) 85%, transparent);
-  transform: rotate(-5deg);
-  transition: transform 400ms var(--motion-ease);
-}
-
-:global(.app-workspace) .pageIcon svg {
-  filter: drop-shadow(0 2px 0 color-mix(in srgb, var(--surface) 80%, transparent));
-}
-
+/* Khu vực học: chỉ đổi màu đường kẻ của đầu mục. */
 :global(.app-workspace) .section {
   border-color: color-mix(in srgb, var(--border) 75%, transparent);
 }
 
 :global(.app-workspace) .sectionIcon {
   background-image: linear-gradient(145deg, color-mix(in srgb, var(--surface) 65%, transparent), transparent);
-  box-shadow: 0 3px 0 color-mix(in srgb, var(--heading-accent) 9%, transparent), inset 0 1px 0 var(--surface);
-}
-
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  :global(.app-workspace) .page:hover .pageIcon {
-    transform: perspective(500px) rotate(-1deg) rotateY(12deg) translateY(-2px);
-  }
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--foreground) 5%, transparent), inset 0 1px 0 var(--surface);
 }
 
 @media (max-width: 639px) {
-  :global(.app-workspace) .identity { align-items: start; }
-  :global(.app-workspace) .pageIcon { grid-row: 1 / span 2; align-self: center; }
-  :global(.app-workspace) .pageTitle { grid-column: 2; grid-row: 2; margin-top: 4px; font-size: 24px; }
-  :global(.app-workspace) .identity:not(:has(.eyebrow)) .pageTitle { grid-row: 1 / span 2; align-self: center; margin-top: 0; }
-  :global(.app-workspace) .pageDescription { margin-top: 12px; }
-  :global(.app-workspace) .pageActions { padding-top: 14px; }
-
   .page {
-    gap: 20px;
-    padding: 20px;
-    border-radius: 20px;
+    gap: 10px;
   }
 
+  /* Nút nhỏ (vd "Hướng dẫn") nằm cùng hàng tiêu đề; nhiều nút thì tự xuống hàng dưới. */
   .identity {
-    flex-basis: 100%;
-    grid-template-columns: 44px minmax(0, 1fr);
-    align-items: center;
-    column-gap: 12px;
+    flex: 1 1 240px;
+    gap: 12px;
   }
 
   .pageIcon {
-    grid-row: 1;
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
   }
 
   .pageIcon svg {
-    width: 23px;
-    height: 23px;
+    width: 20px;
+    height: 20px;
   }
 
+  /* Điện thoại: nhãn nhỏ thừa (thanh tab dưới đáy đã cho biết đang ở đâu), mô tả tối đa 2 dòng. */
   .eyebrow {
-    margin: 0;
-  }
-
-  .eyebrow::before {
     display: none;
   }
 
   .pageTitle {
-    grid-column: 1 / -1;
-    margin-top: 16px;
+    font-size: 22px;
   }
 
   .pageDescription {
-    grid-column: 1 / -1;
-    margin-top: 8px;
-    font-size: 13px;
-  }
-
-  .pageActions {
-    width: 100%;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-  }
-
-  .pageActions > :is(a, button) {
-    flex: 1 1 auto;
-    justify-content: center;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 13.5px;
   }
 
   .section {

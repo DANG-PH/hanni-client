@@ -36,7 +36,7 @@
   align-items: center;
   gap: 7px;
   color: var(--primary);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 650;
   letter-spacing: 0.09em;
 }
@@ -51,7 +51,7 @@
 .hint {
   flex-shrink: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .stages {
@@ -101,7 +101,7 @@
   top: 9px;
   left: 10px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
@@ -136,7 +136,7 @@
 .pinyin {
   margin-top: 2px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .detail {
@@ -161,7 +161,7 @@
   display: block;
   margin-bottom: 4px;
   color: var(--primary);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.09em;
 }

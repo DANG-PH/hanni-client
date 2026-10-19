@@ -123,7 +123,7 @@ export function HskCoverflow() {
                   setActive(i);
                 }
               }}
-              className={`${styles.card} absolute flex h-[236px] w-[188px] flex-col items-center justify-center rounded-3xl border border-border bg-surface p-5 text-center shadow-xl sm:h-[264px] sm:w-[210px]`}
+              className={`${styles.card} absolute flex h-[236px] w-[188px] flex-col items-center justify-center rounded-2xl border border-border bg-surface p-5 text-center shadow-xl sm:h-[264px] sm:w-[210px]`}
               style={{
                 transform,
                 opacity: hidden ? 0 : 1 - abs * 0.32,

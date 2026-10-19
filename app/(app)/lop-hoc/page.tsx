@@ -166,7 +166,7 @@ export default function ClassroomsPage() {
                       </span>
                     </span>
                     {c.pendingCount > 0 && (
-                      <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold text-primary-fg">
+                      <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-fg">
                         {c.pendingCount} bài cần làm
                       </span>
                     )}

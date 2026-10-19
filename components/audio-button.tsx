@@ -69,7 +69,7 @@ export function AudioButton({
         <Icon name={failed ? "refresh" : "sound"} size={size} />
       </button>
       {failed && (
-        <span role="status" className="text-[10px] font-normal text-danger">
+        <span role="status" className="text-xs font-normal text-danger">
           Chưa phát được
         </span>
       )}

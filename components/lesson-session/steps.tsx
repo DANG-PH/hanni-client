@@ -54,7 +54,7 @@ export function IntroStep({ word }: { word: SessionWord }) {
 
   return (
     <div className="flex flex-col items-center text-center">
-      <span className="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold tracking-wide text-primary">
+      <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold tracking-wide text-primary">
         TỪ MỚI
       </span>
       {word.imageUrl && (
@@ -78,10 +78,10 @@ export function IntroStep({ word }: { word: SessionWord }) {
         {word.meaningVi ?? word.meaningEn ?? "Đang cập nhật nghĩa"}
       </p>
       {word.hanViet && (
-        <div className="mt-4 w-full max-w-sm rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3">
+        <div className="mt-4 w-full max-w-sm rounded-2xl border border-hanviet/20 bg-hanviet/5 px-4 py-3">
           <p className="text-sm">
             Âm Hán Việt:{" "}
-            <strong className="text-primary">{word.hanViet}</strong>
+            <strong className="text-hanviet">{word.hanViet}</strong>
           </p>
           {hints.length > 0 && (
             <ul className="mt-2 flex flex-wrap justify-center gap-1.5">
@@ -93,7 +93,7 @@ export function IntroStep({ word }: { word: SessionWord }) {
                       ? TONE_RULE_TEXT[h.rule]
                       : "Ngoại lệ — chữ này không theo quy luật, nhớ riêng nhé"
                   }
-                  className="rounded-lg bg-surface px-2 py-1 text-[11px] text-muted"
+                  className="rounded-lg bg-surface px-2 py-1 text-xs text-muted"
                 >
                   {h.hanViet} →{" "}
                   <span className={`font-bold ${TONE_CLASS[String(h.tone)]}`}>

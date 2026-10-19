@@ -52,7 +52,7 @@ export function SendToFriendButton({
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         className={`motion-button inline-flex items-center gap-1.5 rounded-full bg-surface-2 font-semibold text-muted hover:bg-primary/10 hover:text-primary ${
-          compact ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs"
+          compact ? "px-2.5 py-1 text-xs" : "px-3 py-1.5 text-xs"
         }`}
       >
         <Icon name="message" size={13} />

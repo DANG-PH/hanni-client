@@ -637,7 +637,7 @@ function MatchMinigame() {
                         className={
                           card.kind === "hanzi"
                             ? "hanzi text-lg sm:text-2xl"
-                            : "text-[11px] font-medium leading-tight sm:text-xs"
+                            : "text-xs font-medium leading-tight sm:text-xs"
                         }
                       >
                         {card.content}
@@ -774,7 +774,7 @@ export default function MinigamePage() {
         tone="accent"
         eyebrow="Vừa học vừa chơi"
         title="Trò chơi luyện từ"
-        description="Chọn 1 trò chơi để luyện phản xạ từ vựng — mỗi ván 60 giây, càng nhanh càng nhiều xu."
+        description="Ôn từ vựng bằng trò chơi — mỗi ván 60 giây."
       >
         <TourButton tourKey="minigame" />
       </PageHeading>

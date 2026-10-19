@@ -73,7 +73,7 @@ function PronunciationLibrary() {
       key={lessonId ?? "free"}
       skill="pronunciation"
       title="Luyện phát âm"
-      description="Nghe mẫu, ghi âm và nghe lại. Từng lần luyện giúp bạn nói rõ và tự nhiên hơn."
+      description="Nghe mẫu, đọc to — Hanni vẽ đường giọng bạn chồng lên giọng chuẩn để chấm thanh điệu."
       startSteps={[
         'Nhấn "Nghe phát âm mẫu" để nghe cách đọc chuẩn của từ.',
         'Nhấn "Bắt đầu ghi âm", đọc theo rồi nhấn dừng khi xong.',
@@ -419,7 +419,7 @@ function PronunciationWord({
   return (
     <div className="space-y-5">
       <div className="rounded-2xl border border-border bg-surface-2/60 px-5 py-10 text-center sm:py-12">
-        <span className="rounded-full bg-surface px-3 py-1 text-[11px] font-semibold text-muted">
+        <span className="rounded-full bg-surface px-3 py-1 text-xs font-semibold text-muted">
           HSK {word.hskLevel}
         </span>
         <p
@@ -446,7 +446,7 @@ function PronunciationWord({
           <Icon name="sound" size={17} />
           {model.playing ? "Nghe lại từ đầu" : "Nghe phát âm mẫu"}
         </Button>
-        <p className="mt-3 text-[11px] text-muted">
+        <p className="mt-3 text-xs text-muted">
           {model.synthetic
             ? "Giọng đọc tiếng Trung của thiết bị"
             : "Bản thu phát âm từ thư viện"}

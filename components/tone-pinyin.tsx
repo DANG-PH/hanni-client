@@ -48,7 +48,7 @@ export function TonePinyin({
     return (
       <span key={i} className="flex flex-col items-center leading-none">
         <span
-          className={`mb-0.5 text-[11px] ${
+          className={`mb-0.5 text-xs ${
             isHan ? TONE_CLASS[tone] : "text-transparent"
           }`}
         >

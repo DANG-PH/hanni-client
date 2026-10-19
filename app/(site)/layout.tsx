@@ -65,7 +65,7 @@ function GuestFrame({ children }: { children: ReactNode }) {
             },
           ].map((group) => (
             <div key={group.title}>
-              <h2 className="text-[10px] font-bold tracking-wider">
+              <h2 className="text-xs font-bold tracking-wider">
                 {group.title}
               </h2>
               <ul className="mt-4 space-y-3">
@@ -84,7 +84,7 @@ function GuestFrame({ children }: { children: ReactNode }) {
           ))}
         </div>
         <div className="border-t border-border">
-          <div className="page-wrap flex flex-wrap items-center justify-between gap-3 py-5! text-[11px] text-muted">
+          <div className="page-wrap flex flex-wrap items-center justify-between gap-3 py-5! text-xs text-muted">
             <span>
               © {new Date().getFullYear()} Hanni. Mỗi ngày một chút, tiến xa
               hơn.

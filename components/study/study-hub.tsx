@@ -92,7 +92,7 @@ export function StudyHub() {
                   onClick={() => setLevel(l)}
                   className={`motion-button shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold ${
                     l === path.data!.level
-                      ? "border-primary bg-primary text-primary-fg"
+                      ? "border-foreground bg-foreground text-background"
                       : "border-border bg-surface hover:border-primary/40"
                   }`}
                 >

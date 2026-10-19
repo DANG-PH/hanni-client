@@ -19,7 +19,7 @@
   align-items: center;
   gap: 7px;
   color: var(--primary);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 750;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -96,7 +96,7 @@
 
 .inboxKicker {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .inboxTitle {
@@ -109,7 +109,7 @@
 .inboxHint {
   margin: -4px 4px 13px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -124,7 +124,7 @@
   background: color-mix(in srgb, var(--primary) 7%, var(--surface));
   color: var(--primary);
   box-shadow: 0 2px 0 color-mix(in srgb, var(--primary) 9%, var(--border));
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   transition: transform 180ms var(--motion-ease), box-shadow 180ms ease, background 180ms ease;
 }
@@ -207,7 +207,7 @@
 .conversationTime,
 .conversationPreview {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .conversationTime {
@@ -229,7 +229,7 @@
   border-radius: 7px;
   background: var(--primary);
   color: var(--primary-fg);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 750;
 }
 
@@ -275,7 +275,7 @@
   max-width: 25ch;
   margin-top: 5px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -346,7 +346,7 @@
 .threadStatus {
   margin-top: 2px;
   color: var(--primary);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .messageList {
@@ -417,7 +417,7 @@
   border-radius: 11px;
   padding: 9px 11px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
 }

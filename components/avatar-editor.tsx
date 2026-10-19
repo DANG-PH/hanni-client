@@ -79,7 +79,7 @@ export function AvatarEditor({
         ) : (
           <Avatar user={user} size={size} />
         )}
-        <span className="absolute inset-0 flex items-center justify-center bg-black/45 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100">
+        <span className="absolute inset-0 flex items-center justify-center bg-black/45 text-xs font-medium text-white opacity-0 transition group-hover:opacity-100">
           {busy ? "Đang tải…" : "Đổi ảnh"}
         </span>
       </button>

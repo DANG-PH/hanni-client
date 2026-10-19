@@ -82,7 +82,7 @@ export function LeaderboardOverview({
                 Cùng lan tỏa tinh thần học mỗi ngày.
               </p>
             </div>
-            <span className="hidden rounded-full border border-accent/20 bg-accent/8 px-2.5 py-1 text-[10px] font-semibold tracking-wider text-accent sm:block">
+            <span className="hidden rounded-full border border-accent/20 bg-accent/8 px-2.5 py-1 text-xs font-semibold tracking-wider text-accent sm:block">
               TOP {leaders.length}
             </span>
           </div>
@@ -116,7 +116,7 @@ export function LeaderboardOverview({
                   {row.displayName}
                 </p>
                 <span
-                  className={`mt-1 text-[10px] font-semibold ${row.isMe ? "text-primary" : "text-muted"}`}
+                  className={`mt-1 text-xs font-semibold ${row.isMe ? "text-primary" : "text-muted"}`}
                 >
                   {row.isMe ? "Bạn" : `Hạng ${row.rank}`}
                 </span>
@@ -124,7 +124,7 @@ export function LeaderboardOverview({
                   <strong className="block text-lg leading-6 font-bold tabular-nums sm:text-xl">
                     {number(row.value)}
                   </strong>
-                  <span className="text-[11px] text-muted">{board.unit}</span>
+                  <span className="text-xs text-muted">{board.unit}</span>
                 </div>
               </li>
             ))}
@@ -180,7 +180,7 @@ export function LeaderboardOverview({
                 </>
               )}
             </dd>
-            <dd className="mt-1 text-[11px] text-muted">
+            <dd className="mt-1 text-xs text-muted">
               trong {number(board.me.totalRanked)} người học
             </dd>
           </div>
@@ -189,7 +189,7 @@ export function LeaderboardOverview({
             <dd className="mt-1 text-2xl font-bold tracking-tight tabular-nums [overflow-wrap:anywhere]">
               {number(board.me.value)}
             </dd>
-            <dd className="mt-1 text-[11px] text-muted">{board.unit}</dd>
+            <dd className="mt-1 text-xs text-muted">{board.unit}</dd>
           </div>
         </dl>
         <p className="mb-4 hidden text-xs leading-5 text-muted xl:block">
@@ -217,7 +217,7 @@ export function LeaderboardRankings({ board }: { board: Leaderboard }) {
         title={limited ? "Người học dẫn đầu" : "Cộng đồng cùng tiến bộ"}
         className="px-4 py-4 sm:px-6"
       >
-        <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-medium text-muted">
+        <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-medium text-muted">
           {number(board.me.totalRanked)} người học
         </span>
       </SectionHeading>
@@ -269,18 +269,18 @@ export function LeaderboardRankings({ board }: { board: Leaderboard }) {
                         {row.displayName}
                       </span>
                       {row.title && (
-                        <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-[10px] font-semibold text-accent">
+                        <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-xs font-semibold text-accent">
                           {row.title}
                         </span>
                       )}
                       {row.isMe && (
-                        <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                        <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary">
                           Bạn
                         </span>
                       )}
                     </Link>
                     {board.metric !== "streak" && row.currentStreak > 0 && (
-                      <span className="mt-1 flex items-center gap-1 text-[11px] text-muted">
+                      <span className="mt-1 flex items-center gap-1 text-xs text-muted">
                         <Icon name="flame" size={12} className="text-primary" />
                         Chuỗi {number(row.currentStreak)} ngày
                       </span>
@@ -294,13 +294,13 @@ export function LeaderboardRankings({ board }: { board: Leaderboard }) {
                 >
                   {number(row.value)}
                 </span>
-                <span className="text-[11px] text-muted">{board.unit}</span>
+                <span className="text-xs text-muted">{board.unit}</span>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div className="flex items-start gap-2 border-t border-border px-4 py-3 text-[11px] leading-5 text-muted sm:px-6">
+      <div className="flex items-start gap-2 border-t border-border px-4 py-3 text-xs leading-5 text-muted sm:px-6">
         <Icon name="spark" size={14} className="mt-0.5 shrink-0 text-primary" />
         <p>
           {limited

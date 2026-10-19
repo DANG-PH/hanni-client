@@ -7,7 +7,7 @@
   align-items: center;
   gap: 12px;
   margin: 0 3px 13px;
-  font-size: 11px;
+  font-size: 12px;
 }
 .level {
   display: flex;
@@ -91,7 +91,7 @@
 }
 .prompt {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .character {
   margin-top: 26px;
@@ -125,13 +125,13 @@
   border: 1px solid var(--border);
   border-radius: 9px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .revealHint > svg {
   color: var(--primary);
 }
 .revealHint kbd {
-  font-size: 9px;
+  font-size: 11px;
 }
 .back {
   transform: rotateY(180deg);
@@ -213,7 +213,7 @@
   border-radius: 6px;
   background: var(--surface-2);
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .hanViet {
   display: inline-block;
@@ -221,9 +221,9 @@
   margin-left: 6px;
   padding: 3px 9px;
   border-radius: 6px;
-  background: color-mix(in srgb, var(--primary) 12%, var(--surface-2));
-  color: var(--primary);
-  font-size: 10px;
+  background: color-mix(in srgb, var(--hanviet) 12%, var(--surface-2));
+  color: var(--hanviet);
+  font-size: 12px;
   font-weight: 600;
 }
 .example {
@@ -240,7 +240,7 @@
 .exampleLabel {
   display: block;
   margin-bottom: 6px;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -252,13 +252,13 @@
 }
 .examplePinyin {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .ratingPrompt {
   min-height: 20px;
   margin-bottom: 12px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   text-align: center;
 }
 .ratings {
@@ -310,7 +310,7 @@
 .ratingHint {
   display: block;
   margin-top: 3px;
-  font-size: 9px;
+  font-size: 11px;
 }
 .ratingKey {
   display: grid;
@@ -320,7 +320,7 @@
   margin-top: 8px;
   border: 1px solid color-mix(in srgb, var(--rating-color) 16%, transparent);
   border-radius: 5px;
-  font-size: 9px;
+  font-size: 11px;
   opacity: 0.8;
 }
 .knownButton {
@@ -354,7 +354,7 @@
   margin-top: 8px;
   text-align: center;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {

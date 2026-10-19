@@ -71,7 +71,7 @@ export function TopicExplorer({
   return (
     <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
       <div className="panel min-w-0 p-2 lg:flex lg:flex-col lg:p-3">
-        <p className="hidden px-2 pb-2 text-[11px] font-bold tracking-wider text-muted lg:flex lg:justify-between">
+        <p className="hidden px-2 pb-2 text-xs font-bold tracking-wider text-muted lg:flex lg:justify-between">
           <span>CHỦ ĐỀ</span>
           <span>{variant === "review" ? "ĐÃ HỌC" : "TIẾN ĐỘ"}</span>
         </p>
@@ -176,13 +176,13 @@ export function TopicExplorer({
                       Bài {lesson.orderIndex}
                       {part ? ` · phần ${part}` : ""}
                       {isCurrent && (
-                        <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] text-primary-fg">
+                        <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-primary-fg">
                           HỌC TIẾP
                         </span>
                       )}
                       {variant === "review" && (
                         <span
-                          className={`rounded-full px-2 py-0.5 text-[10px] ${
+                          className={`rounded-full px-2 py-0.5 text-xs ${
                             done ? "bg-good/12 text-good" : "bg-surface-2 text-muted"
                           }`}
                         >
@@ -193,7 +193,7 @@ export function TopicExplorer({
                     <span lang="zh" className="hanzi mt-0.5 block truncate text-base text-primary">
                       {lesson.previewWords.join(" · ")}
                     </span>
-                    <span className="mt-1 flex flex-wrap gap-1.5 text-[11px] text-muted">
+                    <span className="mt-1 flex flex-wrap gap-1.5 text-xs text-muted">
                       <span className="rounded-md bg-surface-2 px-1.5 py-0.5">{lesson.wordCount} từ vựng</span>
                       <span className="rounded-md bg-surface-2 px-1.5 py-0.5">
                         ~{lessonMinutes(lesson.wordCount)} phút
@@ -269,7 +269,7 @@ function LessonWords({ lesson, part, variant }: { lesson: LessonNode; part: stri
                 <span className="min-w-0 flex-1 leading-tight">
                   <span className="block truncate text-xs">
                     <span className="text-muted">{w.pinyin}</span>
-                    {w.hanViet && <span className="ml-1.5 font-semibold text-primary">{w.hanViet}</span>}
+                    {w.hanViet && <span className="ml-1.5 font-semibold text-hanviet">{w.hanViet}</span>}
                   </span>
                   <span className="block truncate text-xs">{w.meaningVi?.split(";")[0]}</span>
                 </span>

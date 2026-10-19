@@ -49,7 +49,7 @@ export function TranscriptLine({
     >
       <div className="flex gap-3">
         <span
-          className={`mt-1 shrink-0 text-[11px] font-semibold ${
+          className={`mt-1 shrink-0 text-xs font-semibold ${
             active ? "text-primary" : "text-muted"
           }`}
         >

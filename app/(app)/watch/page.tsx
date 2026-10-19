@@ -68,7 +68,7 @@ export default function WatchPage() {
         tone="good"
         eyebrow="Tiếng Trung trong cuộc sống"
         title="Học qua video"
-        description="Chọn một câu chuyện bạn thích. Nghe, đọc phụ đề và làm quen với tiếng Trung tự nhiên."
+        description="Phụ đề song ngữ chạy theo lời thoại, bấm từ để tra và lưu."
       >
         <span className={styles.captionNote}>
           <Icon name="headphones" size={17} /> Hán tự · Pinyin · Nghĩa tiếng

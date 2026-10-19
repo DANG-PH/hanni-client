@@ -15,7 +15,7 @@ export function ClassAssignmentsCard() {
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 id="class-tasks" className="flex items-center gap-2 text-sm font-bold">
           <Icon name="flag" size={16} className="text-primary" /> Bài tập của lớp
-          <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] text-primary-fg">{data.length}</span>
+          <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-primary-fg">{data.length}</span>
         </h2>
         <Link href="/lop-hoc" className="text-xs font-semibold text-primary hover:underline">
           Lớp học →

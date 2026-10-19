@@ -233,7 +233,7 @@ export function AuthFormCard({
                   onError={setError}
                 />
               </div>
-              <div className="my-6 flex items-center gap-3 text-[10px] font-semibold tracking-wider text-muted">
+              <div className="my-6 flex items-center gap-3 text-xs font-semibold tracking-wider text-muted">
                 <span className="h-px flex-1 bg-border" />
                 HOẶC ĐĂNG NHẬP BẰNG EMAIL
                 <span className="h-px flex-1 bg-border" />
@@ -275,7 +275,7 @@ export function AuthFormCard({
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-[11px] font-medium text-primary hover:underline underline-offset-4"
+                  className="text-xs font-medium text-primary hover:underline underline-offset-4"
                 >
                   Quên mật khẩu?
                 </Link>
@@ -360,7 +360,7 @@ export function AuthFormCard({
                   onError={setError}
                 />
               </div>
-              <div className="my-6 flex items-center gap-3 text-[10px] font-semibold tracking-wider text-muted">
+              <div className="my-6 flex items-center gap-3 text-xs font-semibold tracking-wider text-muted">
                 <span className="h-px flex-1 bg-border" />
                 HOẶC ĐĂNG KÝ BẰNG EMAIL
                 <span className="h-px flex-1 bg-border" />

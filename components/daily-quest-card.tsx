@@ -26,7 +26,7 @@ export function DailyQuestCard() {
             <h3 className="text-sm font-bold text-foreground">
               Nhiệm vụ hàng ngày
             </h3>
-            <p className="text-[11px] text-muted">Hoàn thành để nhận xu thưởng</p>
+            <p className="text-xs text-muted">Hoàn thành để nhận xu thưởng</p>
           </div>
         </div>
       </div>

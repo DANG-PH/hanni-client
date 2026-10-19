@@ -54,7 +54,7 @@ export function ActivityCalendar({ days = 30 }: { days?: number }) {
           />
         ))}
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-muted">
+      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted">
         <span className="flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-sm bg-surface-2" /> Không học
         </span>

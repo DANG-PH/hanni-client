@@ -86,7 +86,7 @@ export function JumpToLatest({ unseen, onClick }: { unseen: number; onClick: () 
       <Icon name="arrow" size={14} className="rotate-90 text-primary" />
       Xuống tin mới
       {unseen > 0 && (
-        <span className="min-w-5 rounded-full bg-primary px-1.5 py-0.5 text-center text-[10px] font-bold text-primary-fg">
+        <span className="min-w-5 rounded-full bg-primary px-1.5 py-0.5 text-center text-xs font-bold text-primary-fg">
           {unseen > 99 ? "99+" : unseen}
         </span>
       )}

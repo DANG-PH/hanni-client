@@ -202,11 +202,11 @@ function WritingPage() {
                   </p>
                   <p className="flex items-center gap-2 text-sm text-primary">
                     {activeEntry.pinyin}
-                    <span className="rounded-lg bg-primary/8 px-2 py-0.5 text-[11px] font-medium">
+                    <span className="rounded-lg bg-primary/8 px-2 py-0.5 text-xs font-medium">
                       HSK {activeEntry.level}
                     </span>
                     {strokeCount != null && (
-                      <span className="rounded-lg bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-muted">
+                      <span className="rounded-lg bg-surface-2 px-2 py-0.5 text-xs font-medium text-muted">
                         {strokeCount} nét
                       </span>
                     )}
@@ -254,19 +254,19 @@ function WritingPage() {
               <button
                 onClick={() => setByLesson(true)}
                 aria-pressed={byLesson}
-                className={`motion-button min-h-8 rounded-lg px-2.5 py-1 font-medium ${byLesson ? "bg-primary text-primary-fg" : "text-muted hover:text-primary"}`}
+                className={`motion-button min-h-8 rounded-lg px-2.5 py-1 font-medium ${byLesson ? "bg-foreground text-background" : "text-muted hover:text-primary"}`}
               >
                 Chữ trong bài đang học
               </button>
               <button
                 onClick={() => setByLesson(false)}
                 aria-pressed={!byLesson}
-                className={`motion-button min-h-8 rounded-lg px-2.5 py-1 font-medium ${!byLesson ? "bg-primary text-primary-fg" : "text-muted hover:text-primary"}`}
+                className={`motion-button min-h-8 rounded-lg px-2.5 py-1 font-medium ${!byLesson ? "bg-foreground text-background" : "text-muted hover:text-primary"}`}
               >
                 Toàn bộ cấp HSK
               </button>
               {byLesson && current.data && (
-                <span className="w-full text-[11px] text-muted">
+                <span className="w-full text-xs text-muted">
                   Bài {current.data.orderIndex}: {current.data.title}
                 </span>
               )}
@@ -283,7 +283,7 @@ function WritingPage() {
                 key={l}
                 onClick={() => setLevel(l)}
                 aria-pressed={level === l}
-                className={`motion-button min-h-8 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-colors ${level === l ? "border-primary bg-primary text-primary-fg" : "border-border bg-surface text-muted hover:border-primary/40 hover:text-primary"}`}
+                className={`motion-button min-h-8 rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors ${level === l ? "border-foreground bg-foreground text-background" : "border-border bg-surface text-muted hover:border-primary/40 hover:text-primary"}`}
               >
                 {hskLabel(l)}
               </button>
@@ -305,7 +305,7 @@ function WritingPage() {
                   onClick={() => setActive(entry.c)}
                   aria-pressed={active === entry.c}
                   lang="zh"
-                  className={`hanzi motion-button flex h-11 items-center justify-center rounded-lg border text-xl ${active === entry.c ? "border-primary bg-primary/10 text-primary" : "border-border bg-surface hover:border-primary/40"}`}
+                  className={`hanzi motion-button flex h-11 items-center justify-center rounded-lg border text-xl ${active === entry.c ? "border-foreground bg-foreground text-background" : "border-border bg-surface hover:border-primary/40"}`}
                 >
                   {entry.c}
                 </button>

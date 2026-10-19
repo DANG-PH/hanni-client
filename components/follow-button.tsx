@@ -42,7 +42,7 @@ export function FollowButton({
       aria-pressed={following}
       title={following ? "Bỏ theo dõi" : "Theo dõi người học này"}
       className={`motion-button inline-flex items-center gap-1 rounded-full font-semibold transition-colors disabled:opacity-60 ${
-        compact ? "px-2 py-1 text-[11px]" : "px-2.5 py-1 text-xs"
+        compact ? "px-2 py-1 text-xs" : "px-2.5 py-1 text-xs"
       } ${
         following
           ? "bg-surface-2 text-muted hover:text-foreground"

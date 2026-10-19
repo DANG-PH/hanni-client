@@ -65,7 +65,7 @@ export function ExamStructure() {
               aria-selected={s.level === level}
               onClick={() => setLevel(s.level)}
               className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                s.level === level ? "bg-primary text-primary-fg" : "bg-surface-2 text-muted hover:text-foreground"
+                s.level === level ? "bg-foreground text-background" : "bg-surface-2 text-muted hover:text-foreground"
               }`}
             >
               HSK {s.level}

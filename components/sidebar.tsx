@@ -61,7 +61,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
           <span className="block text-xl font-bold tracking-tight">
             Hanni<span className="text-primary">.</span>
           </span>
-          <span className="mt-0.5 block text-[10px] text-muted">
+          <span className="mt-0.5 block text-xs text-muted">
             Học tiếng Trung mỗi ngày
           </span>
         </span>
@@ -104,7 +104,7 @@ export function Sidebar({
         className={`flex items-center justify-center rounded-full font-bold bg-primary/12 text-primary ${
           collapsed
             ? "absolute top-1 right-1.5 h-4 min-w-4 px-1 text-[9px]"
-            : "ml-auto h-5 min-w-5 px-1.5 text-[10px]"
+            : "ml-auto h-5 min-w-5 px-1.5 text-xs"
         }`}
       >
         {text}

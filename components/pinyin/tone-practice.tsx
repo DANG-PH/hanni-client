@@ -150,7 +150,7 @@ export function TonePractice({ initial }: { initial: PinyinOverview | null }) {
               }`}
             >
               <span className={`block text-xl font-extrabold ${TONE_CLASS[o.tone]}`}>{o.sound.mark}</span>
-              <span className="text-[11px] text-muted">Thanh {o.tone}</span>
+              <span className="text-xs text-muted">Thanh {o.tone}</span>
             </button>
           );
         })}

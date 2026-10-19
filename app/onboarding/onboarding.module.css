@@ -180,7 +180,7 @@
   gap: 8px;
   margin-bottom: 28px;
   color: var(--primary);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 750;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -265,7 +265,7 @@
   border-radius: 13px;
   background: var(--accent);
   color: #fff;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1.1;
   text-align: center;
@@ -288,7 +288,7 @@
 .quoteCopy span {
   margin-top: 2px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .contentArea {
@@ -326,7 +326,7 @@
 
 .progressLabel {
   color: var(--primary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 750;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -389,7 +389,7 @@
 .questionEyebrow {
   margin: 1px 0 5px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 750;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -495,7 +495,7 @@
   display: block;
   margin-top: 3px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
 }
 
@@ -550,7 +550,7 @@
 .levelDescription {
   margin-top: 2px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .levelActive .levelDescription {
@@ -598,7 +598,7 @@
 .goalHint {
   margin-top: auto;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.35;
 }
 

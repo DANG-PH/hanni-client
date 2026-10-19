@@ -43,7 +43,7 @@ const PROGRESS_TOUR_STEPS: TourStep[] = [
     icon: "chart",
     title: "Bốn con số nói bốn chuyện khác nhau",
     description:
-      '"Đang học" là vốn từ bạn đã chạm tới; "Đến hạn ôn" là việc cần làm hôm nay; "Sắp quên" là những từ sắp rơi; "Đã thuộc" chỉ tính từ đã ôn đúng khoảng 21 ngày nên tăng chậm nhất.',
+      '"Đang học" là vốn từ bạn đã chạm tới; "Đến hạn ôn" là việc cần làm hôm nay; "Ôn trong 24 giờ" là từ sắp tới lịch ôn; "Đã thuộc" chỉ tính từ đã ôn đúng khoảng 21 ngày nên tăng chậm nhất.',
   },
   {
     icon: "spark",
@@ -84,9 +84,11 @@ export default function ProgressPage() {
     }
   }
   if (loading || !user) return <Spinner />;
-  const completion = data?.totals.totalWords
-    ? Math.round((data.totals.learned / data.totals.totalWords) * 100)
-    : 0;
+  // Cấp đang học: cấp thấp nhất còn từ chưa thuộc mà đã chạm tới (chưa học gì thì HSK 1) — thanh tiến độ
+  // theo CẤP mới thấy nhích từ ngày đầu (10/300), tính trên cả 10.958 từ thì mãi là 0%.
+  const focus =
+    data?.levels.find((l) => l.learned + l.learning > 0 && l.learned < l.totalWords) ?? data?.levels[0];
+  const touched = data ? data.totals.learned + data.totals.learning : 0;
   return (
     <div className="page-wrap space-y-8">
       <FeatureTour tourKey="progress" steps={PROGRESS_TOUR_STEPS} />
@@ -95,7 +97,7 @@ export default function ProgressPage() {
         tone="good"
         eyebrow="Hành trình của bạn"
         title="Tiến độ học tập"
-        description="Nhìn lại những gì đã học và biết mình cần tập trung vào đâu."
+        description="Bạn đã học được gì và nên ôn gì tiếp."
       >
         <LinkButton href="/study">
           <Icon name="cards" size={17} />
@@ -107,7 +109,8 @@ export default function ProgressPage() {
           <Icon name="trophy" size={17} />
           Huy hiệu
         </LinkButton>
-        <LinkButton href="/leaderboard" variant="secondary">
+        {/* Điện thoại: "Xếp hạng" đã có trong menu "Thêm" — 4 nút ở đầu trang tràn thành 2 hàng. */}
+        <LinkButton href="/leaderboard" variant="secondary" className="max-sm:hidden">
           <Icon name="flame" size={17} />
           Bảng xếp hạng
         </LinkButton>
@@ -129,69 +132,64 @@ export default function ProgressPage() {
         data && (
           <>
             <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
-              <Card className="flex flex-wrap items-center gap-6">
-                <div
-                  role="img"
-                  aria-label={`Đã thuộc ${completion}% từ vựng trong các cấp`}
-                  className="relative flex h-28 w-28 shrink-0 items-center justify-center rounded-full"
-                  style={{
-                    background: `conic-gradient(var(--primary) ${Math.min(100, Math.max(0, completion))}%, var(--surface-2) 0)`,
-                  }}
-                >
-                  <div className="absolute inset-2 rounded-full bg-surface" />
-                  <div className="relative text-center">
-                    <span className="text-2xl font-semibold">
-                      {completion}%
-                    </span>
-                    <p className="mt-0.5 text-[10px] text-muted">Đã ghi nhớ</p>
+              <Card>
+                <p className="eyebrow">Vốn từ của bạn</p>
+                <p className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="text-4xl font-extrabold tracking-tight">{touched.toLocaleString("vi-VN")}</span>
+                  <span className="text-base font-semibold">từ đã học</span>
+                  <span className="text-sm text-muted">· {data.totals.learned.toLocaleString("vi-VN")} từ đã thuộc</span>
+                </p>
+                {focus && (
+                  <div className="mt-4">
+                    <div className="mb-1.5 flex items-center justify-between text-sm">
+                      <span className="font-semibold">{focus.level >= 7 ? "HSK 7–9" : `HSK ${focus.level}`}</span>
+                      <span className="text-muted">
+                        {(focus.learned + focus.learning).toLocaleString("vi-VN")}/{focus.totalWords.toLocaleString("vi-VN")} từ
+                      </span>
+                    </div>
+                    <div
+                      role="img"
+                      aria-label={`HSK ${focus.level}: ${focus.learned} từ đã thuộc, ${focus.learning} từ đang học, trên ${focus.totalWords} từ`}
+                      className="flex h-3 overflow-hidden rounded-full bg-surface-2"
+                    >
+                      <span className="bg-good" style={{ width: `${(focus.learned / Math.max(1, focus.totalWords)) * 100}%` }} />
+                      <span className="bg-primary/70" style={{ width: `${(focus.learning / Math.max(1, focus.totalWords)) * 100}%` }} />
+                    </div>
+                    <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-good" /> Đã thuộc
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-primary/70" /> Đang học
+                      </span>
+                      <span>“Đã thuộc” = ôn đúng đủ khoảng 21 ngày</span>
+                    </p>
                   </div>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="eyebrow mb-2">VỐN TỪ TÍCH LŨY</p>
-                  <h2 className="text-xl font-semibold">
-                    {data.totals.learned.toLocaleString("vi-VN")} từ đã thuộc
-                  </h2>
-                  <p className="mt-2 text-sm leading-6 text-muted">
-                    Trong {data.totals.totalWords.toLocaleString("vi-VN")} từ
-                    vựng thuộc các cấp học. Mỗi lần ôn là một lần nhớ vững hơn.
-                  </p>
-                  <p className="mt-2 text-xs leading-5 text-muted">
-                    Một từ chỉ tính “đã thuộc” khi ôn đều và đạt chu kỳ ôn ≥ 21
-                    ngày — cần vài tuần ôn đặn mới thấy % này tăng. Số từ “Đang
-                    học” bên dưới tăng nhanh hơn nhiều.
-                  </p>
-                </div>
+                )}
               </Card>
               <Card className="border-primary/15 bg-primary/5!">
                 <div className="mb-3 flex items-center gap-2 text-primary">
                   <Icon name="spark" size={19} />
                   <h2 className="text-sm font-semibold">Gợi ý cho hôm nay</h2>
                 </div>
+                {/* Chỉ giục ôn khi có từ ĐẾN HẠN thật — từ ôn trong 24 giờ tới thì để mai, hôm nay học bài mới. */}
                 <p className="text-base font-semibold">
-                  {data.totals.atRisk > 0
-                    ? `Củng cố ${data.totals.atRisk} từ sắp quên`
-                    : data.totals.due > 0
-                      ? `Bạn có ${data.totals.due} từ đến lịch ôn`
-                      : "Sẵn sàng cho một bài học mới"}
+                  {data.totals.due > 0
+                    ? `Bạn có ${data.totals.due} từ đến lịch ôn`
+                    : "Hôm nay học thêm một bài mới"}
                 </p>
                 <p className="mt-2 text-sm leading-6 text-muted">
-                  {data.totals.due > 0 || data.totals.atRisk > 0
-                    ? "Mở buổi ôn tập để gặp lại các từ theo lịch học của bạn."
-                    : "Khám phá bài tiếp theo trong lộ trình để mở rộng vốn từ."}
+                  {data.totals.due > 0
+                    ? "Ôn đúng lúc sắp quên là cách nhớ lâu nhất."
+                    : data.totals.atRisk > 0
+                      ? `${data.totals.atRisk} từ sẽ đến hạn ôn trong 24 giờ tới — Hanni sẽ nhắc.`
+                      : "Chưa có từ nào đến hạn ôn."}
                 </p>
                 <Link
-                  href={
-                    data.totals.due > 0
-                      ? "/study?review=1"
-                      : data.totals.atRisk > 0
-                        ? "/study"
-                        : "/learn"
-                  }
+                  href={data.totals.due > 0 ? "/study?review=1" : "/learn"}
                   className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary"
                 >
-                  {data.totals.due > 0 || data.totals.atRisk > 0
-                    ? "Mở buổi ôn tập"
-                    : "Đến lộ trình HSK"}
+                  {data.totals.due > 0 ? "Mở buổi ôn tập" : "Học tiếp lộ trình"}
                   <Icon name="arrow" size={16} />
                 </Link>
               </Card>
@@ -217,11 +215,11 @@ export default function ProgressPage() {
                 hint="Cần gặp lại hôm nay"
               />
               <Stat
-                label="Sắp quên"
+                label="Ôn trong 24 giờ"
                 value={data.totals.atRisk}
                 icon="refresh"
                 tone="text-warn bg-warn/8"
-                hint="Ưu tiên củng cố thêm"
+                hint="Sắp tới lịch ôn"
               />
             </div>
             <PeriodReport />
@@ -441,7 +439,7 @@ export default function ProgressPage() {
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 text-xs">
                         <span className="text-muted">
                           {l.atRisk > 0
-                            ? `${l.atRisk} từ cần củng cố thêm`
+                            ? `${l.atRisk} từ ôn trong 24 giờ tới`
                             : l.learned > 0
                               ? "Tiếp tục duy trì nhịp ôn tập của bạn"
                               : "Bắt đầu với những từ đầu tiên"}

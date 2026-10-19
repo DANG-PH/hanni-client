@@ -50,14 +50,14 @@ export default function PublicProfilePage() {
               <h1 className="flex flex-wrap items-center gap-1.5 text-lg font-bold">
                 {p.displayName}
                 {p.equippedTitle && (
-                  <span className="rounded-full bg-good/10 px-2 py-0.5 text-[10px] font-bold text-good">
+                  <span className="rounded-full bg-good/10 px-2 py-0.5 text-xs font-bold text-good">
                     {p.equippedTitle}
                   </span>
                 )}
                 {p.isPremium && (
                   <span
                     title="Hanni Premium"
-                    className="flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold text-accent"
+                    className="flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-bold text-accent"
                   >
                     <Icon name="crown" size={11} />
                     PREMIUM

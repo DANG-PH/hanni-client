@@ -132,7 +132,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 550;
   color: var(--primary);
 }
@@ -180,7 +180,7 @@
   border-radius: 9px;
   background: var(--surface);
   color: var(--primary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   box-shadow: 0 3px 0 color-mix(in srgb, var(--primary) 9%, var(--border));
   transform: rotate(-5deg);

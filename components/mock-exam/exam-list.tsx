@@ -71,14 +71,14 @@ export function MockExamList({
               onClick={() => setLevel(l)}
               className={`motion-button flex shrink-0 flex-col items-start rounded-2xl border-2 px-4 py-2 text-left disabled:cursor-not-allowed ${
                 selected
-                  ? "border-primary bg-primary text-primary-fg shadow-[0_3px_0_0_color-mix(in_srgb,var(--primary)_62%,#000)]"
+                  ? "border-foreground bg-foreground text-background shadow-[0_3px_0_0_color-mix(in_srgb,var(--foreground)_55%,#000)]"
                   : has
                     ? "border-border bg-surface hover:border-primary/40"
                     : "border-dashed border-border bg-surface opacity-60"
               }`}
             >
               <span className="text-sm font-extrabold">HSK {l}</span>
-              <span className={`text-[10px] ${selected ? "text-primary-fg/80" : "text-muted"}`}>
+              <span className={`text-xs ${selected ? "text-primary-fg/80" : "text-muted"}`}>
                 {has ? `${exams.filter((e) => e.level === l).length} đề` : "Sắp có"}
               </span>
             </button>
@@ -94,7 +94,7 @@ export function MockExamList({
           return (
             <li
               key={e.slug}
-              className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-3xl border border-border bg-surface p-4"
+              className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl border border-border bg-surface p-4"
             >
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                 <Icon name="book" size={22} />
@@ -105,10 +105,10 @@ export function MockExamList({
                     {e.title}
                   </Link>
                   {doing ? (
-                    <span className="rounded-full bg-warn/15 px-2 py-0.5 text-[11px] font-bold text-warn">Đang làm dở</span>
+                    <span className="rounded-full bg-warn/15 px-2 py-0.5 text-xs font-bold text-warn">Đang làm dở</span>
                   ) : done ? (
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                      className={`rounded-full px-2 py-0.5 text-xs font-bold ${
                         passed ? "bg-good/15 text-good" : "bg-danger/10 text-danger"
                       }`}
                     >
@@ -139,7 +139,7 @@ export function MockExamList({
                         style={{ width: `${(doing.answered / Math.max(1, e.questionCount)) * 100}%` }}
                       />
                     </div>
-                    <p className="mt-1 text-[11px] text-muted">
+                    <p className="mt-1 text-xs text-muted">
                       Đã làm {doing.answered}/{e.questionCount} câu · còn khoảng {doing.minutesLeft} phút
                     </p>
                   </div>
@@ -164,7 +164,7 @@ export function MockExamList({
         })}
       </ul>
       {exams.length === 0 && (
-        <p className="rounded-3xl border border-border bg-surface p-6 text-center text-sm text-muted">
+        <p className="rounded-2xl border border-border bg-surface p-6 text-center text-sm text-muted">
           Chưa tải được danh sách đề. Bạn thử tải lại trang nhé.
         </p>
       )}
@@ -172,7 +172,7 @@ export function MockExamList({
       {/* Luyện từng dạng bài của cấp đang chọn. Mọi cấp đều nằm sẵn trong HTML
        * (cấp khác chỉ `hidden`) — Google đọc được hết các trang dạng bài. */}
       {sets.length > 0 && (
-        <section aria-labelledby="practice-sets" className="rounded-3xl border border-border bg-surface p-4 sm:p-5">
+        <section aria-labelledby="practice-sets" className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
           <h3 id="practice-sets" className="text-sm font-bold">
             Luyện từng dạng bài
           </h3>
@@ -197,7 +197,7 @@ export function MockExamList({
                           </span>{" "}
                           · {partInfo(x.section, x.type).label}
                         </span>
-                        <span className="shrink-0 text-[11px] text-muted">{x.count} câu</span>
+                        <span className="shrink-0 text-xs text-muted">{x.count} câu</span>
                       </Link>
                     </li>
                   ))}
@@ -295,7 +295,7 @@ export function MockExamInsights({ exams: initial }: { exams: MockExamMeta[] }) 
         </Link>
       </section>
     );
-  if (!analysis || !attempts) return <div className="skeleton h-40 w-full rounded-3xl" />;
+  if (!analysis || !attempts) return <div className="skeleton h-40 w-full rounded-2xl" />;
   if (analysis.attempts === 0)
     return (
       <section aria-labelledby="insights" className="panel p-5">

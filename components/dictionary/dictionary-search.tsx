@@ -263,11 +263,11 @@ export function DictionarySearch({
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-xs text-muted">
                       {w.pinyin}
-                      {w.hanViet && <span className="ml-1.5 font-semibold text-primary uppercase">{w.hanViet}</span>}
+                      {w.hanViet && <span className="ml-1.5 font-semibold text-hanviet uppercase">{w.hanViet}</span>}
                     </span>
                     <span className="block truncate text-sm">{shortMeaning(w.meaningVi) ?? w.meaningEn}</span>
                   </span>
-                  <span className="shrink-0 rounded-full bg-surface-2 px-2 py-0.5 text-[10px] text-muted">
+                  <span className="shrink-0 rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
                     HSK {w.hskLevel >= 7 ? "7–9" : w.hskLevel}
                   </span>
                 </Link>
@@ -320,7 +320,7 @@ export function DictionarySearch({
               aria-selected={current === t.key}
               onClick={() => pickTab(t.key)}
               className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
-                current === t.key ? "bg-primary text-primary-fg shadow-sm" : "text-muted hover:bg-surface-2 hover:text-foreground"
+                current === t.key ? "bg-foreground text-background shadow-sm" : "text-muted hover:bg-surface-2 hover:text-foreground"
               }`}
             >
               {t.label}

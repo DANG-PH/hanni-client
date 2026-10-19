@@ -29,7 +29,7 @@ export default function SettingsPage() {
         tone="lavender"
         eyebrow="Nhịp học của bạn"
         title="Cài đặt học tập"
-        description="Một mục tiêu vừa sức, một thói quen bền lâu."
+        description="Mục tiêu mỗi ngày, giờ nhắc học, cách xếp lịch ôn."
       >
         <Link
           href="/account"

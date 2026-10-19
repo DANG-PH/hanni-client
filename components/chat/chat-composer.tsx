@@ -95,7 +95,7 @@ export function ChatComposer({
         </button>
       </div>
       {length > 0 && (
-        <p id={counterId} aria-live="polite" className={`mt-1.5 text-right text-[11px] tabular-nums ${tone}`}>
+        <p id={counterId} aria-live="polite" className={`mt-1.5 text-right text-xs tabular-nums ${tone}`}>
           {length >= maxLength
             ? `Đã tới giới hạn ${maxLength.toLocaleString("vi-VN")} ký tự`
             : `${length.toLocaleString("vi-VN")}/${maxLength.toLocaleString("vi-VN")} ký tự · Shift+Enter để xuống dòng`}

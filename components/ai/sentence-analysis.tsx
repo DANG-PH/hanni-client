@@ -77,14 +77,14 @@ export function SentenceAnalysis({ text }: { text: string }) {
                   title={t.meaningVi ?? undefined}
                   className="flex flex-col items-center rounded-xl border border-border px-2.5 py-1.5 hover:border-primary/40"
                 >
-                  <span className="text-[11px] text-muted">{t.pinyin}</span>
+                  <span className="text-xs text-muted">{t.pinyin}</span>
                   <span className="hanzi text-xl leading-tight text-primary">{t.text}</span>
-                  {t.hanViet && <span className="text-[11px] font-semibold text-accent">{t.hanViet}</span>}
-                  {t.meaningVi && <span className="max-w-28 truncate text-[11px] text-muted">{t.meaningVi}</span>}
+                  {t.hanViet && <span className="text-xs font-semibold text-hanviet">{t.hanViet}</span>}
+                  {t.meaningVi && <span className="max-w-28 truncate text-xs text-muted">{t.meaningVi}</span>}
                 </Link>
               ) : (
                 <span key={i} className="flex flex-col items-center justify-end px-1 py-1.5">
-                  {t.pinyin && <span className="text-[11px] text-muted">{t.pinyin}</span>}
+                  {t.pinyin && <span className="text-xs text-muted">{t.pinyin}</span>}
                   <span className="hanzi text-xl leading-tight">{t.text}</span>
                 </span>
               ),
@@ -110,7 +110,7 @@ export function SentenceAnalysis({ text }: { text: string }) {
               {result.notesVi}
             </p>
           )}
-          <p className="text-[11px] text-muted">Bản dịch và giải thích do AI viết — đối chiếu với nghĩa từ điển ở từng từ.</p>
+          <p className="text-xs text-muted">Bản dịch và giải thích do AI viết — đối chiếu với nghĩa từ điển ở từng từ.</p>
         </div>
       )}
     </section>

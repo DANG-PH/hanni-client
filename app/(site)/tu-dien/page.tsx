@@ -77,11 +77,11 @@ function WordRow({ w }: { w: Word }) {
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm">
             {w.pinyin}
-            {w.hanViet && <b className="ml-2 text-xs tracking-wide text-primary uppercase">{w.hanViet}</b>}
+            {w.hanViet && <b className="ml-2 text-xs tracking-wide text-hanviet uppercase">{w.hanViet}</b>}
           </span>
           <span className="block truncate text-sm text-muted">{short(w.meaningVi) || w.meaningEn || "Đang cập nhật"}</span>
         </span>
-        <span className="shrink-0 rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-semibold text-muted">{hskLabel(w.hskLevel)}</span>
+        <span className="shrink-0 rounded-full bg-surface-2 px-2 py-0.5 text-xs font-semibold text-muted">{hskLabel(w.hskLevel)}</span>
       </Link>
     </li>
   );
@@ -214,7 +214,7 @@ async function DictionaryHome() {
                     <span lang="zh" className="hanzi mt-0.5 block truncate text-sm text-primary">
                       {t.preview.slice(0, 3).join(" · ")}
                     </span>
-                    <span className="block text-[11px] text-muted">{t.words} từ</span>
+                    <span className="block text-xs text-muted">{t.words} từ</span>
                   </Link>
                 </li>
               ))}
@@ -231,7 +231,7 @@ async function DictionaryHome() {
               {LEVELS.map((l) => (
                 <Link key={l} href={`/tu-dien?level=${l}`} className="hover-card rounded-xl border border-border bg-surface px-3 py-2.5 text-center">
                   <span className="block text-sm font-bold">{hskLabel(l)}</span>
-                  <span className="block text-[11px] text-muted">
+                  <span className="block text-xs text-muted">
                     {fmt(levels?.find((x) => x.level === l)?.wordsInDb) ?? "—"} từ
                   </span>
                 </Link>
@@ -307,7 +307,7 @@ async function LevelList({ level, page }: { level: number; page: number }) {
             href={`/tu-dien?level=${l}`}
             aria-current={l === level ? "page" : undefined}
             className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${
-              l === level ? "border-primary bg-primary text-primary-fg" : "border-border text-muted hover:border-primary/40 hover:text-primary"
+              l === level ? "border-foreground bg-foreground text-background" : "border-border text-muted hover:border-primary/40 hover:text-primary"
             }`}
           >
             {hskLabel(l)}
@@ -375,19 +375,19 @@ function Segmented({ tokens }: { tokens: SegToken[] }) {
               title={t.meaningVi ?? undefined}
               className="group flex flex-col items-center rounded-lg px-1.5 py-1 hover:bg-primary/5"
             >
-              <span className="text-[11px] text-muted">{t.pinyin}</span>
+              <span className="text-xs text-muted">{t.pinyin}</span>
               <span lang="zh" className="hanzi text-2xl group-hover:text-primary">
                 {t.text}
               </span>
-              <span className="text-[10px] font-bold tracking-wide text-primary uppercase">{t.hanViet ?? "\u00a0"}</span>
+              <span className="text-xs font-bold tracking-wide text-hanviet uppercase">{t.hanViet ?? "\u00a0"}</span>
             </Link>
           ) : (
             <span key={i} className="flex flex-col items-center px-0.5 py-1">
-              <span className="text-[11px] text-muted">{t.pinyin ?? "\u00a0"}</span>
+              <span className="text-xs text-muted">{t.pinyin ?? "\u00a0"}</span>
               <span lang="zh" className="hanzi text-2xl">
                 {t.text}
               </span>
-              <span className="text-[10px]">{"\u00a0"}</span>
+              <span className="text-xs">{"\u00a0"}</span>
             </span>
           ),
         )}
@@ -461,7 +461,7 @@ async function WordResults({ q, page }: { q: string; page: number }) {
             </Link>
             <div className="min-w-0 flex-1">
               <p className="flex flex-wrap items-center gap-x-3 text-lg">
-                [{exact.pinyin}]{exact.hanViet && <b className="tracking-wide text-primary uppercase">[{exact.hanViet}]</b>}
+                [{exact.pinyin}]{exact.hanViet && <b className="tracking-wide text-hanviet uppercase">[{exact.hanViet}]</b>}
                 {exact.audioUrl && <AudioButton src={exact.audioUrl} size={18} />}
               </p>
               <p className="mt-1 text-xs font-bold tracking-wide text-primary/80 uppercase">
@@ -535,7 +535,7 @@ async function CharResults({ q }: { q: string }) {
                 {info.hanViet && (
                   <>
                     <dt className="text-muted">Hán Việt</dt>
-                    <dd className="font-bold text-primary uppercase">{info.hanViet}</dd>
+                    <dd className="font-bold text-hanviet uppercase">{info.hanViet}</dd>
                   </>
                 )}
                 {info.pinyin && (
@@ -599,7 +599,7 @@ async function CharResults({ q }: { q: string }) {
                           <span lang="zh" className="hanzi">
                             {w.simplified}
                           </span>
-                          {w.hanViet && <span className="text-[11px] font-semibold text-muted uppercase">{w.hanViet}</span>}
+                          {w.hanViet && <span className="text-xs font-semibold text-hanviet uppercase">{w.hanViet}</span>}
                         </Link>
                       </li>
                     ))}
@@ -644,7 +644,7 @@ async function ExampleResults({ q, page }: { q: string; page: number }) {
               <span lang="zh" className="hanzi text-sm text-primary">
                 {ex.word.simplified}
               </span>
-              {ex.word.hanViet && <b className="uppercase">{ex.word.hanViet}</b>} · {hskLabel(ex.word.hskLevel)}
+              {ex.word.hanViet && <b className="text-hanviet uppercase">{ex.word.hanViet}</b>} · {hskLabel(ex.word.hskLevel)}
             </Link>
           </li>
         ))}
@@ -678,7 +678,7 @@ async function GrammarResults({ q }: { q: string }) {
                 <span lang="zh" className="hanzi text-lg text-primary">
                   {g.titleZh}
                 </span>
-                <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-semibold text-muted">{hskLabel(g.hskLevel)}</span>
+                <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-semibold text-muted">{hskLabel(g.hskLevel)}</span>
               </span>
               <span className="mt-1 block text-sm font-semibold">{g.titleVi}</span>
               <span className="mt-0.5 line-clamp-2 block text-xs text-muted">{g.summaryVi}</span>

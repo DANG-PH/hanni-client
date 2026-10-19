@@ -77,7 +77,7 @@ export function SentencePractice({ word }: { word: { id: string; simplified: str
       <h2 className="flex items-center gap-2 text-sm font-semibold">
         <Icon name="pencil" size={16} className="text-primary" />
         Đặt câu với <span lang="zh" className="hanzi text-base">{word.simplified}</span>
-        <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold text-accent">AI chấm</span>
+        <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-bold text-accent">AI chấm</span>
       </h2>
       <p className="mt-1 text-xs leading-5 text-muted">
         Tự viết 1 câu dùng từ này{word.meaningVi ? ` (${word.meaningVi.split(";")[0]})` : ""} — AI sửa lỗi và giải thích bằng tiếng Việt.
@@ -140,7 +140,7 @@ export function SentencePractice({ word }: { word: { id: string; simplified: str
             <p className="text-xs text-danger">Câu của bạn chưa dùng từ {word.simplified} — thử lại với từ này nhé.</p>
           )}
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">{same ? "Câu của bạn" : "Câu đã sửa"}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted">{same ? "Câu của bạn" : "Câu đã sửa"}</p>
             <p lang="zh" className="hanzi mt-0.5 text-lg">{result.corrected}</p>
             <p className="text-xs text-muted">{result.pinyin}</p>
             <p className="mt-0.5 text-sm">{result.translationVi}</p>

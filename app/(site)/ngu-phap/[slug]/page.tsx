@@ -99,7 +99,7 @@ export default async function NguPhapPage({
               {p.titleZh}
             </p>
           </div>
-          <span className="rounded-full bg-primary/10 px-3 py-1.5 text-[11px] font-semibold text-primary">
+          <span className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
             HSK {p.hskLevel}
           </span>
         </div>

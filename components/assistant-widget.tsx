@@ -20,7 +20,7 @@ import { usePwaState } from "@/lib/pwa/store";
 import { timeAgo } from "@/lib/time";
 import type { AssistantAction, AssistantMessage } from "@/lib/types";
 
-function HanniLogo({ size }: { size: number }) {
+function HanniLogo({ size, fill = false }: { size: number; fill?: boolean }) {
   return (
     <Image
       src="/brand/hanni.png"
@@ -28,10 +28,36 @@ function HanniLogo({ size }: { size: number }) {
       width={size}
       height={size}
       className="shrink-0 rounded-full object-cover"
-      style={{ width: size, height: size }}
+      style={fill ? { width: "100%", height: "100%" } : { width: size, height: size }}
       sizes={`${size}px`}
     />
   );
+}
+
+/** Điện thoại / máy tính bảng: nút trợ lý tự lùi xuống khi cuộn xuống đọc (trước đây đè lên nút, chữ ở cuối
+ * thẻ — Huy hiệu, Tài khoản, Lớp học), hiện lại khi cuộn lên — cách các nút nổi trong app di động vẫn làm. */
+function useTuckOnScroll(): boolean {
+  const [tucked, setTucked] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY;
+    let frame = 0;
+    function onScroll() {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const y = window.scrollY;
+        if (Math.abs(y - last) < 12) return;
+        setTucked(y > last && y > 160);
+        last = y;
+      });
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+  return tucked;
 }
 
 const ASK_EVENT = "hanni:ask-assistant";
@@ -68,6 +94,7 @@ function AssistantActionButton({ action }: { action: AssistantAction }) {
 export function AssistantWidget() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
+  const tucked = useTuckOnScroll();
   const [view, setView] = useState<"chat" | "history">("chat");
   const [sessionId, setSessionId] = useState<string | null>(null);
   const sessions = useAssistantSessions(open);
@@ -287,9 +314,9 @@ export function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Đóng trợ lý Hanni" : "Mở trợ lý Hanni"}
         aria-expanded={open}
-        className={`motion-button fixed right-5 z-40 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90 ${open ? "max-sm:hidden" : ""} ${promptDialogVisible ? "bottom-[calc(var(--bottom-nav-h,0px)_+_14rem)]" : "bottom-[calc(var(--bottom-nav-h,0px)_+_1.25rem)]"}`}
+        className={`motion-button fixed right-4 z-40 flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 transition-[translate,opacity] duration-300 hover:bg-primary/90 sm:right-5 sm:h-14 sm:w-14 ${open ? "max-sm:hidden" : ""} ${tucked && !open ? "max-lg:pointer-events-none max-lg:translate-y-24 max-lg:opacity-0" : ""} ${promptDialogVisible ? "bottom-[calc(var(--bottom-nav-h,0px)_+_14rem)]" : "bottom-[calc(var(--bottom-nav-h,0px)_+_1rem)]"}`}
       >
-        {open ? <Icon name="close" size={24} /> : <HanniLogo size={56} />}
+        {open ? <Icon name="close" size={24} /> : <HanniLogo size={56} fill />}
       </button>
 
       {open && (
@@ -303,7 +330,7 @@ export function AssistantWidget() {
               <HanniLogo size={32} />
               <div>
                 <p className="text-sm font-bold">Trợ lý Hanni</p>
-                <p className="text-[11px] text-muted">
+                <p className="text-xs text-muted">
                   Hỏi về tiếng Trung, ngữ pháp, lộ trình học
                 </p>
               </div>
@@ -360,7 +387,7 @@ export function AssistantWidget() {
                       className="min-w-0 flex-1 truncate text-left"
                     >
                       {s.title ?? "Cuộc trò chuyện mới"}
-                      <span className="ml-2 text-[11px] text-muted">
+                      <span className="ml-2 text-xs text-muted">
                         {timeAgo(s.updatedAt)}
                       </span>
                     </button>

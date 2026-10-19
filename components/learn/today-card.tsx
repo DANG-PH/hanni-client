@@ -33,7 +33,7 @@ function WeekStrip({ activeToday }: { activeToday: boolean }) {
         const done = isToday ? activeToday : studied.has(iso);
         return (
           <li key={label}>
-            <span className={`block text-[10px] font-bold ${isToday ? "text-primary" : "text-muted"}`}>{label}</span>
+            <span className={`block text-xs font-bold ${isToday ? "text-primary" : "text-muted"}`}>{label}</span>
             <span
               title={future ? "" : done ? "Đã học" : isToday ? "Hôm nay chưa học" : "Không học"}
               className={`mx-auto mt-1 flex h-7 w-7 items-center justify-center rounded-full ${

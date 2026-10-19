@@ -482,7 +482,7 @@ export default function WatchDetailPage() {
                   {wordPopup.word.pinyin}
                 </p>
               </div>
-              <span className="rounded-lg bg-surface-2 px-2 py-1 text-[11px] font-semibold text-muted">
+              <span className="rounded-lg bg-surface-2 px-2 py-1 text-xs font-semibold text-muted">
                 HSK {wordPopup.word.hskLevel}
               </span>
             </div>

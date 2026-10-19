@@ -75,19 +75,21 @@ export default async function PinyinPage() {
 
   return (
     <div className="page-wrap max-w-5xl! space-y-10 py-8!">
-      <section className="panel tint-primary p-6 sm:p-8">
-        <span className="eyebrow">PHÁT ÂM CHO NGƯỜI MỚI</span>
-        <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+      <section className="panel tint-primary p-5 sm:p-8">
+        <span className="eyebrow max-sm:hidden">PHÁT ÂM CHO NGƯỜI MỚI</span>
+        <h1 className="text-2xl font-extrabold tracking-tight sm:mt-3 sm:text-4xl">
           Bảng phiên âm tiếng Trung (pinyin)
         </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-muted">
-          Pinyin là cách ghi cách đọc chữ Hán bằng chữ La-tinh — học xong phần này là tự đọc được
-          mọi từ mới. Mỗi âm tiết gồm <strong className="text-foreground">thanh mẫu</strong> (phụ âm
-          đầu), <strong className="text-foreground">vận mẫu</strong> (vần) và{" "}
-          <strong className="text-foreground">thanh điệu</strong>. Cách đọc dưới đây so với âm tiếng
-          Việt gần nhất, bấm vào là nghe ghi âm thật.
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted sm:mt-3 sm:leading-7">
+          Học xong phần này là tự đọc được mọi từ mới — mỗi âm đều so với âm tiếng Việt gần nhất, bấm là nghe ghi âm thật.
+          <span className="max-sm:hidden">
+            {" "}
+            Mỗi âm tiết gồm <strong className="text-foreground">thanh mẫu</strong> (phụ âm đầu),{" "}
+            <strong className="text-foreground">vận mẫu</strong> (vần) và{" "}
+            <strong className="text-foreground">thanh điệu</strong>.
+          </span>
         </p>
-        <ul className="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
+        <ul className="mt-4 flex flex-wrap gap-2 text-xs font-semibold sm:mt-5">
           {["21 thanh mẫu", "36 vận mẫu", "4 thanh điệu + thanh nhẹ", "Ghi âm thật"].map((t) => (
             <li key={t} className="rounded-full border border-primary/20 bg-surface/70 px-3 py-1.5">
               {t}

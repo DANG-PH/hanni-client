@@ -166,7 +166,7 @@ function TeacherView({ data }: { data: OwnerView }) {
           <div key={s.label} className="panel p-4">
             <p className="text-xs font-medium text-muted">{s.label}</p>
             <p className="mt-1 text-2xl font-extrabold tracking-tight">{s.value}</p>
-            <p className="text-[11px] text-muted">{s.hint}</p>
+            <p className="text-xs text-muted">{s.hint}</p>
           </div>
         ))}
       </div>
@@ -384,7 +384,7 @@ function ExamCell({ m }: { m: MemberStats }) {
       <b className={m.bestExam.passed ? "text-good" : ""}>
         {m.bestExam.score}/{m.bestExam.maxScore}
       </b>
-      <span className="block text-[11px] text-muted">{m.bestExam.title}</span>
+      <span className="block text-xs text-muted">{m.bestExam.title}</span>
     </Link>
   );
 }
@@ -450,7 +450,7 @@ function Members({ data }: { data: OwnerView }) {
                     </td>
                     <td className="px-2 py-2.5 text-xs">
                       {lastStudied(m.lastStudiedOn)}
-                      <span className="block text-[11px] text-muted">{m.daysActive7d}/7 ngày học</span>
+                      <span className="block text-xs text-muted">{m.daysActive7d}/7 ngày học</span>
                     </td>
                     <td className="px-2 py-2.5 text-right tabular-nums">{m.currentStreak}</td>
                     <td className="px-2 py-2.5 text-right tabular-nums">{m.minutes7d}</td>
@@ -482,7 +482,7 @@ function Members({ data }: { data: OwnerView }) {
                     <Icon name="close" size={14} />
                   </button>
                 </div>
-                <dl className="mt-2 grid grid-cols-4 gap-1 text-center text-[11px] text-muted">
+                <dl className="mt-2 grid grid-cols-4 gap-1 text-center text-xs text-muted">
                   {[
                     ["Chuỗi", m.currentStreak],
                     ["Phút/7n", m.minutes7d],

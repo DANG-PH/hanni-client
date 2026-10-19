@@ -7,9 +7,12 @@
   --surface: #ffffff;
   --surface-2: #f0f2f5;
   --foreground: #202b3e;
-  --muted: #727b8b;
+  /* ≥4,5:1 trên trắng, nền xám, nền hồng nhạt (#727b8b cũ chỉ 3,8:1 trên nền xám — chữ nhỏ khó đọc). */
+  --muted: #646c7b;
   --border: #e7e9ef;
   --primary: #dc3526;
+  /* Âm Hán Việt — "chữ ký" riêng của Hanni (vàng đồng, ≥4,6:1); đỏ để dành cho nút chính. */
+  --hanviet: #946311;
   --primary-fg: #ffffff;
   /* Cột biểu đồ — đã qua bộ kiểm màu (độ sáng, tương phản ≥3:1 trên --surface). */
   --chart-bar: #dc3526;
@@ -34,6 +37,7 @@
     --border: #303a4a;
     --primary: #ff796b;
     --primary-fg: #26110d;
+    --hanviet: #e3b25c;
     --chart-bar: #ec5d50;
     --accent: #d8a24e;
     --good: #55c489;
@@ -55,6 +59,7 @@
   --border: #303a4a;
   --primary: #ff796b;
   --primary-fg: #26110d;
+  --hanviet: #e3b25c;
   --chart-bar: #ec5d50;
   --accent: #d8a24e;
   --good: #55c489;
@@ -79,6 +84,7 @@
   --color-warn: var(--warn);
   --color-danger: var(--danger);
   --color-lavender: var(--lavender);
+  --color-hanviet: var(--hanviet);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
@@ -181,14 +187,16 @@
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--primary), transparent);
   }
+  /* Nhãn nhỏ trên tiêu đề: xám (trước 2026-10-19 là đỏ — đỏ ở khắp nơi thì không còn gì nổi bật). */
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.16em] text-primary;
+    @apply text-xs font-semibold uppercase tracking-[0.14em] text-muted;
   }
   .field {
     @apply w-full rounded-xl border border-border/80 bg-surface/80 px-3.5 py-3 text-sm transition-all focus:border-primary focus:bg-surface focus:outline-none;
   }
+  /* Ô biểu tượng trung tính — trước đây hồng + đỏ ở mọi thẻ (trông như mẫu có sẵn, lẫn với nút chính). */
   .icon-tile {
-    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-primary/15 bg-primary/10 text-primary shadow-xs;
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-2 text-foreground/75;
     transition: transform 200ms ease, box-shadow 200ms ease;
   }
   .hero {
@@ -630,7 +638,7 @@
   bottom: -1px;
   right: 36px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.9;
 }
 .art-caption strong {
@@ -905,7 +913,7 @@ body:has(.mobile-drawer[open]) {
   gap: 16px;
   padding: 22px 40px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .login-story {
   --login-story-base: #c53b2b;
@@ -966,7 +974,7 @@ body:has(.mobile-drawer[open]) {
   justify-content: center;
   gap: 8px;
   margin-bottom: 30px;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.14em;
   color: #ffffffa6;
@@ -1042,7 +1050,7 @@ body:has(.mobile-drawer[open]) {
   border: 1px solid #ffffff26;
   border-radius: 100px;
   padding: 9px 15px;
-  font-size: 11px;
+  font-size: 12px;
   color: #ffffffbf;
 }
 :root[data-theme="dark"] .login-form-card {

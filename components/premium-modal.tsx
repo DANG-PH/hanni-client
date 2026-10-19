@@ -136,7 +136,7 @@ export function PremiumModal({
         aria-modal="true"
         aria-labelledby="premium-title"
         tabIndex={-1}
-        className="relative flex max-h-[92dvh] w-full max-w-[880px] flex-col overflow-hidden rounded-t-3xl border border-border bg-surface shadow-2xl outline-none sm:rounded-3xl"
+        className="relative flex max-h-[92dvh] w-full max-w-[880px] flex-col overflow-hidden rounded-t-3xl border border-border bg-surface shadow-2xl outline-none sm:rounded-2xl"
         style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
       >
         <header className="relative shrink-0 border-b border-border bg-gradient-to-br from-accent/20 via-accent/5 to-transparent px-5 pb-5 pt-6 sm:px-8">
@@ -210,7 +210,7 @@ export function PremiumModal({
                         }`}
                       >
                         {plan.badge && (
-                          <span className="absolute -top-2.5 left-4 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-white">
+                          <span className="absolute -top-2.5 left-4 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-white">
                             {plan.badge}
                           </span>
                         )}
@@ -229,7 +229,7 @@ export function PremiumModal({
                           {pm ? `≈ ${formatVnd(pm)}/tháng` : plan.months === null ? "Trả 1 lần, dùng mãi" : "Trả theo từng tháng"}
                         </span>
                         {save > 0 && (
-                          <span className="mt-2 inline-block rounded-full bg-good/10 px-2 py-0.5 text-[11px] font-semibold text-good">
+                          <span className="mt-2 inline-block rounded-full bg-good/10 px-2 py-0.5 text-xs font-semibold text-good">
                             Tiết kiệm {save}%
                           </span>
                         )}

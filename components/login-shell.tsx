@@ -43,7 +43,7 @@ export function LoginShell({ children }: { children: ReactNode }) {
             <ThemeToggle />
             <span
               aria-label="Ngôn ngữ: Tiếng Việt"
-              className="rounded-md bg-primary/8 px-2 py-1 text-[10px] font-bold tracking-wider text-primary"
+              className="rounded-md bg-primary/8 px-2 py-1 text-xs font-bold tracking-wider text-primary"
             >
               VI
             </span>
@@ -80,7 +80,7 @@ export function LoginShell({ children }: { children: ReactNode }) {
                   width={120}
                   height={120}
                   unoptimized
-                  className="rounded-3xl"
+                  className="rounded-2xl"
                 />
               </div>
             ) : (

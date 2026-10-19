@@ -420,6 +420,29 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   âm) — dữ liệu gộp 7–9 vào cấp 7 nên chip HSK 8, 9 luôn trống; `/tu-dien?level=8|9` → 308 sang `level=7`; điện
   thoại 1 hàng cuộn ngang. Dữ liệu (phồn thể, âm Hán Việt, nghĩa HSK 4, từ loại): xem `hanni-server/CLAUDE.md`.
 
+### Quy tắc giao diện (làm lại 2026-10-19 — user: "nhiều chỗ UI, UX chưa ưng") — THEO khi làm trang mới
+Soi 28 trang × 390/1440 trước khi sửa; lỗi chính: đầu trang dạng thẻ to chiếm màn đầu điện thoại, đỏ ở khắp nơi, chữ xám 10–11px,
+mọi khối là thẻ trắng + ô biểu tượng hồng, nút trợ lý nổi đè nội dung, trang Tiến độ mở bằng "0% · 0 từ đã thuộc".
+- **Màu**: đỏ (`primary`) CHỈ cho nút chính, nút ghi âm, bài đang học, liên kết. Mục ĐANG CHỌN (chip cấp HSK, tab từ điển, bộ lọc,
+  `SelectionGroup`, `.levels`) = màu chữ đậm `bg-foreground text-background`. Nhãn nhỏ `.eyebrow` xám. `.icon-tile` + biểu tượng
+  đầu mục tông `primary` trung tính (tông good/accent/lavender giữ màu nhận diện). **Âm Hán Việt luôn `text-hanviet`** (vàng đồng
+  `--hanviet` #946311 / tối #e3b25c, ≥4,6:1) — "chữ ký" của Hanni; hộp Hán Việt `bg-hanviet/5 border-hanviet/20`. `--muted` đổi
+  #727b8b → #646c7b (cũ chỉ 3,8:1 trên nền xám — dưới chuẩn chữ nhỏ 4,5:1; đo bằng công thức độ tương phản WCAG).
+- **Chữ**: nhỏ nhất 12px (`text-xs`); chỉ số đếm trong huy hiệu tròn 16px và chữ trục biểu đồ (`activity-bars`) được nhỏ hơn.
+- **Đầu trang**: `PageHeading` không còn khung — biểu tượng 48px (điện thoại 40px) + tiêu đề + 1 câu mô tả (điện thoại tối đa 2
+  dòng, ẩn nhãn nhỏ) + nút nhỏ; `TourButton` trên điện thoại chỉ còn biểu tượng. Mô tả là 1 câu NÓI ĐƯỢC TRANG LÀM GÌ, không phải câu
+  dẫn dắt ("Một mục tiêu vừa sức, một thói quen bền lâu" → "Mục tiêu mỗi ngày, giờ nhắc học, cách xếp lịch ôn").
+- **Bo góc**: thẻ/khối lớn 16px (`rounded-2xl`, `--radius-card`/`--radius-section` = 16px), ô bên trong + nút 12px, chip tròn.
+  Không dùng `rounded-3xl`.
+- **Nút trợ lý AI** (`assistant-widget.tsx` `useTuckOnScroll`): điện thoại 48px, tự lùi xuống khi cuộn xuống, hiện lại khi cuộn lên.
+- **Tiến độ**: đầu trang là "Vốn từ — N từ đã học · M từ đã thuộc" + thanh của CẤP đang học (10/300 nhích từ ngày đầu); "Sắp quên"
+  đổi "Ôn trong 24 giờ" (đúng định nghĩa server: đến hạn trong 24 giờ tới); gợi ý chỉ giục ôn khi có từ ĐẾN HẠN thật.
+- **Huy hiệu**: lưới huy chương tròn (`Medal`: màu theo nhóm — chuỗi đỏ, lượt ôn tím, số từ xanh, cấp vàng; số mốc ở giữa; chưa
+  mở = xám + vòng tiến độ), 2–5 cột; danh hiệu xuống dưới lưới. Điện thoại 8.262px → ~2.500px.
+- Hero `/thi-thu-hsk`, `/phien-am` trên điện thoại còn 1 câu (phần giải thích dài chỉ hiện từ `sm`) để màn đầu thấy danh sách.
+Kiểm tra sau mỗi lần sửa giao diện: `clip-scan` (phần tử bị CẮT bên phải dù trang không cuộn ngang — lỗi hero trang chủ 463px trên
+màn 390 do lưới thiếu `grid-cols-1`) + chụp 390/1440 so trước/sau.
+
 ### Đợt tham khảo Hanzii + Hanbeego lần 2 (2026-10-19 — user: "tham khảo kỹ 2 web kia, xem còn cần chỉnh gì")
 Chụp + trích dàn ý 19 trang khách xem được (Hanbeego: dashboard, người mới, giáo trình, bài tập, luyện tập, từ vựng chủ đề, nghe,
 nói, trò chơi, truyện song ngữ, đánh giá trình độ, xếp hạng, công cụ; Hanzii: học tập/Bài học AI, thi thử, chủ đề, dịch) và chơi

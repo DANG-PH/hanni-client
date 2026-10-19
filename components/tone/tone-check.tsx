@@ -139,7 +139,7 @@ function ToneChart({ result, labels }: { result: Result; labels: string[] }) {
           </span>
         ))}
       </div>
-      <figcaption className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] text-muted">
+      <figcaption className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted">
         <span className="inline-flex items-center gap-1.5">
           <svg width="22" height="6" aria-hidden="true"><line x1="1" x2="21" y1="3" y2="3" stroke="var(--muted)" strokeWidth="2.5" strokeDasharray="6 5" /></svg>
           {result.hasNative ? "Giọng chuẩn" : "Hình mẫu của thanh"}
@@ -412,7 +412,7 @@ export function ToneCheck({
         </div>
       )}
       {phase === "idle" && !result && (
-        <p className={`mt-1.5 text-[11px] text-muted ${align === "center" ? "text-center" : ""}`}>Giọng bạn được phân tích ngay trên máy, không gửi đi đâu.</p>
+        <p className={`mt-1.5 text-xs text-muted ${align === "center" ? "text-center" : ""}`}>Giọng bạn được phân tích ngay trên máy, không gửi đi đâu.</p>
       )}
     </div>
   );

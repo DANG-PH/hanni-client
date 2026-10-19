@@ -202,7 +202,7 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[170px_minmax(0,1fr)_320px] lg:items-start">
         <nav aria-label="Mục lục" className="sticky top-24 hidden xl:block">
-          <p className="mb-2 px-3 text-[11px] font-bold tracking-wider text-muted uppercase">Mục lục</p>
+          <p className="mb-2 px-3 text-xs font-bold tracking-wider text-muted uppercase">Mục lục</p>
           <ul className="space-y-0.5 border-l-2 border-border">
             {toc.map((t) => (
               <li key={t.id}>
@@ -212,7 +212,7 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
               </li>
             ))}
           </ul>
-          <p className="mt-4 px-3 text-[11px] leading-5 text-muted">
+          <p className="mt-4 px-3 text-xs leading-5 text-muted">
             <Link href="/tu-dien" className="hover:text-primary">
               Từ điển
             </Link>{" "}
@@ -237,7 +237,7 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
                   </h1>
                   <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-lg">
                     <span className="text-foreground/90">[{main.pinyin}]</span>
-                    {main.hanViet && <span className="font-bold tracking-wide text-primary uppercase">[{main.hanViet}]</span>}
+                    {main.hanViet && <span className="font-bold tracking-wide text-hanviet uppercase">[{main.hanViet}]</span>}
                   </p>
                 </div>
                 {main.audioUrl && (
@@ -281,8 +281,8 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
                     {wi > 0 && (
                       <p className="mb-2 flex items-center gap-2 text-sm">
                         <span className="font-semibold">Cách đọc khác:</span> {w.pinyin}
-                        {w.hanViet && <b className="text-primary uppercase">{w.hanViet}</b>}
-                        <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-muted">{hskLabel(w.hskLevel)}</span>
+                        {w.hanViet && <b className="text-hanviet uppercase">{w.hanViet}</b>}
+                        <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">{hskLabel(w.hskLevel)}</span>
                         {w.audioUrl && <AudioButton src={w.audioUrl} size={15} />}
                       </p>
                     )}
@@ -334,7 +334,7 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
                         {c.char}
                       </span>
                       <span className="min-w-0">
-                        <span className="block text-sm font-bold uppercase">{c.hanViet ?? "—"}</span>
+                        <span className="block text-sm font-bold text-hanviet uppercase">{c.hanViet ?? "—"}</span>
                         <span className="block max-w-36 truncate text-xs text-muted">{c.meaningVi?.split(";")[0] ?? "không đứng riêng"}</span>
                       </span>
                     </Link>
@@ -343,15 +343,15 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
                 {main.hanViet && (
                   <>
                     <Icon name="arrow" size={16} className="text-muted" />
-                    <span className="rounded-xl bg-primary/10 px-3 py-2 text-sm font-bold text-primary uppercase">{main.hanViet}</span>
+                    <span className="rounded-xl bg-hanviet/10 px-3 py-2 text-sm font-bold text-hanviet uppercase">{main.hanViet}</span>
                   </>
                 )}
               </div>
             ) : main.hanViet && compounds.some((c) => c.hanViet) ? (
               // Từ 1 chữ: âm Hán Việt của chữ này đã có sẵn trong những từ ghép người Việt hay gặp.
               <p className="text-sm leading-7">
-                Âm Hán Việt <b className="text-primary uppercase">{main.hanViet}</b> — cũng là chữ{" "}
-                <b className="uppercase">{main.hanViet}</b> trong{" "}
+                Âm Hán Việt <b className="text-hanviet uppercase">{main.hanViet}</b> — cũng là chữ{" "}
+                <b className="text-hanviet uppercase">{main.hanViet}</b> trong{" "}
                 {compounds
                   .filter((c) => c.hanViet)
                   .slice(0, 4)
@@ -362,7 +362,7 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
                         <span lang="zh" className="hanzi text-base">
                           {c.simplified}
                         </span>{" "}
-                        <span className="font-semibold">{c.hanViet}</span>
+                        <span className="font-semibold text-hanviet">{c.hanViet}</span>
                       </Link>
                     </span>
                   ))}
@@ -387,7 +387,7 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
                     </span>
                     <span className="text-sm">
                       {m.pinyin}
-                      {m.hanViet && <span className="ml-1.5 text-xs font-bold text-muted uppercase">{m.hanViet}</span>}
+                      {m.hanViet && <span className="ml-1.5 text-xs font-bold text-hanviet uppercase">{m.hanViet}</span>}
                     </span>
                   </Link>
                 ))}
@@ -417,7 +417,7 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
                         <Highlight text={c.simplified} word={Array.from(main.simplified)[0]} />
                       </span>
                       <span className="min-w-0">
-                        {c.hanViet && <span className="block text-xs font-bold text-primary uppercase">{c.hanViet}</span>}
+                        {c.hanViet && <span className="block text-xs font-bold text-hanviet uppercase">{c.hanViet}</span>}
                         <span className="block truncate text-sm">{c.meaningVi?.split(";")[0]}</span>
                       </span>
                     </Link>
@@ -447,9 +447,9 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
                       <span lang="zh" className="hanzi block text-lg text-primary">
                         {r.simplified}
                       </span>
-                      <span className="block truncate text-[11px] text-muted">
+                      <span className="block truncate text-xs text-muted">
                         {r.pinyin}
-                        {r.hanViet && <span className="ml-1 font-bold uppercase">{r.hanViet}</span>}
+                        {r.hanViet && <span className="ml-1 font-bold text-hanviet uppercase">{r.hanViet}</span>}
                       </span>
                       <span className="block truncate text-xs">{r.meaningVi?.split(";")[0]}</span>
                     </Link>

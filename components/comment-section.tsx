@@ -54,7 +54,7 @@ function CommentForm({
         {value.length > 0 && (
           <span
             aria-live="polite"
-            className={`mr-auto text-[11px] tabular-nums ${value.length >= 2000 ? "text-danger" : value.length >= 1800 ? "text-warn" : "text-muted"}`}
+            className={`mr-auto text-xs tabular-nums ${value.length >= 2000 ? "text-danger" : value.length >= 1800 ? "text-warn" : "text-muted"}`}
           >
             {value.length.toLocaleString("vi-VN")}/2.000 ký tự
           </span>

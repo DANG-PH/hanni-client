@@ -17,7 +17,7 @@ export default function InstallPage() {
           alt="Logo Hanni"
           width={76}
           height={76}
-          className="mx-auto rounded-3xl"
+          className="mx-auto rounded-2xl"
         />
         <p className="eyebrow mt-6">MỞ HANNI, BẮT ĐẦU MỘT NGÀY MỚI</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">

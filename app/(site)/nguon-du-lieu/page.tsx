@@ -31,7 +31,7 @@ function SourceCard({
             {name}
           </a>
         </h2>
-        <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-medium text-muted">
+        <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-medium text-muted">
           {license}
         </span>
       </div>

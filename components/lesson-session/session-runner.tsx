@@ -184,7 +184,7 @@ export function SessionRunner({ session }: { session: LessonSession }) {
           </button>
           <div className="min-w-0 flex-1">
             <ProgressBar value={progress} label="Tiến độ bài học" />
-            <p className="mt-1 truncate text-[11px] text-muted">
+            <p className="mt-1 truncate text-xs text-muted">
               HSK {session.lesson.hskLevel === 7 ? "7–9" : session.lesson.hskLevel}{" "}
               · Bài {session.lesson.orderIndex}: {session.lesson.title}
             </p>
@@ -262,7 +262,7 @@ export function SessionRunner({ session }: { session: LessonSession }) {
           aria-label="Thoát bài học"
           className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
         >
-          <div className="w-full max-w-sm rounded-3xl bg-surface p-6 text-center shadow-2xl">
+          <div className="w-full max-w-sm rounded-2xl bg-surface p-6 text-center shadow-2xl">
             <h2 className="text-lg font-bold">Dừng bài học?</h2>
             <p className="mt-2 text-sm text-muted">
               Còn một chút nữa thôi. Nếu thoát bây giờ, kết quả bài này sẽ chưa được lưu.

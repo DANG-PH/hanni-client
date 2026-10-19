@@ -62,7 +62,7 @@ export function PremiumSection() {
             <div>
               <h2 className="flex items-center gap-2 font-semibold">
                 Hanni Premium
-                <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold text-accent">
+                <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-bold text-accent">
                   ĐANG DÙNG
                 </span>
               </h2>
