@@ -166,8 +166,10 @@ export default function Home() {
   return (
     <div>
       <section className="home-hero overflow-hidden border-b border-border">
-        <div className="page-wrap relative grid items-center gap-4 py-8! md:grid-cols-[1.05fr_1fr] md:py-12!">
-          <div className="reveal-group relative z-10 max-w-xl">
+        {/* `grid-cols-1`: lưới không khai cột thì cột giãn theo bề rộng tối thiểu của ô tra (ô nhập + 4 nút) —
+         * ở 390px cột hero rộng 463px, `overflow-hidden` cắt mất tiêu đề, mô tả, nút tra (2026-10-19). */}
+        <div className="page-wrap relative grid grid-cols-1 items-center gap-4 py-8! md:grid-cols-[1.05fr_1fr] md:py-12!">
+          <div className="reveal-group relative z-10 min-w-0 max-w-xl">
             <span className="section-label">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" /> HỌC
               TIẾNG TRUNG CHO NGƯỜI VIỆT
