@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/lib/auth";
 import { useStudyStats } from "@/lib/hooks";
-import { useMessagesSocket } from "@/lib/messages";
 import { ACCOUNT_LINK, INSTALL_LINK, isNavActive, NAV_MAIN, NAV_MORE, type NavLink } from "@/lib/nav";
 import { usePwaState } from "@/lib/pwa/store";
 import { Icon } from "./icon";
@@ -94,12 +93,6 @@ export function Sidebar({
   const { due } = useNavBadges();
   const pwa = usePwaState();
   const canInstall = pwa.initialized && !pwa.standalone && !pwa.installed;
-  // Sidebar nằm trong app-shell nên luôn mount ở mọi trang — nghe socket ở
-  // đây để badge chưa đọc cập nhật realtime dù đang không mở /messages
-  // (trang /messages tự nghe thêm 1 lần nữa cho đúng hội thoại đang xem,
-  // 2 listener cùng lúc trên 1 event vô hại, socket.io-client tự dedupe kết
-  // nối theo URL).
-  useMessagesSocket(null);
 
   function badge(href: string) {
     const count = href === "/study" ? due : 0;

@@ -6,7 +6,6 @@ import {
   type TourStep,
 } from "@/components/feature-tour";
 import { useRef, useState, type KeyboardEvent } from "react";
-import { FriendsLeaderboard } from "@/components/friends-leaderboard";
 import { Icon } from "@/components/icon";
 import {
   LEADERBOARD_METRICS,
@@ -28,31 +27,30 @@ import type { LeaderboardMetricKey } from "@/lib/types";
 
 const LEADERBOARD_TOUR_STEPS: TourStep[] = [
   {
+    icon: "flame",
+    title: "Chuỗi ngày học",
+    description:
+      "Bảng mặc định: ai học liên tục nhiều ngày nhất. Mỗi ngày học 1 bài hoặc ôn vài từ là giữ được chuỗi.",
+  },
+  {
+    icon: "check",
+    title: "Bài đã xong",
+    description: "Đổi tab để xếp theo số bài học đã hoàn thành trên lộ trình.",
+  },
+  {
     icon: "trophy",
-    title: "Năm cách xếp hạng khác nhau",
+    title: "Giải đấu tuần ở trang chủ",
     description:
-      "Từ đã thuộc, chuỗi hiện tại, chuỗi dài nhất và bài đã xong. Đổi tab để xem bảng tương ứng — mỗi bảng đo một kiểu nỗ lực khác nhau.",
-  },
-  {
-    icon: "user",
-    title: "Theo dõi người học khác",
-    description:
-      'Bấm "Theo dõi" ngay trong bảng. Sau đó ở Tổng quan sẽ có thẻ so chuỗi ngày học riêng trong nhóm bạn theo dõi — dễ bám hơn là so với cả server.',
-  },
-  {
-    icon: "info",
-    title: '"Từ đã thuộc" tăng chậm là bình thường',
-    description:
-      "Một từ chỉ được tính là đã thuộc khi bạn ôn đúng nó đủ lâu (khoảng 21 ngày). Muốn thấy nỗ lực hằng ngày phản ánh ngay thì xem bảng chuỗi ngày học.",
+      "Thi đua theo tuần với người cùng bậc: đầu bảng lên bậc, cuối bảng xuống bậc — xem ở thẻ \"Giải đấu tuần\" trên trang chủ.",
   },
 ];
 
 export default function LeaderboardPage() {
-  // Khách xem được bảng chung (2026-10-18); "So với bạn bè", theo dõi, hạng của mình cần tài khoản.
+  // Khách xem được bảng chung (2026-10-18); hạng của mình cần tài khoản.
   const { user, loading } = useAuth();
   const metrics = useLeaderboardMetrics();
-  // Mặc định "Chuỗi hiện tại": "Từ đã thuộc" cần ôn đều ~21 ngày mới tính nên
-  // đang trống với mọi người — trang mở ra (giờ cả khách xem) là một bảng rỗng.
+  // Chỉ còn "Chuỗi hiện tại" (mặc định) + "Bài đã xong" (2026-10-19): "Từ đã thuộc" cần ôn đều ~21 ngày
+  // mới tính nên trống với mọi người, "Chuỗi dài nhất" trùng ý "Chuỗi hiện tại" (`LEADERBOARD_METRICS`).
   const [selectedMetric, setMetric] = useState<LeaderboardMetricKey>("streak");
   const [focusedMetric, setFocusedMetric] =
     useState<LeaderboardMetricKey>("streak");
@@ -100,21 +98,15 @@ export default function LeaderboardPage() {
         title="Bảng xếp hạng"
         description="Một chút nỗ lực mỗi ngày. Cùng nhau đi xa hơn trên hành trình học tiếng Trung."
       >
-        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-2 text-xs font-medium text-muted">
-          <Icon name="spark" size={15} className="text-accent" />
-          Mỗi ngày một bước tiến
-        </span>
         <TourButton tourKey="leaderboard" />
       </PageHeading>
-
-      {user && <FriendsLeaderboard />}
 
       <div className="space-y-3">
         <div
           ref={tablist}
           role="tablist"
           aria-label="Tiêu chí xếp hạng"
-          className="grid grid-cols-2 gap-1.5 rounded-2xl border border-border bg-surface-2/70 p-1.5 sm:grid-cols-4"
+          className="grid grid-cols-2 gap-1.5 rounded-2xl border border-border bg-surface-2/70 p-1.5"
         >
           {tabs.map((tab, index) => (
             <button
@@ -192,22 +184,7 @@ export default function LeaderboardPage() {
               ) : (
                 <>
                   <LeaderboardOverview board={board.data} user={user} />
-                  <LeaderboardRankings
-                    board={board.data}
-                    onFollowChange={(userId, following) =>
-                      void board.mutate(
-                        {
-                          ...board.data!,
-                          rows: board.data!.rows.map((row) =>
-                            row.userId === userId
-                              ? { ...row, isFollowing: following }
-                              : row,
-                          ),
-                        },
-                        { revalidate: false },
-                      )
-                    }
-                  />
+                  <LeaderboardRankings board={board.data} />
                 </>
               )}
             </>

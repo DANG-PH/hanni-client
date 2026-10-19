@@ -9,7 +9,6 @@ import { pageLabel } from "@/lib/nav";
 import { BottomNav } from "./bottom-nav";
 import { Brand, Sidebar, useSidebarCollapsed } from "./sidebar";
 import { AssistantWidget } from "./assistant-widget";
-import { MessagesButton } from "./messages-button";
 import { NotificationBell } from "./notification-bell";
 import { StreakCelebration } from "./streak-celebration";
 import { ThemeToggle } from "./theme-toggle";
@@ -113,7 +112,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                 )}
               </Link>
             )}
-            {user && <MessagesButton />}
             {user && <NotificationBell />}
             <ThemeToggle />
             {user ? (

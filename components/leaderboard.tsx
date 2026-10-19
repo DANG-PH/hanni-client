@@ -2,11 +2,8 @@
 
 import Link from "next/link";
 import { Avatar } from "@/components/avatar";
-import { FollowButton } from "@/components/follow-button";
 import { Icon, type IconName } from "@/components/icon";
-import { MessageIconButton } from "@/components/message-icon-button";
 import { LinkButton, SectionHeading } from "@/components/ui";
-import { useAuth } from "@/lib/auth";
 import type {
   Leaderboard,
   LeaderboardMetric,
@@ -23,18 +20,6 @@ export const LEADERBOARD_METRICS: (LeaderboardMetric & {
   action: string;
 })[] = [
   {
-    key: "learned",
-    label: "Từ đã thuộc",
-    unit: "từ",
-    icon: "book",
-    description:
-      "Xếp hạng theo số từ vựng đã thuộc — một từ chỉ tính khi ôn đều đạt chu kỳ ≥ 21 ngày, nên cần vài tuần ôn đặn mới thấy số tăng.",
-    encouragement:
-      "Mỗi từ ghi nhớ là một bước tiến. Cùng ôn thêm một chút nhé!",
-    href: "/study",
-    action: "Ôn từ vựng",
-  },
-  {
     key: "streak",
     label: "Chuỗi hiện tại",
     unit: "ngày",
@@ -42,16 +27,6 @@ export const LEADERBOARD_METRICS: (LeaderboardMetric & {
     description: "Xếp hạng theo chuỗi ngày học liên tiếp hiện tại.",
     encouragement:
       "Một chút hôm nay, thêm một ngày bền bỉ. Giữ nhịp học của bạn nhé!",
-    href: "/study",
-    action: "Học tiếp hôm nay",
-  },
-  {
-    key: "longest",
-    label: "Chuỗi dài nhất",
-    unit: "ngày",
-    icon: "trophy",
-    description: "Xếp hạng theo chuỗi ngày học dài nhất từng đạt được.",
-    encouragement: "Đi từng bước nhỏ để chinh phục kỷ lục của chính mình.",
     href: "/study",
     action: "Học tiếp hôm nay",
   },
@@ -230,15 +205,8 @@ export function LeaderboardOverview({
   );
 }
 
-export function LeaderboardRankings({
-  board,
-  onFollowChange,
-}: {
-  board: Leaderboard;
-  onFollowChange: (userId: string, following: boolean) => void;
-}) {
+export function LeaderboardRankings({ board }: { board: Leaderboard }) {
   const limited = board.rows.length < board.me.totalRanked;
-  const { user } = useAuth();
 
   return (
     <section className="panel overflow-hidden" aria-labelledby="rankings-title">
@@ -316,19 +284,6 @@ export function LeaderboardRankings({
                         <Icon name="flame" size={12} className="text-primary" />
                         Chuỗi {number(row.currentStreak)} ngày
                       </span>
-                    )}
-                    {user && !row.isMe && (
-                      <div className="mt-1.5 flex items-center gap-1.5">
-                        <FollowButton
-                          userId={row.userId}
-                          following={row.isFollowing}
-                          onChange={(following) =>
-                            onFollowChange(row.userId, following)
-                          }
-                          compact
-                        />
-                        <MessageIconButton userId={row.userId} />
-                      </div>
                     )}
                   </div>
                 </div>

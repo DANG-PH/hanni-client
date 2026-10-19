@@ -12,7 +12,6 @@ import {
 } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { TitlePicker } from "@/components/title-shop";
-import { SendToFriendButton } from "@/components/send-to-friend";
 import { ShareButton } from "@/components/share-button";
 import { useRequireAuth } from "@/lib/auth";
 import { useAchievements } from "@/lib/hooks";
@@ -220,10 +219,6 @@ export default function AchievementsPage() {
                       </div>
                       {a.unlocked && (
                         <div className="mt-3 flex justify-end gap-2">
-                          <SendToFriendButton
-                            compact
-                            text={`🏆 Mình vừa mở khóa huy hiệu "${a.nameVi}" trên Hanni!`}
-                          />
                           <ShareButton
                             compact
                             title="Huy hiệu Hanni"

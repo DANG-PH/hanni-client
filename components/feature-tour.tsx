@@ -11,27 +11,11 @@ export interface TourStep {
   description: string;
 }
 
-function seen(key: string): boolean {
-  try {
-    return localStorage.getItem(`hanni-tour-${key}`) === "1";
-  } catch {
-    return false;
-  }
-}
-
-function markSeen(key: string) {
-  try {
-    localStorage.setItem(`hanni-tour-${key}`, "1");
-  } catch {
-    /* trình duyệt có thể chặn bộ nhớ cục bộ */
-  }
-}
-
 /**
  * Popup hướng dẫn từng bước (kiểu "product tour") giới thiệu tác dụng của
- * các tính năng chính trên 1 trang — chỉ hiện 1 LẦN cho mỗi `tourKey`, đánh
- * dấu đã xem qua localStorage (cùng cách install-prompt.tsx nhớ đã tắt).
- * Bỏ qua bất cứ lúc nào cũng được, không ép xem hết.
+ * các tính năng chính trên 1 trang. CHỈ mở khi bấm nút "Hướng dẫn"
+ * (`TourButton`) — trước 2026-10-19 tự bật ở lần đầu vào mỗi trang, 6 trang
+ * là 6 popup chắn màn hình (nhiễu nhất là lúc demo / người mới đi một vòng).
  */
 export function FeatureTour({
   tourKey,
@@ -40,9 +24,7 @@ export function FeatureTour({
   tourKey: string;
   steps: TourStep[];
 }) {
-  const [hidden, setHidden] = useState(
-    () => typeof window === "undefined" || seen(tourKey),
-  );
+  const [hidden, setHidden] = useState(true);
   const [index, setIndex] = useState(0);
 
   // Mở lại khi người dùng bấm nút "Hướng dẫn" ở tiêu đề trang.
@@ -59,7 +41,6 @@ export function FeatureTour({
   if (hidden || steps.length === 0) return null;
 
   function close() {
-    markSeen(tourKey);
     setHidden(true);
   }
 

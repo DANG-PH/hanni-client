@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CommentSection } from "@/components/comment-section";
 import { NextStep } from "@/components/next-step";
 import {
   FeatureTour,
@@ -14,7 +13,6 @@ import { Icon } from "@/components/icon";
 import { MobileVideoTranscript } from "@/components/mobile-video-transcript";
 import { TranscriptLine } from "@/components/transcript-line";
 import { Button, ErrorNote, Spinner } from "@/components/ui";
-import { VideoLikeButton } from "@/components/video-like-button";
 import { YoutubePlayer } from "@/components/youtube-player";
 import styles from "@/components/video-learning.module.css";
 import { api } from "@/lib/api";
@@ -68,19 +66,14 @@ const WATCH_TOUR_STEPS: TourStep[] = [
     description:
       "Khi cuộn xuống đọc bản chép trên điện thoại, video sẽ dán lại ngay dưới thanh menu để bạn vừa nghe vừa đọc cùng lúc.",
   },
-  {
-    icon: "message",
-    title: "Bình luận & thích video",
-    description:
-      "Thích video hoặc để lại bình luận, trả lời bình luận của người khác ngay bên dưới — có thông báo khi ai đó phản hồi bạn.",
-  },
 ];
 
 export default function WatchDetailPage() {
-  // Khách xem được video + bản chép (2026-10-18); thích, bình luận, tiến độ cần tài khoản.
+  // Khách xem được video + bản chép (2026-10-18); lưu từ, tiến độ cần tài khoản. Thích + bình luận đã ẩn
+  // (2026-10-19 — mục bình luận trống, gọn trang trước buổi thuyết trình; code + dữ liệu giữ nguyên).
   const { user, loading } = useAuth();
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading, error, mutate } = useVideo(id);
+  const { data, isLoading, error } = useVideo(id);
 
   const [showPinyin, setShowPinyin] = useState(true);
   const [showTrans, setShowTrans] = useState(true);
@@ -285,28 +278,6 @@ export default function WatchDetailPage() {
              * bấm từ trong bản chép) — cho mở lại hướng dẫn thay vì chỉ hiện
              * đúng một lần rồi thôi. */}
             <TourButton tourKey="watch-detail" />
-            {user ? (
-              <VideoLikeButton
-                videoId={id}
-                liked={data.likedByMe}
-                count={data.likeCount}
-                onChange={(likedByMe, likeCount) =>
-                  void mutate(
-                    { ...data, likedByMe, likeCount },
-                    { revalidate: false },
-                  )
-                }
-              />
-            ) : (
-              <Link
-                href={`/register?next=/watch/${id}`}
-                title="Tạo tài khoản để thích video"
-                className="motion-button flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1.5 text-sm font-semibold text-muted hover:text-foreground"
-              >
-                <Icon name="heart" size={16} />
-                {data.likeCount}
-              </Link>
-            )}
           </div>
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted">
@@ -323,10 +294,6 @@ export default function WatchDetailPage() {
           {data.author && (
             <span className="hidden lg:inline">· {data.author}</span>
           )}
-          <span className="hidden items-center gap-1 lg:flex">
-            <Icon name="message" size={13} />
-            {data.commentCount} bình luận
-          </span>
           <span
             className={`rounded-md px-2 py-0.5 text-xs ${
               realSync ? "bg-good/10 text-good" : "bg-surface-2 text-muted"
@@ -495,14 +462,6 @@ export default function WatchDetailPage() {
           { href: "/study", label: "Ôn tập flashcard", icon: "cards" as const },
           { href: "/watch", label: "Xem video khác", icon: "play" as const },
         ]}
-      />
-
-      <CommentSection
-        videoId={id}
-        commentCount={data.commentCount}
-        onCommentCountChange={(commentCount) =>
-          void mutate({ ...data, commentCount }, { revalidate: false })
-        }
       />
 
       {wordPopup?.word && (

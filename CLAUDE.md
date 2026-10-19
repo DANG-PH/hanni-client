@@ -420,6 +420,22 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   âm) — dữ liệu gộp 7–9 vào cấp 7 nên chip HSK 8, 9 luôn trống; `/tu-dien?level=8|9` → 308 sang `level=7`; điện
   thoại 1 hàng cuộn ngang. Dữ liệu (phồn thể, âm Hán Việt, nghĩa HSK 4, từ loại): xem `hanni-server/CLAUDE.md`.
 
+### Gọn lại trước buổi thuyết trình (2026-10-19 — user: "sợ quá nhiều tính năng gây nhiễu… cần tính năng core, chắc chắn người dùng dùng")
+User chọn ẩn 4 nhóm (chỉ ẩn LỐI VÀO — code trang/component + dữ liệu giữ nguyên, mở lại được):
+- **Nhắn tin 1-1 + theo dõi**: bỏ nút tin nhắn ở thanh trên (`MessagesButton`), "Theo dõi"/nhắn tin ở từng dòng bảng xếp
+  hạng, thẻ "So với bạn bè", nút Nhắn tin/Theo dõi/"Gửi cho bạn"/mã người dùng + tab người theo dõi ở `/u/[id]`, "Gửi cho bạn" ở
+  `/achievements`; `/messages`, `/connections` chuyển về `/learn` bằng redirect TẠM (307 — 308 bị trình duyệt nhớ luôn, mở lại
+  sẽ khó); trợ lý AI bỏ trang `messages` khỏi tool điều hướng (server). Lý do: Duolingo/Hanzii/Hanbeego/Migii đều không có nhắn
+  tin; ~6 người dùng thật nên hộp thư, danh sách theo dõi trống — đúng thứ người xem demo bấm vào.
+- **Bình luận + thích video**: bỏ ở `/watch/[id]` (nút tim, số bình luận, `CommentSection`, bước hướng dẫn) và số tim ở thẻ video.
+- **Popup hướng dẫn tự bật**: `FeatureTour` chỉ mở khi bấm "Hướng dẫn" (`TourButton`) — trước đó 6 trang tự bật popup lần
+  đầu vào. Trang có `FeatureTour` PHẢI có `TourButton`, không thì hướng dẫn thành không mở được.
+- **Bảng xếp hạng 2 tiêu chí**: "Chuỗi hiện tại" + "Bài đã xong" (`LEADERBOARD_METRICS`); bỏ "Từ đã thuộc" (cần ~21 ngày, trống
+  với mọi người) và "Chuỗi dài nhất" (trùng ý). Giải đấu tuần ở trang chủ giữ nguyên.
+Mở lại: hoàn tác commit "gọn lại trước buổi thuyết trình" (các component `messages-button`, `follow-button`,
+`message-icon-button`, `send-to-friend`, `friends-leaderboard`, `connections-panel`, `comment-section`, `video-like-button`
+vẫn còn, chỉ không ai gắn).
+
 ### Từ điển làm lại theo Hanzii (2026-10-19 — user: "phần từ điển đang thấy hơi đần, cần làm lại", "bỏ imageUrl cũng được")
 Xem thật Hanzii/Hanbeego (vai khách) trước khi làm. `/tu-dien` có 3 chế độ, đều Server Component: **không tham số** = trang chủ
 tra cứu (ô tra tròn lớn + 4 tab, lưới 3 cột: từ khoá phổ biến, tra gần đây, chủ đề HSK 1 | mẹo Hán Việt, tra theo cấp, từ hôm

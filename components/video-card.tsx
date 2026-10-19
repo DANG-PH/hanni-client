@@ -58,25 +58,11 @@ export function VideoCard({ video, index = 0 }: { video: V; index?: number }) {
             {video.titleZh}
           </p>
         )}
-        {(tienDo > 0 || video.likeCount > 0) && (
+        {tienDo > 0 && (
           <div className={styles.videoFoot}>
-            {tienDo > 0 && (
-              <span>
-                {tienDo >= 100
-                  ? "Đã hoàn thành"
-                  : `${Math.round(tienDo)}% đã học`}
-              </span>
-            )}
-            {video.likeCount > 0 && (
-              <span>
-                <Icon
-                  name="heart"
-                  size={12}
-                  fill={video.likedByMe ? "currentColor" : "none"}
-                />{" "}
-                {video.likeCount}
-              </span>
-            )}
+            <span>
+              {tienDo >= 100 ? "Đã hoàn thành" : `${Math.round(tienDo)}% đã học`}
+            </span>
           </div>
         )}
       </div>

@@ -22,8 +22,10 @@ const nextConfig: NextConfig = {
       // từng dạng bài + quiz cuối buổi ôn, tên lại dễ nhầm với đề HSK thật.
       { source: "/exams", destination: "/thi-thu-hsk", permanent: true },
       { source: "/exams/results", destination: "/thi-thu-hsk", permanent: true },
-      // Kết nối đã là 1 tab của Tin nhắn; chuyển hướng ở server thay vì trang chờ.
-      { source: "/connections", destination: "/messages?tab=connect", permanent: true },
+      // Nhắn tin 1-1 + kết nối đã ẩn (2026-10-19 — app học khác không có nhắn tin, ít người dùng nên hộp thư
+      // trống). TẠM THỜI (307) để mở lại được: 308 bị trình duyệt nhớ luôn. Code trang + dữ liệu giữ nguyên.
+      { source: "/messages", destination: "/learn", permanent: false },
+      { source: "/connections", destination: "/learn", permanent: false },
       // Tự thêm video đã bỏ (2026-10-17); không có dòng này thì /watch/add rơi vào /watch/[id].
       { source: "/watch/add", destination: "/watch", permanent: true },
     ];
