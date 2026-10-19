@@ -210,7 +210,7 @@ export default function Home() {
               <p className="mb-2 px-1 text-xs font-semibold text-muted">
                 Tra từ: Hán tự, pinyin, tiếng Việt hoặc cả câu
               </p>
-              <DictionarySearch showScan />
+              <DictionarySearch showTabs={false} />
               <div className="mt-2.5 flex flex-wrap gap-1.5 px-1">
                 {QUICK_SEARCHES.map((q) => (
                   <Link

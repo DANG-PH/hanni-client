@@ -416,6 +416,20 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   âm) — dữ liệu gộp 7–9 vào cấp 7 nên chip HSK 8, 9 luôn trống; `/tu-dien?level=8|9` → 308 sang `level=7`; điện
   thoại 1 hàng cuộn ngang. Dữ liệu (phồn thể, âm Hán Việt, nghĩa HSK 4, từ loại): xem `hanni-server/CLAUDE.md`.
 
+### Từ điển làm lại theo Hanzii (2026-10-19 — user: "phần từ điển đang thấy hơi đần, cần làm lại", "bỏ imageUrl cũng được")
+Xem thật Hanzii/Hanbeego (vai khách) trước khi làm. `/tu-dien` có 3 chế độ, đều Server Component: **không tham số** = trang chủ
+tra cứu (ô tra tròn lớn + 4 tab, lưới 3 cột: từ khoá phổ biến, tra gần đây, chủ đề HSK 1 | mẹo Hán Việt, tra theo cấp, từ hôm
+nay | công cụ tra cứu + mời học bài 1); **`?q=`** (+ `tab=han-tu|vi-du|ngu-phap`) = kết quả theo tab (Từ vựng: thẻ khớp chính
+xác + danh sách; Hán tự: từng chữ trong ô tra — hoạt hình thứ tự nét `StrokeAnimation`, bộ thủ, số nét, âm Hán Việt, từ chứa
+chữ, `GET /dictionary/char/:c`; Ví dụ: `GET /dictionary/examples`; Ngữ pháp: `GET /grammar/search`); **`?level=N`** = danh sách từ
+theo cấp (trước là trang mặc định). Trang từ `/tu-dien/[slug]` 3 cột (mục lục dính | nội dung | khung Hán tự `GlyphPanel`: tab
+từng chữ + phồn thể, hoạt hình nét bộ thủ tô đỏ, bộ thủ tên Hán Việt, số nét, Tập viết), đầu mục có âm Hán Việt to + chip
+chủ đề/"Trùng nghĩa tiếng Việt", mục Nghĩa · Nhớ bằng Hán Việt (từ 1 chữ: chữ đó trong các từ ghép, vd 书 thư → 读书 độc thư) ·
+Lượng từ · Từ ghép · Cùng chủ đề · Luyện tập (`WordPractice`: chấm thanh / đặt câu AI / viết) · Video. **Bỏ ảnh minh hoạ** khỏi
+từ điển (Hanzii không có; ảnh lấy tự động hay lạc nghĩa). Bẫy: `dictHref`/`DICT_TABS` phải nằm ở file THƯỜNG (`lib/dictionary.ts`)
+— để trong file "use client" thì trang Server Component gọi là lỗi 500 "Attempted to call dictHref() from the server"; lưới
+không khai `grid-cols-1` lại tràn ngang ở 390px (danh sách cấp rộng 957px).
+
 ### Trang chủ khách làm lại (audit S13/G4, 2026-10-19 — user: "tham khảo các web khác làm như thế nào")
 Xem thật trang chủ Hanzii, Hanbeego, Duolingo, SuperChinese, Migii (khổ 1440 + 390, như khách) trước khi làm:
 Hanzii = công cụ trước tiên (ô tra cứu to đầu trang + "Từ khóa hot", trang chỉ cao ~1.600px); Hanbeego = nội dung
