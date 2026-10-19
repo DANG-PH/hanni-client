@@ -41,7 +41,7 @@ export const PRACTICE_SECTIONS: { title: string; items: PracticeLink[] }[] = [
   {
     title: "Luyện 4 kỹ năng",
     items: [
-      { href: "/listening", label: "Luyện nghe", description: "Nghe từ của bài đang học, chọn đúng nghĩa", icon: "headphones" },
+      { href: "/listening", label: "Luyện nghe", description: "Nghe từ của bài đang học, gõ lại bằng pinyin", icon: "headphones" },
       { href: "/pronunciation", label: "Luyện phát âm", description: "Đọc to, Hanni chấm xem bạn nói đúng chưa", icon: "mic" },
       { href: "/roleplay", label: "Luyện nói với AI", description: "Gọi món, hỏi đường, mua sắm — nói như thật", icon: "message" },
       { href: "/writing", label: "Luyện viết chữ Hán", description: "Xem thứ tự nét rồi tự tô từng chữ", icon: "pencil" },

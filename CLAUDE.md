@@ -420,6 +420,24 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   âm) — dữ liệu gộp 7–9 vào cấp 7 nên chip HSK 8, 9 luôn trống; `/tu-dien?level=8|9` → 308 sang `level=7`; điện
   thoại 1 hàng cuộn ngang. Dữ liệu (phồn thể, âm Hán Việt, nghĩa HSK 4, từ loại): xem `hanni-server/CLAUDE.md`.
 
+### Đợt tham khảo Hanzii + Hanbeego lần 2 (2026-10-19 — user: "tham khảo kỹ 2 web kia, xem còn cần chỉnh gì")
+Chụp + trích dàn ý 19 trang khách xem được (Hanbeego: dashboard, người mới, giáo trình, bài tập, luyện tập, từ vựng chủ đề, nghe,
+nói, trò chơi, truyện song ngữ, đánh giá trình độ, xếp hạng, công cụ; Hanzii: học tập/Bài học AI, thi thử, chủ đề, dịch) và chơi
+trọn bài 1 của Hanni ở vai khách. Phiên học bài của Hanni đã ngang họ; sửa 3 chỗ:
+- **Luyện nghe nhận pinyin** (`lib/pinyin-answer.ts` `checkPinyin`): trước đó BẮT gõ đúng chữ Hán — người chưa cài bàn phím
+  tiếng Trung (đa số người mới, nhất là trên điện thoại) không làm được; Hanbeego có "Nghe gõ pinyin". Nhận dấu thanh hoặc số
+  thanh, âm tiết thanh nhẹ không bắt gõ thanh, nhận thanh đã biến điệu (ní hǎo, bú shì, yí gè), 儿 hoá gõ liền ("nar3"); đúng âm
+  mà thiếu/sai thanh → "Đúng âm rồi…" (không tính đúng). Dò trên 10.958 từ: gõ đúng pinyin hiển thị của từ là được nhận, trừ 6
+  mục đại cương có phần trong ngoặc ("méi(yǒu)"). Gợi ý đổi từ "xem pinyin" (giờ là đáp án) sang số âm tiết + nghĩa. Mô tả ở
+  `/luyen-tap` từng ghi "chọn đúng nghĩa" — sai với trang thật, đã sửa.
+- **Dải tuần T2–CN ở thẻ chuỗi ngày** (`components/learn/today-card.tsx` `WeekStrip`): Hanbeego, Hanzii, Duolingo đều có. Hôm
+  nay lấy `activeToday` của server (đã tính giờ cắt ngày), ngày trước lấy `/streak/history?days=7`.
+- **Dán cả câu vào ô tra → phiên âm + âm Hán Việt từng từ ngay** (`Segmented` ở `/tu-dien`, `GET /ai/segment` — KHÔNG gọi AI):
+  trước đó khách dán câu chỉ gặp "Đăng nhập để dùng AI"; Hanbeego có "Convert pinyin". Hàng chữ có pinyin trên + Hán Việt dưới,
+  bấm sang trang từ, danh sách nghĩa bên dưới (điện thoại không có tooltip); khi đã tách được từ thì ẩn hộp "không có từ nào khớp".
+Không làm (đã cân nhắc): truyện song ngữ 117 bài (cần soạn nội dung lớn), trò chơi mới, XP/cấp độ, công cụ dịch tài liệu — thêm
+bề mặt mà không phải lõi, đúng thứ user vừa yêu cầu bớt.
+
 ### Gọn lại trước buổi thuyết trình (2026-10-19 — user: "sợ quá nhiều tính năng gây nhiễu… cần tính năng core, chắc chắn người dùng dùng")
 User chọn ẩn 4 nhóm (chỉ ẩn LỐI VÀO — code trang/component + dữ liệu giữ nguyên, mở lại được):
 - **Nhắn tin 1-1 + theo dõi**: bỏ nút tin nhắn ở thanh trên (`MessagesButton`), "Theo dõi"/nhắn tin ở từng dòng bảng xếp

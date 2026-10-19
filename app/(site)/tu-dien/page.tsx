@@ -348,6 +348,69 @@ interface ExampleHit {
   vi: string | null;
   word: { simplified: string; pinyin: string; hanViet: string | null; hskLevel: number };
 }
+interface SegToken {
+  text: string;
+  simplified: string | null;
+  pinyin: string | null;
+  hanViet: string | null;
+  meaningVi: string | null;
+}
+
+/** Dán cả câu vào ô tra: tách theo từ điển Hanni, mỗi từ có pinyin (trên) + âm Hán Việt (dưới) — không gọi AI,
+ * khách dùng được (như "Convert pinyin" của Hanbeego; Hanzii bắt dịch bằng AI). Dịch + ngữ pháp bằng AI ở dưới. */
+function Segmented({ tokens }: { tokens: SegToken[] }) {
+  const words = [...new Map(tokens.filter((t) => t.simplified).map((t) => [t.simplified, t])).values()];
+  return (
+    <section className="panel p-5 sm:p-6" aria-labelledby="phien-am-cau">
+      <h2 id="phien-am-cau" className="flex items-center gap-2 text-sm font-bold">
+        <Icon name="book" size={16} className="text-primary" /> Phiên âm + âm Hán Việt từng từ
+      </h2>
+      <p className="mt-1 text-xs text-muted">Tách theo từ điển Hanni — bấm một từ để xem đầy đủ.</p>
+      <div className="mt-4 flex flex-wrap items-end gap-x-1 gap-y-3">
+        {tokens.map((t, i) =>
+          t.simplified ? (
+            <Link
+              key={i}
+              href={`/tu-dien/${encodeURIComponent(t.simplified)}`}
+              title={t.meaningVi ?? undefined}
+              className="group flex flex-col items-center rounded-lg px-1.5 py-1 hover:bg-primary/5"
+            >
+              <span className="text-[11px] text-muted">{t.pinyin}</span>
+              <span lang="zh" className="hanzi text-2xl group-hover:text-primary">
+                {t.text}
+              </span>
+              <span className="text-[10px] font-bold tracking-wide text-primary uppercase">{t.hanViet ?? "\u00a0"}</span>
+            </Link>
+          ) : (
+            <span key={i} className="flex flex-col items-center px-0.5 py-1">
+              <span className="text-[11px] text-muted">{t.pinyin ?? "\u00a0"}</span>
+              <span lang="zh" className="hanzi text-2xl">
+                {t.text}
+              </span>
+              <span className="text-[10px]">{"\u00a0"}</span>
+            </span>
+          ),
+        )}
+      </div>
+      {words.length > 0 && (
+        <ul className="mt-4 grid grid-cols-1 gap-x-6 gap-y-1 border-t border-border pt-3 text-sm sm:grid-cols-2">
+          {words.map((w) => (
+            <li key={w.simplified} className="min-w-0 truncate">
+              <Link href={`/tu-dien/${encodeURIComponent(w.simplified!)}`} className="hover:text-primary">
+                <span lang="zh" className="hanzi">
+                  {w.simplified}
+                </span>{" "}
+                <span className="text-muted">{w.pinyin}</span>
+              </Link>{" "}
+              — {w.meaningVi ?? "đang cập nhật"}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 interface GrammarHit {
   slug: string;
   hskLevel: number;
@@ -371,6 +434,11 @@ async function Results({ q, tab, page }: { q: string; tab: DictTab; page: number
 async function WordResults({ q, page }: { q: string; page: number }) {
   const data = await fetchPublic<Paginated<Word>>(`/words?q=${encodeURIComponent(q)}&page=${page}&pageSize=24`, revalidate);
   const items = data?.items ?? [];
+  const offer = offerAnalysis(q, items);
+  const seg =
+    offer && page === 1 && /\p{Script=Han}/u.test(q)
+      ? await getJson<{ tokens: SegToken[] }>(`/ai/segment?q=${encodeURIComponent(q)}`)
+      : null;
   const lower = q.toLowerCase();
   const top = page === 1 ? items[0] : undefined;
   const exact =
@@ -383,7 +451,8 @@ async function WordResults({ q, page }: { q: string; page: number }) {
   const rest = exact ? items.slice(1) : items;
   return (
     <>
-      {offerAnalysis(q, items) && <SentenceAnalysis key={q} text={q} />}
+      {seg && seg.tokens.length > 0 && <Segmented tokens={seg.tokens} />}
+      {offer && <SentenceAnalysis key={q} text={q} />}
       {exact && (
         <article className="panel overflow-hidden">
           <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:p-6">
@@ -408,13 +477,16 @@ async function WordResults({ q, page }: { q: string; page: number }) {
         </article>
       )}
       {items.length === 0 ? (
-        <div className="panel p-6 text-center text-sm text-muted">
-          Không có từ nào khớp &ldquo;{q}&rdquo;. Thử tab{" "}
-          <Link href={dictHref(q, "vi-du")} className="font-semibold text-primary">
-            Ví dụ
-          </Link>{" "}
-          hoặc gõ Hán tự, pinyin, âm Hán Việt.
-        </div>
+        // Dán cả câu: khối phiên âm ở trên đã là kết quả — báo "không khớp" ở đây chỉ gây rối.
+        seg?.tokens.some((t) => t.simplified) ? null : (
+          <div className="panel p-6 text-center text-sm text-muted">
+            Không có từ nào khớp &ldquo;{q}&rdquo;. Thử tab{" "}
+            <Link href={dictHref(q, "vi-du")} className="font-semibold text-primary">
+              Ví dụ
+            </Link>{" "}
+            hoặc gõ Hán tự, pinyin, âm Hán Việt.
+          </div>
+        )
       ) : (
         rest.length > 0 && (
           <section>

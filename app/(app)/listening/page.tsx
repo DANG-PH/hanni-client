@@ -19,6 +19,7 @@ import {
 import { useWordAudio } from "@/components/practice/use-word-audio";
 import { useAuth } from "@/lib/auth";
 import { recordPracticeAttempt, usePracticeStats } from "@/lib/hooks";
+import { checkPinyin, type ListenVerdict } from "@/lib/pinyin-answer";
 import type { Word } from "@/lib/types";
 
 function ListeningLibrary() {
@@ -28,10 +29,10 @@ function ListeningLibrary() {
       key={lessonId ?? "free"}
       skill="listening"
       title="Luyện nghe"
-      description="Nghe một từ, viết lại điều bạn nghe và đối chiếu để nhớ lâu hơn."
+      description="Nghe một từ, gõ lại bằng pinyin hoặc chữ Hán rồi đối chiếu để nhớ lâu hơn."
       startSteps={[
         "Nhấn nút loa để nghe từ — có thể chỉnh tốc độ chậm/nhanh.",
-        "Gõ lại đúng Hán tự bạn nghe được vào ô bên dưới rồi kiểm tra.",
+        "Gõ lại bằng pinyin (vd ni3hao3 hoặc nǐ hǎo) hoặc chữ Hán rồi kiểm tra.",
         "Sai thì xem đáp án và nghĩa, rồi chuyển sang từ tiếp theo.",
       ]}
       lessonId={lessonId}
@@ -52,13 +53,13 @@ export default function ListeningPage() {
 function ListeningSession({ words }: { words: Word[] }) {
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<
-    Record<string, { value: string; correct: boolean }>
+    Record<string, { value: string; verdict: ListenVerdict }>
   >({});
   const stats = usePracticeStats("LISTENING");
   const { user } = useAuth();
   const completed = Object.keys(answers).length;
   const correct = Object.values(answers).filter(
-    (answer) => answer.correct,
+    (answer) => answer.verdict === "right",
   ).length;
   const word = words[index];
 
@@ -81,14 +82,14 @@ function ListeningSession({ words }: { words: Word[] }) {
             key={word.id}
             word={word}
             saved={answers[word.id]}
-            onCheck={(value, isCorrect) => {
+            onCheck={(value, verdict) => {
               setAnswers((current) => ({
                 ...current,
-                [word.id]: { value, correct: isCorrect },
+                [word.id]: { value, verdict },
               }));
               // Khách luyện thử — không có tài khoản để lưu lượt luyện.
               if (user)
-                void recordPracticeAttempt(word.id, "LISTENING", isCorrect).then(
+                void recordPracticeAttempt(word.id, "LISTENING", verdict === "right").then(
                   () => stats.mutate(),
                 );
             }}
@@ -117,7 +118,7 @@ function ListeningSession({ words }: { words: Word[] }) {
         title="Nghe hiệu quả hơn"
         tips={[
           "Nghe lần đầu ở tốc độ thường, tập trung vào âm đầu và thanh điệu.",
-          "Thử nghe chậm hơn nếu cần, sau đó nhập Hán tự bạn nhận ra.",
+          "Thử nghe chậm hơn nếu cần, rồi gõ pinyin kèm thanh (hoặc chữ Hán) bạn nhận ra.",
           "Đối chiếu đáp án rồi đọc lại thành tiếng để ghi nhớ từ.",
         ]}
       >
@@ -202,8 +203,8 @@ function ListeningWord({
   onCheck,
 }: {
   word: Word;
-  saved?: { value: string; correct: boolean };
-  onCheck: (value: string, correct: boolean) => void;
+  saved?: { value: string; verdict: ListenVerdict };
+  onCheck: (value: string, verdict: ListenVerdict) => void;
 }) {
   const [value, setValue] = useState(saved?.value ?? "");
   const [rate, setRate] = useState(1);
@@ -281,15 +282,17 @@ function ListeningWord({
           aria-controls="listening-hint"
           className="min-h-9 text-xs font-medium text-muted hover:text-primary"
         >
-          {hint ? "Ẩn gợi ý" : "Xem gợi ý pinyin"}
+          {hint ? "Ẩn gợi ý" : "Xem gợi ý"}
         </button>
       </div>
+      {/* Gõ pinyin đã là câu trả lời hợp lệ nên gợi ý không đưa pinyin (lộ đáp án) — đưa số âm tiết + nghĩa. */}
       {hint && (
         <p
           id="listening-hint"
-          className="rounded-xl bg-primary/5 px-4 py-3 text-center text-lg font-medium text-primary"
+          className="rounded-xl bg-primary/5 px-4 py-3 text-center text-sm font-medium text-primary"
         >
-          {word.pinyin}
+          {word.pinyinNumeric.trim().split(/\s+/).length} âm tiết · nghĩa:{" "}
+          {(word.meaningVi ?? word.meaningEn ?? "").split(";")[0]}
         </p>
       )}
 
@@ -298,28 +301,30 @@ function ListeningWord({
         onSubmit={(event) => {
           event.preventDefault();
           if (!value.trim() || checked || !audio.hasPlayed) return;
-          const answer = normalize(value);
-          onCheck(
-            value,
-            answer === normalize(word.simplified) ||
-              Boolean(
-                word.traditional && answer === normalize(word.traditional),
-              ),
-          );
+          // Có chữ Hán thì so mặt chữ; không thì chấm như pinyin (người chưa cài bàn phím tiếng Trung).
+          if (/\p{Script=Han}/u.test(value)) {
+            const answer = normalize(value);
+            const same =
+              answer === normalize(word.simplified) ||
+              Boolean(word.traditional && answer === normalize(word.traditional));
+            onCheck(value, same ? "right" : "wrong");
+          } else {
+            onCheck(value, checkPinyin(value, word.simplified, word.pinyinNumeric, word.pinyin));
+          }
         }}
       >
         <label
           htmlFor="listening-answer"
           className="block text-sm font-semibold"
         >
-          Viết Hán tự bạn nghe được
+          Gõ pinyin hoặc chữ Hán bạn nghe được
         </label>
         <input
           id="listening-answer"
           value={value}
           onChange={(event) => setValue(event.target.value)}
           disabled={checked}
-          placeholder="Nhập câu trả lời của bạn…"
+          placeholder="Vd: ni3hao3 · nǐ hǎo · 你好"
           autoComplete="off"
           className="field"
           required
@@ -340,15 +345,17 @@ function ListeningWord({
       {checked && (
         <div
           role="status"
-          className={`rounded-xl border p-5 ${saved.correct ? "border-good/20 bg-good/5" : "border-primary/20 bg-primary/5"}`}
+          className={`rounded-xl border p-5 ${saved.verdict === "right" ? "border-good/20 bg-good/5" : "border-primary/20 bg-primary/5"}`}
         >
           <p
-            className={`flex items-center gap-2 text-sm font-semibold ${saved.correct ? "text-good" : "text-primary"}`}
+            className={`flex items-center gap-2 text-sm font-semibold ${saved.verdict === "right" ? "text-good" : "text-primary"}`}
           >
-            <Icon name={saved.correct ? "check" : "info"} size={18} />
-            {saved.correct
+            <Icon name={saved.verdict === "right" ? "check" : "info"} size={18} />
+            {saved.verdict === "right"
               ? "Chính xác, bạn nghe rất tốt!"
-              : "Cùng nghe lại và ghi nhớ từ này"}
+              : saved.verdict === "tones"
+                ? "Đúng âm rồi — chỉ thiếu hoặc lệch thanh điệu, nghe lại để ý giọng lên xuống nhé"
+                : "Cùng nghe lại và ghi nhớ từ này"}
           </p>
           <p lang="zh" className="hanzi mt-4 text-3xl">
             {word.simplified}
