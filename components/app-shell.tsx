@@ -131,6 +131,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               // Khách xem/dùng thử app không cần đăng nhập (2026-10-18) — tài
               // khoản chỉ để LƯU tiến độ, mời ở đây và đúng lúc cần lưu.
               <>
+                <span
+                  title="Bạn đang dùng thử không cần tài khoản — tiến độ chỉ được lưu khi tạo tài khoản"
+                  className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-semibold text-muted"
+                >
+                  <Icon name="user" size={12} />
+                  <span className="sm:hidden">Khách</span>
+                  <span className="hidden sm:inline">Chế độ khách</span>
+                </span>
                 <Link
                   href={`/login?next=${encodeURIComponent(pathname)}`}
                   className="hidden rounded-lg px-2.5 py-2 text-xs font-semibold text-muted hover:text-foreground sm:block"

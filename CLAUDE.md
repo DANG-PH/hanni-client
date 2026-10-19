@@ -401,6 +401,10 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   "Chuỗi hiện tại" ("Từ đã thuộc" cần ~21 ngày nên đang trống với mọi người). Server: xem mục "Khách xem +
   dùng thử" ở `hanni-server/CLAUDE.md`. `robots.ts` vẫn KHÔNG mời index các trang này (vẽ ở trình duyệt,
   HTML server chỉ có vòng tải).
+  **Lối vào chế độ khách (2026-10-19 — user: "hiện tại chưa có chế độ khách à?")**: tính năng có từ 18/10 nhưng không chỗ nào
+  nói ra — trang đăng nhập/đăng ký không có lối dùng thử, mục "Lộ trình HSK" ở menu khách chỉ cuộn xuống trang giới thiệu. Giờ:
+  "Chưa muốn đăng ký? Vào học ở chế độ khách" dưới form đăng nhập/đăng ký (`GuestEntry` → `/learn`), chip "Chế độ khách" (điện
+  thoại: "Khách") trên thanh trên của khung app khi chưa đăng nhập, menu khách "Lộ trình HSK" mở thẳng `/learn`.
 - **Từ điển theo hướng Hanzii (vấn đề 2, 2026-10-18)** — `components/dictionary/`: `DictionarySearch` (dùng ở cả
   `/tu-dien` lẫn trang từ — trước đó trang từ không có ô tra): gợi ý ngay khi gõ (`GET /words?q=&pageSize=6`, server
   đã xếp hạng — bỏ dấu, pinyin viết liền, âm Hán Việt lên trước), ↑/↓/Enter chọn, "Tra gần đây" khi ô trống

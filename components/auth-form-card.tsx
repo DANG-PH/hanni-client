@@ -333,6 +333,7 @@ export function AuthFormCard({
               Đăng ký ngay
             </button>
           </p>
+          <GuestEntry />
         </div>
 
         <div
@@ -471,8 +472,22 @@ export function AuthFormCard({
               Đăng nhập
             </button>
           </p>
+          <GuestEntry />
         </div>
       </div>
     </section>
+  );
+}
+
+/** Chế độ khách (2026-10-18): xem và dùng thử cả app không cần tài khoản — trước đây trang đăng nhập
+ * không có lối nào nói ra điều đó nên gần như không ai biết. */
+function GuestEntry() {
+  return (
+    <p className="mt-1 text-center text-xs leading-6 text-muted">
+      Chưa muốn đăng ký?{" "}
+      <Link href="/learn" className="font-semibold text-foreground underline-offset-4 hover:text-primary hover:underline">
+        Vào học ở chế độ khách
+      </Link>
+    </p>
   );
 }

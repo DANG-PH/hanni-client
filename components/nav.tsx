@@ -9,7 +9,7 @@ import { Icon } from "./icon";
 import { ThemeToggle } from "./theme-toggle";
 
 const LINKS = [
-  { href: "/#lo-trinh", label: "Lộ trình HSK" },
+  { href: "/learn", label: "Lộ trình HSK" },
   { href: "/tu-dien", label: "Từ vựng" },
   { href: "/phien-am", label: "Phát âm" },
   { href: "/thi-thu-hsk", label: "Luyện thi HSK" },
