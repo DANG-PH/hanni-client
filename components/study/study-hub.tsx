@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Icon } from "@/components/icon";
 import { TopicExplorer } from "@/components/learn/topic-explorer";
-import { LinkButton, Spinner } from "@/components/ui";
+import { LinkButton, PageHeading, Spinner } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { useLearnPath, useStudyStats } from "@/lib/hooks";
 
@@ -27,16 +27,11 @@ export function StudyHub() {
 
   return (
     <div className="page-wrap space-y-6">
-      <div>
-        <p className="eyebrow">ÔN TẬP & FLASHCARD</p>
-        <h1 className="mt-1 text-2xl font-extrabold tracking-tight">
-          Ôn đúng lúc, nhớ thật lâu
-        </h1>
-        <p className="mt-1 text-sm text-muted">
-          Hanni đưa từ bạn đã học quay lại đúng lúc sắp quên. Hoặc chọn một bài bên dưới để
-          ôn bằng flashcard.
-        </p>
-      </div>
+      <PageHeading
+        icon="cards"
+        title="Ôn tập"
+        description="Từ đã học quay lại đúng lúc sắp quên — hoặc chọn một bài để ôn bằng flashcard."
+      />
 
       <section className="panel tint-primary grid gap-5 p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:p-6">
         <div className="flex items-center gap-4">
@@ -92,7 +87,7 @@ export function StudyHub() {
                   onClick={() => setLevel(l)}
                   className={`motion-button shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold ${
                     l === path.data!.level
-                      ? "border-foreground bg-foreground text-background"
+                      ? "chip-on"
                       : "border-border bg-surface hover:border-primary/40"
                   }`}
                 >

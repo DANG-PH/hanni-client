@@ -101,10 +101,10 @@
   color: var(--primary);
 }
 .levels button[aria-pressed="true"] {
-  border-color: var(--foreground);
-  background: var(--foreground);
-  color: var(--background);
-  box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--foreground) 45%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+  color: var(--primary);
+  font-weight: 650;
 }
 .levels button > span {
   padding: 1px 5px;

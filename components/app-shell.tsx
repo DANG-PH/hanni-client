@@ -10,6 +10,7 @@ import { BottomNav } from "./bottom-nav";
 import { Brand, Sidebar, useSidebarCollapsed } from "./sidebar";
 import { AssistantWidget } from "./assistant-widget";
 import { NotificationBell } from "./notification-bell";
+import { PremiumTopButton } from "./premium-nav-card";
 import { StreakCelebration } from "./streak-celebration";
 import { ThemeToggle } from "./theme-toggle";
 import { Icon } from "./icon";
@@ -112,6 +113,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 )}
               </Link>
             )}
+            {user && <PremiumTopButton />}
             {user && <NotificationBell />}
             <ThemeToggle />
             {user ? (

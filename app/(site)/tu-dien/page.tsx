@@ -307,7 +307,7 @@ async function LevelList({ level, page }: { level: number; page: number }) {
             href={`/tu-dien?level=${l}`}
             aria-current={l === level ? "page" : undefined}
             className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${
-              l === level ? "border-foreground bg-foreground text-background" : "border-border text-muted hover:border-primary/40 hover:text-primary"
+              l === level ? "chip-on" : "border-border text-muted hover:border-primary/40 hover:text-primary"
             }`}
           >
             {hskLabel(l)}

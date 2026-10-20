@@ -263,7 +263,7 @@ export function PlacementTest() {
                 onClick={() => setStartLevel(l)}
                 className={`rounded-full border px-3.5 py-1.5 text-sm font-semibold ${
                   startLevel === l
-                    ? "border-foreground bg-foreground text-background"
+                    ? "chip-on"
                     : "border-border bg-surface hover:border-primary/40"
                 }`}
               >

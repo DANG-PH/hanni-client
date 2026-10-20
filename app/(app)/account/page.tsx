@@ -63,8 +63,8 @@ export default function AccountPage() {
             <div className="relative flex h-32 items-end justify-between overflow-hidden border-b border-primary/15 bg-gradient-to-r from-primary/15 via-primary/8 to-accent/10 px-7 py-3">
               {/* Nhãn ở góc TRÊN: góc dưới bên trái là chỗ avatar kéo lên đè. */}
               <div className="flex items-center gap-2 self-start">
-                <span className="rounded-full bg-surface/80 px-3 py-1 text-xs font-bold text-primary shadow-2xs">
-                  HSK Student
+                <span className="whitespace-nowrap rounded-full bg-surface/80 px-3 py-1 text-xs font-bold text-primary shadow-2xs">
+                  Học viên Hanni
                 </span>
               </div>
               <span

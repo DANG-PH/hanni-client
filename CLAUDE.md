@@ -341,7 +341,9 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   tiếp `/learn`, màn mở đầu kiểm tra trình độ, danh sách đề (thay bằng icon-tile). Giữ: video cáo ở màn
   đăng nhập/đăng ký (logo góc trên đổi sang chữ 汉 cho khớp site), xong bài, kết quả kiểm tra trình độ,
   kết quả thi thử, mừng cột mốc chuỗi ngày, `EmptyState` (giờ có cáo). Icon app/favicon vẫn là cáo (user
-  chọn 2026-10-15, như Duolingo dùng cú làm icon).
+  chọn 2026-10-15, như Duolingo dùng cú làm icon). **Từ 2026-10-20 MẶT cáo là LOGO** (user: "dùng con cáo thay cho
+  logo chữ") — logo chữ 汉 ở vòng tải/góc trên đã thay bằng `public/brand/fox-mark.png`; 3 vai trên là của hình
+  cáo NGUYÊN CON (`anhloading.png`), không đổi.
 - `/exams` (trắc nghiệm từ vựng cũ, trùng thi thử) và `/connections` thành chuyển hướng ở `next.config.ts`;
   xoá `components/exam-result.tsx`. Kệ video `/learn` chỉ hiện video tới cấp đang học + 1 (kho toàn HSK 4–5
   nên người HSK 1–2 không thấy kệ); "Từ vựng hôm nay" theo đúng cấp (`?level=`); bộ lọc `/watch` chỉ hiện
@@ -423,8 +425,10 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
 ### Quy tắc giao diện (làm lại 2026-10-19 — user: "nhiều chỗ UI, UX chưa ưng") — THEO khi làm trang mới
 Soi 28 trang × 390/1440 trước khi sửa; lỗi chính: đầu trang dạng thẻ to chiếm màn đầu điện thoại, đỏ ở khắp nơi, chữ xám 10–11px,
 mọi khối là thẻ trắng + ô biểu tượng hồng, nút trợ lý nổi đè nội dung, trang Tiến độ mở bằng "0% · 0 từ đã thuộc".
-- **Màu**: đỏ (`primary`) CHỈ cho nút chính, nút ghi âm, bài đang học, liên kết. Mục ĐANG CHỌN (chip cấp HSK, tab từ điển, bộ lọc,
-  `SelectionGroup`, `.levels`) = màu chữ đậm `bg-foreground text-background`. Nhãn nhỏ `.eyebrow` xám. `.icon-tile` + biểu tượng
+- **Màu**: đỏ ĐẶC (`bg-primary`) CHỈ cho nút chính, nút ghi âm, bài đang học, liên kết. Mục ĐANG CHỌN (chip cấp HSK, tab từ điển, bộ
+  lọc, nút chế độ, `SelectionGroup`, `.levels`) = lớp **`.chip-on`** (globals.css): nền đỏ nhạt + viền + chữ đỏ, cùng kiểu mục menu
+  đang mở — đổi 2026-10-20 từ nền đen (`bg-foreground`), user hỏi "sao màu đen là sao"; Hanzii/Hanbeego đều tô mục chọn bằng màu
+  thương hiệu. Ngoại lệ: TRONG phòng thi (phương án đã chọn, ô câu đã làm) giữ trung tính — đỏ ở đó đọc như "sai". Nhãn nhỏ `.eyebrow` xám. `.icon-tile` + biểu tượng
   đầu mục tông `primary` trung tính (tông good/accent/lavender giữ màu nhận diện). **Âm Hán Việt luôn `text-hanviet`** (vàng đồng
   `--hanviet` #946311 / tối #e3b25c, ≥4,6:1) — "chữ ký" của Hanni; hộp Hán Việt `bg-hanviet/5 border-hanviet/20`. `--muted` đổi
   #727b8b → #646c7b (cũ chỉ 3,8:1 trên nền xám — dưới chuẩn chữ nhỏ 4,5:1; đo bằng công thức độ tương phản WCAG).
@@ -442,6 +446,27 @@ mọi khối là thẻ trắng + ô biểu tượng hồng, nút trợ lý nổi
 - Hero `/thi-thu-hsk`, `/phien-am` trên điện thoại còn 1 câu (phần giải thích dài chỉ hiện từ `sm`) để màn đầu thấy danh sách.
 Kiểm tra sau mỗi lần sửa giao diện: `clip-scan` (phần tử bị CẮT bên phải dù trang không cuộn ngang — lỗi hero trang chủ 463px trên
 màn 390 do lưới thiếu `grid-cols-1`) + chụp 390/1440 so trước/sau.
+
+### Rà UI/UX lần cuối (2026-10-20 — user: "sao màu đen", "dùng con cáo thay logo chữ", "nâng premium cần nổi ở góc dưới trái")
+Xem lại Hanzii (`/`, `/test`) + Hanbeego (`/`, `/hsk/1`, `/exam`) như khách ở 1440/390 trước khi sửa: cả hai dùng **linh vật + tên**
+làm logo (gấu trúc / ong; điện thoại chỉ còn linh vật) và tô mục đang chọn bằng **màu thương hiệu** (Hanzii navy, Hanbeego đỏ).
+- **Mục đang chọn** đổi sang `.chip-on` (xem "Quy tắc giao diện"): 17 chỗ (tab cấp `/learn`, đề thi, từ điển, luyện viết, huy hiệu,
+  lớp học, kiểm tra trình độ, bảng phiên âm, `SelectionGroup`…). `/watch` từng có 2 kiểu chọn khác nhau trong 1 thẻ — giờ 1 kiểu.
+- **Logo cáo** (`Brand` → `fox-mark.png`, cùng hình icon app): sidebar, thanh trên điện thoại, menu khách, trang đăng nhập, khảo sát,
+  vòng tải, nút + ảnh đại diện trợ lý AI.
+- **Lối vào Premium** (`components/premium-nav-card.tsx`): thẻ "Hanni Premium" + nút "Nâng cấp" ở chân sidebar ngay trên Tài khoản
+  (thu gọn menu → biểu tượng vương miện; đang Premium → 1 dòng "Đang dùng Premium"), cũng nằm trong ngăn "Thêm" của điện thoại; thêm nút
+  vương miện trên thanh trên ở < lg (`PremiumTopButton`). Cả 3 mở `PremiumModal`. Trước đó chỉ có trong `/account`.
+- `/study`, `/luyen-tap` đổi tiêu đề khẩu hiệu ("Ôn đúng lúc, nhớ thật lâu", "Luyện thêm theo cách bạn thích") sang `PageHeading` "Ôn tập"
+  / "Luyện tập" như mọi trang trong app. `/luyen-tap` bỏ ô "Kiểm tra trình độ" (làm 1 lần để chọn cấp, không phải công cụ luyện — còn lối
+  vào ở trang chủ, thi thử, giới thiệu, khảo sát, trợ lý AI): 11 → 10 ô, lưới 4/2/4.
+- Chi tiết nhỏ: thẻ trò chơi `/minigame` là `<button>` nên nội dung bị căn giữa dọc (thẻ mô tả ngắn lệch xuống) → `flex flex-col` + "Xem
+  luật & chơi" bám đáy; nút "Bài đang học / Cả cấp HSK" ở `/writing` thành lưới 2 cột (cột 320px làm rớt dòng); nhãn "HSK Student" (tiếng
+  Anh, gãy 2 dòng trên điện thoại) ở `/account` → "Học viên Hanni"; "Di chuột lên ảnh" ở `/settings` → "Bấm vào ảnh" (điện thoại không có
+  chuột); gợi ý ô tra từ điển dạng ví dụ ("你好, nihao, học sinh…") — câu mô tả cũ bị cắt còn "nghĩa h" ở 390px.
+- Thẻ "Học tiếp" `/learn` ở màn ≥1536px có thêm "Một bài gồm" 4 bước (làm quen từ → luyện ngay → ghép cặp → ôn trộn) — ở 1920 nửa phải
+  thẻ từng trống trơn, giờ là thông tin người mới cần để hiểu nút Học tiếp dẫn tới đâu.
+Kiểm tra: dò tràn ngang/bị cắt 25 trang × 360/390 (0 lỗi), chụp 1440/390/1920 + chế độ tối trước/sau, `next build`.
 
 ### Đợt tham khảo Hanzii + Hanbeego lần 2 (2026-10-19 — user: "tham khảo kỹ 2 web kia, xem còn cần chỉnh gì")
 Chụp + trích dàn ý 19 trang khách xem được (Hanbeego: dashboard, người mới, giáo trình, bài tập, luyện tập, từ vựng chủ đề, nghe,
@@ -1088,8 +1113,9 @@ thẻ cài trong `/settings`, thanh mời cài ở đáy màn hình (`components
 Lời mời cài thật chỉ chạy ở bản production/HTTPS, không đăng ký worker ở `npm run dev`.
 **Icon app/favicon = cáo Hanni trên nền đỏ** (2026-10-15, user chọn): dựng từ mascot
 `public/anhloading.png` bằng `python3 scripts/make-icons.py` (mặt cáo căn giữa, viền kem để cáo đỏ
-không chìm vào nền đỏ; bản maskable thu nhỏ vào vùng an toàn, bản iOS để vuông). Logo chữ Hanni
-(`public/brand/hanni.png`) vẫn dùng trong trang. Đổi icon thì tăng `CACHE_NAME` trong `public/sw.js`
+không chìm vào nền đỏ; bản maskable thu nhỏ vào vùng an toàn, bản iOS để vuông). Cùng script dựng
+`public/brand/fox-mark.png` — LOGO trong trang từ 2026-10-20 (`Brand` ở sidebar/thanh trên/menu khách, trang đăng
+nhập, khảo sát, vòng tải, trợ lý AI); logo chữ `public/brand/hanni.png` không còn chỗ nào dùng. Đổi icon thì tăng `CACHE_NAME` trong `public/sw.js`
 (đang `hanni-public-v2`) + test, để máy đã cài nhận icon mới.
 **Nhận diện ĐÃ CÀI hay chưa** (`lib/pwa/store.ts`'s `installed`, từ 2026-09-19) — trước đây chỉ
 có `standalone` (đang CHẠY ở chế độ app ngay lúc này), nên ai đã cài PWA nhưng đang xem lại ở

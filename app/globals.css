@@ -226,6 +226,11 @@
   .nav-item[aria-current="page"] > svg {
     transform: scale(1.1);
   }
+  /* Mục ĐANG CHỌN (chip cấp HSK, tab, bộ lọc, nút chế độ): nền đỏ nhạt + chữ đỏ — cùng kiểu mục menu đang mở; Hanzii,
+     Hanbeego đều tô mục chọn bằng màu thương hiệu. Trước 2026-10-20 là nền đen, user hỏi "sao màu đen". */
+  .chip-on {
+    @apply border-primary/50 bg-primary/10 font-semibold text-primary;
+  }
 }
 
 /* ===== Nhịp chuyển động (giữ từ thiết kế trước) ===== */

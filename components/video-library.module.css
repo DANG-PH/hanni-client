@@ -152,10 +152,7 @@
   background: var(--surface-2);
 }
 .kinds > [data-selection-indicator] {
-  border: 1px solid color-mix(in srgb, var(--primary) 13%, var(--border));
   border-radius: 8px;
-  background: var(--surface);
-  box-shadow: 0 2px 5px color-mix(in srgb, var(--foreground) 7%, transparent);
 }
 .kinds button {
   position: relative;

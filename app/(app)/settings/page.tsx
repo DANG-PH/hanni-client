@@ -477,7 +477,7 @@ function AvatarCard({ user, onChange }: { user: Me; onChange: () => void }) {
         <p className="font-semibold">{user.displayName}</p>
         <p className="text-sm text-muted">{user.email}</p>
         <p className="mt-2 text-xs text-muted">
-          Di chuột lên ảnh rồi bấm để đổi. Ảnh tự cắt vuông, thu nhỏ về 512px.
+          Bấm vào ảnh để đổi. Ảnh tự cắt vuông, thu nhỏ về 512px.
           PNG, JPG hoặc WEBP.
         </p>
       </div>

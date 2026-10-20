@@ -928,7 +928,7 @@ function Result({
                       type="button"
                       onClick={() => setFilter(k)}
                       className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
-                        filter === k ? "border-foreground bg-foreground text-background" : "border-border bg-surface"
+                        filter === k ? "chip-on" : "border-border bg-surface"
                       }`}
                     >
                       {label}

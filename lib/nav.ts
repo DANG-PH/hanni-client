@@ -65,7 +65,8 @@ export const PRACTICE_SECTIONS: { title: string; items: PracticeLink[] }[] = [
       { href: "/ngu-phap", label: "Ngữ pháp & mẫu câu", description: "235 điểm ngữ pháp giải thích bằng tiếng Việt", icon: "book" },
       { href: "/tu-dien/quet", label: "Quét ảnh học từ", description: "Chụp thực đơn, biển hiệu, đồ vật — ra từ kèm Hán Việt", icon: "camera" },
       { href: "/tu-da-biet", label: "Từ bạn đã biết sẵn", description: "Từ trùng nghĩa với tiếng Việt nhờ âm Hán Việt", icon: "heart" },
-      { href: "/kiem-tra-trinh-do", label: "Kiểm tra trình độ", description: "Vài phút biết nên học HSK cấp mấy", icon: "chart" },
+      // "Kiểm tra trình độ" bỏ khỏi đây (2026-10-20): làm 1 lần để chọn cấp, không phải công cụ luyện — lối vào ở
+      // trang chủ ("Không chắc nên học cấp nào?"), thi thử, trang giới thiệu, khảo sát, trợ lý AI.
     ],
   },
 ];

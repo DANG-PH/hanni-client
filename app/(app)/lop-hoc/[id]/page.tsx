@@ -241,7 +241,7 @@ function AssignForm({ data }: { data: OwnerView }) {
               setTarget("");
             }}
             className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold ${
-              kind === k ? "border-foreground bg-foreground text-background" : "border-border bg-surface text-muted hover:text-foreground"
+              kind === k ? "chip-on" : "border-border bg-surface text-muted hover:text-foreground"
             }`}
           >
             <Icon name={icon} size={16} /> {label}

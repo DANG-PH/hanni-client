@@ -197,7 +197,7 @@ function OnboardingShell({
             aria-label="Về trang chủ Hanni"
           >
             <Image
-              src="/brand/hanni.png"
+              src="/brand/fox-mark.png"
               alt=""
               width={34}
               height={34}

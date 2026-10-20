@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Icon } from "@/components/icon";
-import { Spinner } from "@/components/ui";
+import { PageHeading, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
 import { PRACTICE_SECTIONS } from "@/lib/nav";
 
@@ -18,15 +18,11 @@ export default function PracticeHubPage() {
 
   return (
     <div className="page-wrap space-y-7">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <p className="eyebrow">LUYỆN TẬP</p>
-          <h1 className="mt-1 text-2xl font-extrabold tracking-tight">Luyện thêm theo cách bạn thích</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Trang chủ là nơi học chính. Ở đây là các cách luyện thêm — nghe, nói, viết đều lấy từ
-            của bài bạn đang học.
-          </p>
-        </div>
+      <PageHeading
+        icon="grid"
+        title="Luyện tập"
+        description="Luyện thêm ngoài lộ trình — nghe, nói, viết đều lấy từ của bài bạn đang học."
+      >
         {/* Tra từ nhanh: gửi thẳng sang /tu-dien?q=… (trang từ điển tự lọc). */}
         <form action="/tu-dien" role="search" className="flex w-full gap-2 lg:w-80">
           <label htmlFor="hub-q" className="sr-only">
@@ -47,7 +43,7 @@ export default function PracticeHubPage() {
             <Icon name="search" size={18} />
           </button>
         </form>
-      </div>
+      </PageHeading>
 
       {PRACTICE_SECTIONS.map((section, i) => (
         <section key={section.title} aria-labelledby={`hub-${i}`}>

@@ -23,7 +23,7 @@ import type { AssistantAction, AssistantMessage } from "@/lib/types";
 function HanniLogo({ size, fill = false }: { size: number; fill?: boolean }) {
   return (
     <Image
-      src="/brand/hanni.png"
+      src="/brand/fox-mark.png"
       alt=""
       width={size}
       height={size}

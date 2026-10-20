@@ -98,7 +98,7 @@ export default async function PracticeSetPage({ params }: { params: Promise<{ sl
               aria-current={s.slug === set.slug ? "page" : undefined}
               className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold ${
                 s.slug === set.slug
-                  ? "border-foreground bg-foreground text-background"
+                  ? "chip-on"
                   : "border-border bg-surface hover:border-primary/40"
               }`}
             >

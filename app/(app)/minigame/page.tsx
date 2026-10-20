@@ -134,7 +134,7 @@ function GameHub({ onSelect }: { onSelect: (game: GameDef) => void }) {
           key={g.mode}
           type="button"
           onClick={() => onSelect(g)}
-          className="motion-button hover-card reveal panel relative overflow-hidden p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+          className="motion-button hover-card reveal panel relative flex flex-col items-start overflow-hidden p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
         >
           <div className="flex items-center justify-between mb-4">
             <span className={`icon-tile ${g.tileClass} shadow-2xs`}>
@@ -145,7 +145,7 @@ function GameHub({ onSelect }: { onSelect: (game: GameDef) => void }) {
             {g.title}
           </h3>
           <p className="mb-5 text-xs leading-relaxed text-muted">{g.tagline}</p>
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-primary">
+          <span className="mt-auto inline-flex items-center gap-1.5 text-xs font-bold text-primary">
             Xem luật &amp; chơi <Icon name="arrow" size={15} />
           </span>
         </button>

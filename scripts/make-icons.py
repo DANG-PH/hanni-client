@@ -4,7 +4,9 @@ Favicon, icon PWA và icon iOS dùng MẶT cáo căn giữa (đầu cáo nghiên
 thò xa sang trái — căn theo khung đầu thì mặt lệch hẳn sang phải), viền kem
 kiểu sticker để cáo đỏ không chìm vào nền đỏ, phần cổ dán sát mép dưới để
 không lộ đường cắt. Ở 16px vẫn nhận ra mặt cáo; nguyên con thì chỉ còn 1 chấm.
-Logo chữ Hanni (public/brand/hanni.png) giữ nguyên cho thương hiệu trong trang.
+Từ 2026-10-20 cùng mặt cáo đó là LOGO trong trang (public/brand/fox-mark.png — sidebar, thanh
+trên, trang đăng nhập, trợ lý AI), thay logo chữ public/brand/hanni.png (user: "dùng con cáo thay
+cho logo chữ, con cáo là linh vật của web").
 
 Chạy (cần Pillow):  python3 scripts/make-icons.py
 """
@@ -75,7 +77,9 @@ def main() -> None:
     # tròn 80% ở giữa → thu nhỏ để mặt cáo nằm trọn trong vùng an toàn.
     fox_icon(512, radius=0, fill=0.9).save(icons / "icon-maskable-512.png", optimize=True)
     fox_icon(256).save(ROOT / "app/favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
-    print("Đã dựng icon-192/512, apple-touch-icon, icon-maskable-512, app/favicon.ico")
+    # Logo trong trang: hiện 32–96px (vòng tải), 256px đủ nét trên màn hình mật độ cao.
+    fox_icon(256).save(ROOT / "public/brand/fox-mark.png", optimize=True)
+    print("Đã dựng icon-192/512, apple-touch-icon, icon-maskable-512, app/favicon.ico, brand/fox-mark.png")
 
 
 if __name__ == "__main__":

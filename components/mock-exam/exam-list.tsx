@@ -71,14 +71,14 @@ export function MockExamList({
               onClick={() => setLevel(l)}
               className={`motion-button flex shrink-0 flex-col items-start rounded-2xl border-2 px-4 py-2 text-left disabled:cursor-not-allowed ${
                 selected
-                  ? "border-foreground bg-foreground text-background shadow-[0_3px_0_0_color-mix(in_srgb,var(--foreground)_55%,#000)]"
+                  ? "chip-on shadow-[0_3px_0_0_color-mix(in_srgb,var(--primary)_25%,transparent)]"
                   : has
                     ? "border-border bg-surface hover:border-primary/40"
                     : "border-dashed border-border bg-surface opacity-60"
               }`}
             >
               <span className="text-sm font-extrabold">HSK {l}</span>
-              <span className={`text-xs ${selected ? "text-primary-fg/80" : "text-muted"}`}>
+              <span className={`text-xs ${selected ? "text-primary/80" : "text-muted"}`}>
                 {has ? `${exams.filter((e) => e.level === l).length} đề` : "Sắp có"}
               </span>
             </button>

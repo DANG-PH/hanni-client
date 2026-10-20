@@ -10,6 +10,7 @@ import { useMyClassrooms } from "@/lib/classrooms";
 import { ACCOUNT_LINK, CLASS_LINK, INSTALL_LINK, isNavActive, NAV_MAIN, NAV_MORE, type NavLink } from "@/lib/nav";
 import { usePwaState } from "@/lib/pwa/store";
 import { Icon } from "./icon";
+import { PremiumNavCard } from "./premium-nav-card";
 
 const COLLAPSE_KEY = "hanni:sidebar-collapsed";
 const collapseListeners = new Set<() => void>();
@@ -50,7 +51,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <span className="flex items-center gap-2.5">
       <Image
-        src="/brand/hanni.png"
+        src="/brand/fox-mark.png"
         alt=""
         width={40}
         height={40}
@@ -147,6 +148,7 @@ export function Sidebar({
         <div className="space-y-1">{moreLinks.map((l) => item(l))}</div>
       </nav>
       <div className="mt-auto pt-6">
+        {user && <PremiumNavCard collapsed={collapsed} onNavigate={onNavigate} />}
         <div className="space-y-0.5 border-t border-border/70 pt-3">
           {canInstall && item(INSTALL_LINK, true)}
           {!user && (

@@ -320,7 +320,7 @@ export function DictionarySearch({
               aria-selected={current === t.key}
               onClick={() => pickTab(t.key)}
               className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
-                current === t.key ? "bg-foreground text-background shadow-sm" : "text-muted hover:bg-surface-2 hover:text-foreground"
+                current === t.key ? "chip-on shadow-sm" : "text-muted hover:bg-surface-2 hover:text-foreground"
               }`}
             >
               {t.label}

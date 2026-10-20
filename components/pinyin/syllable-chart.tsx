@@ -30,7 +30,7 @@ export function SyllableChart({ initial }: { initial: PinyinOverview | null }) {
             aria-selected={t === tab}
             onClick={() => setTab(t)}
             className={`min-w-10 rounded-xl border-2 px-2.5 py-1.5 text-sm font-bold ${
-              t === tab ? "border-foreground bg-foreground text-background" : "border-border bg-surface hover:border-primary/40"
+              t === tab ? "chip-on" : "border-border bg-surface hover:border-primary/40"
             }`}
           >
             {TAB_LABEL[t] ?? t}

@@ -129,7 +129,7 @@ export function GlyphPanel({ glyphs }: { glyphs: Glyph[] }) {
             onClick={() => setIndex(i)}
             title={t.isTraditional ? "Chữ phồn thể" : undefined}
             className={`hanzi flex h-10 min-w-10 items-center justify-center rounded-xl px-2 text-xl ${
-              i === index ? "bg-foreground text-background shadow-sm" : "bg-surface-2 hover:bg-primary/10 hover:text-primary"
+              i === index ? "chip-on shadow-sm" : "bg-surface-2 hover:bg-primary/10 hover:text-primary"
             }`}
             lang="zh"
           >

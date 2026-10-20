@@ -169,7 +169,7 @@ export default function AchievementsPage() {
                     onClick={() => setFilter(option.value)}
                     className={`motion-button inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all ${
                       filter === option.value
-                        ? "border-foreground bg-foreground text-background shadow-xs"
+                        ? "chip-on shadow-xs"
                         : "border-border/80 bg-surface text-muted hover:bg-surface-2 hover:text-foreground"
                     }`}
                   >

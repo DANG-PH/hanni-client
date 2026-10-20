@@ -61,6 +61,36 @@ function ProgressRing({ value }: { value: number }) {
   );
 }
 
+/** Các bước của phiên học bài (`buildLessonSession` ở server) — nói trước bấm "Học tiếp" sẽ làm gì. Chỉ màn
+ * ≥1536px: ở 1920 nửa phải thẻ Học tiếp từng trống trơn, màn nhỏ hơn thì không có chỗ. */
+const LESSON_STEPS: [IconName, string, string][] = [
+  ["book", "Làm quen từ mới", "Pinyin, âm Hán Việt, mẹo đoán thanh điệu"],
+  ["headphones", "Luyện ngay", "Chọn nghĩa, nghe chọn từ, nhận mặt chữ"],
+  ["cards", "Ghép cặp", "Nối chữ Hán với nghĩa"],
+  ["refresh", "Ôn trộn cuối bài", "Hỏi lại bằng dạng khác, làm lại câu sai"],
+];
+
+function LessonSteps() {
+  return (
+    <div className="hidden w-80 shrink-0 self-stretch border-l border-primary/15 pl-6 2xl:block">
+      <p className="text-xs font-bold tracking-wider text-muted">MỘT BÀI GỒM</p>
+      <ol className="mt-3 space-y-3">
+        {LESSON_STEPS.map(([icon, title, desc]) => (
+          <li key={title} className="flex items-start gap-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-foreground/75">
+              <Icon name={icon} size={16} />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold">{title}</span>
+              <span className="block text-xs text-muted">{desc}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 /** Khách (chưa đăng nhập) — tài khoản chỉ để LƯU, mời ở cột phải. */
 function GuestSaveCard({ learned }: { learned: number }) {
   return (
@@ -261,6 +291,7 @@ function LearnHome() {
                   </>
                 )}
               </div>
+              {current && <LessonSteps />}
             </>
           )}
         </section>
@@ -300,7 +331,7 @@ function LearnHome() {
                   onClick={() => setViewLevel(user && l === courseLevel ? undefined : l)}
                   className={`motion-button flex shrink-0 items-center gap-1.5 rounded-full border-2 px-4 py-2 text-sm font-bold ${
                     selected
-                      ? "border-foreground bg-foreground text-background shadow-[0_3px_0_0_color-mix(in_srgb,var(--foreground)_55%,#000)]"
+                      ? "chip-on shadow-[0_3px_0_0_color-mix(in_srgb,var(--primary)_25%,transparent)]"
                       : "border-border bg-surface hover:border-primary/40"
                   }`}
                 >
@@ -308,7 +339,7 @@ function LearnHome() {
                   {l === courseLevel && (
                     <span
                       className={`rounded-full px-1.5 py-0.5 text-[10px] ${
-                        selected ? "bg-primary-fg/20" : "bg-primary/10 text-primary"
+                        selected ? "bg-primary text-primary-fg" : "bg-primary/10 text-primary"
                       }`}
                     >
                       ĐANG HỌC

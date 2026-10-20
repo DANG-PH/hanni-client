@@ -20,10 +20,10 @@ export function StudyLoader({
         <span className={styles.sparkle} />
         <span className={styles.smallSparkle} />
         <Image
-          src="/brand/hanni.png"
+          src="/brand/fox-mark.png"
           alt=""
-          width={1254}
-          height={1254}
+          width={256}
+          height={256}
           sizes={variant === "compact" ? "44px" : "96px"}
           loading="eager"
           fetchPriority={variant === "startup" ? "high" : "auto"}

@@ -27,7 +27,7 @@ export function LoginShell({ children }: { children: ReactNode }) {
             className="flex items-center gap-2.5"
           >
             <Image
-              src="/brand/hanni.png"
+              src="/brand/fox-mark.png"
               alt=""
               width={42}
               height={42}
