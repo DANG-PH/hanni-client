@@ -65,6 +65,8 @@ const paths = {
   users:
     "M9 4a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM2 20v-2a7 4.5 0 0 1 14 0v2M16 4.2a3.5 3.5 0 0 1 0 6.6M18.5 14.6A6.5 4.3 0 0 1 22 18v2",
   calendar: "M4 6h16v14H4V6Zm0 4h16M8 3v4m8-4v4",
+  /** Lá chắn giữ chuỗi ngày học. */
+  shield: "M12 3 19 6v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6l7-3Z",
   copy: "M9 9h11v11H9V9ZM5 15H4V4h11v1",
 } as const;
 

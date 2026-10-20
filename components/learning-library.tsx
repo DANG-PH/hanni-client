@@ -1,42 +1,5 @@
-import type { ReactNode } from "react";
-import { Icon, type IconName } from "./icon";
-import { PageHeading } from "./ui";
 import { SelectionGroup } from "./selection-group";
 import styles from "./learning-library.module.css";
-
-type LibrarySection = "vocabulary" | "grammar" | "exams";
-
-export function LearningHeader({
-  section,
-  eyebrow,
-  title,
-  description,
-  children,
-}: {
-  section: LibrarySection;
-  eyebrow: string;
-  title: string;
-  description: string;
-  children?: ReactNode;
-}) {
-  const icons = {
-    vocabulary: "book",
-    grammar: "cards",
-    exams: "target",
-  } satisfies Record<LibrarySection, IconName>;
-
-  return (
-    <PageHeading
-      icon={icons[section]}
-      tone={section === "grammar" ? "lavender" : "primary"}
-      eyebrow={eyebrow}
-      title={title}
-      description={description}
-    >
-      {children}
-    </PageHeading>
-  );
-}
 
 export function LevelFilter({
   options,
@@ -65,25 +28,5 @@ export function LevelFilter({
         </button>
       ))}
     </SelectionGroup>
-  );
-}
-
-export function LearningTip({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className={styles.tip}>
-      <span className={styles.tipIcon}>
-        <Icon name="spark" size={20} />
-      </span>
-      <div>
-        <h3>{title}</h3>
-        <div className={styles.tipCopy}>{children}</div>
-      </div>
-    </div>
   );
 }

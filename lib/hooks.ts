@@ -14,9 +14,6 @@ import type {
   Leaderboard,
   LeaderboardMetric,
   LeaderboardMetricKey,
-  GrammarDetail,
-  GrammarLevel,
-  GrammarListItem,
   HskLevel,
   LearnPath,
   LeechWord,
@@ -35,9 +32,7 @@ import type {
   StudyStats,
   SubmitOnboardingInput,
   TodayQuests,
-  UserSearchResult,
   VideoCard,
-  VideoComment,
   VideoDetail,
   WeeklyLeague,
   Word,
@@ -158,52 +153,6 @@ export function useVideo(id: string | null) {
   return useSWR<VideoDetail>(id ? `/videos/${id}` : null, fetcher);
 }
 
-export function useComments(videoId: string | null, page = 1) {
-  return useSWR<Paginated<VideoComment>>(
-    videoId ? `/videos/${videoId}/comments?page=${page}&pageSize=20` : null,
-    fetcher,
-  );
-}
-
-export function postComment(
-  videoId: string,
-  content: string,
-  parentId?: string,
-) {
-  return api.post<VideoComment>(`/videos/${videoId}/comments`, {
-    content,
-    parentId,
-  });
-}
-
-export function deleteComment(videoId: string, commentId: string) {
-  return api.del(`/videos/${videoId}/comments/${commentId}`);
-}
-
-export function likeVideo(videoId: string) {
-  return api.post<{ liked: boolean; likeCount: number }>(
-    `/videos/${videoId}/like`,
-  );
-}
-
-export function unlikeVideo(videoId: string) {
-  return api.del<{ liked: boolean; likeCount: number }>(
-    `/videos/${videoId}/like`,
-  );
-}
-
-export function followUser(userId: string) {
-  return api.post<{ following: boolean; followerCount: number }>(
-    `/users/${userId}/follow`,
-  );
-}
-
-export function unfollowUser(userId: string) {
-  return api.del<{ following: boolean; followerCount: number }>(
-    `/users/${userId}/follow`,
-  );
-}
-
 export function usePublicProfile(userId: string | null) {
   return useSWR<PublicProfile>(
     userId ? `/users/${userId}/profile` : null,
@@ -213,30 +162,6 @@ export function usePublicProfile(userId: string | null) {
 
 export function useReferralStats() {
   return useSWR<ReferralStats>("/referrals/me", fetcher);
-}
-
-/** Tìm người dùng theo tên — để theo dõi/nhắn tin khi họ không lọt bảng xếp hạng. */
-export function useUserSearch(q: string) {
-  const query = q.trim();
-  return useSWR<UserSearchResult[]>(
-    query ? `/users/search?q=${encodeURIComponent(query)}` : null,
-    fetcher,
-  );
-}
-
-export function useGrammarLevels() {
-  return useSWR<GrammarLevel[]>("/grammar/levels", fetcher);
-}
-
-export function useGrammar(level?: number) {
-  return useSWR<GrammarListItem[]>(
-    `/grammar${level ? `?level=${level}` : ""}`,
-    fetcher,
-  );
-}
-
-export function useGrammarPoint(slug: string | null) {
-  return useSWR<GrammarDetail>(slug ? `/grammar/${slug}` : null, fetcher);
 }
 
 export function useLeaderboardMetrics() {
@@ -258,16 +183,14 @@ export function useWeeklyLeague() {
   return useSWR<WeeklyLeague>("/leaderboard/league", fetcher);
 }
 
-/** Nhiệm vụ hàng ngày — server tự cộng xu ngay khi phát hiện nhiệm vụ vừa
- * hoàn thành (xem `QuestsService.getToday()`), field `justClaimedXu` chỉ
- * khác 0 ở ĐÚNG lần gọi phát hiện ra điều đó — client dùng để hiện toast
- * rồi làm mới số dư ví (`/wallet/me`) vì 2 thẻ này không cùng 1 component. */
+/** Nhiệm vụ hàng ngày — xong cả 3 thì server tự cấp 1 lá chắn giữ chuỗi (`QuestsService.getToday()`);
+ * `justEarnedFreeze` chỉ true ở ĐÚNG lần gọi cấp lá chắn → làm mới `/streak` để số lá chắn ở thanh trên theo kịp. */
 export function useTodayQuests() {
   const result = useSWR<TodayQuests>("/quests/today", fetcher);
-  const justClaimedXu = result.data?.justClaimedXu ?? 0;
+  const justEarnedFreeze = result.data?.justEarnedFreeze ?? false;
   useEffect(() => {
-    if (justClaimedXu > 0) void mutate("/wallet/me");
-  }, [justClaimedXu]);
+    if (justEarnedFreeze) void mutate("/streak");
+  }, [justEarnedFreeze]);
   return result;
 }
 

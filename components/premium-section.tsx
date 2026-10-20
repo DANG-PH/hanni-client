@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, Card } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { PremiumModal } from "@/components/premium-modal";
-import { getTopUpStatus } from "@/lib/payments";
+import { getOrderStatus } from "@/lib/payments";
 import { usePremiumStatus } from "@/lib/premium";
 
 function formatDate(iso: string): string {
@@ -26,15 +26,15 @@ export function PremiumSection() {
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
 
-  // Vừa quay lại từ payOS qua returnUrl (?premium=<orderCode>) — cùng cách
-  // đọc `?topup=` ở WalletCard, đọc thẳng window.location cho 1 khối nhỏ.
+  // Vừa quay lại từ payOS qua returnUrl (?premium=<orderCode>) — đọc thẳng
+  // window.location cho 1 khối nhỏ, khỏi bọc cả trang trong <Suspense>.
   useEffect(() => {
     const code = Number(
       new URLSearchParams(window.location.search).get("premium"),
     );
     if (!Number.isFinite(code) || code <= 0) return;
     window.history.replaceState({}, "", window.location.pathname);
-    void getTopUpStatus(code)
+    void getOrderStatus(code)
       .then((order) => {
         if (order.status === "PAID") {
           setNote("Nâng cấp Premium thành công! Cảm ơn bạn đã ủng hộ Hanni.");

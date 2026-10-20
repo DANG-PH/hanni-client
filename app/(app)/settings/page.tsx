@@ -42,16 +42,19 @@ export default function SettingsPage() {
 
       <AvatarCard user={user} onChange={() => void refresh()} />
       <InstallCard />
-      <NotificationCard
-        onSubscribed={() => void mutate()}
-        reminderHour={data?.reminderHour ?? null}
-        onChangeReminderHour={async (hour) => {
-          const next = await api.patch<UserSettings>("/users/me/settings", {
-            reminderHour: hour,
-          });
-          await mutate(next, { revalidate: false });
-        }}
-      />
+      {/* Neo cho nút "Bật nhắc" ở thẻ "Bắt đầu với Hanni" trên trang chủ. */}
+      <div id="nhac-hoc" className="scroll-mt-24">
+        <NotificationCard
+          onSubscribed={() => void mutate()}
+          reminderHour={data?.reminderHour ?? null}
+          onChangeReminderHour={async (hour) => {
+            const next = await api.patch<UserSettings>("/users/me/settings", {
+              reminderHour: hour,
+            });
+            await mutate(next, { revalidate: false });
+          }}
+        />
+      </div>
       <CalendarReminder
         key={data?.reminderHour ?? "chua-dat"}
         defaultHour={data?.reminderHour ?? null}
@@ -387,7 +390,7 @@ function SettingsForm({
           </Card>
 
           {/* Chưa cấu hình máy chủ email thì email tuần không bao giờ tới nơi —
-           * ẩn hẳn mục này (như thẻ nạp xu khi chưa có payOS) thay vì hiện cho
+           * ẩn hẳn mục này (như nút thanh toán Premium khi chưa có payOS) thay vì hiện cho
            * người dùng một dòng lỗi nội bộ. */}
           {mail.data?.configured && (
             <Card>

@@ -109,21 +109,7 @@ function TeacherView({ data }: { data: OwnerView }) {
 
   return (
     <div className="page-wrap space-y-6">
-      <Header data={data}>
-        <Button
-          variant="ghost"
-          disabled={busy}
-          onClick={async () => {
-            if (!window.confirm(`Xoá lớp "${data.class.name}"? Học viên sẽ rời lớp, bài đã giao bị xoá (tiến độ học của họ vẫn giữ).`)) return;
-            setBusy(true);
-            await deleteClassroom(data.class.id);
-            router.replace("/lop-hoc");
-          }}
-          className="self-start text-xs hover:text-danger"
-        >
-          <Icon name="trash" size={15} /> Xoá lớp
-        </Button>
-      </Header>
+      <Header data={data} />
 
       <section aria-label="Mời học viên" className="panel grid gap-5 p-5 sm:p-6 lg:grid-cols-[auto_1fr] lg:items-center">
         <div className="text-center lg:pr-6 lg:text-left">
@@ -132,11 +118,11 @@ function TeacherView({ data }: { data: OwnerView }) {
         </div>
         <div className="min-w-0 space-y-3">
           <p className="text-sm leading-6 text-muted">
-            Gửi đường dẫn này cho học viên (hoặc đọc mã — học viên nhập ở <b className="text-foreground">Tài khoản → Lớp học</b>),
-            tạo tài khoản miễn phí là vào lớp. Bài bạn giao hiện ngay ở Trang chủ của học viên.
+            Học viên mở đường dẫn (hoặc nhập mã ở <b className="text-foreground">Tài khoản → Lớp học</b>) là vào lớp. Bài bạn
+            giao hiện ngay ở Trang chủ của họ.
           </p>
           <p className="truncate rounded-lg bg-surface-2 px-3 py-2 font-mono text-xs">{url}</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
             <Button onClick={() => void share()}>
               <Icon name="share" size={16} /> Gửi cho học viên
             </Button>
@@ -148,7 +134,7 @@ function TeacherView({ data }: { data: OwnerView }) {
               href={`https://classroom.google.com/share?url=${encodeURIComponent(url)}&title=${encodeURIComponent(`Vào lớp ${data.class.name} trên Hanni`)}`}
               target="_blank"
               rel="noreferrer"
-              className="motion-button inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-surface px-4 text-sm font-semibold shadow-[0_3px_0_0_var(--border)] hover:bg-surface-2"
+              className="motion-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 text-sm font-semibold shadow-[0_3px_0_0_var(--border)] hover:bg-surface-2"
             >
               <Icon name="book" size={16} /> Google Classroom
             </a>
@@ -181,6 +167,23 @@ function TeacherView({ data }: { data: OwnerView }) {
           <Members data={data} />
         </div>
       </div>
+
+      {/* Thao tác không hoàn tác được để cuối trang — trước đây nằm ngay dưới tên lớp. */}
+      <div className="border-t border-border pt-4">
+        <Button
+          variant="ghost"
+          disabled={busy}
+          onClick={async () => {
+            if (!window.confirm(`Xoá lớp "${data.class.name}"? Học viên sẽ rời lớp, bài đã giao bị xoá (tiến độ học của họ vẫn giữ).`)) return;
+            setBusy(true);
+            await deleteClassroom(data.class.id);
+            router.replace("/lop-hoc");
+          }}
+          className="text-xs hover:text-danger"
+        >
+          <Icon name="trash" size={15} /> Xoá lớp này
+        </Button>
+      </div>
     </div>
   );
 }
@@ -199,7 +202,11 @@ function AssignForm({ data }: { data: OwnerView }) {
 
   async function submit(e: FormEvent) {
     e.preventDefault();
-    if (!target || busy) return;
+    if (busy) return;
+    if (!target) {
+      setNote({ ok: false, text: kind === "LESSON" ? "Chọn bài học muốn giao trước nhé." : "Chọn đề thi muốn giao trước nhé." });
+      return;
+    }
     setBusy(true);
     setNote(null);
     try {
@@ -302,7 +309,7 @@ function AssignForm({ data }: { data: OwnerView }) {
         />
       </label>
       {note && <p className={`text-xs ${note.ok ? "text-good" : "text-danger"}`}>{note.text}</p>}
-      <Button type="submit" disabled={!target || busy} className="w-full sm:w-auto">
+      <Button type="submit" disabled={busy} className="w-full sm:w-auto">
         {busy ? "Đang giao…" : "Giao cho cả lớp"}
       </Button>
     </form>

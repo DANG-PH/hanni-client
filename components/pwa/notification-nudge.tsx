@@ -50,7 +50,7 @@ export function NotificationNudge() {
     return (
       <div className="panel flex items-center gap-3 p-4 text-sm">
         <Icon name="check" size={18} className="text-good" />
-        Đã bật thông báo — Hanni sẽ nhắc bạn ôn tập và báo khi có tin nhắn mới.
+        Đã bật thông báo — Hanni sẽ nhắc bạn ôn tập và báo khi lớp học có bài mới.
       </div>
     );
   }
@@ -76,8 +76,8 @@ export function NotificationNudge() {
         <div className="min-w-0">
           <p className="text-sm font-semibold">Đừng để mất chuỗi ngày học</p>
           <p className="mt-1 text-xs leading-5 text-muted">
-            Bật thông báo để Hanni nhắc bạn ôn đúng lúc sắp quên, và báo khi có
-            tin nhắn hay ai đó trả lời bạn.
+            Bật thông báo để Hanni nhắc bạn ôn đúng lúc sắp quên, báo kết quả
+            giải đấu tuần và bài tập mới từ lớp học.
           </p>
         </div>
       </div>

@@ -37,8 +37,7 @@ app/
 │                        ngày (`components/activity-calendar.tsx`, dùng GET /streak/history) +
 │                        lịch sử quiz gần đây (GET /quiz/recent)
 ├── achievements         huy hiệu chưa mở khoá hiện thêm thanh tiến độ (progressCurrent/Target)
-├── (app)/u/[id]         hồ sơ công khai — streak, huy hiệu, follow, "Nhắn tin"
-├── (app)/messages       hộp thư nhắn tin 1-1 realtime (2 cột, mobile chỉ hiện 1 bên)
+├── (app)/u/[id]         hồ sơ công khai — streak, số liệu, huy hiệu
 ├── settings            mục tiêu ngày, thuật toán SRS, múi giờ
 ├── nguon-du-lieu       trang ghi công nguồn dữ liệu (bắt buộc theo license)
 └── tu-dien             TỪ ĐIỂN CÔNG KHAI (SEO) — `/tu-dien` + `/tu-dien/[slug]`.
@@ -273,18 +272,17 @@ components/  ui.tsx · nav.tsx · flashcard.tsx (4 nút đánh giá: hint nói K
              lại"/"Nhớ được từ"), vì thứ người học thật sự đang quyết định là LỊCH gặp lại; cả
              4 nút ẩn hẳn (`hidden`) khi chưa lật thẻ thay vì hiện xám mờ khó hiểu — sửa
              2026-09-22 theo phản ánh "ui ux flashcard vẫn đang rất khó hiểu")
-             · quiz-runner.tsx · comment-section.tsx
+             · quiz-runner.tsx · overlay.tsx (popup toàn màn hình — xem "Làm rõ cho người mới")
              · sidebar.tsx + bottom-nav.tsx (dữ liệu menu ở `lib/nav.ts` — xem mục "Menu
                ngắn" bên dưới. Khi bỏ mục khỏi nav PHẢI kiểm tra còn link nào trỏ tới
                không, nếu không sẽ thành trang mồ côi)
              · save-word-button.tsx (nút "Lưu để ôn tập" ở trang từ điển công khai)
-             · video-like-button.tsx · notification-bell.tsx · follow-button.tsx
+             · notification-bell.tsx
              · activity-calendar.tsx (lịch hoạt động 30 ngày)
              · assistant-widget.tsx (bong bóng chat nổi, mount trong app-shell.tsx)
              · markdown-lite.tsx (render **in đậm**/`code`/gạch đầu dòng cho trả lời AI)
 lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notifications.ts
-      (SWR + socket.io-client) · messages.ts (SWR + dùng CHUNG kết nối socket.io với
-      notifications.ts qua namespace /notifications — khác event name) · time.ts (timeAgo) · types.ts
+      (SWR + socket.io-client) · time.ts (timeAgo) · types.ts
 ```
 
 ## Convention
@@ -325,6 +323,42 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 ```
 
 ## Trạng thái hiện tại
+
+### Làm rõ cho người mới + bỏ xu (2026-10-20 — user: "UI/UX quá loạn, người mới không biết vào học gì", "popup Premium ở mobile lỗi", "hệ thống xu có nên bỏ không", "logic không còn thì xoá")
+- **Popup toàn màn hình PHẢI bọc `<Overlay>`** (`components/overlay.tsx`, portal vào `<body>`). Lỗi thật: popup Premium trên điện thoại
+  hiện thành 1 thanh ngang giữa màn hình — thanh trên có `backdrop-filter` nên `position: fixed` bên trong tính theo thanh đó; popup
+  hướng dẫn cao 812px vì `space-y-*` của khối cha cộng margin (tìm ra bằng CDP `CSS.getMatchedStylesForNode`). Đã bọc: popup Premium,
+  hướng dẫn, mừng cột mốc, xác nhận thoát phiên học, bảng câu + xác nhận nộp ở phòng thi, popup từ ở video. `<dialog>` (ngăn "Thêm"
+  trên điện thoại) nằm ở top layer che cả portal → `PremiumNavCard` gọi `onNavigate` đóng ngăn TRƯỚC rồi mới mở popup.
+- **Trang chủ khách**: khối "HANNI CÓ GÌ?" — 4 cách học vào thử ngay (`PILLARS`: bài học → `/bat-dau`, thi thử, từ điển, chấm phát âm
+  → `#cham-thanh`), mỗi thẻ có hình minh hoạ nhỏ (`PillarPreview`) + 1 nút; khối "Học đều mỗi ngày" (`DAILY_HABITS`: chuỗi ngày, ôn
+  đúng lúc sắp quên, giải đấu tuần, nhắc học + báo cáo tuần). Bỏ `HskCoverflow`/`LearningJourney` (đẹp nhưng không nói được vào học gì).
+- **Thẻ "Bắt đầu với Hanni"** ở `/learn` (`components/learn/getting-started.tsx`): 5 việc tuần đầu (học bài đầu, chấm phát âm 1 từ,
+  làm thử 1 đề, tra 1 từ, bật nhắc học), tự tick từ dữ liệu thật (thống kê học, lượt luyện phát âm + `markToneTried()` ở
+  `lib/getting-started.ts`, `/mock-exams/attempts/me`, lịch sử tra `hanni:dict-history`, `reminderHour`); "Ẩn" nhớ ở localStorage, xong
+  hết tự ẩn. `/settings#nhac-hoc` là neo của thẻ thông báo.
+- **Nhiệm vụ hôm nay** (`daily-quest-card.tsx`): mỗi nhiệm vụ là link tới đúng chỗ làm (`QUEST_HREF`, "Học 5 từ mới" mở bài đang học),
+  dòng cuối "Xong cả 3 → +1 lá chắn" + số lá chắn `N/2`; `useTodayQuests` làm mới `/streak` khi `justEarnedFreeze`. Biểu tượng lá chắn
+  là `shield` (thanh trên, thẻ nhiệm vụ, thông báo).
+- **Chuông thông báo** (`notification-bell.tsx`): 4 loại (huy hiệu, bài giao của lớp, kết quả giải đấu, lá chắn giữ chuỗi) mỗi loại 1
+  biểu tượng/màu (`LOOK`), câu do server soạn (`message`), bấm mở `href` (`/learn#giai-dau` → `Card` nhận `id`) + đánh dấu đã đọc cả
+  dòng (`markNotificationsRead(ids)`); huy hiệu mở cách nhau ≤ 2 phút gộp 1 dòng (xong bài đầu mở 3 huy hiệu cùng lúc); trống thì nói
+  rõ chuông báo những gì; chân khung trỏ `/settings#nhac-hoc`. Điện thoại: khung `fixed inset-x-3 top-[72px]` ngay trên phần tử (thay
+  CSS bám `[aria-label="Thông báo"] + div` ở `app-shell.module.css` — khó đoán khi sửa).
+- **Bỏ xu** (server: mục "Gỡ hệ thống xu"): thẻ Ví xu ở `/account`, "+N xu"/số dư ở trò chơi (giờ chỉ điểm; khách được mời tạo tài
+  khoản để có tên trên bảng xếp hạng), "Xu x2" ở popup Premium (còn 5 quyền lợi + dòng "bản thường đủ"), chữ "xu" ở điều khoản/bảo
+  mật. `lib/payments.ts` chỉ còn `usePaymentsConfigured`, `createPremiumCheckout`, `getOrderStatus` (`/payments/orders/:code`).
+- **Xoá hẳn** (trước chỉ ẩn lối vào): trang `/messages` (redirect 307 `/messages`, `/connections` → `/learn` vẫn ở `next.config.ts`),
+  component `comment-section`, `connections-panel`, `follow-button`, `friends-leaderboard` (CSS đổi tên `weekly-league-card.module.css`),
+  `message-icon-button`, `messages-button`, `rank-emblem`, `send-to-friend`, `video-like-button`, `hsk-coverflow`, `learning-journey`,
+  `auth-shell`, `level-card`, `sample-card`; `lib/messages.ts`, `wallet.ts`, `duel.ts`, `socket.ts`; hook bình luận/thích/theo dõi/tìm
+  người và 3 hook ngữ pháp cũ (trang `/ngu-phap` là Server Component); kiểu `Duel*`, `RankTier*`, `Wallet*`, `DirectMessage`,
+  `UserSearchResult`, `VideoComment`; `learning-library` chỉ còn `LevelFilter` (CSS 879 → 70 dòng).
+- **Lớp học**: `/lop-hoc` đưa 2 hành động lên đầu (học viên nhập mã · giáo viên tạo lớp, nhãn vai "Học viên"/"Giáo viên"), "Lớp học
+  hoạt động thế nào" thu gọn xuống cuối; `/lop-hoc/[id]` nút "Xoá lớp này" xuống cuối trang có xác nhận, lời mời ngắn lại, nút chia sẻ
+  thành lưới 1 cột trên điện thoại; nút "Tạo lớp"/"Giao bài" luôn bấm được, thiếu thông tin thì báo rõ thiếu gì (trước đó nút xám im lặng).
+Kiểm tra: đăng ký + học bài 1 qua API rồi đi trang chủ, chuông (gộp 3 huy hiệu, khung trong màn hình 12–378px, bấm → `/achievements`,
+chưa đọc về 0), trò chơi, tài khoản, lớp học, hồ sơ, popup Premium ở 390 và 1440 — 0 lỗi console, 0 tràn ngang; `next build`.
 
 ### Audit UI/UX 2026-10-17 (user giao toàn quyền quyết định) — các mục cũ bên dưới có thể đã lỗi thời
 Báo cáo đầy đủ (mã X/G/S/Q): claude.ai/artifact/Qvahko7HnmTrruqdyvLRs6. User yêu cầu làm ĐÚNG 8 vấn đề
@@ -498,9 +532,8 @@ User chọn ẩn 4 nhóm (chỉ ẩn LỐI VÀO — code trang/component + dữ 
   đầu vào. Trang có `FeatureTour` PHẢI có `TourButton`, không thì hướng dẫn thành không mở được.
 - **Bảng xếp hạng 2 tiêu chí**: "Chuỗi hiện tại" + "Bài đã xong" (`LEADERBOARD_METRICS`); bỏ "Từ đã thuộc" (cần ~21 ngày, trống
   với mọi người) và "Chuỗi dài nhất" (trùng ý). Giải đấu tuần ở trang chủ giữ nguyên.
-Mở lại: hoàn tác commit "gọn lại trước buổi thuyết trình" (các component `messages-button`, `follow-button`,
-`message-icon-button`, `send-to-friend`, `friends-leaderboard`, `connections-panel`, `comment-section`, `video-like-button`
-vẫn còn, chỉ không ai gắn).
+2026-10-20: nhắn tin, theo dõi, bình luận/thích video đã GỠ HẲN cả code lẫn API (xem "Làm rõ cho người mới") — muốn làm lại
+thì xem lịch sử git trước commit gỡ.
 
 ### Từ điển làm lại theo Hanzii (2026-10-19 — user: "phần từ điển đang thấy hơi đần, cần làm lại", "bỏ imageUrl cũng được")
 Xem thật Hanzii/Hanbeego (vai khách) trước khi làm. `/tu-dien` có 3 chế độ, đều Server Component: **không tham số** = trang chủ
@@ -531,12 +564,10 @@ ngay nút học + ô tra (như Hanbeego/Hanzii). Footer pháp lý (Hanzii/Hanbee
 ### Gỡ 2026-10-19 (audit X2/X3, Q2/Q4 — user duyệt "triển khai nhé")
 - **Đấu 1v1** khỏi `/minigame` (tab, nhãn "Đấu 1v1" ở thẻ trò chơi, luật chơi, bước hướng dẫn, bảng ELO + bậc rank +
   đếm ngược mùa), tab **ELO** ở bảng xếp hạng (`LEADERBOARD_METRICS`), mục menu đổi tên "Trò chơi luyện từ".
-  `lib/duel.ts`, `components/rank-emblem.tsx` + kiểu `Duel*`/`RankTier*` ở `lib/types.ts` còn nằm lại vì bộ phân
-  loại auto mode chặn xoá file — không nơi nào import nên không vào bundle; xoá tay khi được phép.
+  `lib/duel.ts`, `components/rank-emblem.tsx`, kiểu `Duel*`/`RankTier*` đã xoá 2026-10-20.
 - **Khung avatar Phượng Hoàng**: nút bật khung ở thẻ Premium, viền khung ở `/u/[id]`, prop `frameColors` của `Avatar`,
   `useFrameShop`/`equipFrame`. Danh hiệu theo huy hiệu giữ nguyên.
-- **Nạp xu bằng tiền thật CHƯA gỡ** (bộ phân loại chặn sửa luồng thanh toán ở server) — khối "Nạp thêm xu" ở
-  `/account` vẫn tự ẩn vì payOS chưa cấu hình.
+- **Nạp xu**: gỡ 2026-10-20 cùng cả hệ thống xu.
 
 ### Lớp học, hợp tác, bài đọc AI, trang pháp lý (2026-10-19 — user: "thu hút người dùng", "dễ chào mời đối tác", "điểm cao")
 Rà toàn site trước khi làm (khách 33 trang × 390/1440, đã đăng nhập 23 trang × 390/1440/1920): 0 tràn ngang, 0 lỗi JS/request

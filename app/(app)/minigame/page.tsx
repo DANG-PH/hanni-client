@@ -52,7 +52,7 @@ const GAMES: GameDef[] = [
     tagline:
       "Chọn nghĩa tiếng Việt đúng cho từ tiếng Trung hiện ra — chạy đua với đồng hồ.",
     rules: [
-      "Luyện tập 1 mình: 60 giây, trả lời càng nhiều câu càng tốt, mỗi câu đúng thưởng 1 xu.",
+      "Luyện tập 1 mình: 60 giây, trả lời càng nhiều câu càng tốt — mỗi câu đúng 1 điểm.",
     ],
   },
   {
@@ -63,7 +63,7 @@ const GAMES: GameDef[] = [
     tagline:
       "Nghe phát âm rồi chọn đúng nghĩa — không nhìn chữ, luyện phản xạ nghe thật.",
     rules: [
-      "Luyện tập 1 mình: 60 giây, chỉ nghe âm thanh (Hán tự/pinyin được ẩn), mỗi câu đúng thưởng 1 xu.",
+      "Luyện tập 1 mình: 60 giây, chỉ nghe âm thanh (Hán tự/pinyin được ẩn) — mỗi câu đúng 1 điểm.",
     ],
   },
   {
@@ -72,10 +72,10 @@ const GAMES: GameDef[] = [
     icon: "cards",
     tileClass: "bg-good/10 text-good",
     tagline:
-      "Lật thẻ tìm đúng cặp Hán tự ↔ nghĩa — luyện trí nhớ từ vựng, càng ít lật sai càng nhiều xu.",
+      "Lật thẻ tìm đúng cặp Hán tự ↔ nghĩa — luyện trí nhớ từ vựng, càng ít lật sai điểm càng cao.",
     rules: [
       "8 cặp thẻ (16 ô) — lật 2 thẻ mỗi lượt, khớp đúng cặp thì giữ nguyên, sai thì úp lại.",
-      "Hoàn thành càng ít lần lật sai càng được nhiều xu (tối đa 8 xu nếu không sai lần nào).",
+      "Không lật sai lần nào được tối đa 8 điểm, mỗi lần lật sai trừ 1 điểm.",
     ],
   },
   {
@@ -86,25 +86,21 @@ const GAMES: GameDef[] = [
     tagline:
       "Nhìn Hán tự, chọn đúng pinyin — luyện phát âm/thanh điệu thay vì nghĩa.",
     rules: [
-      "Luyện tập 1 mình: 60 giây, trả lời càng nhiều câu càng tốt, mỗi câu đúng thưởng 1 xu.",
+      "Luyện tập 1 mình: 60 giây, trả lời càng nhiều câu càng tốt — mỗi câu đúng 1 điểm.",
     ],
   },
 ];
 
-/** Xu thưởng sau ván — khách chơi được nhưng không có ví (`balance: null`), mời tạo tài khoản. */
-function RewardLine({ result }: { result: MinigameResult }) {
-  if (result.balance === null)
-    return (
-      <p className="mx-auto mt-2 max-w-sm text-sm text-muted">
-        <Link href="/register?next=/minigame" className="font-semibold text-primary hover:underline">
-          Tạo tài khoản
-        </Link>{" "}
-        để nhận xu cho mỗi câu đúng và có tên trên bảng xếp hạng.
-      </p>
-    );
+/** Khách chơi được nhưng điểm không lên bảng xếp hạng — mời tạo tài khoản ngay lúc vừa có điểm. */
+function GuestScoreNote() {
+  const { user } = useAuth();
+  if (user) return null;
   return (
-    <p className="mt-2 text-sm text-good">
-      +{result.coinsEarned} xu — số dư hiện tại: {result.balance.toLocaleString("vi-VN")} xu
+    <p className="mx-auto mt-2 max-w-sm text-sm text-muted">
+      <Link href="/register?next=/minigame" className="font-semibold text-primary hover:underline">
+        Tạo tài khoản
+      </Link>{" "}
+      để điểm của bạn có tên trên bảng xếp hạng.
     </p>
   );
 }
@@ -119,10 +115,10 @@ const MINIGAME_TOUR_STEPS: TourStep[] = [
       "Dịch tốc độ, Nghe đoán từ, Ghép cặp và Chọn pinyin đúng — mỗi ván 60 giây. Bấm vào một trò sẽ xem luật trước rồi mới bắt đầu.",
   },
   {
-    icon: "plus",
-    title: "Chơi được cộng xu",
+    icon: "trophy",
+    title: "Bảng xếp hạng ngày, tuần",
     description:
-      "Mỗi câu đúng đổi thành xu, dùng mua lá chắn giữ chuỗi ngày học trong mục Tài khoản.",
+      "Mỗi trò có bảng xếp hạng riêng theo điểm — chơi lại để vượt điểm cao nhất của chính mình.",
   },
 ];
 
@@ -321,9 +317,8 @@ function SoloMinigame({ game }: { game: GameDef }) {
           <div className="py-8 text-center">
             <Icon name="clock" size={36} className="mx-auto mb-4 text-accent" />
             <p className="mx-auto mb-5 max-w-md text-sm leading-6 text-muted">
-              Bạn có 60 giây để trả lời càng nhiều câu hỏi trắc nghiệm càng tốt.
-              Mỗi câu đúng thưởng 1 xu — dùng xu để mua thêm lá chắn giữ chuỗi
-              ngày học trong trang Tài khoản.
+              Bạn có 60 giây để trả lời càng nhiều câu hỏi trắc nghiệm càng tốt
+              — mỗi câu đúng 1 điểm.
             </p>
             <Button onClick={() => void start()} disabled={starting}>
               {starting ? "Đang chuẩn bị…" : "Bắt đầu chơi"}
@@ -396,7 +391,7 @@ function SoloMinigame({ game }: { game: GameDef }) {
                 <p className="text-2xl font-bold">
                   {result.score}/{result.totalAsked} câu đúng
                 </p>
-                <RewardLine result={result} />
+                <GuestScoreNote />
                 <Button className="mt-5" onClick={() => setPhase("idle")}>
                   Chơi lại
                 </Button>
@@ -590,9 +585,8 @@ function MatchMinigame() {
           <div className="py-8 text-center">
             <Icon name="cards" size={36} className="mx-auto mb-4 text-good" />
             <p className="mx-auto mb-5 max-w-md text-sm leading-6 text-muted">
-              Lật 2 thẻ mỗi lượt để tìm đúng cặp Hán tự ↔ nghĩa. Hoàn thành
-              không sai lần nào được thưởng tối đa 8 xu, mỗi lần lật sai trừ 1
-              xu.
+              Lật 2 thẻ mỗi lượt để tìm đúng cặp Hán tự ↔ nghĩa. Không lật sai
+              lần nào được tối đa 8 điểm, mỗi lần lật sai trừ 1 điểm.
             </p>
             <Button onClick={() => void start()} disabled={starting}>
               {starting ? "Đang chuẩn bị…" : "Bắt đầu chơi"}
@@ -671,7 +665,7 @@ function MatchMinigame() {
                 <p className="mt-2 text-sm text-muted">
                   Sai {mistakes} lần · {Math.floor(elapsedMs / 1000)} giây
                 </p>
-                <RewardLine result={result} />
+                <GuestScoreNote />
                 <Button className="mt-5" onClick={playAgain}>
                   Chơi lại
                 </Button>
@@ -716,7 +710,7 @@ function MatchMinigame() {
                   {row.displayName}
                 </span>
                 <span className="text-sm font-semibold text-primary">
-                  {row.score} xu · {Math.floor(row.durationMs / 1000)}s
+                  {row.score} điểm · {Math.floor(row.durationMs / 1000)}s
                 </span>
               </div>
             ))
@@ -760,7 +754,7 @@ type View =
   | { stage: "play"; game: GameDef };
 
 export default function MinigamePage() {
-  // Khách chơi được 4 trò 1 mình (2026-10-18) — không xu, không lên bảng xếp hạng.
+  // Khách chơi được 4 trò 1 mình (2026-10-18) — điểm không lên bảng xếp hạng.
   const { loading } = useAuth();
   const [view, setView] = useState<View>({ stage: "hub" });
 

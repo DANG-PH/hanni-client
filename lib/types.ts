@@ -283,8 +283,6 @@ export interface VideoCard {
   isFree: boolean;
   progressPct: number;
   completed: boolean;
-  likeCount: number;
-  likedByMe: boolean;
 }
 
 export interface WordMatch {
@@ -323,39 +321,22 @@ export interface VideoDetail {
   author: string | null;
   lines: VideoLine[];
   progress: { lastLineIndex: number; linesRead: number; completed: boolean };
-  likeCount: number;
-  likedByMe: boolean;
-  commentCount: number;
-}
-
-export interface CommentAuthor {
-  id: string;
-  displayName: string;
-  avatarUrl: string | null;
-}
-
-export interface VideoComment {
-  id: string;
-  content: string;
-  parentId: string | null;
-  createdAt: string;
-  user: CommentAuthor;
-  replies: VideoComment[];
 }
 
 export type NotificationType =
-  | "COMMENT_REPLY"
-  | "NEW_FOLLOWER"
-  | "ACHIEVEMENT_UNLOCKED";
+  | "ACHIEVEMENT_UNLOCKED"
+  | "CLASS_ASSIGNMENT"
+  | "LEAGUE_RESULT"
+  | "STREAK_SAVED";
 
+/** Thông báo trong app — server soạn sẵn câu chữ (`message`) và nơi mở ra (`href`); huy hiệu thì đọc `achievement`. */
 export interface AppNotification {
   id: string;
   type: NotificationType;
+  message: string | null;
+  href: string | null;
   readAt: string | null;
   createdAt: string;
-  actor: CommentAuthor | null;
-  video: { id: string; title: string } | null;
-  comment: { id: string; content: string } | null;
   achievement: { code: string; nameVi: string; descriptionVi: string } | null;
 }
 
@@ -422,7 +403,6 @@ export interface LeaderboardRow {
   value: number;
   currentStreak: number;
   isMe: boolean;
-  isFollowing: boolean;
 }
 
 export interface Leaderboard {
@@ -462,16 +442,18 @@ export interface DailyQuest {
   title: string;
   progress: number;
   target: number;
-  xu: number;
-  claimed: boolean;
+  done: boolean;
 }
 
+/** Xong cả 3 nhiệm vụ → server tự cấp 1 lá chắn giữ chuỗi (tối đa `maxFreeze`). */
 export interface TodayQuests {
   quests: DailyQuest[];
   allDone: boolean;
-  allDoneBonusXu: number;
-  allDoneClaimed: boolean;
-  justClaimedXu: number;
+  rewardClaimed: boolean;
+  /** Lần gọi này vừa cấp lá chắn — hiện lời chúc mừng. */
+  justEarnedFreeze: boolean;
+  freezeCount: number;
+  maxFreeze: number;
 }
 
 export interface PublicProfileAchievement {
@@ -479,12 +461,6 @@ export interface PublicProfileAchievement {
   nameVi: string;
   descriptionVi: string;
   unlockedAt: string;
-}
-
-export interface PublicProfileUser {
-  id: string;
-  displayName: string;
-  avatarUrl: string | null;
 }
 
 /** Danh hiệu mở khi đạt huy hiệu `requirement`. */
@@ -529,20 +505,7 @@ export interface PublicProfile {
   learnedWordsCount: number;
   completedLessonsCount: number;
   achievements: PublicProfileAchievement[];
-  followerCount: number;
-  followingCount: number;
-  isFollowing: boolean;
   isMe: boolean;
-  followers: PublicProfileUser[];
-  following: PublicProfileUser[];
-}
-
-export interface UserSearchResult {
-  id: string;
-  displayName: string;
-  avatarUrl: string | null;
-  currentStreak: number;
-  isFollowing: boolean;
 }
 
 export type OnboardingGoal =
@@ -641,23 +604,6 @@ export interface RoleplayMessage {
   createdAt: string;
 }
 
-export interface DirectMessage {
-  id: string;
-  conversationId: string;
-  senderId: string;
-  content: string;
-  readAt: string | null;
-  createdAt: string;
-}
-
-export interface ConversationSummary {
-  id: string;
-  updatedAt: string;
-  otherUser: PublicProfileUser;
-  lastMessage: { content: string; createdAt: string; mine: boolean } | null;
-  unreadCount: number;
-}
-
 export interface ReferralStats {
   totalReferred: number;
   rewardedCount: number;
@@ -701,9 +647,6 @@ export interface MinigameStartResponse {
 export interface MinigameResult {
   score: number;
   totalAsked: number;
-  coinsEarned: number;
-  /** null = khách chơi thử (không có ví xu). */
-  balance: number | null;
 }
 
 export interface MinigameLeaderboardRow {
@@ -716,21 +659,8 @@ export interface MinigameLeaderboardRow {
   durationMs: number;
 }
 
-export interface WalletBalance {
-  balance: number;
-}
-
-export interface CoinTransaction {
-  id: string;
-  userId: string;
-  amount: number;
-  reason: string;
-  createdAt: string;
-}
-
-/** Nạp tiền thật lấy xu qua payOS (1 VNĐ = 1 xu) — xem `hanni-server/CLAUDE.md`
- * mục PaymentsService. */
-export interface TopUpResponse {
+/** Link thanh toán payOS của 1 đơn Premium — xem `hanni-server/CLAUDE.md` mục Premium. */
+export interface CheckoutResponse {
   checkoutUrl: string;
   qrCode: string;
   orderCode: number;
@@ -738,116 +668,11 @@ export interface TopUpResponse {
 
 export type PaymentOrderStatus = "PENDING" | "PAID" | "CANCELLED" | "EXPIRED";
 
-export interface TopUpOrder {
+export interface PaymentOrder {
   orderCode: number;
   amountVnd: number;
-  xuAmount: number;
-  kind?: "TOPUP" | "PREMIUM";
-  premiumPlanKey?: string | null;
+  premiumPlanKey: string | null;
   status: PaymentOrderStatus;
-}
-
-export interface DuelOpponent {
-  id: string;
-  displayName: string;
-  avatarUrl: string | null;
-}
-
-export interface DuelMatched {
-  matchId: string;
-  opponent: DuelOpponent;
-  totalRounds: number;
-  /** ms nghỉ trước câu hỏi đầu tiên — FE dùng để chạy đếm ngược màn "VS". */
-  introMs: number;
-}
-
-export interface DuelRoundQuestion {
-  wordId: string;
-  prompt: string;
-  pinyin: string;
-  options: string[];
-}
-
-export interface DuelRoundPayload {
-  matchId: string;
-  round: number;
-  totalRounds: number;
-  question: DuelRoundQuestion;
-  deadlineMs: number;
-}
-
-export interface DuelRoundResult {
-  matchId: string;
-  round: number;
-  correctIndex: number;
-  scores: Record<string, number>;
-}
-
-export interface DuelFinished {
-  matchId: string;
-  opponent: DuelOpponent;
-  myScore: number;
-  opponentScore: number;
-  winnerId: string | null;
-  /** khác null nếu trận kết thúc sớm do 1 bên rớt mạng quá lâu. */
-  forfeitedBy: "me" | "opponent" | null;
-  eloChange: number;
-  newElo: number;
-}
-
-export interface DuelRatingStats {
-  elo: number;
-  wins: number;
-  losses: number;
-  draws: number;
-  tier: string;
-  tierColor: string;
-}
-
-export interface DuelLeaderboardRow {
-  rank: number;
-  userId: string;
-  displayName: string;
-  avatarUrl: string | null;
-  elo: number;
-  tier: string;
-  tierColor: string;
-  wins: number;
-  losses: number;
-  draws: number;
-}
-
-export interface DuelSeasonInfo {
-  number: number;
-  startedAt: string;
-  endsAt: string;
-  daysRemaining: number;
-}
-
-export interface RankTierInfo {
-  name: string;
-  min: number;
-  color: string;
-}
-
-/** Bảng ngưỡng rank + luật riêng của Thách Đấu (giới hạn số lượng, xem
- * `GET /duel/rank-tiers`) — nguồn dữ liệu DUY NHẤT cho bảng chú giải rank,
- * tránh chép tay lại ngưỡng ELO ở client. */
-export interface RankTiersInfo {
-  tiers: RankTierInfo[];
-  challengerTopN: number;
-}
-
-/** Trận ĐANG DIỄN RA của mình, nếu có — dùng để tự phục hồi UI khi mở lại
- * trang giữa 1 trận (xem `GET /duel/active`). */
-export interface DuelActiveMatch {
-  matchId: string;
-  opponent: DuelOpponent;
-  totalRounds: number;
-  round: number;
-  scores: Record<string, number>;
-  question: DuelRoundQuestion | null;
-  myAnswered: boolean;
 }
 
 /** Gợi ý quy luật thanh điệu Hán Việt → tiếng Trung cho 1 chữ (server tính). */

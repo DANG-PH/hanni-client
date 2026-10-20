@@ -72,7 +72,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
   );
 }
 
-/** Số nhỏ cạnh mục menu: từ cần ôn (tin nhắn chưa đọc nằm ở nút tin nhắn trên thanh trên). */
+/** Số nhỏ cạnh mục menu: số từ đang đến hạn ôn. */
 export function useNavBadges() {
   const { data: stats } = useStudyStats();
   return { due: stats?.dueNow ?? 0 };

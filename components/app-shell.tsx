@@ -98,16 +98,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Icon name="flame" size={16} />
                 {streak.data.currentStreak}
                 <span className="hidden md:inline">ngày</span>
-                {/* Lá chắn kiếm được (mốc 7 ngày, mời bạn, mua bằng xu) trước
-                 * đây KHÔNG hiện ở đâu cả — phần thưởng vô hình thì không tạo
-                 * được động lực nào. `streakFreezeCount` đã có sẵn trong
-                 * `GET /streak` từ lâu mà chưa UI nào đọc. */}
+                {/* Lá chắn kiếm được (mốc 7 ngày, mời bạn, xong nhiệm vụ ngày)
+                 * phải nhìn thấy được — phần thưởng vô hình thì không tạo
+                 * được động lực nào. */}
                 {streak.data.streakFreezeCount > 0 && (
                   <span
                     title={`${streak.data.streakFreezeCount} lá chắn — giữ chuỗi nếu bạn lỡ nghỉ 1 ngày`}
                     className="ml-0.5 flex items-center gap-0.5 border-l border-primary/20 pl-1.5 text-xs"
                   >
-                    <Icon name="heart" size={13} />
+                    <Icon name="shield" size={13} />
                     {streak.data.streakFreezeCount}
                   </span>
                 )}
@@ -176,8 +175,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </footer>
       </div>
       <BottomNav onMore={() => drawer.current?.showModal()} />
-      {/* Trang chat (tin nhắn, luyện nói AI) có ô soạn ở đáy — bong bóng trợ lý đè đúng nút Gửi. */}
-      {user && !/^\/(messages|roleplay)(\/|$)/.test(pathname) && <AssistantWidget />}
+      {/* Luyện nói AI có ô soạn ở đáy — bong bóng trợ lý đè đúng nút Gửi. */}
+      {user && !/^\/roleplay(\/|$)/.test(pathname) && <AssistantWidget />}
       {user && <StreakCelebration />}
     </div>
   );

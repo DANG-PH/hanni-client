@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/icon";
 import { TONE_CLASS } from "@/components/tone-pinyin";
 import { mediaUrl } from "@/lib/api";
+import { markToneTried } from "@/lib/getting-started";
 import { stopListening } from "@/lib/listening-audio";
 import { TONES } from "@/lib/pinyin";
 import {
@@ -350,6 +351,7 @@ export function ToneCheck({
           }
           setResult(r);
           setPhase("done");
+          markToneTried();
         })
         .catch(() => {
           setPhase("error");

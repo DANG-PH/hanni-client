@@ -5,7 +5,7 @@ import { Avatar } from "@/components/avatar";
 import { Icon } from "@/components/icon";
 import { Card } from "@/components/ui";
 import { useWeeklyLeague } from "@/lib/hooks";
-import styles from "./friends-leaderboard.module.css";
+import styles from "./weekly-league-card.module.css";
 
 const ZONE_LABEL: Record<string, string> = {
   promote: "Sắp thăng hạng",
@@ -24,7 +24,7 @@ export function WeeklyLeagueCard() {
   const data = board.data;
 
   return (
-    <Card className={styles.card}>
+    <Card id="giai-dau" className={`scroll-mt-24 ${styles.card}`}>
       <div className={styles.heading}>
         <div className="flex items-center gap-2 text-primary">
           <Icon name="trophy" size={18} />

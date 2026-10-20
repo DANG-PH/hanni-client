@@ -65,12 +65,15 @@ export function LinkButton({
 export function Card({
   children,
   className = "",
+  id,
 }: {
   children: ReactNode;
   className?: string;
+  /** Neo để liên kết `#id` cuộn tới (vd thông báo kết quả giải đấu → `/learn#giai-dau`). */
+  id?: string;
 }) {
   return (
-    <div className={`reveal panel p-5 sm:p-6 ${className}`}>{children}</div>
+    <div id={id} className={`reveal panel p-5 sm:p-6 ${className}`}>{children}</div>
   );
 }
 export function ProgressBar({

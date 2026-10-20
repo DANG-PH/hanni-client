@@ -16,8 +16,8 @@ function joinedLabel(iso: string): string {
   });
 }
 
-/** Hồ sơ công khai: chuỗi ngày học, số liệu, huy hiệu. Nhắn tin + theo dõi đã ẩn (2026-10-19 — gọn lại trước
- * buổi thuyết trình: app học khác không có nhắn tin, ít người dùng nên hộp thư/danh sách theo dõi trống). */
+/** Hồ sơ công khai: chuỗi ngày học, số liệu, huy hiệu. Nhắn tin + theo dõi đã gỡ hẳn (2026-10-20 — app học
+ * khác không có nhắn tin, ít người dùng nên hộp thư/danh sách theo dõi trống). */
 export default function PublicProfilePage() {
   const { user: me, loading } = useRequireAuth();
   const params = useParams<{ id: string }>();

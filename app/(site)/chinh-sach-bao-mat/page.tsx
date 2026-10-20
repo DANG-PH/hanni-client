@@ -19,7 +19,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="Chính sách bảo mật"
-      updated="19/10/2026"
+      updated="21/10/2026"
       intro={
         <p>
           Trang này nói rõ Hanni lưu những gì về bạn, vì sao, và bạn kiểm soát dữ liệu đó thế nào. Bạn dùng được phần lớn Hanni (bài
@@ -32,8 +32,8 @@ export default function PrivacyPage() {
           title: "Dữ liệu Hanni lưu khi bạn có tài khoản",
           body: ul([
             "Email, tên hiển thị, ảnh đại diện (nếu bạn tải lên), múi giờ; mật khẩu chỉ lưu dạng băm, không ai đọc được. Đăng nhập bằng Google thì Hanni nhận email, tên và ảnh từ Google.",
-            "Tiến độ học: từ đã học và lịch ôn, bài đã xong, chuỗi ngày, phút học mỗi ngày, kết quả luyện nghe/phát âm, điểm và bài làm đề thi thử, huy hiệu, xu.",
-            "Nội dung bạn tạo: bình luận video, tin nhắn với người học khác, hội thoại với trợ lý AI và luyện nói, lớp học bạn tạo hoặc tham gia.",
+            "Tiến độ học: từ đã học và lịch ôn, bài đã xong, chuỗi ngày, phút học mỗi ngày, kết quả luyện nghe/phát âm, điểm và bài làm đề thi thử, huy hiệu.",
+            "Nội dung bạn tạo: hội thoại với trợ lý AI và luyện nói, câu bạn tự đặt để AI chấm, lớp học bạn tạo hoặc tham gia. Bình luận video và tin nhắn viết trước khi Hanni gỡ hai tính năng này (20/10/2026) vẫn được lưu tới khi bạn xoá tài khoản.",
             "Cài đặt: mục tiêu ngày, giờ nhắc học, đăng ký nhận thông báo đẩy của trình duyệt.",
           ]),
         },
@@ -55,7 +55,7 @@ export default function PrivacyPage() {
                 "Google Gemini API — xử lý nội dung bạn gửi cho tính năng AI (trợ lý, luyện nói, chấm câu, phân tích câu, mẹo nhớ, bài đọc, quét ảnh, nhận xét học tập). Chỉ phần nội dung cần cho lượt đó được gửi đi, kèm số liệu học tập liên quan nếu tính năng cần.",
                 "Nhận dạng giọng nói của trình duyệt — khi bạn bấm micro (tra từ, luyện phát âm, nói với AI), trình duyệt Chrome/Edge gửi âm thanh tới máy chủ của Google/Microsoft để chuyển thành chữ; Hanni chỉ nhận lại phần chữ.",
                 "Đăng nhập bằng Google; YouTube (video nhúng trong mục Học qua video); Wikimedia Commons/Wikipedia (ảnh minh hoạ từ vựng).",
-                "Dịch máy (Google Translate, MyMemory) cho phụ đề video và nút Dịch trong tin nhắn — chỉ gửi đúng câu cần dịch.",
+                "Dịch máy (Google Translate, MyMemory) cho phụ đề video — chỉ gửi lời thoại của video, không gửi dữ liệu của bạn.",
                 "Vercel (phục vụ giao diện web) và máy chủ riêng (VPS) của Hanni — nơi lưu tài khoản và tiến độ học.",
                 "payOS — chỉ khi bạn thanh toán Premium (đang chuẩn bị mở bán); Hanni không lưu số thẻ hay tài khoản ngân hàng.",
               ])}
@@ -86,7 +86,7 @@ export default function PrivacyPage() {
           title: "Quyền của bạn",
           body: ul([
             "Sửa tên, ảnh, múi giờ, mục tiêu ở Tài khoản và Cài đặt; tắt email tổng kết tuần và thông báo đẩy bất cứ lúc nào.",
-            "Xoá tài khoản ở Tài khoản → Vùng nguy hiểm: toàn bộ tiến độ, tin nhắn và dữ liệu cá nhân bị xoá vĩnh viễn ngay lập tức.",
+            "Xoá tài khoản ở Tài khoản → Vùng nguy hiểm: toàn bộ tiến độ, nội dung bạn tạo và dữ liệu cá nhân bị xoá vĩnh viễn ngay lập tức.",
             "Muốn hỏi thêm về dữ liệu của mình: liên hệ qua form Liên hệ (cuối trang Dành cho giáo viên).",
           ]),
         },

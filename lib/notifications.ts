@@ -73,19 +73,19 @@ export function useNotificationSocket() {
   }, [user]);
 }
 
-export async function markNotificationRead(id: string) {
-  patchCache((current) => ({
-    ...current,
-    items: current.items.map((n) =>
-      n.id === id && !n.readAt
-        ? { ...n, readAt: new Date().toISOString() }
-        : n,
-    ),
-    unreadCount: current.items.some((n) => n.id === id && !n.readAt)
-      ? Math.max(0, current.unreadCount - 1)
-      : current.unreadCount,
-  }));
-  await api.patch(`/notifications/${id}/read`).catch(() => undefined);
+/** Đánh dấu đã đọc 1 dòng của chuông — dòng gộp nhiều huy hiệu thì nhiều id. */
+export async function markNotificationsRead(ids: string[]) {
+  if (ids.length === 0) return;
+  const now = new Date().toISOString();
+  patchCache((current) => {
+    const fresh = current.items.filter((n) => ids.includes(n.id) && !n.readAt).length;
+    return {
+      ...current,
+      items: current.items.map((n) => (ids.includes(n.id) && !n.readAt ? { ...n, readAt: now } : n)),
+      unreadCount: Math.max(0, current.unreadCount - fresh),
+    };
+  });
+  await Promise.all(ids.map((id) => api.patch(`/notifications/${id}/read`).catch(() => undefined)));
 }
 
 export async function markAllNotificationsRead() {

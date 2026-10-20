@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AvatarEditor } from "@/components/avatar-editor";
 import { JoinClassForm } from "@/components/classrooms/join-class-form";
@@ -21,13 +21,7 @@ import { api, ApiError } from "@/lib/api";
 import { useAuth, useRequireAuth } from "@/lib/auth";
 import { useMyClassrooms } from "@/lib/classrooms";
 import { useReferralStats } from "@/lib/hooks";
-import {
-  createTopUp,
-  getTopUpStatus,
-  useTopUpConfigured,
-} from "@/lib/payments";
 import { TIMEZONES } from "@/lib/timezones";
-import { buyStreakFreeze, useWallet } from "@/lib/wallet";
 
 export default function AccountPage() {
   const { user, loading, logout, refresh } = useRequireAuth();
@@ -190,7 +184,6 @@ export default function AccountPage() {
             </Link>
           </Card>
           <PremiumSection />
-          <WalletCard />
           <Card>
             <SectionHeading
               icon="route"
@@ -362,162 +355,6 @@ function PasswordForm({
   );
 }
 
-const TOPUP_PRESETS_VND = [10_000, 20_000, 50_000, 100_000];
-
-function WalletCard() {
-  const { data, mutate } = useWallet();
-  const topupConfigured = useTopUpConfigured();
-  const [buying, setBuying] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [amountVnd, setAmountVnd] = useState(20_000);
-  const [toppingUp, setToppingUp] = useState(false);
-  const [topupNote, setTopupNote] = useState("");
-
-  async function buy() {
-    if (buying) return;
-    setBuying(true);
-    setError("");
-    setMessage("");
-    try {
-      const res = await buyStreakFreeze();
-      await mutate({ balance: res.balance }, { revalidate: false });
-      setMessage(`Đã mua thêm 1 lá chắn streak với ${res.price} xu!`);
-    } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : "Chưa mua được, thử lại nhé.",
-      );
-    } finally {
-      setBuying(false);
-    }
-  }
-
-  async function topUp() {
-    if (toppingUp) return;
-    setToppingUp(true);
-    setTopupNote("");
-    try {
-      const res = await createTopUp(amountVnd);
-      window.location.href = res.checkoutUrl;
-    } catch (err) {
-      setTopupNote(
-        err instanceof ApiError
-          ? err.message
-          : "Chưa tạo được link nạp, thử lại nhé.",
-      );
-      setToppingUp(false);
-    }
-  }
-
-  // Vừa quay lại từ payOS qua returnUrl (?topup=<orderCode>) — đọc thẳng
-  // window.location thay vì useSearchParams() để khỏi phải bọc cả trang
-  // trong <Suspense> chỉ vì 1 khối nhỏ này.
-  useEffect(() => {
-    const code = Number(
-      new URLSearchParams(window.location.search).get("topup"),
-    );
-    if (!Number.isFinite(code) || code <= 0) return;
-    window.history.replaceState({}, "", window.location.pathname);
-    void getTopUpStatus(code)
-      .then((order) => {
-        if (order.status === "PAID") {
-          setTopupNote(
-            `Nạp thành công! +${order.xuAmount.toLocaleString("vi-VN")} xu.`,
-          );
-          void mutate();
-        } else if (order.status === "PENDING") {
-          setTopupNote(
-            "Đang chờ xác nhận thanh toán — thử tải lại trang sau ít phút.",
-          );
-        } else {
-          setTopupNote("Giao dịch đã huỷ hoặc hết hạn.");
-        }
-      })
-      .catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return (
-    <Card>
-      <div className="flex items-center gap-3">
-        <span className="icon-tile bg-accent/10 text-accent">
-          <Icon name="spark" />
-        </span>
-        <div>
-          <h2 className="font-semibold">Ví xu</h2>
-          {/* Nói RÕ xu từ đâu ra và tiêu vào đâu — trước đó chỉ nhắc đúng 1
-           * minigame (giờ có 4) nên người dùng không biết mình kiếm xu bằng
-           * cách nào khác, cũng không biết tiêu để làm gì. */}
-          <p className="mt-1 text-sm text-muted">
-            Kiếm xu khi chơi minigame, xong nhiệm vụ hàng ngày và học đều mỗi
-            ngày. Dùng xu mua lá chắn giữ chuỗi ngày học. Danh hiệu thì không
-            mua được — mở bằng huy hiệu học thật.
-          </p>
-        </div>
-      </div>
-      <p className="mt-4 text-3xl font-bold text-accent">
-        {(data?.balance ?? 0).toLocaleString("vi-VN")}
-        <span className="ml-2 text-sm font-normal text-muted">xu</span>
-      </p>
-      <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-4">
-        <Button
-          variant="secondary"
-          onClick={() => void buy()}
-          disabled={buying}
-        >
-          {buying ? "Đang mua…" : "Mua lá chắn streak (300 xu)"}
-        </Button>
-        <LinkButton href="/minigame" variant="ghost">
-          Kiếm xu ở minigame <Icon name="arrow" size={16} />
-        </LinkButton>
-      </div>
-      <p className="mt-2 text-xs text-muted">
-        Lá chắn giữ nguyên chuỗi ngày học nếu bạn lỡ nghỉ đúng 1 ngày.
-      </p>
-      {message && <p className="mt-3 text-sm text-good">{message}</p>}
-      {error && <ErrorNote>{error}</ErrorNote>}
-
-      {topupConfigured.data?.configured && (
-        <div className="mt-5 border-t border-border pt-4">
-          <h3 className="text-sm font-semibold">Nạp thêm xu</h3>
-          <p className="mt-1 text-xs text-muted">
-            1 VNĐ = 1 xu, thanh toán qua payOS (chuyển khoản/VietQR). Xu không
-            hoàn tiền, không chuyển nhượng cho người khác.
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {TOPUP_PRESETS_VND.map((v) => (
-              <button
-                key={v}
-                type="button"
-                aria-pressed={amountVnd === v}
-                onClick={() => setAmountVnd(v)}
-                className={`rounded-full px-3 py-1.5 text-xs font-semibold ${amountVnd === v ? "bg-primary/10 text-primary" : "bg-surface-2 text-muted hover:text-foreground"}`}
-              >
-                {v.toLocaleString("vi-VN")}đ
-              </button>
-            ))}
-          </div>
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <input
-              type="number"
-              min={10_000}
-              max={2_000_000}
-              step={1000}
-              value={amountVnd}
-              onChange={(e) => setAmountVnd(Number(e.target.value))}
-              className="field w-40"
-            />
-            <Button onClick={() => void topUp()} disabled={toppingUp}>
-              {toppingUp ? "Đang tạo link…" : "Nạp qua payOS"}
-            </Button>
-          </div>
-          {topupNote && <p className="mt-3 text-sm text-muted">{topupNote}</p>}
-        </div>
-      )}
-    </Card>
-  );
-}
-
 /** Lối vào lớp học cho người chưa có lớp (menu chỉ hiện "Lớp học" khi đã có lớp) — như Duolingo:
  * học viên nhập mã lớp ở Cài đặt → Duolingo for Schools. */
 function ClassroomCard() {
@@ -568,7 +405,7 @@ function ReferralCard({ userId }: { userId: string }) {
         <div>
           <h2 className="font-semibold">Mời bạn bè cùng học</h2>
           <p className="mt-1 text-sm leading-6 text-muted">
-            Khi bạn mời hoàn thành ngày học đầu tiên, cả hai đều nhận thêm 1 🧊
+            Khi bạn mời hoàn thành ngày học đầu tiên, cả hai đều nhận thêm 1
             lá chắn giữ chuỗi ngày học.
           </p>
         </div>
@@ -633,8 +470,8 @@ function DangerZone({ hasPassword }: { hasPassword: boolean }) {
         <div>
           <h2 className="font-semibold text-danger">Vùng nguy hiểm</h2>
           <p className="mt-1 text-sm leading-6 text-muted">
-            Xoá tài khoản sẽ xoá vĩnh viễn toàn bộ tiến độ học, tin nhắn, và dữ
-            liệu cá nhân — không thể khôi phục.
+            Xoá tài khoản sẽ xoá vĩnh viễn toàn bộ tiến độ học và dữ liệu cá
+            nhân — không thể khôi phục.
           </p>
         </div>
       </div>

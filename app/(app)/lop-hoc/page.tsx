@@ -5,18 +5,18 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Avatar } from "@/components/avatar";
 import { JoinClassForm } from "@/components/classrooms/join-class-form";
-import { Icon, type IconName } from "@/components/icon";
+import { Icon } from "@/components/icon";
 import { Button, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { createClassroom, useMyClassrooms } from "@/lib/classrooms";
 import { HSK_LEVELS, hskLabel } from "@/lib/pos";
 
 /** 4 bước của cả luồng — người mới vào trang (chưa có lớp nào) thấy ngay ai làm gì. */
-const FLOW: { icon: IconName; who: string; text: string }[] = [
-  { icon: "plus", who: "Giáo viên", text: "Tạo lớp, nhận mã 6 ký tự" },
-  { icon: "share", who: "Giáo viên", text: "Gửi mã hoặc đường dẫn qua Zalo, Messenger" },
-  { icon: "user", who: "Học viên", text: "Vào lớp — bài được giao hiện ở Trang chủ" },
-  { icon: "chart", who: "Giáo viên", text: "Xem ai đã làm bài, ai học đều mỗi ngày" },
+const FLOW: { who: string; text: string }[] = [
+  { who: "Giáo viên", text: "tạo lớp, nhận mã 6 ký tự" },
+  { who: "Giáo viên", text: "gửi mã hoặc đường dẫn qua Zalo, Messenger" },
+  { who: "Học viên", text: "vào lớp — bài được giao hiện ở Trang chủ" },
+  { who: "Giáo viên", text: "xem ai đã làm bài, ai học đều mỗi ngày" },
 ];
 
 /**
@@ -40,26 +40,10 @@ export default function ClassroomsPage() {
       <PageHeading
         icon="users"
         title="Lớp học"
-        description="Ai cũng tạo được lớp — người tạo là giáo viên của lớp đó. Học viên vào lớp bằng mã giáo viên gửi. Miễn phí."
+        description="Vào lớp của giáo viên bằng mã, hoặc tự mở lớp để giao bài — miễn phí."
       />
 
       {error && <ErrorNote>Chưa tải được danh sách lớp.</ErrorNote>}
-
-      {isNew && (
-        <ol aria-label="Lớp học hoạt động thế nào" className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {FLOW.map((step, i) => (
-            <li key={step.text} className="panel flex items-start gap-3 p-4">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-foreground text-sm font-bold text-background">
-                {i + 1}
-              </span>
-              <span className="min-w-0">
-                <span className="block text-xs font-semibold text-muted">{step.who}</span>
-                <span className="mt-0.5 block text-sm leading-6 font-semibold">{step.text}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
-      )}
 
       {owned.length > 0 && (
         <section aria-labelledby="lop-day" className="space-y-3">
@@ -121,34 +105,55 @@ export default function ClassroomsPage() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <section aria-labelledby="vai-hoc-vien" className="panel space-y-4 p-5 sm:p-6">
           <div>
-            <p className="eyebrow">{isNew ? "Tôi là học viên" : "Vào thêm lớp"}</p>
+            <p className="eyebrow">{isNew ? "Học viên" : "Vào thêm lớp"}</p>
             <h2 id="vai-hoc-vien" className="mt-1 text-lg font-bold">
               Có mã lớp từ giáo viên?
             </h2>
-            <p className="mt-1 text-sm leading-6 text-muted">
-              Nhập mã hoặc mở đường dẫn giáo viên gửi. Vào lớp thì giáo viên thấy tiến độ học của bạn (chuỗi ngày, phút học,
-              bài đã xong, điểm thi thử) — không thấy email.
-            </p>
+            <p className="mt-1 text-sm leading-6 text-muted">Nhập mã 6 ký tự giáo viên gửi qua Zalo, Messenger.</p>
           </div>
           <JoinClassForm />
+          <p className="flex items-start gap-1.5 text-xs leading-5 text-muted">
+            <Icon name="info" size={14} className="mt-0.5 shrink-0" />
+            Vào lớp thì giáo viên thấy chuỗi ngày, phút học, bài đã xong, điểm thi thử của bạn — không thấy email.
+          </p>
         </section>
 
         <section id="tao-lop" aria-labelledby="vai-giao-vien" className="panel scroll-mt-24 space-y-4 p-5 sm:p-6">
           <div>
-            <p className="eyebrow">{isNew ? "Tôi là giáo viên" : "Tạo thêm lớp"}</p>
+            <p className="eyebrow">{isNew ? "Giáo viên" : "Mở thêm lớp"}</p>
             <h2 id="vai-giao-vien" className="mt-1 text-lg font-bold">
-              Dạy tiếng Trung? Tạo lớp miễn phí
+              Dạy tiếng Trung? Mở lớp miễn phí
             </h2>
             <p className="mt-1 text-sm leading-6 text-muted">
-              Không cần đăng ký gói giáo viên. Giao bài từ lộ trình HSK hoặc đề thi thử, xem tiến độ từng học viên.{" "}
+              Giao bài từ lộ trình HSK hoặc đề thi thử, xem ai đã làm, ai học đều.{" "}
               <Link href="/hop-tac" className="font-semibold text-primary hover:underline">
-                Xem giáo viên làm được gì
+                Xem màn giáo viên
               </Link>
             </p>
           </div>
           <CreateClassForm />
         </section>
       </div>
+
+      {isNew && (
+        <section aria-labelledby="cach-hoat-dong" className="rounded-2xl border border-border p-4 sm:p-5">
+          <h2 id="cach-hoat-dong" className="text-sm font-bold">
+            Lớp học hoạt động thế nào
+          </h2>
+          <ol className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {FLOW.map((step, i) => (
+              <li key={step.text} className="flex items-start gap-2.5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                  {i + 1}
+                </span>
+                <span className="min-w-0 text-sm leading-5">
+                  <span className="font-semibold">{step.who}:</span> {step.text}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
     </div>
   );
 }
@@ -162,7 +167,11 @@ function CreateClassForm() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (busy || name.trim().length < 2) return;
+    if (busy) return;
+    if (name.trim().length < 2) {
+      setError("Đặt tên lớp trước nhé (ít nhất 2 ký tự), vd: HSK 1 — tối thứ 3, 5.");
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
@@ -204,7 +213,7 @@ function CreateClassForm() {
         </label>
       </div>
       {error && <p className="text-xs text-danger">{error}</p>}
-      <Button type="submit" disabled={busy || name.trim().length < 2} className="w-full sm:w-auto">
+      <Button type="submit" disabled={busy} className="w-full sm:w-auto">
         <Icon name="plus" size={16} />
         {busy ? "Đang tạo…" : "Tạo lớp"}
       </Button>

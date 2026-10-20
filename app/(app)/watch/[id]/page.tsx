@@ -10,6 +10,7 @@ import {
   type TourStep,
 } from "@/components/feature-tour";
 import { Icon } from "@/components/icon";
+import { Overlay } from "@/components/overlay";
 import { MobileVideoTranscript } from "@/components/mobile-video-transcript";
 import { TranscriptLine } from "@/components/transcript-line";
 import { Button, ErrorNote, Spinner } from "@/components/ui";
@@ -465,70 +466,72 @@ export default function WatchDetailPage() {
       />
 
       {wordPopup?.word && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
-          onClick={() => setWordPopup(null)}
-        >
+        <Overlay>
           <div
-            className="w-full max-w-sm rounded-2xl bg-surface p-5 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+            onClick={() => setWordPopup(null)}
           >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p lang="zh" className="hanzi text-3xl">
-                  {wordPopup.text}
-                </p>
-                <p className="mt-1 text-sm text-primary">
-                  {wordPopup.word.pinyin}
-                </p>
+            <div
+              className="w-full max-w-sm rounded-2xl bg-surface p-5 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p lang="zh" className="hanzi text-3xl">
+                    {wordPopup.text}
+                  </p>
+                  <p className="mt-1 text-sm text-primary">
+                    {wordPopup.word.pinyin}
+                  </p>
+                </div>
+                <span className="rounded-lg bg-surface-2 px-2 py-1 text-xs font-semibold text-muted">
+                  HSK {wordPopup.word.hskLevel}
+                </span>
               </div>
-              <span className="rounded-lg bg-surface-2 px-2 py-1 text-xs font-semibold text-muted">
-                HSK {wordPopup.word.hskLevel}
-              </span>
-            </div>
-            {wordPopup.word.imageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element -- ảnh Pexels ngoài miền, chưa cần next/image cho tính năng còn đang thử nghiệm
-              <img
-                src={wordPopup.word.imageUrl}
-                alt={wordPopup.word.meaningVi ?? wordPopup.text}
-                className="mt-3 h-32 w-full rounded-xl object-cover"
-              />
-            )}
-            <p className="mt-3 text-sm leading-6">
-              {wordPopup.word.meaningVi ?? "Nghĩa đang được cập nhật."}
-            </p>
-            <div className="mt-5 flex gap-2">
-              <Button
-                variant="secondary"
-                className="flex-1"
-                onClick={() => setWordPopup(null)}
-              >
-                Đóng
-              </Button>
-              <Button
-                className="flex-1"
-                disabled={savingWord || savedWordIds.has(wordPopup.word.id)}
-                onClick={() => void saveWord(wordPopup.word!.id)}
-              >
-                {savedWordIds.has(wordPopup.word.id)
-                  ? user
-                    ? "Đã lưu"
-                    : "Đã ghi nhớ"
-                  : savingWord
-                    ? "Đang lưu…"
-                    : "Lưu để ôn tập"}
-              </Button>
-            </div>
-            {!user && savedWordIds.has(wordPopup.word.id) && (
-              <p className="mt-3 text-xs leading-5 text-muted">
-                <Link href={`/register?next=/watch/${id}`} className="font-semibold text-primary hover:underline">
-                  Tạo tài khoản
-                </Link>{" "}
-                để giữ các từ đã ghi nhớ — Hanni nhắc ôn đúng lúc sắp quên.
+              {wordPopup.word.imageUrl && (
+                // eslint-disable-next-line @next/next/no-img-element -- ảnh Pexels ngoài miền, chưa cần next/image cho tính năng còn đang thử nghiệm
+                <img
+                  src={wordPopup.word.imageUrl}
+                  alt={wordPopup.word.meaningVi ?? wordPopup.text}
+                  className="mt-3 h-32 w-full rounded-xl object-cover"
+                />
+              )}
+              <p className="mt-3 text-sm leading-6">
+                {wordPopup.word.meaningVi ?? "Nghĩa đang được cập nhật."}
               </p>
-            )}
+              <div className="mt-5 flex gap-2">
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => setWordPopup(null)}
+                >
+                  Đóng
+                </Button>
+                <Button
+                  className="flex-1"
+                  disabled={savingWord || savedWordIds.has(wordPopup.word.id)}
+                  onClick={() => void saveWord(wordPopup.word!.id)}
+                >
+                  {savedWordIds.has(wordPopup.word.id)
+                    ? user
+                      ? "Đã lưu"
+                      : "Đã ghi nhớ"
+                    : savingWord
+                      ? "Đang lưu…"
+                      : "Lưu để ôn tập"}
+                </Button>
+              </div>
+              {!user && savedWordIds.has(wordPopup.word.id) && (
+                <p className="mt-3 text-xs leading-5 text-muted">
+                  <Link href={`/register?next=/watch/${id}`} className="font-semibold text-primary hover:underline">
+                    Tạo tài khoản
+                  </Link>{" "}
+                  để giữ các từ đã ghi nhớ — Hanni nhắc ôn đúng lúc sắp quên.
+                </p>
+              )}
+            </div>
           </div>
-        </div>
+        </Overlay>
       )}
     </div>
   );

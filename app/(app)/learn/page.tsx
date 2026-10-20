@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ClassAssignmentsCard } from "@/components/classrooms/class-assignments-card";
 import { DailyQuestCard } from "@/components/daily-quest-card";
 import { Icon, type IconName } from "@/components/icon";
+import { GettingStarted } from "@/components/learn/getting-started";
 import { TodayCard } from "@/components/learn/today-card";
 import { TopicExplorer } from "@/components/learn/topic-explorer";
 import { NotificationNudge } from "@/components/pwa/notification-nudge";
@@ -298,6 +299,8 @@ function LearnHome() {
         {user ? <TodayCard /> : <GuestSaveCard learned={guestDone.size} />}
       </div>
 
+      {user && <GettingStarted lessonHref={current ? `/bai-hoc/${current.id}` : "/learn"} />}
+
       {user && <ClassAssignmentsCard />}
 
       {data && (
@@ -357,7 +360,7 @@ function LearnHome() {
        * chừa mảng trống bên dưới. */}
       {user ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <DailyQuestCard />
+          <DailyQuestCard lessonHref={current ? `/bai-hoc/${current.id}` : "/learn"} />
           <WeeklyLeagueCard />
           <WordOfTheDayCard level={courseLevel} />
         </div>

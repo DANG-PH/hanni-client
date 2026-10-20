@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, ErrorNote } from "@/components/ui";
 import { Icon } from "@/components/icon";
+import { Overlay } from "@/components/overlay";
 import { ApiError } from "@/lib/api";
-import { createPremiumCheckout, useTopUpConfigured } from "@/lib/payments";
+import { createPremiumCheckout, usePaymentsConfigured } from "@/lib/payments";
 import { usePremiumStatus } from "@/lib/premium";
 import type { PremiumPlan } from "@/lib/types";
 
@@ -19,7 +20,6 @@ const BENEFITS: { icon: IconName; title: string; desc: string; free: string; pre
   { icon: "spark", title: "Trợ lý AI Hanni", desc: "Hỏi ngữ pháp, từ vựng, nhờ giải thích câu sai trong đề thi thử.", free: "15 lượt/ngày", premium: "Không giới hạn" },
   { icon: "mic", title: "Luyện nói với AI", desc: "Đóng vai tình huống đời thường, có gợi ý câu và nhận xét cuối buổi.", free: "15 lượt/ngày", premium: "Không giới hạn" },
   { icon: "pencil", title: "AI chấm câu, mẹo nhớ, dịch câu", desc: "Đặt câu với từ mới để AI sửa, mẹo nhớ theo âm Hán Việt, phân tích câu ngay ở ô tra từ điển.", free: "10 lượt/ngày", premium: "200 lượt/ngày" },
-  { icon: "flame", title: "Xu x2", desc: "Gấp đôi xu từ minigame và nhiệm vụ ngày — đổi lá chắn giữ chuỗi ngày học.", free: "x1", premium: "x2" },
 ];
 
 const FAQ: { q: string; a: string }[] = [
@@ -57,7 +57,7 @@ export function PremiumModal({
   plans: PremiumPlan[];
   onClose: () => void;
 }) {
-  const configured = useTopUpConfigured();
+  const configured = usePaymentsConfigured();
   const status = usePremiumStatus();
   const panel = useRef<HTMLDivElement>(null);
   const shortest = plans
@@ -124,124 +124,81 @@ export function PremiumModal({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[70] flex items-end justify-center bg-black/45 sm:items-center sm:p-4"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
+    <Overlay>
       <div
-        ref={panel}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="premium-title"
-        tabIndex={-1}
-        className="relative flex max-h-[92dvh] w-full max-w-[880px] flex-col overflow-hidden rounded-t-3xl border border-border bg-surface shadow-2xl outline-none sm:rounded-2xl"
-        style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
+        className="fixed inset-0 z-[70] flex items-end justify-center bg-black/45 sm:items-center sm:p-4"
+        onMouseDown={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
       >
-        <header className="relative shrink-0 border-b border-border bg-gradient-to-br from-accent/20 via-accent/5 to-transparent px-5 pb-5 pt-6 sm:px-8">
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Đóng"
-            className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-xl text-muted hover:bg-surface-2 hover:text-foreground"
-          >
-            <Icon name="close" size={17} />
-          </button>
-          <div className="flex items-center gap-3 pr-10">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent text-white shadow-sm">
-              <Icon name="crown" size={22} />
-            </span>
-            <div className="min-w-0">
-              <h2 id="premium-title" className="text-lg font-bold sm:text-xl">
-                {step === "choose" ? "Hanni Premium" : "Xác nhận gói"}
-              </h2>
-              <p className="mt-0.5 text-sm text-muted">
-                {step === "choose"
-                  ? "Mở thêm tiện ích AI — mọi bài học vẫn miễn phí."
-                  : "Kiểm tra lại trước khi sang trang thanh toán."}
-              </p>
-            </div>
-          </div>
-        </header>
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-8">
-          {step === "choose" ? (
-            <>
-              <section aria-label="Quyền lợi Premium" className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                {BENEFITS.map((b) => (
-                  <div key={b.title} className="flex items-center gap-3 rounded-2xl border border-border p-3 sm:items-start sm:p-3.5">
-                    <span className="icon-tile shrink-0 bg-accent/10 text-accent">
-                      <Icon name={b.icon} size={18} />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold">{b.title}</p>
-                      <p className="mt-0.5 hidden text-xs leading-5 text-muted sm:block">{b.desc}</p>
-                      <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs sm:mt-1.5">
-                        <span className="text-muted line-through decoration-muted/50">{b.free}</span>
-                        <Icon name="arrow" size={12} className="text-muted" />
-                        <span className="font-semibold text-accent">{b.premium}</span>
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                <p className="flex items-center gap-2 rounded-2xl bg-good/10 px-3.5 py-3 text-xs font-medium leading-5 text-good">
-                  <Icon name="check" size={15} className="shrink-0" />
-                  9 cấp HSK, từ điển, ngữ pháp, ôn tập, đề thi thử — bản thường cũng có đủ, không khoá bài nào.
+        <div
+          ref={panel}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="premium-title"
+          tabIndex={-1}
+          className="relative flex max-h-[92dvh] w-full max-w-[880px] flex-col overflow-hidden rounded-t-3xl border border-border bg-surface shadow-2xl outline-none sm:rounded-2xl"
+          style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
+        >
+          <header className="relative shrink-0 border-b border-border bg-gradient-to-br from-accent/20 via-accent/5 to-transparent px-5 pb-5 pt-6 sm:px-8">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Đóng"
+              className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-xl text-muted hover:bg-surface-2 hover:text-foreground"
+            >
+              <Icon name="close" size={17} />
+            </button>
+            <div className="flex items-center gap-3 pr-10">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent text-white shadow-sm">
+                <Icon name="crown" size={22} />
+              </span>
+              <div className="min-w-0">
+                <h2 id="premium-title" className="text-lg font-bold sm:text-xl">
+                  {step === "choose" ? "Hanni Premium" : "Xác nhận gói"}
+                </h2>
+                <p className="mt-0.5 text-sm text-muted">
+                  {step === "choose"
+                    ? "Mở thêm tiện ích AI — mọi bài học vẫn miễn phí."
+                    : "Kiểm tra lại trước khi sang trang thanh toán."}
                 </p>
-              </section>
+              </div>
+            </div>
+          </header>
 
-              <section aria-labelledby="premium-plans" className="mt-6">
-                <h3 id="premium-plans" className="text-sm font-semibold">Chọn gói</h3>
-                <div role="radiogroup" aria-labelledby="premium-plans" className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-3">
-                  {featured.map((plan) => {
-                    const on = plan.key === selectedKey;
-                    const pm = perMonth(plan);
-                    const save = saving(plan);
-                    return (
-                      <button
-                        key={plan.key}
-                        type="button"
-                        role="radio"
-                        aria-checked={on}
-                        onClick={() => setSelectedKey(plan.key)}
-                        className={`relative rounded-2xl border-2 p-4 text-left transition-colors ${
-                          on ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"
-                        }`}
-                      >
-                        {plan.badge && (
-                          <span className="absolute -top-2.5 left-4 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-white">
-                            {plan.badge}
-                          </span>
-                        )}
-                        <span className="flex items-center justify-between gap-2">
-                          <span className="text-sm font-semibold">{durationLabel(plan)}</span>
-                          <span
-                            className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border-2 ${
-                              on ? "border-accent bg-accent text-white" : "border-border"
-                            }`}
-                          >
-                            {on && <Icon name="check" size={11} />}
-                          </span>
-                        </span>
-                        <span className="mt-2 block text-xl font-bold">{formatVnd(plan.priceVnd)}</span>
-                        <span className="mt-0.5 block text-xs text-muted">
-                          {pm ? `≈ ${formatVnd(pm)}/tháng` : plan.months === null ? "Trả 1 lần, dùng mãi" : "Trả theo từng tháng"}
-                        </span>
-                        {save > 0 && (
-                          <span className="mt-2 inline-block rounded-full bg-good/10 px-2 py-0.5 text-xs font-semibold text-good">
-                            Tiết kiệm {save}%
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-                {others.length > 0 && (
-                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                    <span className="text-muted">Gói khác:</span>
-                    {others.map((plan) => {
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-8">
+            {step === "choose" ? (
+              <>
+                <section aria-label="Quyền lợi Premium" className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                  {BENEFITS.map((b) => (
+                    <div key={b.title} className="flex items-center gap-3 rounded-2xl border border-border p-3 sm:items-start sm:p-3.5">
+                      <span className="icon-tile shrink-0 bg-accent/10 text-accent">
+                        <Icon name={b.icon} size={18} />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold">{b.title}</p>
+                        <p className="mt-0.5 hidden text-xs leading-5 text-muted sm:block">{b.desc}</p>
+                        <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs sm:mt-1.5">
+                          <span className="text-muted line-through decoration-muted/50">{b.free}</span>
+                          <Icon name="arrow" size={12} className="text-muted" />
+                          <span className="font-semibold text-accent">{b.premium}</span>
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  <p className="flex items-center gap-2 rounded-2xl bg-good/10 px-3.5 py-3 text-xs font-medium leading-5 text-good">
+                    <Icon name="check" size={15} className="shrink-0" />
+                    9 cấp HSK, từ điển, ngữ pháp, ôn tập, đề thi thử — bản thường cũng có đủ, không khoá bài nào.
+                  </p>
+                </section>
+
+                <section aria-labelledby="premium-plans" className="mt-6">
+                  <h3 id="premium-plans" className="text-sm font-semibold">Chọn gói</h3>
+                  <div role="radiogroup" aria-labelledby="premium-plans" className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+                    {featured.map((plan) => {
                       const on = plan.key === selectedKey;
+                      const pm = perMonth(plan);
+                      const save = saving(plan);
                       return (
                         <button
                           key={plan.key}
@@ -249,135 +206,180 @@ export function PremiumModal({
                           role="radio"
                           aria-checked={on}
                           onClick={() => setSelectedKey(plan.key)}
-                          className={`rounded-full border px-3 py-1.5 font-medium transition-colors ${
-                            on ? "border-accent bg-accent/10 text-foreground" : "border-border text-muted hover:border-accent/40"
+                          className={`relative rounded-2xl border-2 p-4 text-left transition-colors ${
+                            on ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"
                           }`}
                         >
-                          {durationLabel(plan)} · {formatVnd(plan.priceVnd)}
+                          {plan.badge && (
+                            <span className="absolute -top-2.5 left-4 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-white">
+                              {plan.badge}
+                            </span>
+                          )}
+                          <span className="flex items-center justify-between gap-2">
+                            <span className="text-sm font-semibold">{durationLabel(plan)}</span>
+                            <span
+                              className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border-2 ${
+                                on ? "border-accent bg-accent text-white" : "border-border"
+                              }`}
+                            >
+                              {on && <Icon name="check" size={11} />}
+                            </span>
+                          </span>
+                          <span className="mt-2 block text-xl font-bold">{formatVnd(plan.priceVnd)}</span>
+                          <span className="mt-0.5 block text-xs text-muted">
+                            {pm ? `≈ ${formatVnd(pm)}/tháng` : plan.months === null ? "Trả 1 lần, dùng mãi" : "Trả theo từng tháng"}
+                          </span>
+                          {save > 0 && (
+                            <span className="mt-2 inline-block rounded-full bg-good/10 px-2 py-0.5 text-xs font-semibold text-good">
+                              Tiết kiệm {save}%
+                            </span>
+                          )}
                         </button>
                       );
                     })}
                   </div>
-                )}
-              </section>
-
-              <section aria-label="Câu hỏi thường gặp" className="mt-6 divide-y divide-border rounded-2xl border border-border">
-                {FAQ.map((f) => (
-                  <details key={f.q} className="group px-4 py-3">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
-                      {f.q}
-                      <Icon name="chevron" size={15} className="shrink-0 text-muted transition-transform group-open:rotate-180" />
-                    </summary>
-                    <p className="mt-2 text-sm leading-6 text-muted">{f.a}</p>
-                  </details>
-                ))}
-              </section>
-            </>
-          ) : (
-            selected && (
-              <>
-                <div className="rounded-2xl border-2 border-accent bg-accent/5 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold">Hanni Premium · {durationLabel(selected)}</p>
-                      <p className="mt-1 text-xs text-muted">{validity(selected)}</p>
+                  {others.length > 0 && (
+                    <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                      <span className="text-muted">Gói khác:</span>
+                      {others.map((plan) => {
+                        const on = plan.key === selectedKey;
+                        return (
+                          <button
+                            key={plan.key}
+                            type="button"
+                            role="radio"
+                            aria-checked={on}
+                            onClick={() => setSelectedKey(plan.key)}
+                            className={`rounded-full border px-3 py-1.5 font-medium transition-colors ${
+                              on ? "border-accent bg-accent/10 text-foreground" : "border-border text-muted hover:border-accent/40"
+                            }`}
+                          >
+                            {durationLabel(plan)} · {formatVnd(plan.priceVnd)}
+                          </button>
+                        );
+                      })}
                     </div>
-                    <p className="shrink-0 text-xl font-bold">{formatVnd(selected.priceVnd)}</p>
-                  </div>
-                </div>
+                  )}
+                </section>
 
-                <h3 className="mt-6 text-sm font-semibold">Thanh toán thế nào?</h3>
-                <ol className="mt-3 space-y-3">
-                  {[
-                    "Bấm “Thanh toán qua payOS” — trang thanh toán của payOS mở ra.",
-                    "Quét mã VietQR bằng app ngân hàng bất kỳ (hoặc chuyển khoản đúng nội dung trên trang).",
-                    "Xong là Premium tự kích hoạt, trang tự quay về Hanni.",
-                  ].map((t, i) => (
-                    <li key={t} className="flex gap-3 text-sm leading-6">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-bold">
-                        {i + 1}
-                      </span>
-                      {t}
-                    </li>
+                <section aria-label="Câu hỏi thường gặp" className="mt-6 divide-y divide-border rounded-2xl border border-border">
+                  {FAQ.map((f) => (
+                    <details key={f.q} className="group px-4 py-3">
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
+                        {f.q}
+                        <Icon name="chevron" size={15} className="shrink-0 text-muted transition-transform group-open:rotate-180" />
+                      </summary>
+                      <p className="mt-2 text-sm leading-6 text-muted">{f.a}</p>
+                    </details>
                   ))}
-                </ol>
-
-                <ul className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-3">
-                  {(
-                    [
-                      ["lock", "Không lưu thẻ, không tự gia hạn"],
-                      ["check", "Kích hoạt tự động ngay"],
-                      ["refresh", "Hết hạn tự về bản thường, giữ nguyên dữ liệu"],
-                    ] as const
-                  ).map(([icon, text]) => (
-                    <li key={text} className="flex items-center gap-2 rounded-xl bg-surface-2/60 px-3 py-2.5 text-xs font-medium">
-                      <Icon name={icon} size={15} className="shrink-0 text-good" />
-                      {text}
-                    </li>
-                  ))}
-                </ul>
-                {error && (
-                  <div className="mt-4">
-                    <ErrorNote>{error}</ErrorNote>
-                  </div>
-                )}
+                </section>
               </>
-            )
-          )}
-        </div>
+            ) : (
+              selected && (
+                <>
+                  <div className="rounded-2xl border-2 border-accent bg-accent/5 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold">Hanni Premium · {durationLabel(selected)}</p>
+                        <p className="mt-1 text-xs text-muted">{validity(selected)}</p>
+                      </div>
+                      <p className="shrink-0 text-xl font-bold">{formatVnd(selected.priceVnd)}</p>
+                    </div>
+                  </div>
 
-        <footer className="shrink-0 border-t border-border bg-surface px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:px-8 sm:pb-4">
-          {status.data?.lifetime ? (
-            <p className="py-2 text-center text-sm text-muted">Bạn đang có Premium trọn đời — không cần mua thêm.</p>
-          ) : !configured.isLoading && !ready ? (
-            <div className="flex flex-col items-center gap-1 py-1 text-center sm:flex-row sm:justify-between sm:text-left">
-              <p className="text-sm">
-                <span className="font-semibold">Sắp mở bán.</span>{" "}
-                <span className="text-muted">Trong lúc chờ, mọi bài học vẫn miễn phí.</span>
-              </p>
-              <Button disabled className="w-full justify-center sm:w-auto">
-                <Icon name="clock" size={16} />
-                Sắp mở bán
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              {step === "confirm" ? (
-                <Button variant="secondary" onClick={() => setStep("choose")} disabled={busy}>
-                  <Icon name="back" size={16} />
-                  Đổi gói
+                  <h3 className="mt-6 text-sm font-semibold">Thanh toán thế nào?</h3>
+                  <ol className="mt-3 space-y-3">
+                    {[
+                      "Bấm “Thanh toán qua payOS” — trang thanh toán của payOS mở ra.",
+                      "Quét mã VietQR bằng app ngân hàng bất kỳ (hoặc chuyển khoản đúng nội dung trên trang).",
+                      "Xong là Premium tự kích hoạt, trang tự quay về Hanni.",
+                    ].map((t, i) => (
+                      <li key={t} className="flex gap-3 text-sm leading-6">
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-bold">
+                          {i + 1}
+                        </span>
+                        {t}
+                      </li>
+                    ))}
+                  </ol>
+
+                  <ul className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                    {(
+                      [
+                        ["lock", "Không lưu thẻ, không tự gia hạn"],
+                        ["check", "Kích hoạt tự động ngay"],
+                        ["refresh", "Hết hạn tự về bản thường, giữ nguyên dữ liệu"],
+                      ] as const
+                    ).map(([icon, text]) => (
+                      <li key={text} className="flex items-center gap-2 rounded-xl bg-surface-2/60 px-3 py-2.5 text-xs font-medium">
+                        <Icon name={icon} size={15} className="shrink-0 text-good" />
+                        {text}
+                      </li>
+                    ))}
+                  </ul>
+                  {error && (
+                    <div className="mt-4">
+                      <ErrorNote>{error}</ErrorNote>
+                    </div>
+                  )}
+                </>
+              )
+            )}
+          </div>
+
+          <footer className="shrink-0 border-t border-border bg-surface px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:px-8 sm:pb-4">
+            {status.data?.lifetime ? (
+              <p className="py-2 text-center text-sm text-muted">Bạn đang có Premium trọn đời — không cần mua thêm.</p>
+            ) : !configured.isLoading && !ready ? (
+              <div className="flex flex-col items-center gap-1 py-1 text-center sm:flex-row sm:justify-between sm:text-left">
+                <p className="text-sm">
+                  <span className="font-semibold">Sắp mở bán.</span>{" "}
+                  <span className="text-muted">Trong lúc chờ, mọi bài học vẫn miễn phí.</span>
+                </p>
+                <Button disabled className="w-full justify-center sm:w-auto">
+                  <Icon name="clock" size={16} />
+                  Sắp mở bán
                 </Button>
-              ) : (
-                selected && (
-                  <p className="min-w-0 flex-1 text-sm">
-                    <span className="font-semibold">{durationLabel(selected)}</span>
-                    <span className="text-muted"> · {formatVnd(selected.priceVnd)}</span>
-                  </p>
-                )
-              )}
-              <Button
-                className={`justify-center ${step === "confirm" ? "flex-1" : ""}`}
-                disabled={!selected || busy || configured.isLoading}
-                onClick={() => (step === "choose" ? setStep("confirm") : void pay())}
-              >
-                {step === "choose" ? (
-                  <>
-                    Tiếp tục
-                    <Icon name="arrow" size={16} />
-                  </>
-                ) : busy ? (
-                  "Đang mở trang thanh toán…"
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                {step === "confirm" ? (
+                  <Button variant="secondary" onClick={() => setStep("choose")} disabled={busy}>
+                    <Icon name="back" size={16} />
+                    Đổi gói
+                  </Button>
                 ) : (
-                  <>
-                    <Icon name="lock" size={16} />
-                    Thanh toán qua payOS
-                  </>
+                  selected && (
+                    <p className="min-w-0 flex-1 text-sm">
+                      <span className="font-semibold">{durationLabel(selected)}</span>
+                      <span className="text-muted"> · {formatVnd(selected.priceVnd)}</span>
+                    </p>
+                  )
                 )}
-              </Button>
-            </div>
-          )}
-        </footer>
+                <Button
+                  className={`justify-center ${step === "confirm" ? "flex-1" : ""}`}
+                  disabled={!selected || busy || configured.isLoading}
+                  onClick={() => (step === "choose" ? setStep("confirm") : void pay())}
+                >
+                  {step === "choose" ? (
+                    <>
+                      Tiếp tục
+                      <Icon name="arrow" size={16} />
+                    </>
+                  ) : busy ? (
+                    "Đang mở trang thanh toán…"
+                  ) : (
+                    <>
+                      <Icon name="lock" size={16} />
+                      Thanh toán qua payOS
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </footer>
+        </div>
       </div>
-    </div>
+    </Overlay>
   );
 }

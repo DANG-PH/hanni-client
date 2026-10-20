@@ -20,6 +20,11 @@ export function PremiumNavCard({
   const { data } = usePremiumStatus();
   const [open, setOpen] = useState(false);
   if (!data) return null;
+  // Trong ngăn "Thêm" của điện thoại (<dialog> nằm lớp trên cùng): đóng ngăn trước, không thì popup gắn ở <body> bị che.
+  const upgrade = () => {
+    onNavigate?.();
+    setOpen(true);
+  };
 
   if (data.active)
     return (
@@ -41,7 +46,7 @@ export function PremiumNavCard({
       {collapsed ? (
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={upgrade}
           title="Nâng cấp Premium"
           aria-label="Nâng cấp Premium"
           className="nav-item mb-1 w-full justify-center px-0! text-accent!"
@@ -61,7 +66,7 @@ export function PremiumNavCard({
           </p>
           <button
             type="button"
-            onClick={() => setOpen(true)}
+            onClick={upgrade}
             className="motion-button mt-3 flex min-h-9 w-full items-center justify-center gap-1.5 rounded-xl border border-primary bg-primary text-xs font-bold text-primary-fg shadow-[0_3px_0_0_color-mix(in_srgb,var(--primary)_62%,#000)] hover:brightness-105 active:translate-y-[2px] active:shadow-none"
           >
             Nâng cấp

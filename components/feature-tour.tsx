@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { Icon, type IconName } from "@/components/icon";
+import { Overlay } from "@/components/overlay";
 import { onOpenTour, openTour } from "@/lib/tour";
 
 export interface TourStep {
@@ -48,54 +49,56 @@ export function FeatureTour({
   const isLast = index === steps.length - 1;
 
   return (
-    <div
-      role="dialog"
-      aria-label="Hướng dẫn sử dụng"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-    >
+    <Overlay>
       <div
-        className="relative w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-2xl"
-        style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
+        role="dialog"
+        aria-label="Hướng dẫn sử dụng"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
       >
-        <button
-          type="button"
-          onClick={close}
-          aria-label="Bỏ qua hướng dẫn"
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-foreground"
+        <div
+          className="relative w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-2xl"
+          style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
         >
-          <Icon name="close" size={16} />
-        </button>
+          <button
+            type="button"
+            onClick={close}
+            aria-label="Bỏ qua hướng dẫn"
+            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-foreground"
+          >
+            <Icon name="close" size={16} />
+          </button>
 
-        <div className="icon-tile mx-auto flex h-16 w-16 items-center justify-center text-primary">
-          <Icon name={step.icon} size={32} />
-        </div>
-        <h2 className="mt-4 text-center text-base font-bold">{step.title}</h2>
-        <p className="mt-2 text-center text-sm leading-6 text-muted">
-          {step.description}
-        </p>
+          <div className="icon-tile mx-auto flex h-16 w-16 items-center justify-center text-primary">
+            <Icon name={step.icon} size={32} />
+          </div>
+          <h2 className="mt-4 text-center text-base font-bold">{step.title}</h2>
+          <p className="mt-2 text-center text-sm leading-6 text-muted">
+            {step.description}
+          </p>
 
-        <div className="mt-5 flex items-center justify-center gap-1.5">
-          {steps.map((_, i) => (
-            <span
-              key={i}
-              className={`h-1.5 rounded-full transition-all ${
-                i === index ? "w-5 bg-primary" : "w-1.5 bg-border"
-              }`}
-            />
-          ))}
-        </div>
+          <div className="mt-5 flex items-center justify-center gap-1.5">
+            {steps.map((_, i) => (
+              <span
+                key={i}
+                className={`h-1.5 rounded-full transition-all ${
+                  i === index ? "w-5 bg-primary" : "w-1.5 bg-border"
+                }`}
+              />
+            ))}
+          </div>
 
-        <div className="mt-5 flex items-center justify-between gap-2">
-          <Button variant="ghost" onClick={close}>
-            Bỏ qua
-          </Button>
-          <Button onClick={() => (isLast ? close() : setIndex((i) => i + 1))}>
-            {isLast ? "Đã hiểu, bắt đầu thôi!" : "Tiếp theo"}
-            <Icon name="arrow" size={16} />
-          </Button>
+          <div className="mt-5 flex items-center justify-between gap-2">
+            <Button variant="ghost" onClick={close}>
+              Bỏ qua
+            </Button>
+            <Button onClick={() => (isLast ? close() : setIndex((i) => i + 1))}>
+              {isLast ? "Đã hiểu, bắt đầu thôi!" : "Tiếp theo"}
+              <Icon name="arrow" size={16} />
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </Overlay>
   );
 }
 

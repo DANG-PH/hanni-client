@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { mutate } from "swr";
 import { Icon } from "@/components/icon";
+import { Overlay } from "@/components/overlay";
 import { Button, ProgressBar } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -257,27 +258,29 @@ export function SessionRunner({ session }: { session: LessonSession }) {
       )}
 
       {confirmExit && (
-        <div
-          role="dialog"
-          aria-label="Thoát bài học"
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
-        >
-          <div className="w-full max-w-sm rounded-2xl bg-surface p-6 text-center shadow-2xl">
-            <h2 className="text-lg font-bold">Dừng bài học?</h2>
-            <p className="mt-2 text-sm text-muted">
-              Còn một chút nữa thôi. Nếu thoát bây giờ, kết quả bài này sẽ chưa được lưu.
-            </p>
-            <div className="mt-5 grid gap-2">
-              <Button onClick={() => setConfirmExit(false)}>Học tiếp</Button>
-              <Button
-                variant="ghost"
-                onClick={() => router.push(user ? "/learn" : "/")}
-              >
-                Thoát
-              </Button>
+        <Overlay>
+          <div
+            role="dialog"
+            aria-label="Thoát bài học"
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+          >
+            <div className="w-full max-w-sm rounded-2xl bg-surface p-6 text-center shadow-2xl">
+              <h2 className="text-lg font-bold">Dừng bài học?</h2>
+              <p className="mt-2 text-sm text-muted">
+                Còn một chút nữa thôi. Nếu thoát bây giờ, kết quả bài này sẽ chưa được lưu.
+              </p>
+              <div className="mt-5 grid gap-2">
+                <Button onClick={() => setConfirmExit(false)}>Học tiếp</Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => router.push(user ? "/learn" : "/")}
+                >
+                  Thoát
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        </Overlay>
       )}
     </div>
   );

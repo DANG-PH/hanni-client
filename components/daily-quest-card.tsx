@@ -1,88 +1,108 @@
 "use client";
 
+import Link from "next/link";
 import { Card, ProgressBar } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { useTodayQuests } from "@/lib/hooks";
+import type { TodayQuests } from "@/lib/types";
+
+/** Bấm nhiệm vụ là tới đúng chỗ làm; nhiệm vụ không có ở đây ("Học 5 từ mới") mở bài đang học. */
+const QUEST_HREF: Record<string, string> = {
+  review_words: "/study",
+  complete_quiz: "/study",
+  listening_practice: "/listening",
+  pronunciation_practice: "/pronunciation",
+};
 
 /**
- * Thẻ "Nhiệm vụ hàng ngày" ở dashboard — 3 nhiệm vụ mỗi ngày, MỖI NHIỆM VỤ
- * lấy tiêu chí từ 1 tính năng KHÁC NHAU đã có sẵn (ôn từ vựng, làm quiz,
- * luyện nghe, luyện phát âm, học từ mới) để kéo người dùng qua lại giữa các
- * tính năng thay vì mỗi tính năng đứng 1 mình — xem `hanni-server/CLAUDE.md`
- * mục "Nhiệm vụ hàng ngày". Server tự cộng xu ngay khi phát hiện hoàn
- * thành, thẻ này chỉ hiển thị, không có nút "Nhận thưởng" riêng.
+ * Thẻ "Nhiệm vụ hôm nay" ở trang chủ — 3 nhiệm vụ mỗi ngày, mỗi cái đo 1 tính năng khác nhau (ôn từ, quiz, luyện
+ * nghe, luyện phát âm, học từ mới — xem `hanni-server/CLAUDE.md` mục "Nhiệm vụ hàng ngày"). Xong cả 3 thì server tự
+ * cấp 1 lá chắn giữ chuỗi, thẻ chỉ hiển thị.
  */
-export function DailyQuestCard() {
+export function DailyQuestCard({ lessonHref }: { lessonHref: string }) {
   const { data, isLoading } = useTodayQuests();
+  const doneCount = data?.quests.filter((q) => q.done).length ?? 0;
 
   return (
-    <Card className="space-y-4 relative overflow-hidden">
-      <div className="flex items-center justify-between border-b border-border/70 pb-3">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary shadow-2xs">
-            <Icon name="target" size={18} />
-          </span>
-          <div>
-            <h3 className="text-sm font-bold text-foreground">
-              Nhiệm vụ hàng ngày
-            </h3>
-            <p className="text-xs text-muted">Hoàn thành để nhận xu thưởng</p>
-          </div>
+    <Card className="flex flex-col gap-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Icon name="target" size={18} className="text-primary" />
+          <h3 className="text-sm font-semibold">Nhiệm vụ hôm nay</h3>
         </div>
+        {data && (
+          <span className="text-xs text-muted">
+            {doneCount}/{data.quests.length} xong
+          </span>
+        )}
       </div>
 
-      {isLoading ? (
+      {isLoading || !data ? (
         <div className="space-y-3 py-2">
-          <div className="h-4 w-3/4 rounded-md bg-surface-2 animate-pulse" />
-          <div className="h-2 w-full rounded-full bg-surface-2 animate-pulse" />
+          <div className="h-4 w-3/4 animate-pulse rounded-md bg-surface-2" />
+          <div className="h-2 w-full animate-pulse rounded-full bg-surface-2" />
         </div>
       ) : (
-        <ul className="space-y-4">
-          {data?.quests.map((quest) => (
-            <li key={quest.key} className="space-y-2 rounded-xl border border-border/50 bg-surface-2/30 p-3 transition-colors hover:border-primary/20">
-              <div className="flex items-center justify-between gap-2 text-sm">
+        <ul className="space-y-2">
+          {data.quests.map((quest) => (
+            <li key={quest.key}>
+              <Link
+                href={QUEST_HREF[quest.key] ?? lessonHref}
+                className="flex items-center gap-3 rounded-xl border border-border px-3 py-2.5 transition-colors hover:border-primary/30 hover:bg-primary/5"
+              >
                 <span
-                  className={`flex items-center gap-2 font-semibold ${
-                    quest.claimed ? "text-muted line-through" : "text-foreground"
+                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
+                    quest.done ? "bg-good/15 text-good" : "border-2 border-border"
                   }`}
                 >
-                  {quest.claimed ? (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-good/15 text-good">
-                      <Icon name="check" size={12} />
-                    </span>
-                  ) : (
-                    <span className="h-2 w-2 rounded-full bg-primary" />
-                  )}
-                  {quest.title}
+                  {quest.done && <Icon name="check" size={14} />}
                 </span>
-                <span className="shrink-0 flex items-center gap-1 rounded-full border border-accent/20 bg-accent/10 px-2.5 py-0.5 text-xs font-bold text-accent shadow-2xs">
-                  <Icon name="spark" size={13} />+{quest.xu} xu
+                <span className="min-w-0 flex-1 space-y-1.5">
+                  <span
+                    className={`block text-sm font-medium ${quest.done ? "text-muted line-through" : ""}`}
+                  >
+                    {quest.title}
+                  </span>
+                  <ProgressBar
+                    value={(quest.progress / quest.target) * 100}
+                    label={quest.title}
+                    color={quest.done ? "bg-good" : "bg-primary"}
+                  />
                 </span>
-              </div>
-              <ProgressBar
-                value={(quest.progress / quest.target) * 100}
-                label={quest.title}
-                color={quest.claimed ? "bg-good" : "bg-primary"}
-              />
-              <div className="flex items-center justify-between text-xs text-muted">
-                <span>Tiến độ</span>
-                <span className="font-semibold text-foreground">
-                  {Math.min(quest.progress, quest.target)} / {quest.target}
+                <span className="shrink-0 text-xs font-semibold tabular-nums text-muted">
+                  {quest.progress}/{quest.target}
                 </span>
-              </div>
+              </Link>
             </li>
           ))}
         </ul>
       )}
 
-      {data?.allDone && (
-        <div className="flex items-center gap-2.5 rounded-xl border border-good/30 bg-gradient-to-r from-good/15 to-good/5 p-3.5 text-sm font-bold text-good shadow-xs">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-good/20 text-good">
-            <Icon name="check" size={16} />
-          </span>
-          <span>Hoàn thành tất cả nhiệm vụ hôm nay — thưởng thêm {data.allDoneBonusXu} xu!</span>
-        </div>
-      )}
+      {data && <QuestReward data={data} />}
     </Card>
+  );
+}
+
+function QuestReward({ data }: { data: TodayQuests }) {
+  const full = data.freezeCount >= data.maxFreeze;
+  const text = !data.allDone
+    ? full
+      ? "Bạn đang có đủ lá chắn — dùng bớt rồi nhận thêm."
+      : "Xong cả 3 → +1 lá chắn giữ chuỗi khi lỡ nghỉ 1 ngày."
+    : data.justEarnedFreeze
+      ? "Xong cả 3 — bạn vừa nhận 1 lá chắn giữ chuỗi!"
+      : "Xong cả 3 nhiệm vụ hôm nay — giỏi lắm!";
+  return (
+    <p
+      className={`mt-auto flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-medium ${
+        data.allDone ? "bg-good/10 text-good" : "bg-surface-2 text-muted"
+      }`}
+    >
+      <Icon name="shield" size={15} className="shrink-0" />
+      <span className="flex-1">{text}</span>
+      <span className="shrink-0 font-semibold">
+        {data.freezeCount}/{data.maxFreeze}
+      </span>
+    </p>
   );
 }

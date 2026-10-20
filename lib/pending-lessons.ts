@@ -34,10 +34,6 @@ export function savePendingLesson(lesson: PendingLesson) {
   }
 }
 
-export function hasPendingLessons(): boolean {
-  return read().length > 0;
-}
-
 /** Bài khách đã học xong trong phiên (chưa lưu) — trang chủ đánh dấu xong và
  * "Học tiếp" đúng bài kế, thay vì mời học lại bài 1. */
 export function pendingLessonIds(): string[] {

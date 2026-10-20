@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { Icon } from "@/components/icon";
+import { Overlay } from "@/components/overlay";
 import { onStreakMilestone } from "@/lib/streak-celebration";
 
 /** Chỉ 5 cột mốc — khớp `STREAK_1/3/7/30/100` trong achievement-catalog.ts
@@ -58,44 +59,46 @@ export function StreakCelebration() {
   };
 
   return (
-    <div
-      role="dialog"
-      aria-label={`Chuỗi ${milestone} ngày`}
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4"
-    >
+    <Overlay>
       <div
-        className="relative w-full max-w-sm rounded-2xl border border-border bg-surface p-7 text-center shadow-2xl"
-        style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
+        role="dialog"
+        aria-label={`Chuỗi ${milestone} ngày`}
+        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4"
       >
-        <button
-          type="button"
-          onClick={() => setMilestone(null)}
-          aria-label="Đóng"
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-foreground"
+        <div
+          className="relative w-full max-w-sm rounded-2xl border border-border bg-surface p-7 text-center shadow-2xl"
+          style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
         >
-          <Icon name="close" size={16} />
-        </button>
+          <button
+            type="button"
+            onClick={() => setMilestone(null)}
+            aria-label="Đóng"
+            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-foreground"
+          >
+            <Icon name="close" size={16} />
+          </button>
 
-        <span
-          className="icon-tile mx-auto flex h-20 w-20 items-center justify-center bg-danger/10 text-danger"
-          style={{ animation: "reveal-in 600ms var(--motion-ease) both" }}
-        >
-          <Icon name="flame" size={40} />
-        </span>
+          <span
+            className="icon-tile mx-auto flex h-20 w-20 items-center justify-center bg-danger/10 text-danger"
+            style={{ animation: "reveal-in 600ms var(--motion-ease) both" }}
+          >
+            <Icon name="flame" size={40} />
+          </span>
 
-        <p className="mt-5 text-xs font-bold uppercase tracking-wider text-danger">
-          {copy.eyebrow}
-        </p>
-        <h2 className="mt-1.5 text-2xl font-extrabold tracking-tight">
-          Chuỗi {milestone} ngày!
-        </h2>
-        <p className="mt-3 text-sm leading-6 text-muted">{copy.body}</p>
+          <p className="mt-5 text-xs font-bold uppercase tracking-wider text-danger">
+            {copy.eyebrow}
+          </p>
+          <h2 className="mt-1.5 text-2xl font-extrabold tracking-tight">
+            Chuỗi {milestone} ngày!
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-muted">{copy.body}</p>
 
-        <Button className="mt-6 w-full" onClick={() => setMilestone(null)}>
-          Tiếp tục học
-          <Icon name="arrow" size={16} />
-        </Button>
+          <Button className="mt-6 w-full" onClick={() => setMilestone(null)}>
+            Tiếp tục học
+            <Icon name="arrow" size={16} />
+          </Button>
+        </div>
       </div>
-    </div>
+    </Overlay>
   );
 }

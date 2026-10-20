@@ -4,7 +4,7 @@
  * Vì sao tách riêng khỏi chuông thông báo có sẵn: mở khoá huy hiệu
  * STREAK_* trước đây chỉ thêm 1 dòng vào danh sách thông báo — người dùng
  * phải chủ động bấm chuông mới thấy, và nhìn y hệt mọi loại thông báo khác
- * (bình luận, theo dõi...). Nghiên cứu về Duolingo (xem hanni-client/
+ * (bài tập lớp học, giải đấu...). Nghiên cứu về Duolingo (xem hanni-client/
  * CLAUDE.md mục "Cột mốc chuỗi ngày học") đo được: riêng việc tách MÀN HÌNH
  * ĂN MỪNG cho đúng những cột mốc hiếm (không phải mọi buổi ôn) dịch chuyển
  * được tỉ lệ quay lại ở ngày 7 — vì người dùng chỉ thấy nó "hiếm" khi nó

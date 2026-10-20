@@ -219,20 +219,6 @@
   .streak { padding-inline: 9px; gap: 4px; }
   .workspace :global(.page-wrap) { padding: 20px 16px 28px; }
   .footer { padding-inline: 20px; padding-right: 76px; text-align: left; }
-
-  /* The bell sits near the middle of a narrow header; use the full header width. */
-  .topbar :global([aria-label="Thông báo"]) + div {
-    position: fixed;
-    top: 72px;
-    right: 12px;
-    left: 12px;
-    width: auto;
-    max-width: none;
-  }
-
-  .topbar :global([aria-label="Thông báo"]) + div > div:last-child {
-    max-height: min(24rem, calc(100dvh - 132px));
-  }
 }
 
 @media (max-width: 359px) {

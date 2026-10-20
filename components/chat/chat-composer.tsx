@@ -7,7 +7,7 @@ import { Icon } from "@/components/icon";
 const MAX_HEIGHT = 132;
 
 /**
- * Ô soạn tin dùng chung cho tin nhắn, trợ lý AI và luyện nói AI — theo cách các
+ * Ô soạn tin dùng chung cho trợ lý AI và luyện nói AI — theo cách các
  * app chat phổ biến (Messenger, Zalo, Telegram) làm:
  * - Ô tự giãn theo nội dung tới ~5 dòng; Enter gửi, Shift+Enter xuống dòng
  *   (không gửi khi đang gõ dở bằng bộ gõ tiếng Việt/tiếng Trung).

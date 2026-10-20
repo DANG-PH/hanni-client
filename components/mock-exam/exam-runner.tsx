@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useSWR, { mutate } from "swr";
 import { Icon } from "@/components/icon";
+import { Overlay } from "@/components/overlay";
 import { ShareButton } from "@/components/share-button";
 import { StudyLoader } from "@/components/study-loader";
 import { signalInstallMoment } from "@/components/pwa/install-prompt";
@@ -334,63 +335,67 @@ export function MockExamRunner({ slug }: { slug: string }) {
         Câu hỏi {answered}/{total}
       </button>
       {navOpen && (
-        <div className="fixed inset-0 z-40 flex items-end bg-black/40 lg:hidden" onClick={() => setNavOpen(false)}>
-          <div
-            className="max-h-[75dvh] w-full overflow-y-auto rounded-t-3xl bg-surface p-5"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Navigator paper={paper} answers={answers} flags={flags} onJump={jump} />
+        <Overlay>
+          <div className="fixed inset-0 z-40 flex items-end bg-black/40 lg:hidden" onClick={() => setNavOpen(false)}>
+            <div
+              className="max-h-[75dvh] w-full overflow-y-auto rounded-t-3xl bg-surface p-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Navigator paper={paper} answers={answers} flags={flags} onJump={jump} />
+            </div>
           </div>
-        </div>
+        </Overlay>
       )}
 
       {confirm && (
-        <div role="dialog" aria-modal className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-          <div className="w-full max-w-sm rounded-2xl bg-surface p-6 text-center shadow-2xl">
-            {confirm === "submit" ? (
-              <>
-                <h2 className="text-lg font-bold">Nộp bài?</h2>
-                <p className="mt-2 text-sm text-muted">
-                  {answered < total
-                    ? `Bạn còn ${total - answered} câu chưa làm — câu bỏ trống tính là sai.`
-                    : "Bạn đã làm hết các câu."}
-                </p>
-                {submitError && (
-                  <p className="mt-2 text-sm text-danger">
-                    Chưa nộp được — kiểm tra kết nối rồi thử lại. Bài làm vẫn được giữ trên máy.
+        <Overlay>
+          <div role="dialog" aria-modal className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
+            <div className="w-full max-w-sm rounded-2xl bg-surface p-6 text-center shadow-2xl">
+              {confirm === "submit" ? (
+                <>
+                  <h2 className="text-lg font-bold">Nộp bài?</h2>
+                  <p className="mt-2 text-sm text-muted">
+                    {answered < total
+                      ? `Bạn còn ${total - answered} câu chưa làm — câu bỏ trống tính là sai.`
+                      : "Bạn đã làm hết các câu."}
                   </p>
-                )}
-                <div className="mt-5 grid gap-2">
-                  <Button onClick={submit} disabled={busy}>
-                    {busy ? "Đang chấm điểm…" : "Nộp bài và xem điểm"}
-                  </Button>
-                  <Button variant="ghost" onClick={() => setConfirm(null)}>
-                    Làm tiếp
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <h2 className="text-lg font-bold">Thoát bài thi?</h2>
-                <p className="mt-2 text-sm text-muted">
-                  Bài làm được giữ tạm trên máy này — quay lại trong thời gian làm bài là làm tiếp được.
-                </p>
-                <div className="mt-5 grid gap-2">
-                  <Button onClick={() => setConfirm(null)}>Làm tiếp</Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => {
-                      stopListening();
-                      router.push("/thi-thu-hsk");
-                    }}
-                  >
-                    Thoát
-                  </Button>
-                </div>
-              </>
-            )}
+                  {submitError && (
+                    <p className="mt-2 text-sm text-danger">
+                      Chưa nộp được — kiểm tra kết nối rồi thử lại. Bài làm vẫn được giữ trên máy.
+                    </p>
+                  )}
+                  <div className="mt-5 grid gap-2">
+                    <Button onClick={submit} disabled={busy}>
+                      {busy ? "Đang chấm điểm…" : "Nộp bài và xem điểm"}
+                    </Button>
+                    <Button variant="ghost" onClick={() => setConfirm(null)}>
+                      Làm tiếp
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-lg font-bold">Thoát bài thi?</h2>
+                  <p className="mt-2 text-sm text-muted">
+                    Bài làm được giữ tạm trên máy này — quay lại trong thời gian làm bài là làm tiếp được.
+                  </p>
+                  <div className="mt-5 grid gap-2">
+                    <Button onClick={() => setConfirm(null)}>Làm tiếp</Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        stopListening();
+                        router.push("/thi-thu-hsk");
+                      }}
+                    >
+                      Thoát
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        </Overlay>
       )}
     </div>
   );

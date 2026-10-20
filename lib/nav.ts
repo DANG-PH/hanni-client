@@ -79,7 +79,6 @@ const OTHER_PAGES = [
   { href: "/settings", label: "Cài đặt" },
   { href: "/achievements", label: "Huy hiệu" },
   { href: "/u", label: "Hồ sơ" },
-  { href: "/messages", label: "Tin nhắn" },
   { href: "/lop", label: "Vào lớp" },
   { href: "/hop-tac", label: "Cho giáo viên" },
   { href: "/bai-doc", label: "Bài đọc" },

@@ -4,7 +4,7 @@ import { LegalPage } from "@/components/legal/legal-page";
 
 export const metadata: Metadata = {
   title: "Điều khoản sử dụng — Hanni",
-  description: "Điều khoản khi dùng Hanni: tài khoản, nội dung học, tính năng AI, Premium và xu, lớp học, hành vi không được phép.",
+  description: "Điều khoản khi dùng Hanni: tài khoản, nội dung học, tính năng AI, Premium, lớp học, hành vi không được phép.",
 };
 
 const ul = (items: string[]) => (
@@ -19,7 +19,7 @@ export default function TermsPage() {
   return (
     <LegalPage
       title="Điều khoản sử dụng"
-      updated="19/10/2026"
+      updated="21/10/2026"
       intro={
         <p>
           Hanni là ứng dụng học tiếng Trung cho người Việt. Khi dùng Hanni — có hay chưa có tài khoản — bạn đồng ý với các điều
@@ -60,7 +60,7 @@ export default function TermsPage() {
                 </Link>
                 . Bài giải thích ngữ pháp, câu ví dụ, đề thi thử và giao diện do Hanni soạn.
               </p>
-              <p>Bạn giữ quyền với nội dung mình viết (bình luận, tin nhắn) và cho phép Hanni hiển thị nội dung đó trong ứng dụng.</p>
+              <p>Bạn giữ quyền với nội dung mình viết (vd tên lớp, bài giao trong lớp học) và cho phép Hanni hiển thị nội dung đó trong ứng dụng.</p>
             </>
           ),
         },
@@ -75,10 +75,9 @@ export default function TermsPage() {
         },
         {
           id: "premium",
-          title: "Premium và xu",
+          title: "Premium",
           body: ul([
             "Premium mua một lần cho một số tháng, không tự gia hạn; mua thêm khi còn hạn thì cộng nối tiếp. Premium chỉ mở thêm tiện ích AI, không khoá nội dung học nào. Thanh toán qua payOS đang chuẩn bị mở.",
-            "Xu là điểm thưởng trong ứng dụng (kiếm khi học, chơi trò chơi, làm nhiệm vụ), chỉ dùng trong Hanni, không quy đổi ra tiền và không chuyển cho người khác.",
           ]),
         },
         {
@@ -93,8 +92,8 @@ export default function TermsPage() {
           id: "cam",
           title: "Không được phép",
           body: ul([
-            "Quấy rối, xúc phạm, spam hay gửi nội dung vi phạm pháp luật qua bình luận, tin nhắn, lớp học.",
-            "Gian lận bảng xếp hạng, giải đấu, phần thưởng xu (vd dùng công cụ tự động).",
+            "Quấy rối, xúc phạm, spam hay gửi nội dung vi phạm pháp luật qua lớp học hoặc tính năng AI.",
+            "Gian lận bảng xếp hạng, giải đấu, nhiệm vụ ngày (vd dùng công cụ tự động).",
             "Tìm cách truy cập trái phép, làm quá tải hay sao chép hàng loạt dữ liệu của Hanni.",
           ]),
         },
