@@ -524,11 +524,20 @@ Rà toàn site trước khi làm (khách 33 trang × 390/1440, đã đăng nhậ
   chưa làm", bảng tiến độ (máy tính: bảng 8 cột; điện thoại: thẻ từng người, xếp LÊN TRƯỚC phần giao bài). Học viên: bài tập + "Làm
   ngay", bảng phút học tuần của lớp, ghi rõ giáo viên thấy gì, "Rời lớp". `/lop/[mã]` công khai: khách thấy lớp + giáo viên rồi
   "Tạo tài khoản để vào lớp" (`?next=` quay lại đúng trang). Trang chủ: thẻ `ClassAssignmentsCard` ngay dưới thẻ Học tiếp (chỉ khi
-  có bài chưa làm). Menu: **"Lớp học" thay chỗ "Tin nhắn"** (vẫn 8 mục); tin nhắn thành nút có số chưa đọc trên thanh trên
-  (`components/messages-button.tsx`), bỏ chấm đỏ tin nhắn ở nút "Thêm".
-- **Hợp tác `/hop-tac`** (Server Component, SEO; dàn ý theo Hanbeego `/partners`: 3 nhóm đối tác, 3 bước, FAQ) — nút chính "Tạo lớp
-  miễn phí" (dùng được ngay, không phải chờ báo giá), form liên hệ `components/partners/partner-lead-form.tsx` → `POST
-  /partners/leads` (ô ẩn `website` bẫy bot). Không công bố email/điện thoại cá nhân (chờ thông tin pháp lý từ user).
+  có bài chưa làm).
+- **Làm rõ luồng (2026-10-20 — user: "ai được tạo lớp? chưa hiểu luồng… không thì bỏ cho đỡ loãng")**: GIỮ tính năng, làm rõ vai
+  trò. AI CŨNG tạo được lớp, người tạo là giáo viên của lớp đó — không duyệt, không gói giáo viên (như Google Classroom tài khoản cá
+  nhân, Duolingo for Schools). (1) Menu chỉ hiện "Lớp học" (`CLASS_LINK`, `lib/nav.ts`) khi người dùng đã dạy/đã vào ≥1 lớp hoặc đang
+  ở `/lop-hoc` — với người tự học đó chỉ là trang trống (7 mục còn lại). (2) Người chưa có lớp vào từ: đường dẫn mời `/lop/[mã]`
+  (chính), thẻ **"Lớp học" ở `/account`** (ô nhập mã `JoinClassForm` + "Tạo lớp miễn phí" — như Duolingo: Cài đặt → nhập mã lớp),
+  trang "Dành cho giáo viên". (3) `/lop-hoc` chưa có lớp: dải 4 bước ghi rõ AI làm (Giáo viên/Học viên) + 2 thẻ vai "Tôi là học viên"
+  (nhập mã) / "Tôi là giáo viên" (`#tao-lop`); có lớp rồi thì danh sách lớp lên đầu. Nút chọn loại bài khi giao = màu đậm trung tính.
+- **"Dành cho giáo viên" `/hop-tac`** (Server Component, SEO; đổi tên nhãn từ "Hợp tác" 2026-10-20 — chữ "hợp tác" khiến người xem
+  tưởng là trang ký hợp đồng): hero 1 câu + "Ai có tài khoản Hanni cũng tạo được lớp" + nút "Tạo lớp miễn phí" (`/lop-hoc#tao-lop`) +
+  **khung minh hoạ màn giáo viên** (`TeacherPreview`, dữ liệu mẫu có nhãn "Minh hoạ") → "Cách hoạt động" 4 bước có nhãn vai → 3 thứ
+  giao được → FAQ (mở sẵn "Ai được tạo lớp?") → form liên hệ cho trung tâm `components/partners/partner-lead-form.tsx` → `POST
+  /partners/leads` (ô ẩn `website` bẫy bot). Bỏ 2 khối trùng trang chủ ("Vì sao học viên tiến nhanh hơn", "Ba nhóm đối tác"): máy tính
+  3.270px → 2.200px, điện thoại 6.500px → 3.900px. Không công bố email/điện thoại cá nhân (chờ thông tin pháp lý từ user).
 - **Giới thiệu `/gioi-thieu`**, **Điều khoản `/dieu-khoan`**, **Chính sách bảo mật `/chinh-sach-bao-mat`** (`components/legal/legal-page.tsx`):
   ghi ĐÚNG cách xử lý dữ liệu thật — chấm thanh điệu chạy trên máy; nhận dạng giọng nói của Chrome/Edge gửi âm thanh cho Google/Microsoft;
   nội dung tính năng AI gửi qua Gemini API; ảnh quét không lưu; giáo viên thấy gì trong lớp. Chân trang khách thêm cột "VỀ HANNI",

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { isNavActive, NAV_MAIN, NAV_MORE, ACCOUNT_LINK, INSTALL_LINK, type NavLink } from "@/lib/nav";
+import { isNavActive, NAV_MAIN, NAV_MORE, ACCOUNT_LINK, CLASS_LINK, INSTALL_LINK, type NavLink } from "@/lib/nav";
 import { Icon } from "./icon";
 import { useNavBadges } from "./sidebar";
 
@@ -10,7 +10,7 @@ import { useNavBadges } from "./sidebar";
 const TABS: NavLink[] = NAV_MAIN.filter((l) => l.href !== "/tu-dien").map((l) =>
   l.href === "/thi-thu-hsk" ? { ...l, label: "Luyện thi" } : l,
 );
-const IN_MORE = ["/tu-dien", ...NAV_MORE.map((l) => l.href), ACCOUNT_LINK.href, INSTALL_LINK.href];
+const IN_MORE = ["/tu-dien", ...NAV_MORE.map((l) => l.href), CLASS_LINK.href, ACCOUNT_LINK.href, INSTALL_LINK.href];
 
 /**
  * Thanh tab dưới đáy cho điện thoại/máy tính bảng — cách app của Hanzii,

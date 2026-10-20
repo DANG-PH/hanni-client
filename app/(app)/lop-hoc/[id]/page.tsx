@@ -132,8 +132,8 @@ function TeacherView({ data }: { data: OwnerView }) {
         </div>
         <div className="min-w-0 space-y-3">
           <p className="text-sm leading-6 text-muted">
-            Học viên mở đường dẫn dưới đây (hoặc vào <b className="text-foreground">Lớp học → Vào lớp bằng mã</b>), tạo tài khoản
-            miễn phí là vào lớp. Học viên được báo khi bạn giao bài mới.
+            Gửi đường dẫn này cho học viên (hoặc đọc mã — học viên nhập ở <b className="text-foreground">Tài khoản → Lớp học</b>),
+            tạo tài khoản miễn phí là vào lớp. Bài bạn giao hiện ngay ở Trang chủ của học viên.
           </p>
           <p className="truncate rounded-lg bg-surface-2 px-3 py-2 font-mono text-xs">{url}</p>
           <div className="flex flex-wrap gap-2">
@@ -241,7 +241,7 @@ function AssignForm({ data }: { data: OwnerView }) {
               setTarget("");
             }}
             className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold ${
-              kind === k ? "border-primary/50 bg-primary/8 text-primary" : "border-border bg-surface text-muted hover:text-foreground"
+              kind === k ? "border-foreground bg-foreground text-background" : "border-border bg-surface text-muted hover:text-foreground"
             }`}
           >
             <Icon name={icon} size={16} /> {label}

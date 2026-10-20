@@ -161,7 +161,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <nav aria-label="Về Hanni" className="mt-1 flex flex-wrap justify-start gap-x-3 gap-y-1 sm:justify-center">
             {[
               ["Giới thiệu", "/gioi-thieu"],
-              ["Hợp tác", "/hop-tac"],
+              ["Cho giáo viên", "/hop-tac"],
               ["Điều khoản", "/dieu-khoan"],
               ["Bảo mật", "/chinh-sach-bao-mat"],
               ["Nguồn dữ liệu", "/nguon-du-lieu"],

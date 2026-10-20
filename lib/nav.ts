@@ -23,12 +23,16 @@ export const NAV_MAIN: NavLink[] = [
   { href: "/tu-dien", label: "Từ điển", icon: "search" },
 ];
 
-/** "Lớp học" thay chỗ "Tin nhắn" (2026-10-19) — tin nhắn thành nút có số chưa đọc ở thanh trên. */
 export const NAV_MORE: NavLink[] = [
   { href: "/leaderboard", label: "Xếp hạng", icon: "trophy" },
-  { href: "/lop-hoc", label: "Lớp học", icon: "users" },
   { href: "/progress", label: "Tiến độ", icon: "chart" },
 ];
+
+/** "Lớp học" chỉ hiện trong menu khi người dùng đã dạy hoặc đã vào ít nhất 1 lớp (`sidebar.tsx`) — với
+ * người tự học, mục này chỉ là một trang trống (2026-10-20). Người chưa có lớp vào từ đường dẫn mời của
+ * giáo viên, mục "Lớp học" ở trang Tài khoản, hoặc trang "Dành cho giáo viên" — như Duolingo for Schools
+ * (học viên nhập mã ở Cài đặt). */
+export const CLASS_LINK: NavLink = { href: "/lop-hoc", label: "Lớp học", icon: "users" };
 
 export const ACCOUNT_LINK: NavLink = { href: "/account", label: "Tài khoản", icon: "user" };
 
@@ -76,6 +80,7 @@ const OTHER_PAGES = [
   { href: "/u", label: "Hồ sơ" },
   { href: "/messages", label: "Tin nhắn" },
   { href: "/lop", label: "Vào lớp" },
+  { href: "/hop-tac", label: "Cho giáo viên" },
   { href: "/bai-doc", label: "Bài đọc" },
 ];
 
@@ -98,7 +103,7 @@ export function isNavActive(pathname: string, href: string) {
 /** Tên trang cho thanh trên (app-shell) — khớp đường dẫn dài nhất (`/tu-dien/quet` trước `/tu-dien`). */
 export function pageLabel(pathname: string) {
   return (
-    [...NAV_MAIN, ...NAV_MORE, ACCOUNT_LINK, INSTALL_LINK, ...PRACTICE_LINKS, ...OTHER_PAGES]
+    [...NAV_MAIN, ...NAV_MORE, CLASS_LINK, ACCOUNT_LINK, INSTALL_LINK, ...PRACTICE_LINKS, ...OTHER_PAGES]
       .filter((l) => isActive(pathname, l.href))
       .sort((a, b) => b.href.length - a.href.length)[0]?.label ?? "Góc học tập"
   );

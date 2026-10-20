@@ -56,8 +56,7 @@ function GuestFrame({ children }: { children: ReactNode }) {
               title: "VỀ HANNI",
               links: [
                 ["Giới thiệu", "/gioi-thieu"],
-                ["Hợp tác: giáo viên, trung tâm", "/hop-tac"],
-                ["Lớp học", "/lop-hoc"],
+                ["Dành cho giáo viên", "/hop-tac"],
                 ["Điều khoản sử dụng", "/dieu-khoan"],
                 ["Chính sách bảo mật", "/chinh-sach-bao-mat"],
                 ["Nguồn dữ liệu", "/nguon-du-lieu"],

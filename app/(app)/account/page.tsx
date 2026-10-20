@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AvatarEditor } from "@/components/avatar-editor";
+import { JoinClassForm } from "@/components/classrooms/join-class-form";
 import { Icon } from "@/components/icon";
 import { PremiumSection } from "@/components/premium-section";
 import { ShareButton } from "@/components/share-button";
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
 import { useAuth, useRequireAuth } from "@/lib/auth";
+import { useMyClassrooms } from "@/lib/classrooms";
 import { useReferralStats } from "@/lib/hooks";
 import {
   createTopUp,
@@ -48,7 +50,7 @@ export default function AccountPage() {
         tone="lavender"
         eyebrow="Không gian của bạn"
         title="Tài khoản của tôi"
-        description="Hồ sơ, mật khẩu, Premium và mời bạn bè."
+        description="Hồ sơ, mật khẩu, lớp học, Premium và mời bạn bè."
       >
         <LinkButton href="/settings" variant="secondary">
           <Icon name="settings" size={17} />
@@ -151,6 +153,7 @@ export default function AccountPage() {
               </Button>
             </div>
           </Card>
+          <ClassroomCard />
           <ReferralCard userId={user.id} />
           <DangerZone hasPassword={user.hasPassword} />
         </div>
@@ -511,6 +514,44 @@ function WalletCard() {
           {topupNote && <p className="mt-3 text-sm text-muted">{topupNote}</p>}
         </div>
       )}
+    </Card>
+  );
+}
+
+/** Lối vào lớp học cho người chưa có lớp (menu chỉ hiện "Lớp học" khi đã có lớp) — như Duolingo:
+ * học viên nhập mã lớp ở Cài đặt → Duolingo for Schools. */
+function ClassroomCard() {
+  const { data } = useMyClassrooms();
+  const count = (data?.owned.length ?? 0) + (data?.joined.length ?? 0);
+  return (
+    <Card>
+      <div className="flex items-start gap-3">
+        <span className="icon-tile">
+          <Icon name="users" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h2 className="font-semibold">Lớp học</h2>
+          <p className="mt-1 text-sm leading-6 text-muted">
+            {count > 0
+              ? `Bạn đang ở ${count} lớp.`
+              : "Giáo viên gửi mã lớp cho bạn? Nhập ở đây để nhận bài được giao ngay ở Trang chủ."}
+          </p>
+        </div>
+        {count > 0 && (
+          <LinkButton href="/lop-hoc" variant="secondary" className="shrink-0 px-3! text-xs">
+            Mở lớp học
+          </LinkButton>
+        )}
+      </div>
+      <div className="mt-4">
+        <JoinClassForm id="account-class-code" />
+      </div>
+      <p className="mt-3 text-sm text-muted">
+        Bạn dạy tiếng Trung?{" "}
+        <Link href="/lop-hoc#tao-lop" className="font-semibold text-primary hover:underline">
+          Tạo lớp miễn phí
+        </Link>
+      </p>
     </Card>
   );
 }

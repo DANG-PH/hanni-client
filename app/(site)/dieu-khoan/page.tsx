@@ -23,7 +23,7 @@ export default function TermsPage() {
       intro={
         <p>
           Hanni là ứng dụng học tiếng Trung cho người Việt. Khi dùng Hanni — có hay chưa có tài khoản — bạn đồng ý với các điều
-          khoản dưới đây. Điều khoản viết ngắn gọn để đọc được; chỗ nào chưa rõ, bạn liên hệ qua form ở trang Hợp tác.
+          khoản dưới đây. Điều khoản viết ngắn gọn để đọc được; chỗ nào chưa rõ, bạn liên hệ qua form Liên hệ (cuối trang Dành cho giáo viên).
         </p>
       }
       sections={[
@@ -113,9 +113,9 @@ export default function TermsPage() {
           title: "Thay đổi và liên hệ",
           body: (
             <p>
-              Khi điều khoản đổi, ngày cập nhật ở đầu trang đổi theo. Góp ý hoặc khiếu nại: dùng form ở{" "}
+              Khi điều khoản đổi, ngày cập nhật ở đầu trang đổi theo. Góp ý hoặc khiếu nại: dùng{" "}
               <Link href="/hop-tac#lien-he" className="text-primary hover:underline">
-                trang Hợp tác
+                form Liên hệ
               </Link>
               .
             </p>

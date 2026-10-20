@@ -87,7 +87,7 @@ export default function PrivacyPage() {
           body: ul([
             "Sửa tên, ảnh, múi giờ, mục tiêu ở Tài khoản và Cài đặt; tắt email tổng kết tuần và thông báo đẩy bất cứ lúc nào.",
             "Xoá tài khoản ở Tài khoản → Vùng nguy hiểm: toàn bộ tiến độ, tin nhắn và dữ liệu cá nhân bị xoá vĩnh viễn ngay lập tức.",
-            "Muốn hỏi thêm về dữ liệu của mình: liên hệ qua form ở trang Hợp tác.",
+            "Muốn hỏi thêm về dữ liệu của mình: liên hệ qua form Liên hệ (cuối trang Dành cho giáo viên).",
           ]),
         },
         {

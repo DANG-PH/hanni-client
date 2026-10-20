@@ -192,7 +192,7 @@ export default async function AboutPage() {
             <p className="mt-1 text-sm text-muted">
               Là giáo viên hay trung tâm?{" "}
               <Link href="/hop-tac" className="font-semibold text-primary hover:underline">
-                Xem cách hợp tác
+                Tạo lớp học miễn phí
               </Link>
             </p>
           </div>
