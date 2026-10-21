@@ -324,6 +324,39 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 
 ## Trạng thái hiện tại
 
+### Rà lại + đo khách quan so với đối thủ (2026-10-21 — user: "thanh taskbar của lớp học sao không thấy", "UI, UX, features rà lại… chấm điểm thang 10, so với web khác, khách quan")
+- **Mục "Lớp học" LUÔN có trong menu** (`sidebar.tsx`, `lib/nav.ts`): bản 20/10 chỉ hiện khi đã có lớp → giáo viên không tìm ra chỗ
+  tạo lớp, phải biết vào Tài khoản. Khách bấm vào thì sang `/hop-tac`. Thẻ Lớp học ở `/account` giữ làm lối vào thứ hai.
+- **`--bottom-nav-h` khai ở body** (`globals.css`, `body:has([data-bottom-nav])`; `bottom-nav.tsx` gắn `data-bottom-nav`) thay vì
+  `.workspace`: lời mời cài app gắn ở layout gốc, NGOÀI khung app, nên từng đọc ra 0 và nằm đè lên thanh tab dưới đáy.
+- **Phiên đăng nhập**: `lib/auth.tsx` gọi `GET /auth/session` (khách nhận `{ user: null }`, 200) thay cho `/users/me` → 401 →
+  `/auth/refresh` → 401 — khách hết 2 lỗi 401 trong console + 2 lượt mạng mỗi lần mở trang. `lib/api.ts`: route `/auth/*` không tự làm
+  mới phiên khi 401, TRỪ `/auth/session` (phiên hết hạn → làm mới 1 lần → hỏi lại).
+- **Màu chữ đạt chuẩn tương phản** (Lighthouse/axe + công thức WCAG): `--primary` #dc3526 → #bd2b1f (cũ 4,3:1 trên nền xám, 4:1 trên
+  nền hồng nhạt của `.chip-on`; bản giữa #c62f22 vẫn 4,4:1 khi `.chip-on` nằm trên nền xám), `--good` #2f8f5b → #24784b, `--accent` #b5852f → #85621c, `--warn` #b5761b → #93600f, `--lavender`
+  #9a5b8f → #8e5383 — cùng tông, đậm hơn một nấc; mọi màu dùng làm CHỮ ≥4,5:1 trên trắng, nền xám và nền nhạt 10–15% của chính nó.
+  Chế độ tối giữ nguyên. Không dùng `text-primary/80` cho chữ (đỏ 80% trên trắng chỉ 3,5:1). `theme_color` (thanh trạng thái) giữ
+  #dc3526; bảng màu chữ cái avatar (`avatar.tsx`) và trang mất mạng (`public/offline`) đổi theo.
+- **Bố cục không nhảy ở `/learn`** (Lighthouse CLS 0,45 → 0,02): thủ phạm chính là các khối DƯỚI lộ trình (thẻ "Thử ngay"/nhiệm vụ,
+  kệ video, rồi cả chân trang) hiện sẵn ở mép màn hình lúc lộ trình chưa tải, rồi bị lộ trình chèn lên đẩy xuống 700px+. Giờ có khối
+  giữ chỗ `h-[32rem]` lúc đang tải, thẻ dưới + kệ video chỉ render khi có `data`; khung chờ thẻ Học tiếp cùng bố cục với nội dung thật.
+  Tìm thủ phạm bằng `PerformanceObserver({type:'layout-shift'})` ghi `sources` (vị trí trước/sau) khi giả lập máy chậm — báo cáo
+  Lighthouse chỉ nêu phần tử nhìn thấy sau cùng. Trang mới có khối tải dữ liệu chậm phía trên thì giữ chỗ cho nó. Cùng lỗi ở trang
+  từ điển: `SaveWordButton` trả `null` lúc đang kiểm tra đăng nhập rồi hiện nút 44px đẩy phần Nghĩa xuống (CLS 0,046) — giờ trả
+  khung chờ `h-11`. Thành phần phụ thuộc `useAuth().loading` mà nằm giữa trang thì giữ chỗ, đừng trả `null`.
+- Ảnh minh hoạ Wikimedia (6 thẻ `<img src={…imageUrl}>`) có `crossOrigin="anonymous"`: không kèm cookie của Wikimedia (Lighthouse
+  Best Practices trừ "cookie bên thứ ba"; Wikimedia trả CORS `*` nên ảnh vẫn hiện).
+- **Lời mời bật thông báo** (`NotificationNudge`) chỉ hiện khi ĐÃ học hôm nay (`streak.activeToday`), dưới thẻ Học tiếp — như Duolingo
+  hỏi sau bài đầu; trước đó chen trên nút Học tiếp ngay lúc vừa đăng ký.
+- Thẻ "Bắt đầu với Hanni" trên điện thoại ẩn việc đã xong; Ôn tập không có từ đến hạn có nút "Học bài mới" (trạng thái trống luôn có
+  việc tiếp theo); liên kết chân trang vùng bấm ≥28px (WCAG 2.2 ≥24px); `.section-label` và nhãn "ĐANG HỌC" 10px → 12px.
+- **Đo khách quan** (Lighthouse 12.8.2 cấu hình điện thoại, production, mỗi trang 2–3 lượt lấy trung bình:
+  `npx lighthouse@12.8.2 <url> --output=json --chrome-flags="--headless=new"`): Hanni trang chủ Perf 91 · A11y 100 · BP 100 · SEO 100, LCP 2,7 s, 486 KB (trước đợt sửa 82 · 100 · 96 · 100, LCP 3,9 s); `/learn` CLS 0,021 (trước 0,336); Hanzii 30 ·
+  87 · 79 · 92, LCP 24,7 s, 4,3 MB; Hanbeego 55 · 95 · 82 · 100, 4,5 MB; Duolingo 31 · 82 · 57 · 100; HelloChinese 44 · 72 · 100 · 92.
+  `/learn` SEO 66 là do `noindex` có chủ ý (trang cá nhân hoá).
+Kiểm tra: rà 26 trang (khách + đã học bài 1, nộp 1 đề, có lớp + bài giao) ở 390 và 1440 — 0 lỗi trang, 0 tràn ngang; TC-27/28 (mục
+Lớp học, làm mới phiên) trên API production; `next build`.
+
 ### Làm rõ cho người mới + bỏ xu (2026-10-20 — user: "UI/UX quá loạn, người mới không biết vào học gì", "popup Premium ở mobile lỗi", "hệ thống xu có nên bỏ không", "logic không còn thì xoá")
 - **Popup toàn màn hình PHẢI bọc `<Overlay>`** (`components/overlay.tsx`, portal vào `<body>`). Lỗi thật: popup Premium trên điện thoại
   hiện thành 1 thanh ngang giữa màn hình — thanh trên có `backdrop-filter` nên `position: fixed` bên trong tính theo thanh đó; popup
@@ -587,8 +620,8 @@ Rà toàn site trước khi làm (khách 33 trang × 390/1440, đã đăng nhậ
   có bài chưa làm).
 - **Làm rõ luồng (2026-10-20 — user: "ai được tạo lớp? chưa hiểu luồng… không thì bỏ cho đỡ loãng")**: GIỮ tính năng, làm rõ vai
   trò. AI CŨNG tạo được lớp, người tạo là giáo viên của lớp đó — không duyệt, không gói giáo viên (như Google Classroom tài khoản cá
-  nhân, Duolingo for Schools). (1) Menu chỉ hiện "Lớp học" (`CLASS_LINK`, `lib/nav.ts`) khi người dùng đã dạy/đã vào ≥1 lớp hoặc đang
-  ở `/lop-hoc` — với người tự học đó chỉ là trang trống (7 mục còn lại). (2) Người chưa có lớp vào từ: đường dẫn mời `/lop/[mã]`
+  nhân, Duolingo for Schools). (1) [ĐÃ ĐỔI 2026-10-21 — mục "Lớp học" luôn hiện, xem "Rà lại + đo khách quan"] Menu chỉ hiện "Lớp
+  học" (`CLASS_LINK`, `lib/nav.ts`) khi người dùng đã dạy/đã vào ≥1 lớp hoặc đang ở `/lop-hoc`. (2) Người chưa có lớp vào từ: đường dẫn mời `/lop/[mã]`
   (chính), thẻ **"Lớp học" ở `/account`** (ô nhập mã `JoinClassForm` + "Tạo lớp miễn phí" — như Duolingo: Cài đặt → nhập mã lớp),
   trang "Dành cho giáo viên". (3) `/lop-hoc` chưa có lớp: dải 4 bước ghi rõ AI làm (Giáo viên/Học viên) + 2 thẻ vai "Tôi là học viên"
   (nhập mã) / "Tôi là giáo viên" (`#tao-lop`); có lớp rồi thì danh sách lớp lên đầu. Nút chọn loại bài khi giao = màu đậm trung tính.
@@ -687,7 +720,8 @@ các mục cũ bên dưới là LỊCH SỬ — trang đó đã gộp vào `/lea
     cùng lúc, `pageLabel` lấy đường dẫn khớp dài nhất).
   - **Điện thoại/máy tính bảng (< lg)**: thanh tab dưới đáy `components/bottom-nav.tsx` (Trang chủ,
     Ôn tập, Luyện thi, Luyện tập, **Thêm** = mở ngăn kéo menu đầy đủ; bỏ nút ☰ trên thanh trên).
-    Chiều cao thanh là biến CSS `--bottom-nav-h` (0 từ lg) — nội dung app chừa đáy theo biến này,
+    Chiều cao thanh là biến CSS `--bottom-nav-h` (0 từ lg; khai ở `body:has([data-bottom-nav])` trong
+    `globals.css` để cả phần tử ngoài khung app đọc được) — nội dung app chừa đáy theo biến này,
     các nút nổi (trợ lý AI, mời cài app) và khung phụ đề video trên điện thoại cũng tính theo nó.
     Thêm nút nổi/khung cao theo màn hình mới thì nhớ trừ biến này.
   - `pageLabel()` cho nhãn breadcrumb ở `app-shell.tsx`. "So với bạn bè" ở `/leaderboard`. Mặc định
