@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/lib/auth";
 import { useStudyStats } from "@/lib/hooks";
-import { useMyClassrooms } from "@/lib/classrooms";
 import { ACCOUNT_LINK, CLASS_LINK, INSTALL_LINK, isNavActive, NAV_MAIN, NAV_MORE, type NavLink } from "@/lib/nav";
 import { usePwaState } from "@/lib/pwa/store";
 import { Icon } from "./icon";
@@ -95,9 +94,9 @@ export function Sidebar({
   const { due } = useNavBadges();
   const pwa = usePwaState();
   const canInstall = pwa.initialized && !pwa.standalone && !pwa.installed;
-  const classes = useMyClassrooms().data;
-  const hasClass = !!classes && classes.owned.length + classes.joined.length > 0;
-  const moreLinks = hasClass || isNavActive(pathname, CLASS_LINK.href) ? [NAV_MORE[0], CLASS_LINK, ...NAV_MORE.slice(1)] : NAV_MORE;
+  // Khách chưa có tài khoản để vào/tạo lớp → trang công khai giải thích lớp học dành cho ai.
+  const classLink = user ? CLASS_LINK : { ...CLASS_LINK, href: "/hop-tac" };
+  const moreLinks = [NAV_MORE[0], classLink, ...NAV_MORE.slice(1)];
 
   function badge(href: string) {
     const count = href === "/study" ? due : 0;

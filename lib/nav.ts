@@ -28,10 +28,9 @@ export const NAV_MORE: NavLink[] = [
   { href: "/progress", label: "Tiến độ", icon: "chart" },
 ];
 
-/** "Lớp học" chỉ hiện trong menu khi người dùng đã dạy hoặc đã vào ít nhất 1 lớp (`sidebar.tsx`) — với
- * người tự học, mục này chỉ là một trang trống (2026-10-20). Người chưa có lớp vào từ đường dẫn mời của
- * giáo viên, mục "Lớp học" ở trang Tài khoản, hoặc trang "Dành cho giáo viên" — như Duolingo for Schools
- * (học viên nhập mã ở Cài đặt). */
+/** "Lớp học" LUÔN hiện trong menu (2026-10-21 — user: "sao không thấy, phải bấm vào tài khoản tạo lớp mới thấy").
+ * Bản 20/10 chỉ hiện khi đã có lớp nên giáo viên không tìm ra chỗ tạo lớp. Khách bấm vào thì sang trang công khai
+ * "Dành cho giáo viên" (`sidebar.tsx`). */
 export const CLASS_LINK: NavLink = { href: "/lop-hoc", label: "Lớp học", icon: "users" };
 
 export const ACCOUNT_LINK: NavLink = { href: "/account", label: "Tài khoản", icon: "user" };

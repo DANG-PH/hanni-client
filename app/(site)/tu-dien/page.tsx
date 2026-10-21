@@ -464,7 +464,7 @@ async function WordResults({ q, page }: { q: string; page: number }) {
                 [{exact.pinyin}]{exact.hanViet && <b className="tracking-wide text-hanviet uppercase">[{exact.hanViet}]</b>}
                 {exact.audioUrl && <AudioButton src={exact.audioUrl} size={18} />}
               </p>
-              <p className="mt-1 text-xs font-bold tracking-wide text-primary/80 uppercase">
+              <p className="mt-1 text-xs font-bold tracking-wide text-primary uppercase">
                 {hskLabel(exact.hskLevel)}
                 {exact.pos.length > 0 && ` · ${exact.pos.map((p) => POS_VI[p] ?? p).join(" · ")}`}
               </p>

@@ -29,7 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      const me = await api.get<Me>("/users/me");
+      // Khách nhận { user: null } (200) — không còn 2 lỗi 401 (/users/me + /auth/refresh) mỗi lần mở trang.
+      const { user: me } = await api.get<{ user: Me | null }>("/auth/session");
       setUser(me);
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) setUser(null);

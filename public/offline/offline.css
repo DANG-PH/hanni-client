@@ -29,7 +29,7 @@ img {
 .eyebrow {
   font-size: 11px;
   letter-spacing: 0.12em;
-  color: #dc3526;
+  color: #c62f22;
   font-weight: 700;
   margin-top: 26px;
 }
@@ -40,7 +40,7 @@ h1 {
 p {
   font-size: 14px;
   line-height: 1.8;
-  color: #727b8b;
+  color: #646c7b;
 }
 button,
 a {
@@ -54,13 +54,13 @@ a {
 }
 button {
   margin-top: 24px;
-  background: #dc3526;
+  background: #c62f22;
   color: #fff;
   border: 0;
 }
 a {
   margin-top: 8px;
-  color: #dc3526;
+  color: #c62f22;
 }
 button:focus-visible,
 a:focus-visible {
@@ -70,7 +70,7 @@ a:focus-visible {
 small {
   display: block;
   margin-top: 24px;
-  color: #727b8b;
+  color: #646c7b;
   font-size: 11px;
 }
 @media (prefers-color-scheme: dark) {

@@ -75,7 +75,9 @@ export async function apiFetch<T = unknown>(
 ): Promise<T> {
   let res = await raw(path, opts);
 
-  if (res.status === 401 && !opts._retried && !path.startsWith("/auth/")) {
+  // Các route /auth/* tự lo 401 của mình (sai mật khẩu…), trừ /auth/session: phiên hết hạn thì làm mới rồi hỏi lại.
+  const canRefresh = !path.startsWith("/auth/") || path === "/auth/session";
+  if (res.status === 401 && !opts._retried && canRefresh) {
     if (await refreshSession()) {
       res = await raw(path, { ...opts, _retried: true });
     }

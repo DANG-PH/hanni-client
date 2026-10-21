@@ -28,6 +28,7 @@ export function BottomNav({ onMore }: { onMore: () => void }) {
 
   return (
     <nav
+      data-bottom-nav
       aria-label="Điều hướng chính"
       className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden"
     >

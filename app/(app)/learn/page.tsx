@@ -17,7 +17,7 @@ import { WeeklyLeagueCard } from "@/components/weekly-league-card";
 import { WordOfTheDayCard } from "@/components/word-of-the-day";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import { useLearnPath, useLevels } from "@/lib/hooks";
+import { useLearnPath, useLevels, useStreak } from "@/lib/hooks";
 import { pendingLessonIds } from "@/lib/pending-lessons";
 import type { LearnPath } from "@/lib/types";
 import { lessonMinutes, toUnits } from "@/lib/units";
@@ -172,6 +172,7 @@ function LearnHome() {
   const { data: rawData, error, mutate: reload } = useLearnPath(viewLevel);
   const course = useLearnPath();
   const levels = useLevels();
+  const streak = useStreak();
   const [switching, setSwitching] = useState(false);
   const router = useRouter();
   const [guestDone] = useState(
@@ -219,8 +220,6 @@ function LearnHome() {
 
   return (
     <div className="page-wrap space-y-5">
-      {user && <NotificationNudge />}
-
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section className="panel tint-primary relative flex flex-col gap-5 overflow-hidden p-5 sm:flex-row sm:items-center sm:p-6" aria-labelledby="next-lesson">
           {error ? (
@@ -231,7 +230,19 @@ function LearnHome() {
               </Button>
             </div>
           ) : !data ? (
-            <div className="skeleton h-36 w-full rounded-2xl" />
+            // Khung chờ cùng bố cục với nội dung thật (vòng 96px + khối chữ + nút). Khung 144px cũ thấp hơn ~200px trên
+            // điện thoại nên tải xong là đẩy thẻ bên dưới xuống — Lighthouse đo bố cục nhảy (CLS) 0,34 ở trang này.
+            <>
+              <div className="skeleton h-24 w-24 shrink-0 rounded-full" />
+              <div className="min-w-0 flex-1 space-y-2" aria-hidden="true">
+                <div className="skeleton h-4 w-44 rounded" />
+                <div className="skeleton h-14 w-72 max-w-full rounded sm:h-8" />
+                <div className="skeleton h-5 w-56 max-w-full rounded" />
+                <div className="skeleton h-4 w-40 rounded" />
+                <div className="skeleton mt-4! h-12 w-52 rounded-xl" />
+                {!user && <div className="skeleton mt-2.5! h-12 w-52 rounded-xl sm:hidden" />}
+              </div>
+            </>
           ) : (
             <>
               <ProgressRing value={pct} />
@@ -299,6 +310,10 @@ function LearnHome() {
         {user ? <TodayCard /> : <GuestSaveCard learned={guestDone.size} />}
       </div>
 
+      {/* Mời bật thông báo SAU khi đã học hôm nay (như Duolingo hỏi sau bài đầu) — trước đó dải này chen lên trên nút
+       * Học tiếp ngay lúc vừa đăng ký, khi người mới còn chưa biết sẽ được nhắc học cái gì. */}
+      {user && streak.data?.activeToday && <NotificationNudge />}
+
       {user && <GettingStarted lessonHref={current ? `/bai-hoc/${current.id}` : "/learn"} />}
 
       {user && <ClassAssignmentsCard />}
@@ -341,7 +356,7 @@ function LearnHome() {
                   HSK {l === 7 ? "7–9" : l}
                   {l === courseLevel && (
                     <span
-                      className={`rounded-full px-1.5 py-0.5 text-[10px] ${
+                      className={`rounded-full px-1.5 py-0.5 text-xs ${
                         selected ? "bg-primary text-primary-fg" : "bg-primary/10 text-primary"
                       }`}
                     >

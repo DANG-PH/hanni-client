@@ -159,7 +159,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           className={`mt-auto border-t border-border px-6 py-4 text-xs text-muted ${styles.footer}`}
         >
           <span>Hanni · Mỗi ngày một chút, tiến xa hơn.</span>
-          <nav aria-label="Về Hanni" className="mt-1 flex flex-wrap justify-start gap-x-3 gap-y-1 sm:justify-center">
+          <nav aria-label="Về Hanni" className="mt-1 flex flex-wrap justify-start gap-x-1 sm:justify-center">
             {[
               ["Giới thiệu", "/gioi-thieu"],
               ["Cho giáo viên", "/hop-tac"],
@@ -167,7 +167,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               ["Bảo mật", "/chinh-sach-bao-mat"],
               ["Nguồn dữ liệu", "/nguon-du-lieu"],
             ].map(([label, href]) => (
-              <Link key={href} href={href} className="hover:text-primary">
+              // Vùng bấm ≥ 24px (chuẩn WCAG 2.2) — chữ 12px trơn chỉ cao 16px, dễ chạm nhầm trên điện thoại.
+              <Link key={href} href={href} className="inline-flex min-h-7 items-center px-1.5 hover:text-primary">
                 {label}
               </Link>
             ))}

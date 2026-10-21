@@ -78,7 +78,7 @@ export function MockExamList({
               }`}
             >
               <span className="text-sm font-extrabold">HSK {l}</span>
-              <span className={`text-xs ${selected ? "text-primary/80" : "text-muted"}`}>
+              <span className={`text-xs ${selected ? "text-primary" : "text-muted"}`}>
                 {has ? `${exams.filter((e) => e.level === l).length} đề` : "Sắp có"}
               </span>
             </button>

@@ -5,13 +5,13 @@ import { mediaUrl } from "@/lib/api";
 
 const PALETTE = [
   "#c8312b",
-  "#b5761b",
-  "#2f8f5b",
+  "#93600f",
+  "#24784b",
   "#2f6fd0",
   "#8a4fbf",
-  "#9a5b8f",
-  "#0f8a8a",
-  "#b5852f",
+  "#8e5383",
+  "#0d7a7a",
+  "#85621c",
 ];
 
 function colorOf(seed: string): string {

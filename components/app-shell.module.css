@@ -1,7 +1,5 @@
 .workspace {
-  /* Chiều cao thanh tab dưới đáy (điện thoại/máy tính bảng) — nội dung và các
-   * nút nổi (trợ lý AI, mời cài app) chừa chỗ theo biến này. */
-  --bottom-nav-h: calc(4rem + env(safe-area-inset-bottom));
+  /* `--bottom-nav-h` (chiều cao thanh tab dưới đáy) khai ở globals.css, cấp body. */
   /* Một thang bo góc cho cả app (2026-10-19): khối lớn = thẻ = 16px (= rounded-2xl của trang công khai),
    * ô bên trong 12px, nút/ô nhập 12px — trước đó 26/20/14/12 cộng rounded-3xl lẻ tẻ, mỗi trang một kiểu. */
   --radius-section: 16px;
@@ -194,10 +192,6 @@
 
 .workspace :global(.motion-button.bg-primary):active {
   box-shadow: 0 1px 0 color-mix(in srgb, var(--primary) 78%, var(--foreground));
-}
-
-@media (min-width: 1024px) {
-  .workspace { --bottom-nav-h: 0px; }
 }
 
 @media (min-width: 1280px) {

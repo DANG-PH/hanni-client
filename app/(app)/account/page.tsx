@@ -355,7 +355,7 @@ function PasswordForm({
   );
 }
 
-/** Lối vào lớp học cho người chưa có lớp (menu chỉ hiện "Lớp học" khi đã có lớp) — như Duolingo:
+/** Thêm 1 lối vào lớp học ngoài mục "Lớp học" ở menu — như Duolingo:
  * học viên nhập mã lớp ở Cài đặt → Duolingo for Schools. */
 function ClassroomCard() {
   const { data } = useMyClassrooms();

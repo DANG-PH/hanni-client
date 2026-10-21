@@ -287,7 +287,7 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
                       </p>
                     )}
                     {w.pos.length > 0 && (
-                      <p className="mb-1.5 text-xs font-bold tracking-wide text-primary/80 uppercase">
+                      <p className="mb-1.5 text-xs font-bold tracking-wide text-primary uppercase">
                         {w.pos.map((p) => POS_VI[p] ?? p).join(" · ")}
                       </p>
                     )}

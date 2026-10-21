@@ -10,17 +10,19 @@
   /* ≥4,5:1 trên trắng, nền xám, nền hồng nhạt (#727b8b cũ chỉ 3,8:1 trên nền xám — chữ nhỏ khó đọc). */
   --muted: #646c7b;
   --border: #e7e9ef;
-  --primary: #dc3526;
+  /* Đỏ thương hiệu đậm hơn 1 nấc (#dc3526 cũ chỉ 4,3:1 trên nền xám, 4:1 trên nền hồng nhạt của mục đang chọn — chữ đỏ nhỏ
+   * trượt chuẩn 4,5:1). Các màu dưới cũng vậy: mọi màu dùng làm CHỮ đều ≥4,5:1 trên trắng, nền xám và nền nhạt 10–15% của chính nó. */
+  --primary: #c62f22;
   /* Âm Hán Việt — "chữ ký" riêng của Hanni (vàng đồng, ≥4,6:1); đỏ để dành cho nút chính. */
   --hanviet: #946311;
   --primary-fg: #ffffff;
   /* Cột biểu đồ — đã qua bộ kiểm màu (độ sáng, tương phản ≥3:1 trên --surface). */
   --chart-bar: #dc3526;
-  --accent: #b5852f;
-  --good: #2f8f5b;
-  --warn: #b5761b;
+  --accent: #85621c;
+  --good: #24784b;
+  --warn: #93600f;
   --danger: #c0392f;
-  --lavender: #9a5b8f;
+  --lavender: #8e5383;
   --hero-from: #fff8f5;
   --hero-to: #f9e8df;
 }
@@ -203,7 +205,7 @@
     background: linear-gradient(135deg, var(--hero-from), var(--hero-to));
   }
   .section-label {
-    @apply inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-[10px] font-semibold tracking-wider text-primary shadow-2xs;
+    @apply inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-semibold tracking-wider text-primary shadow-2xs;
   }
   .hanzi {
     font-family: "Kaiti SC", "KaiTi", "Noto Serif CJK SC", "Songti SC", serif;
@@ -774,6 +776,17 @@
 }
 body:has(.mobile-drawer[open]) {
   overflow: hidden;
+}
+/* Chiều cao thanh tab dưới đáy (điện thoại/máy tính bảng): nội dung app và mọi nút nổi chừa chỗ theo biến này.
+ * Khai ở body chứ không ở khung app — lời mời cài app gắn ở layout gốc, NGOÀI khung app, từng đọc ra 0 và nằm đè
+ * lên thanh tab (không bấm được Trang chủ/Ôn tập… khi lời mời đang hiện). Trang không có thanh tab = 0. */
+body:has([data-bottom-nav]) {
+  --bottom-nav-h: calc(4rem + env(safe-area-inset-bottom));
+}
+@media (min-width: 1024px) {
+  body:has([data-bottom-nav]) {
+    --bottom-nav-h: 0px;
+  }
 }
 .nav-link::after {
   content: "";

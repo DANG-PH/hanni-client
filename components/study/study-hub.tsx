@@ -56,9 +56,15 @@ export function StudyHub() {
               <Icon name="play" size={16} /> Bắt đầu ôn
             </LinkButton>
           ) : (
-            <p className="max-w-64 text-sm text-muted">
-              Chưa có từ đến hạn. Học bài mới, từ sẽ tự quay lại đây đúng lúc.
-            </p>
+            // Trạng thái trống luôn kèm 1 việc tiếp theo — trước đây chỉ có câu chữ, người mới phải tự tìm đường về trang chủ.
+            <>
+              <p className="max-w-64 text-sm text-muted">
+                Chưa có từ đến hạn. Học bài mới, từ sẽ tự quay lại đây đúng lúc.
+              </p>
+              <LinkButton href="/learn" variant="secondary">
+                <Icon name="play" size={16} /> Học bài mới
+              </LinkButton>
+            </>
           )}
           {!!s?.leechCount && (
             <LinkButton href="/study?leeches=1" variant="secondary">

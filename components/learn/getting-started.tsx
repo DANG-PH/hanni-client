@@ -126,7 +126,8 @@ export function GettingStarted({ lessonHref }: { lessonHref: string }) {
       </div>
       <ol className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
         {steps.map((s) => (
-          <li key={s.title}>
+          // Điện thoại: việc đã xong ẩn đi (đã có "N/5" + thanh tiến độ) — 5 thẻ xếp dọc cao ~600px.
+          <li key={s.title} className={s.done ? "max-sm:hidden" : undefined}>
             <Link
               href={s.href}
               className={`flex h-full items-start gap-3 rounded-xl border p-3 transition-colors ${
