@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { Icon } from "@/components/icon";
+import { HandwritingPad } from "@/components/dictionary/handwriting-pad";
 import { API_BASE } from "@/lib/api";
 import { DICT_TABS, dictHref, type DictTab } from "@/lib/dictionary";
 import { recognizerCtor, useCanRecognize, type Recognizer } from "@/lib/speech";
@@ -74,6 +75,7 @@ export function DictionarySearch({
   const [active, setActive] = useState(-1);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [listening, setListening] = useState(false);
+  const [writing, setWriting] = useState(false);
   const recognizer = useRef<Recognizer | null>(null);
   const input = useRef<HTMLInputElement>(null);
   const seq = useRef(0);
@@ -135,8 +137,9 @@ export function DictionarySearch({
     else input.current?.focus();
   }
 
-  const showHistory = suggest && open && !term && history.length > 0;
-  const showItems = open && items.length > 0;
+  // Đang mở ô viết tay thì không thả danh sách gợi ý đè lên ô viết.
+  const showHistory = suggest && open && !writing && !term && history.length > 0;
+  const showItems = open && !writing && items.length > 0;
   const placeholder = listening
     ? "Đang nghe… nói một từ tiếng Trung"
     : (DICT_TABS.find((t) => t.key === current)?.placeholder ?? "");
@@ -221,6 +224,19 @@ export function DictionarySearch({
               <Icon name="mic" size={18} />
             </button>
           )}
+          {/* Viết tay như bút ở ô tra của Hanzii — cho chữ không biết đọc, không gõ được pinyin. */}
+          <button
+            type="button"
+            onClick={() => setWriting((w) => !w)}
+            aria-label="Viết tay để tra"
+            aria-pressed={writing}
+            title="Viết tay chữ Hán để tra"
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+              writing ? "bg-primary/10 text-primary" : "text-muted hover:bg-surface-2 hover:text-primary"
+            }`}
+          >
+            <Icon name="pencil" size={18} />
+          </button>
           {/* Tra bằng ảnh như "Dịch ảnh" của Hanzii/Google Dịch — chụp thực đơn, biển hiệu. */}
           <Link
             href="/tu-dien/quet"
@@ -309,6 +325,19 @@ export function DictionarySearch({
           </div>
         )}
       </div>
+
+      {writing && (
+        <HandwritingPad
+          onPick={(char) => {
+            setQ((v) => v + char);
+            setResult({ term: "", items: [] });
+          }}
+          onClose={() => {
+            setWriting(false);
+            input.current?.focus();
+          }}
+        />
+      )}
 
       {showTabs && (
         <div role="tablist" aria-label="Kiểu tra" className="mt-3 flex justify-center gap-1 overflow-x-auto">

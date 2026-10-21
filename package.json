@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:pwa": "node --test tests/pwa-worker.test.mjs"
+    "test:pwa": "node --test tests/pwa-worker.test.mjs",
+    "test:handwriting": "node --test tests/handwriting.test.ts"
   },
   "dependencies": {
     "hanzi-writer": "^3.7.3",
