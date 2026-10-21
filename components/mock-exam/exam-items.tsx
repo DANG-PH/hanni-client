@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { HandwritingPad } from "@/components/dictionary/handwriting-pad";
 import { Icon } from "@/components/icon";
 import { playListening, stopListening } from "@/lib/listening-audio";
 import { normalizeSentence } from "@/lib/mock-exam";
@@ -418,6 +419,89 @@ function OrderBuilder({
 }
 
 /** Lời thoại + bản dịch + giải thích — chỉ hiện khi chữa bài. */
+/** HSK 4 viết phần 2: nhìn tranh, dùng từ cho sẵn đặt 1 câu. Gõ bằng bàn phím tiếng Trung hoặc viết tay (ô viết
+ * tay của từ điển — người học chưa cài bộ gõ tiếng Trung vẫn làm được). Server chấm mức tối thiểu
+ * (`acceptableSentence`), chữa bài hiện câu mẫu để tự so — giám khảo thật còn chấm ngữ pháp và ý. */
+function SentenceWriter({
+  picture,
+  label,
+  word,
+  given,
+  review,
+  onChange,
+  pinyin,
+}: {
+  picture: string;
+  label?: string;
+  word: Ruby;
+  given: MockAnswer | null;
+  review?: MockReviewItem;
+  onChange?: (v: MockAnswer | null) => void;
+  pinyin: boolean;
+}) {
+  const [writing, setWriting] = useState(false);
+  const value = typeof given === "string" ? given : "";
+  const set = (v: string) => onChange?.(v.trim() ? v : null);
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-4">
+        <PictureTile emoji={picture} label={label} size="lg" />
+        <div>
+          <p className="text-xs font-semibold text-muted">Dùng từ</p>
+          <RubyText ruby={word} pinyin={pinyin} className="text-2xl font-bold" />
+        </div>
+      </div>
+      {onChange ? (
+        <>
+          <textarea
+            value={value}
+            onChange={(e) => set(e.target.value)}
+            rows={2}
+            lang="zh"
+            aria-label={`Câu có từ ${word.zh}`}
+            placeholder={`Đặt một câu có từ “${word.zh}”…`}
+            className="field hanzi text-xl leading-relaxed"
+          />
+          <button
+            type="button"
+            onClick={() => setWriting((w) => !w)}
+            aria-pressed={writing}
+            className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-border px-3 text-sm font-semibold hover:bg-surface-2"
+          >
+            <Icon name="pencil" size={15} /> Viết tay
+          </button>
+          {writing && (
+            <HandwritingPad
+              title="Viết tay chữ Hán"
+              hint="Bấm chữ đúng để thêm vào câu."
+              onPick={(c) => set(value + c)}
+              onClose={() => setWriting(false)}
+            />
+          )}
+        </>
+      ) : (
+        <p lang="zh" className={`hanzi text-xl ${review ? (review.correct ? "text-good" : "text-danger") : ""}`}>
+          {value || "(bỏ trống)"}
+        </p>
+      )}
+      {review && typeof review.answer === "string" && (
+        <div className="space-y-1 rounded-xl border border-border px-3 py-2">
+          <p className="text-xs font-semibold text-muted">Câu mẫu</p>
+          {[review.answer, ...(review.alternatives ?? [])].map((s) => (
+            <p key={s} lang="zh" className="hanzi text-lg text-good">
+              {s}
+            </p>
+          ))}
+          <p className="text-xs leading-5 text-muted">
+            Chấm tự động: câu có dùng từ đã cho, ít nhất 6 chữ Hán và chỉ gồm chữ Hán + dấu câu. Giám khảo thật còn chấm
+            ngữ pháp và ý — hãy so với câu mẫu.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ReviewNotes({
   review,
   pinyin,
@@ -592,7 +676,8 @@ export function ExamItem({
           )}
           {item.question && <StarLine ruby={item.question} pinyin={pinyin} label="Câu hỏi" />}
           {part.type === "choose-text" && item.options && (
-            <div className="grid gap-2 sm:grid-cols-3">
+            // HSK 4 trở lên có 4 phương án (A–D), dài hơn — xếp 2 cột cho dễ đọc.
+            <div className={`grid gap-2 ${item.options.length === 4 ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
               {item.options.map((o, i) => (
                 <OptionButton
                   key={i}
@@ -698,6 +783,18 @@ export function ExamItem({
                 ))}
               </div>
             </>
+          )}
+
+          {part.type === "write-sentence" && item.picture && item.word && (
+            <SentenceWriter
+              picture={item.picture}
+              label={labels?.[0]}
+              word={item.word}
+              given={given}
+              review={review}
+              onChange={onChange}
+              pinyin={pinyin}
+            />
           )}
 
           {review && <ReviewNotes review={review} pinyin={pinyin} onAsk={onAsk} />}

@@ -758,8 +758,8 @@ function ResultScreen({
               title={`Thi HSK ${levelName(exam.level)}${exam.weeksLeft ? ` · còn ${exam.weeksLeft} tuần` : ""}`}
               detail={examDetail}
               link={
-                // Đề thi thử hiện có HSK 1–3 (công khai, khách làm được).
-                exam.level <= 3
+                // Đề thi thử hiện có HSK 1–4 (công khai, khách làm được).
+                exam.level <= 4
                   ? { href: `/thi-thu-hsk/hsk${exam.level}-de-1`, label: `Làm thử đề HSK ${exam.level}` }
                   : undefined
               }

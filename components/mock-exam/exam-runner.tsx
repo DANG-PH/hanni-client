@@ -74,9 +74,13 @@ function instruction(section: MockSectionKind, part: MockPart): string {
         ? "Nghe một đoạn văn rồi xét câu có dấu ★ in trên đề: đúng với điều vừa nghe chọn ✓, sai chọn ✗."
         : "Đọc đoạn văn rồi xét câu có dấu ★: đúng với đoạn văn chọn ✓, sai chọn ✗.";
     case "order":
-      return "Bấm lần lượt các từ để sắp thành câu đúng; bấm vào từ đã xếp để bỏ ra.";
+      return section === "reading"
+        ? "Bấm lần lượt 3 câu để sắp thành đoạn văn đúng thứ tự; bấm vào câu đã xếp để bỏ ra."
+        : "Bấm lần lượt các từ để sắp thành câu đúng; bấm vào từ đã xếp để bỏ ra.";
     case "pinyin-char":
       return "Nhìn pinyin, chọn chữ Hán đúng cho chỗ trống — như thi trên máy: gõ pinyin rồi chọn chữ trong danh sách.";
+    case "write-sentence":
+      return "Nhìn tranh, dùng từ cho sẵn viết 1 câu — gõ bằng bàn phím tiếng Trung hoặc bấm “Viết tay”.";
   }
 }
 

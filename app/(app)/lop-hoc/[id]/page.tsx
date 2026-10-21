@@ -296,7 +296,7 @@ function AssignForm({ data }: { data: OwnerView }) {
         </label>
       </div>
       {kind === "MOCK_EXAM" && levelExams.length === 0 && (
-        <p className="text-xs text-muted">Đề thi thử hiện có cho HSK 1–3.</p>
+        <p className="text-xs text-muted">Đề thi thử hiện có cho HSK 1–4.</p>
       )}
       <label className="block text-xs font-medium text-muted">
         Hạn nộp (không bắt buộc)

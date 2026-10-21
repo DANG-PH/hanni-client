@@ -29,7 +29,7 @@ async function stats() {
   ]);
   return {
     words: words?.total ? words.total.toLocaleString("vi-VN") : "10.900+",
-    exams: Array.isArray(exams) ? exams.length : 9,
+    exams: Array.isArray(exams) ? exams.length : 10,
   };
 }
 
@@ -182,7 +182,7 @@ export default async function TeachersPage() {
           </h2>
           {[
             ["cards", "Bài học theo lộ trình", "Hơn 700 bài HSK 1–9 chia theo chủ đề: giới thiệu từ có âm Hán Việt, luyện nghe, ghép cặp, điền câu."],
-            ["target", `${s.exams} đề thi thử HSK 1–3`, "Đúng cấu trúc đề thật, chấm ngay, chữa từng câu bằng tiếng Việt — giao làm đề đầu khoá, cuối khoá."],
+            ["target", `${s.exams} đề thi thử HSK 1–4`, "Đúng cấu trúc đề thật, chấm ngay, chữa từng câu bằng tiếng Việt — giao làm đề đầu khoá, cuối khoá."],
             ["book", `${s.words} từ có audio`, "Học viên tự ôn từ đã học theo lịch lặp lại ngắt quãng — giữ vốn từ giữa các buổi lên lớp."],
           ].map(([icon, title, body]) => (
             <div key={title} className="panel flex gap-4 p-5">

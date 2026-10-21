@@ -792,6 +792,8 @@ export interface MockItem {
   picture?: string;
   pictures?: string[];
   options?: Ruby[];
+  /** Dạng `write-sentence` (HSK 4 viết phần 2): từ bắt buộc dùng, in dưới tranh. */
+  word?: Ruby;
 }
 
 export type MockPartType =
@@ -803,7 +805,8 @@ export type MockPartType =
   | "fill-blank"
   | "judge-text"
   | "order"
-  | "pinyin-char";
+  | "pinyin-char"
+  | "write-sentence";
 
 export interface MockPart {
   no: number;
@@ -834,7 +837,7 @@ export interface MockWord {
 export interface MockReviewItem {
   no: number;
   answer: MockAnswer;
-  /** Câu sắp xếp: các thứ tự khác cũng được chấm đúng. */
+  /** Câu sắp xếp: các thứ tự khác cũng được chấm đúng; câu đặt theo tranh: câu mẫu khác. */
   alternatives?: string[];
   given: MockAnswer | null;
   correct: boolean;

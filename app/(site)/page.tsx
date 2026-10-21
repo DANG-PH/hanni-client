@@ -58,7 +58,7 @@ const PILLARS: {
     id: "thi-thu",
     icon: "target",
     title: "Thi thử HSK có chữa bài",
-    description: "9 đề HSK 1–3 đúng cấu trúc đề thật: nghe, đọc, viết, tính giờ. Chấm điểm ngay, giải thích từng câu bằng tiếng Việt — không cần tài khoản.",
+    description: "10 đề HSK 1–4 đúng cấu trúc đề thật: nghe, đọc, viết, tính giờ. Chấm điểm ngay, giải thích từng câu bằng tiếng Việt — không cần tài khoản.",
     cta: "Làm đề HSK 1",
     href: "/thi-thu-hsk",
     preview: "exam",
@@ -106,7 +106,7 @@ const FAQ = [
   ],
   [
     "Hanni có luyện thi HSK không?",
-    "Có. HSK 1–3 mỗi cấp 3 đề đúng cấu trúc đề thật (nghe, đọc, viết, tính giờ). Làm xong có điểm từng phần, chữa từng câu kèm pinyin, bản dịch và từ vựng có âm Hán Việt, luyện lại câu sai và luyện riêng dạng bài còn yếu.",
+    "Có. HSK 1–3 mỗi cấp 3 đề, HSK 4 có 1 đề, đều đúng cấu trúc đề thật (nghe, đọc, viết, tính giờ). Làm xong có điểm từng phần, chữa từng câu kèm pinyin, bản dịch và từ vựng có âm Hán Việt, luyện lại câu sai và luyện riêng dạng bài còn yếu.",
   ],
   [
     "Có cần biết tiếng Anh để sử dụng Hanni không?",
@@ -205,7 +205,7 @@ export default function Home() {
             { n: fmt(totalWords, "10.900+"), t: "từ vựng có audio" },
             { n: fmt(wordStats.data?.withHanViet, "9.800+"), t: "từ có âm Hán Việt" },
             { n: "744", t: "bài học theo chủ đề" },
-            { n: "9 đề", t: "thi thử HSK 1–3" },
+            { n: "10 đề", t: "thi thử HSK 1–4" },
           ].map((s) => (
             <div key={s.t} className="px-2 py-5 text-center">
               <dt className="sr-only">{s.t}</dt>

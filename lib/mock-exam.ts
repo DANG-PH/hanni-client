@@ -100,6 +100,18 @@ const PART_INFO: Record<string, PartInfo> = {
     href: "/ngu-phap",
     cta: "Xem ngữ pháp",
   },
+  "reading:order": {
+    label: "Sắp xếp 3 câu thành đoạn văn",
+    tip: "Câu mở đầu thường nêu chủ ngữ/nhân vật và không bắt đầu bằng 但是, 所以, 然后, 结果; các từ nối đó báo câu đứng sau.",
+    href: "/ngu-phap",
+    cta: "Xem ngữ pháp",
+  },
+  "writing:write-sentence": {
+    label: "Nhìn tranh, dùng từ đặt câu",
+    tip: "Câu đơn giản mà đúng là đủ: chủ ngữ + (thời gian, nơi chốn) + động từ + tân ngữ, có từ cho sẵn và dấu câu. Câu dài dễ sai ngữ pháp.",
+    href: "/tu-dien",
+    cta: "Tra từ, xem câu ví dụ",
+  },
   "writing:pinyin-char": {
     label: "Viết chữ theo pinyin",
     tip: "Chữ đồng âm rất nhiều — nhớ chữ theo TỪ (出租车, 终于) chứ đừng nhớ rời; âm Hán Việt giúp phân biệt: 出 xuất, 初 sơ, 除 trừ.",

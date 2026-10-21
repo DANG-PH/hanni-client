@@ -59,7 +59,18 @@ function drawPad(el: HTMLCanvasElement | null, strokes: Stroke[]) {
  * gợi ý 8 chữ giống nhất (`lib/handwriting.ts`, chạy ngay trong trình duyệt, không gửi nét đi đâu); bấm một chữ là
  * thêm vào ô tra và xoá ô viết để viết chữ tiếp theo.
  */
-export function HandwritingPad({ onPick, onClose }: { onPick: (char: string) => void; onClose: () => void }) {
+export function HandwritingPad({
+  onPick,
+  onClose,
+  title = "Viết chữ Hán để tra",
+  hint = "Bấm chữ đúng để thêm vào ô tra, rồi bấm nút tra.",
+}: {
+  onPick: (char: string) => void;
+  onClose: () => void;
+  /** Mặc định là câu cho ô tra từ điển; phòng thi (HSK 4 đặt câu) truyền câu riêng. */
+  title?: string;
+  hint?: string;
+}) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const strokes = useRef<Stroke[]>([]);
   const current = useRef<Stroke | null>(null);
@@ -111,7 +122,7 @@ export function HandwritingPad({ onPick, onClose }: { onPick: (char: string) => 
   return (
     <div className="mt-3 rounded-2xl border border-border bg-surface p-3 shadow-sm sm:p-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold">Viết chữ Hán để tra</p>
+        <p className="text-sm font-semibold">{title}</p>
         <button
           type="button"
           onClick={onClose}
@@ -174,7 +185,7 @@ export function HandwritingPad({ onPick, onClose }: { onPick: (char: string) => 
               ? "Chưa tải được dữ liệu nhận dạng — kiểm tra mạng rồi mở lại."
               : !templates && strokeCount
                 ? "Đang tải dữ liệu nhận dạng…"
-                : "Viết từng nét theo thứ tự, mỗi lần một chữ. Bấm chữ đúng để thêm vào ô tra, rồi bấm nút tra."}
+                : `Viết từng nét theo thứ tự, mỗi lần một chữ. ${hint}`}
           </p>
           <div className="flex gap-2">
             <button

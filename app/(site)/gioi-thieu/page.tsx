@@ -40,7 +40,7 @@ const PROBLEMS: { problem: string; answer: string; icon: IconName }[] = [
   {
     icon: "target",
     problem: "Luyện thi tốn tiền, đề trên mạng không đúng cấu trúc.",
-    answer: "Đề thi thử HSK 1–3 đúng cấu trúc đề thật, chấm ngay, chữa từng câu bằng tiếng Việt — làm được cả khi chưa có tài khoản.",
+    answer: "Đề thi thử HSK 1–4 đúng cấu trúc đề thật, chấm ngay, chữa từng câu bằng tiếng Việt — làm được cả khi chưa có tài khoản.",
   },
 ];
 
@@ -70,7 +70,7 @@ const TECH: { icon: IconName; title: string; body: string }[] = [
 const TIMELINE: [string, string, string][] = [
   ["09/2026", "Khởi động", "Lõi học tập: tài khoản, 10.900+ từ HSK 3.0 có audio, ôn lặp lại ngắt quãng, chuỗi ngày và huy hiệu."],
   ["09/2026", "Âm Hán Việt + từ điển công khai", "Âm Hán Việt cho từng từ, phân tích từng chữ; từ điển và 235 điểm ngữ pháp mở cho mọi người tra."],
-  ["10/2026", "Một lộ trình, một nút Học tiếp", "744 bài theo chủ đề cho 9 cấp, kiểm tra trình độ, bảng phiên âm, đề thi thử HSK 1–3 đúng cấu trúc."],
+  ["10/2026", "Một lộ trình, một nút Học tiếp", "744 bài theo chủ đề cho 9 cấp, kiểm tra trình độ, bảng phiên âm, đề thi thử HSK 1–4 đúng cấu trúc."],
   ["10/2026", "Chấm thanh điệu + trợ giảng AI", "Đồ thị cao độ giọng nói, luyện nói nhập vai bằng giọng, quét ảnh học từ, bài đọc AI theo từng bài học."],
   ["10/2026", "Lớp học cho giáo viên", "Giáo viên tạo lớp, giao bài, xem tiến độ từng học viên — miễn phí."],
 ];

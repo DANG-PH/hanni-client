@@ -104,6 +104,9 @@ export function PracticeRunner({ set }: { set: MockPracticeSet }) {
             {g.part.items.map((item) => {
               const k = key(g.examSlug, item.no);
               const review = reviews[k];
+              // Câu tự viết (HSK 4 viết phần 2): gõ chỉ lưu, bấm nút mới chấm — chấm theo từng phím gõ thì chữ đầu tiên
+              // đã bị chấm sai và khoá câu.
+              const typed = g.part.type === "write-sentence";
               return (
                 <div key={`${k}-${round}`}>
                   <ExamItem
@@ -112,7 +115,13 @@ export function PracticeRunner({ set }: { set: MockPracticeSet }) {
                     item={item}
                     section={set.section}
                     given={answers[k] ?? null}
-                    onChange={review || checking[k] ? undefined : (v) => void check(g.examSlug, item.no, v)}
+                    onChange={
+                      review || checking[k]
+                        ? undefined
+                        : typed
+                          ? (v) => setAnswers((a) => ({ ...a, [k]: v }))
+                          : (v) => void check(g.examSlug, item.no, v)
+                    }
                     review={review}
                     pinyin={pinyin}
                     onAsk={
@@ -132,6 +141,15 @@ export function PracticeRunner({ set }: { set: MockPracticeSet }) {
                         : undefined
                     }
                   />
+                  {typed && !review && (
+                    <Button
+                      className="mt-2"
+                      disabled={!answers[k] || checking[k]}
+                      onClick={() => void check(g.examSlug, item.no, answers[k] ?? null)}
+                    >
+                      {checking[k] ? "Đang chấm…" : "Chấm câu này"}
+                    </Button>
+                  )}
                   {failed[k] && (
                     <p className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-danger">
                       Chưa chấm được — kiểm tra kết nối.
