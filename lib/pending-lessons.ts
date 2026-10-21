@@ -34,6 +34,11 @@ export function savePendingLesson(lesson: PendingLesson) {
   }
 }
 
+/** Tổng số từ khách đã học trong phiên mà chưa lưu — trang đăng ký nói rõ sẽ lưu gì. */
+export function pendingWordCount(): number {
+  return read().reduce((n, l) => n + l.results.length, 0);
+}
+
 /** Bài khách đã học xong trong phiên (chưa lưu) — trang chủ đánh dấu xong và
  * "Học tiếp" đúng bài kế, thay vì mời học lại bài 1. */
 export function pendingLessonIds(): string[] {

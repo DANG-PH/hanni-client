@@ -84,7 +84,9 @@ export function TodayCard() {
           <p className="mt-1 text-xs text-muted">
             {s?.activeToday
               ? "Hôm nay đã học — chuỗi được giữ."
-              : "Học 1 bài hôm nay để giữ chuỗi."}
+              : s?.savedByFreeze
+                ? "Hôm qua bạn nghỉ — lá chắn đang giữ chuỗi, học 1 bài hôm nay nhé."
+                : "Học 1 bài hôm nay để giữ chuỗi."}
             {s && s.streakFreezeCount > 0 && ` · ${s.streakFreezeCount} lá chắn`}
           </p>
         </div>

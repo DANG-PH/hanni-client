@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Button, ErrorNote } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { GoogleButton } from "@/components/google-button";
@@ -14,6 +14,7 @@ import {
   drainPendingCourseLevel,
   drainPendingExam,
   drainPendingLessons,
+  pendingWordCount,
 } from "@/lib/pending-lessons";
 import { drainPendingWords } from "@/lib/pending-words";
 import type { SubmitOnboardingInput } from "@/lib/types";
@@ -66,6 +67,8 @@ async function saveGuestProgress() {
   return { words, lessons: lessons > 0 || exam, onboarded: onboarded || placed };
 }
 
+const noSubscribe = () => () => {};
+
 export function AuthFormCard({
   initialMode,
 }: {
@@ -95,6 +98,8 @@ export function AuthFormCard({
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Khách vừa học xong bài (sessionStorage) — đọc sau khi gắn trang, máy chủ luôn coi là 0.
+  const pendingWords = useSyncExternalStore(noSubscribe, pendingWordCount, () => 0);
   const hasGoogle = Boolean(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
 
   // Đăng nhập/đăng ký thành công tự điều hướng riêng (có thể khác `next`, vd
@@ -348,7 +353,9 @@ export function AuthFormCard({
             Bắt đầu cùng Hanni<span className="text-primary">.</span>
           </h1>
           <p className="mt-2.5 text-sm leading-6 text-muted">
-            Tạo tài khoản để lưu tiến độ và học theo nhịp của riêng bạn.
+            {pendingWords > 0
+              ? `${pendingWords} từ bạn vừa học sẽ được lưu ngay khi tạo tài khoản xong.`
+              : "Tạo tài khoản để lưu tiến độ và học theo nhịp của riêng bạn."}
           </p>
 
           {hasGoogle && (

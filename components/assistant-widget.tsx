@@ -314,7 +314,7 @@ export function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Đóng trợ lý Hanni" : "Mở trợ lý Hanni"}
         aria-expanded={open}
-        className={`motion-button fixed right-4 z-40 flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 transition-[translate,opacity] duration-300 hover:bg-primary/90 sm:right-5 sm:h-14 sm:w-14 ${open ? "max-sm:hidden" : ""} ${tucked && !open ? "max-lg:pointer-events-none max-lg:translate-y-24 max-lg:opacity-0" : ""} ${promptDialogVisible ? "bottom-[calc(var(--bottom-nav-h,0px)_+_14rem)]" : "bottom-[calc(var(--bottom-nav-h,0px)_+_1rem)]"}`}
+        className={`motion-button fixed right-4 z-40 flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 transition-[translate,opacity] duration-300 hover:bg-primary/90 sm:right-5 sm:h-14 sm:w-14 ${open ? "max-sm:hidden" : ""} ${tucked && !open ? "max-lg:pointer-events-none max-lg:translate-y-24 max-lg:opacity-0" : ""} ${promptDialogVisible ? "max-sm:hidden bottom-[calc(var(--bottom-nav-h,0px)_+_14rem)]" : "bottom-[calc(var(--bottom-nav-h,0px)_+_1rem)]"}`}
       >
         {open ? <Icon name="close" size={24} /> : <HanniLogo size={56} fill />}
       </button>

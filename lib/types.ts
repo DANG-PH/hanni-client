@@ -172,6 +172,8 @@ export interface StreakInfo {
   streakFreezeCount: number;
   lastActiveLocalDate: string | null;
   activeToday: boolean;
+  /** Hôm qua lỡ nghỉ nhưng còn lá chắn — học hôm nay là chuỗi được giữ (server trước 2026-10-21 chưa có). */
+  savedByFreeze?: boolean;
   goal: {
     type: "WORDS" | "MINUTES";
     value: number;
