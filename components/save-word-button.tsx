@@ -28,7 +28,8 @@ export function SaveWordButton({
     "idle" | "saving" | "saved" | "hiding" | "hidden" | "error"
   >("idle");
 
-  if (loading) return null;
+  // Giữ chỗ đúng chiều cao nút (min-h-11) — trả null thì nút hiện ra sau đẩy phần "Nghĩa" xuống 44px (bố cục nhảy).
+  if (loading) return <div className="skeleton h-11 w-60 max-w-full rounded-xl" aria-hidden="true" />;
 
   if (!user) {
     return (
