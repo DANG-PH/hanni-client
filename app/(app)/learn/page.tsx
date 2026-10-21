@@ -12,12 +12,10 @@ import { TodayCard } from "@/components/learn/today-card";
 import { TopicExplorer } from "@/components/learn/topic-explorer";
 import { NotificationNudge } from "@/components/pwa/notification-nudge";
 import { Button, ErrorNote, LinkButton, Spinner } from "@/components/ui";
-import { VideoShelf } from "@/components/video-shelf";
-import { WeeklyLeagueCard } from "@/components/weekly-league-card";
 import { WordOfTheDayCard } from "@/components/word-of-the-day";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import { useLearnPath, useLevels, useStreak } from "@/lib/hooks";
+import { preloadLearnHome, useLearnPath, useLevels, useStreak } from "@/lib/hooks";
 import { pendingLessonIds } from "@/lib/pending-lessons";
 import type { LearnPath } from "@/lib/types";
 import { lessonMinutes, toUnits } from "@/lib/units";
@@ -26,9 +24,16 @@ import { lessonMinutes, toUnits } from "@/lib/units";
  * Trang chủ sau đăng nhập — MỘT lộ trình, MỘT nút "Học tiếp" (cách Duolingo
  * làm lại màn chính 2022), bố cục theo Hanbeego (user chỉ đích danh làm mẫu):
  * thẻ bài tiếp theo + vòng tiến độ, thẻ chuỗi ngày; tab cấp HSK để xem; chủ
- * đề hai cột (danh sách chủ đề | các bài); nhiệm vụ, giải đấu, từ vựng hôm
- * nay và video ở cuối (Hanbeego cũng đặt các thẻ này ngay trang chủ).
+ * đề hai cột (danh sách chủ đề | các bài); nhiệm vụ + từ vựng hôm nay ở cuối.
+ * Gọn lại 2026-10-21: giải đấu tuần sang trang Xếp hạng (như Duolingo để giải đấu ở tab riêng), kệ video bỏ khỏi
+ * đây (video vẫn ở trang Luyện tập) — trang chủ còn ít khối, tải ít hơn.
  */
+
+// Mở thẳng /learn: hỏi lộ trình ngay khi mã trang nạp, song song với `/auth/session` — trước đó phải đợi biết ai
+// đăng nhập mới hỏi, thêm 1 lượt mạng trước khi thẻ Học tiếp hiện ra (Lighthouse: LCP 4,5 s trên điện thoại).
+if (typeof window !== "undefined" && window.location.pathname === "/learn" && !window.location.search) {
+  preloadLearnHome();
+}
 export default function LearnPage() {
   return (
     <Suspense fallback={<Spinner />}>
@@ -374,24 +379,19 @@ function LearnHome() {
         </section>
       )}
 
-      {/* Kéo 3 thẻ cao bằng nhau — để `items-start` thì đáy lệch nhau, thẻ ngắn
-       * chừa mảng trống bên dưới. Các thẻ dưới + kệ video chỉ hiện khi lộ trình đã tải: hiện trước thì lộ trình chèn
-       * lên trên đẩy chúng xuống hơn 700px — Lighthouse đo bố cục nhảy (CLS) 0,45 ở trang này. */}
-      {data &&
-        (user ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {/* Kéo 2 thẻ cao bằng nhau — để `items-start` thì đáy lệch nhau, thẻ ngắn chừa mảng trống bên dưới. Chỉ hiện
+       * khi lộ trình đã tải: hiện trước thì lộ trình chèn lên trên đẩy chúng xuống hơn 700px — Lighthouse đo bố cục
+       * nhảy (CLS) 0,45 ở trang này. */}
+      {data && (
+        <div className="grid gap-4 md:grid-cols-2">
+          {user ? (
             <DailyQuestCard lessonHref={current ? `/bai-hoc/${current.id}` : "/learn"} />
-            <WeeklyLeagueCard />
-            <WordOfTheDayCard level={courseLevel} />
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2">
+          ) : (
             <GuestTryCard />
-            <WordOfTheDayCard level={viewing} />
-          </div>
-        ))}
-
-      {data && <VideoShelf limit={8} maxLevel={(courseLevel ?? viewing ?? 1) + 1} />}
+          )}
+          <WordOfTheDayCard level={user ? courseLevel : viewing} />
+        </div>
+      )}
     </div>
   );
 }

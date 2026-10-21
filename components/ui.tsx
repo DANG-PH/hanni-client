@@ -69,7 +69,7 @@ export function Card({
 }: {
   children: ReactNode;
   className?: string;
-  /** Neo để liên kết `#id` cuộn tới (vd thông báo kết quả giải đấu → `/learn#giai-dau`). */
+  /** Neo để liên kết `#id` cuộn tới (vd thông báo kết quả giải đấu → `/leaderboard#giai-dau`). */
   id?: string;
 }) {
   return (

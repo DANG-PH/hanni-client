@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import useSWR, { mutate } from "swr";
+import useSWR, { mutate, preload } from "swr";
 import { api, apiFetch, API_BASE } from "./api";
 import { useAuth } from "./auth";
 import type {
@@ -101,6 +101,14 @@ export function useAchievements() {
 
 export function useRecentQuizzes() {
   return useSWR<QuizAttemptSummary[]>("/quiz/recent", fetcher);
+}
+
+/** Tải trước lộ trình + danh sách cấp của trang chủ học — gọi lúc mã trang vừa nạp, khi khung app còn đang hỏi
+ * `/auth/session` (khung chỉ hiện trang sau bước đó). Cùng khoá + fetcher với `useLearnPath()`/`useLevels()` nên
+ * hook dùng lại đúng request này thay vì hỏi lại. */
+export function preloadLearnHome() {
+  void preload("/learn/path", fetcher);
+  void preload("/levels", fetcher);
 }
 
 export function useLearnPath(level?: number) {

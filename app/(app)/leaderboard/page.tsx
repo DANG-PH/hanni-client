@@ -21,6 +21,7 @@ import {
   PageHeading,
   Spinner,
 } from "@/components/ui";
+import { WeeklyLeagueCard } from "@/components/weekly-league-card";
 import { useAuth } from "@/lib/auth";
 import { useLeaderboard, useLeaderboardMetrics } from "@/lib/hooks";
 import type { LeaderboardMetricKey } from "@/lib/types";
@@ -39,9 +40,9 @@ const LEADERBOARD_TOUR_STEPS: TourStep[] = [
   },
   {
     icon: "trophy",
-    title: "Giải đấu tuần ở trang chủ",
+    title: "Giải đấu tuần",
     description:
-      "Thi đua theo tuần với người cùng bậc: đầu bảng lên bậc, cuối bảng xuống bậc — xem ở thẻ \"Giải đấu tuần\" trên trang chủ.",
+      "Thi đua theo tuần với người cùng bậc: đầu bảng lên bậc, cuối bảng xuống bậc — thẻ \"Giải đấu tuần\" ở đầu trang này.",
   },
 ];
 
@@ -96,10 +97,14 @@ export default function LeaderboardPage() {
         tone="accent"
         eyebrow="Cùng học, cùng tiến bộ"
         title="Bảng xếp hạng"
-        description="Xếp theo chuỗi ngày học và số bài đã xong."
+        description="Giải đấu tuần với người cùng bậc, và bảng xếp hạng theo chuỗi ngày học, số bài đã xong."
       >
         <TourButton tourKey="leaderboard" />
       </PageHeading>
+
+      {/* Giải đấu tuần ở đây chứ không ở trang chủ học (2026-10-21) — như Duolingo để giải đấu ở tab riêng; trang chủ
+       * chỉ giữ việc cần làm hôm nay. Thông báo kết quả tuần mở `/leaderboard#giai-dau`. */}
+      {user && <WeeklyLeagueCard />}
 
       <div className="space-y-3">
         <div
