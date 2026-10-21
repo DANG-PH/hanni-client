@@ -357,6 +357,10 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 - **Lớp học**: `/lop-hoc` đưa 2 hành động lên đầu (học viên nhập mã · giáo viên tạo lớp, nhãn vai "Học viên"/"Giáo viên"), "Lớp học
   hoạt động thế nào" thu gọn xuống cuối; `/lop-hoc/[id]` nút "Xoá lớp này" xuống cuối trang có xác nhận, lời mời ngắn lại, nút chia sẻ
   thành lưới 1 cột trên điện thoại; nút "Tạo lớp"/"Giao bài" luôn bấm được, thiếu thông tin thì báo rõ thiếu gì (trước đó nút xám im lặng).
+Bổ sung 2026-10-21 (rà luồng người mới như khách thật, tự trả lời trọn bài 1 rồi đăng ký): thẻ chuỗi ngày báo "lá chắn đang giữ
+chuỗi" khi `savedByFreeze`; trang đăng ký sau khi học thử ghi "N từ bạn vừa học sẽ được lưu…" (`pendingWordCount()`, đọc
+sessionStorage qua `useSyncExternalStore`); trên điện thoại ẩn bong bóng trợ lý lúc thanh mời cài app đang hiện (trước đó bị đẩy lên
+14rem, che chữ giữa màn hình ở gần như mọi trang).
 Kiểm tra: đăng ký + học bài 1 qua API rồi đi trang chủ, chuông (gộp 3 huy hiệu, khung trong màn hình 12–378px, bấm → `/achievements`,
 chưa đọc về 0), trò chơi, tài khoản, lớp học, hồ sơ, popup Premium ở 390 và 1440 — 0 lỗi console, 0 tràn ngang; `next build`.
 
