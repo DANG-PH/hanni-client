@@ -61,6 +61,8 @@ export function IntroStep({ word }: { word: SessionWord }) {
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={word.imageUrl}
+          // Ảnh Wikimedia tải không kèm cookie — nếu không, trang bị tính "dùng cookie bên thứ ba" (Wikimedia trả CORS *).
+          crossOrigin="anonymous"
           alt=""
           className="mt-5 h-28 w-40 rounded-2xl object-cover shadow-sm"
         />

@@ -231,7 +231,7 @@ function LearnHome() {
             </div>
           ) : !data ? (
             // Khung chờ cùng bố cục với nội dung thật (vòng 96px + khối chữ + nút). Khung 144px cũ thấp hơn ~200px trên
-            // điện thoại nên tải xong là đẩy thẻ bên dưới xuống — Lighthouse đo bố cục nhảy (CLS) 0,34 ở trang này.
+            // điện thoại nên tải xong là đẩy thẻ bên cạnh/bên dưới xuống (bố cục nhảy).
             <>
               <div className="skeleton h-24 w-24 shrink-0 rounded-full" />
               <div className="min-w-0 flex-1 space-y-2" aria-hidden="true">
@@ -318,6 +318,9 @@ function LearnHome() {
 
       {user && <ClassAssignmentsCard />}
 
+      {/* Giữ chỗ cho lộ trình lúc đang tải — chân trang và các thẻ dưới nằm sẵn ngoài màn đầu, tải xong không bị đẩy xuống. */}
+      {!data && !error && <div className="skeleton h-[32rem] rounded-2xl" aria-hidden="true" />}
+
       {data && (
         <section aria-labelledby="path-title" className="space-y-3">
           <div className="flex flex-wrap items-end justify-between gap-3">
@@ -372,21 +375,23 @@ function LearnHome() {
       )}
 
       {/* Kéo 3 thẻ cao bằng nhau — để `items-start` thì đáy lệch nhau, thẻ ngắn
-       * chừa mảng trống bên dưới. */}
-      {user ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <DailyQuestCard lessonHref={current ? `/bai-hoc/${current.id}` : "/learn"} />
-          <WeeklyLeagueCard />
-          <WordOfTheDayCard level={courseLevel} />
-        </div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          <GuestTryCard />
-          <WordOfTheDayCard level={viewing} />
-        </div>
-      )}
+       * chừa mảng trống bên dưới. Các thẻ dưới + kệ video chỉ hiện khi lộ trình đã tải: hiện trước thì lộ trình chèn
+       * lên trên đẩy chúng xuống hơn 700px — Lighthouse đo bố cục nhảy (CLS) 0,45 ở trang này. */}
+      {data &&
+        (user ? (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <DailyQuestCard lessonHref={current ? `/bai-hoc/${current.id}` : "/learn"} />
+            <WeeklyLeagueCard />
+            <WordOfTheDayCard level={courseLevel} />
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
+            <GuestTryCard />
+            <WordOfTheDayCard level={viewing} />
+          </div>
+        ))}
 
-      <VideoShelf limit={8} maxLevel={(courseLevel ?? viewing ?? 1) + 1} />
+      {data && <VideoShelf limit={8} maxLevel={(courseLevel ?? viewing ?? 1) + 1} />}
     </div>
   );
 }

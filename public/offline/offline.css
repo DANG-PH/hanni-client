@@ -29,7 +29,7 @@ img {
 .eyebrow {
   font-size: 11px;
   letter-spacing: 0.12em;
-  color: #c62f22;
+  color: #bd2b1f;
   font-weight: 700;
   margin-top: 26px;
 }
@@ -54,13 +54,13 @@ a {
 }
 button {
   margin-top: 24px;
-  background: #c62f22;
+  background: #bd2b1f;
   color: #fff;
   border: 0;
 }
 a {
   margin-top: 8px;
-  color: #c62f22;
+  color: #bd2b1f;
 }
 button:focus-visible,
 a:focus-visible {

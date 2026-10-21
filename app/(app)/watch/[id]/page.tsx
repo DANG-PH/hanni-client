@@ -492,6 +492,8 @@ export default function WatchDetailPage() {
                 // eslint-disable-next-line @next/next/no-img-element -- ảnh Pexels ngoài miền, chưa cần next/image cho tính năng còn đang thử nghiệm
                 <img
                   src={wordPopup.word.imageUrl}
+                  // Ảnh Wikimedia tải không kèm cookie — nếu không, trang bị tính "dùng cookie bên thứ ba" (Wikimedia trả CORS *).
+                  crossOrigin="anonymous"
                   alt={wordPopup.word.meaningVi ?? wordPopup.text}
                   className="mt-3 h-32 w-full rounded-xl object-cover"
                 />

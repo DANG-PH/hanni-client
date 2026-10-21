@@ -10,9 +10,10 @@
   /* ≥4,5:1 trên trắng, nền xám, nền hồng nhạt (#727b8b cũ chỉ 3,8:1 trên nền xám — chữ nhỏ khó đọc). */
   --muted: #646c7b;
   --border: #e7e9ef;
-  /* Đỏ thương hiệu đậm hơn 1 nấc (#dc3526 cũ chỉ 4,3:1 trên nền xám, 4:1 trên nền hồng nhạt của mục đang chọn — chữ đỏ nhỏ
-   * trượt chuẩn 4,5:1). Các màu dưới cũng vậy: mọi màu dùng làm CHỮ đều ≥4,5:1 trên trắng, nền xám và nền nhạt 10–15% của chính nó. */
-  --primary: #c62f22;
+  /* Đỏ thương hiệu đậm hơn (#dc3526 cũ chỉ 4,3:1 trên nền xám, 4:1 ở mục đang chọn `.chip-on` — chữ đỏ nhỏ trượt chuẩn 4,5:1;
+   * #c62f22 vẫn 4,4:1 khi `.chip-on` nằm trên nền xám của trang). Các màu dưới cũng vậy: mọi màu dùng làm CHỮ đều ≥4,5:1 trên
+   * trắng, nền xám và nền nhạt 10–15% của chính nó. */
+  --primary: #bd2b1f;
   /* Âm Hán Việt — "chữ ký" riêng của Hanni (vàng đồng, ≥4,6:1); đỏ để dành cho nút chính. */
   --hanviet: #946311;
   --primary-fg: #ffffff;

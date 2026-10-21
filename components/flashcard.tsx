@@ -203,6 +203,8 @@ export function Flashcard({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={word.imageUrl}
+                // Ảnh Wikimedia tải không kèm cookie — nếu không, trang bị tính "dùng cookie bên thứ ba" (Wikimedia trả CORS *).
+                crossOrigin="anonymous"
                 alt=""
                 loading="lazy"
                 className={styles.illustration}

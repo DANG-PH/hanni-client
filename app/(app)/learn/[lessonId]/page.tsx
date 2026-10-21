@@ -160,6 +160,8 @@ export default function LessonDetailPage() {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={word.imageUrl}
+                          // Ảnh Wikimedia tải không kèm cookie — nếu không, trang bị tính "dùng cookie bên thứ ba" (Wikimedia trả CORS *).
+                          crossOrigin="anonymous"
                           alt=""
                           loading="lazy"
                           className="mt-0.5 h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20"
