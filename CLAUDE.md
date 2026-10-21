@@ -324,6 +324,30 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 
 ## Trạng thái hiện tại
 
+### Nâng tiêu chí sau đợt chấm điểm (2026-10-21 tối — user: "nâng tất cả tiêu chí min 9… triển khai nhé")
+Đã nói thẳng với user: người dùng thật, sẵn sàng kinh doanh (payOS/email/billing Gemini/Bộ Công Thương), giữ chân (cần dữ liệu
+thật) không nâng được bằng code; luyện thi + độ dày nội dung muốn 9 cần hàng chục đề/cấp và câu ví dụ cho cả 10k từ. Đã làm:
+- **Trang chủ học gọn + nhanh**: `preloadLearnHome()` (`lib/hooks.ts`, SWR `preload`) gọi ở CẤP MODULE của `app/(app)/learn/page.tsx`
+  khi mở thẳng `/learn` — `AppShell` hiện màn chờ toàn trang tới khi `/auth/session` trả về nên trang con chỉ hỏi dữ liệu SAU bước đó
+  (2 lượt mạng nối tiếp; mọi trang trong app đều vậy — muốn bỏ hẳn phải cho khung app render trong lúc chờ đăng nhập). Bỏ kệ video
+  (xoá `video-shelf.tsx`) và chuyển thẻ giải đấu tuần sang đầu `/leaderboard` (`#giai-dau`, thông báo kết quả tuần trỏ tới đó) — khối
+  cuối trang chủ còn nhiệm vụ + từ vựng hôm nay. Lighthouse `/learn` 72 → 76, LCP 4,5 → 4,1 s (đo ngay sau deploy, cache gần còn nguội).
+- **Viết tay để tra chữ** (`components/dictionary/handwriting-pad.tsx`, nút bút ở `DictionarySearch`): bộ nhận dạng TỰ VIẾT
+  `lib/handwriting.ts` (không dùng HanziLookup — GPL): chuẩn hoá khung bao → khoảng cách từng cặp nét (cho viết ngược chiều) → ghép cặp
+  tối ưu bằng thuật toán Hungary (cho sai thứ tự, thừa/thiếu 2 nét), lọc thô 3 điểm/nét giữ 60 chữ rồi chấm kỹ 8 điểm/nét, ~4 ms/lần.
+  Mẫu `public/hanzi-strokes/recog.txt` (3.088 chữ HSK, ~500 KB, chỉ tải khi mở ô viết) dựng bằng `node scripts/build-handwriting-data.mjs`
+  từ chính dữ liệu Make Me a Hanzi đã có (Arphic, ghi chú ở README). `npm run test:handwriting` (`tests/handwriting.test.ts`, chạy thẳng
+  TS nhờ Node 24 — tsconfig bật `allowImportingTsExtensions`): giả lập run tay + đảo thứ tự + ngược chiều nét top-1 ≥ 97% (đo trên đủ
+  3.088 chữ: 100%), quên 1 nét top-5 ≥ 90% (95,3%), chữ vẽ thô 十口人大木中 đứng đầu. Ô viết nhận `title`/`hint` (phòng thi dùng câu riêng).
+- **Đề HSK 4** (server `papers/hsk4.ts`): dạng mới `write-sentence` — `SentenceWriter` (`exam-items.tsx`: tranh + từ + ô nhập + nút
+  "Viết tay" mở ô viết tay; chữa bài hiện câu mẫu + cách chấm tự động); luyện từng dạng chỉ chấm câu tự viết khi bấm "Chấm câu này"
+  (`practice-runner.tsx` — chấm theo từng phím gõ thì chữ đầu đã bị khoá); câu chọn đáp án 4 phương án xếp 2 cột; hướng dẫn riêng cho
+  "sắp xếp 3 câu". Chữ "HSK 1–3"/"9 đề" ở trang chủ, Dành cho giáo viên, Luyện thi (tiêu đề, mô tả, FAQ cấu trúc + thời gian HSK 4),
+  Giới thiệu, khảo sát, giao bài lớp học đổi thành HSK 1–4 / 10 đề.
+- Câu ví dụ HSK 4 (server, 997 từ) → bài học HSK 4 tự có bước điền từ vào câu, trang từ điển HSK 4 có câu ví dụ.
+Kiểm tra: dev server nối API production qua proxy — đề HSK 4 (4 phương án, sắp 3 câu, đặt câu + viết tay, nộp → 7/300 đúng như các câu đã
+điền, chữa câu 96 có câu mẫu), luyện dạng đặt câu (gõ 5 chữ = 0 lượt chấm, bấm nút = 1), 390px không tràn; `next build`.
+
 ### Rà lại + đo khách quan so với đối thủ (2026-10-21 — user: "thanh taskbar của lớp học sao không thấy", "UI, UX, features rà lại… chấm điểm thang 10, so với web khác, khách quan")
 - **Mục "Lớp học" LUÔN có trong menu** (`sidebar.tsx`, `lib/nav.ts`): bản 20/10 chỉ hiện khi đã có lớp → giáo viên không tìm ra chỗ
   tạo lớp, phải biết vào Tài khoản. Khách bấm vào thì sang `/hop-tac`. Thẻ Lớp học ở `/account` giữ làm lối vào thứ hai.
