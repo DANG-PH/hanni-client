@@ -7,7 +7,7 @@ import { Overlay } from "@/components/overlay";
 import { ApiError } from "@/lib/api";
 import { createPremiumCheckout, usePaymentsConfigured } from "@/lib/payments";
 import { usePremiumStatus } from "@/lib/premium";
-import type { PremiumPlan } from "@/lib/types";
+import type { PaymentProvider, PremiumPlan } from "@/lib/types";
 
 type IconName = Parameters<typeof Icon>[0]["name"];
 
@@ -26,8 +26,22 @@ const FAQ: { q: string; a: string }[] = [
   { q: "Không mua Premium thì học được gì?", a: "Tất cả bài học: 9 cấp HSK, từ điển, ngữ pháp, ôn tập, đề thi thử. Premium chỉ mở thêm tiện ích AI ở trên." },
   { q: "Có tự động trừ tiền gia hạn không?", a: "Không. Bạn trả 1 lần cho đúng thời hạn đã chọn, hết hạn app tự về bản thường — dữ liệu học vẫn giữ nguyên." },
   { q: "Đang Premium mà mua thêm thì sao?", a: "Thời gian mới được cộng nối tiếp vào hạn hiện tại, không mất ngày nào." },
-  { q: "Thanh toán bằng cách nào?", a: "Qua cổng payOS: quét mã VietQR bằng app ngân hàng bất kỳ. Premium kích hoạt tự động ngay khi giao dịch thành công." },
+  { q: "Thanh toán bằng cách nào?", a: "Qua cổng payOS: quét mã VietQR bằng app ngân hàng bất kỳ (app MoMo cũng quét được). Premium kích hoạt tự động ngay khi giao dịch thành công." },
 ];
+
+/** Cách thanh toán của từng cổng — hiện ở bước xác nhận. */
+const PAY_STEPS: Record<PaymentProvider, string[]> = {
+  payos: [
+    "Bấm “Thanh toán qua payOS” — trang thanh toán của payOS mở ra.",
+    "Quét mã VietQR bằng app ngân hàng bất kỳ hoặc app MoMo (hoặc chuyển khoản đúng nội dung trên trang).",
+    "Xong là Premium tự kích hoạt, trang tự quay về Hanni.",
+  ],
+  momo: [
+    "Bấm “Thanh toán qua MoMo” — trang thanh toán của MoMo mở ra.",
+    "Chọn ví MoMo (quét mã bằng app MoMo), thẻ ATM nội địa hoặc thẻ quốc tế.",
+    "Xong là trang tự quay về Hanni và Premium tự kích hoạt.",
+  ],
+};
 
 function formatVnd(n: number): string {
   return n.toLocaleString("vi-VN") + "đ";
@@ -70,11 +84,19 @@ export function PremiumModal({
   const defaultPlan = plans.find((p) => p.badge) ?? plans[0];
   const [selectedKey, setSelectedKey] = useState(defaultPlan?.key ?? "");
   const [step, setStep] = useState<"choose" | "confirm">("choose");
+  const [picked, setPicked] = useState<PaymentProvider>("payos");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
   const selected = plans.find((p) => p.key === selectedKey) ?? null;
   const ready = configured.data?.configured === true;
+  // Server cũ chỉ trả { configured } (= payOS). Chỉ hiện cổng đã cấu hình; chỉ 1 cổng thì không cần ô chọn.
+  const providers: PaymentProvider[] = ready
+    ? (["payos", "momo"] as const).filter((p) => configured.data?.[p] ?? p === "payos")
+    : [];
+  const provider = providers.includes(picked) ? picked : (providers[0] ?? "payos");
+  const momoSandbox = configured.data?.momoSandbox === true;
+  const providerName = provider === "momo" ? "MoMo" : "payOS";
 
   useEffect(() => {
     panel.current?.focus();
@@ -113,8 +135,8 @@ export function PremiumModal({
     setBusy(true);
     setError("");
     try {
-      const res = await createPremiumCheckout(selected.key);
-      // Điều hướng ra ngoài (trang thanh toán payOS), quay về /account?premium=<mã đơn>.
+      const res = await createPremiumCheckout(selected.key, provider);
+      // Điều hướng ra ngoài (trang thanh toán payOS/MoMo), quay về /account?premium=<mã đơn>.
       // eslint-disable-next-line react-hooks/immutability
       window.location.href = res.checkoutUrl;
     } catch (err) {
@@ -287,13 +309,55 @@ export function PremiumModal({
                     </div>
                   </div>
 
+                  {providers.length > 1 && (
+                    <section aria-labelledby="pay-method" className="mt-6">
+                      <h3 id="pay-method" className="text-sm font-semibold">Cách thanh toán</h3>
+                      <div role="radiogroup" aria-labelledby="pay-method" className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                        {providers.map((p) => {
+                          const on = p === provider;
+                          return (
+                            <button
+                              key={p}
+                              type="button"
+                              role="radio"
+                              aria-checked={on}
+                              onClick={() => setPicked(p)}
+                              className={`flex items-start gap-3 rounded-2xl border-2 p-3.5 text-left transition-colors ${
+                                on ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"
+                              }`}
+                            >
+                              <span
+                                className={`mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border-2 ${
+                                  on ? "border-accent bg-accent text-white" : "border-border"
+                                }`}
+                              >
+                                {on && <Icon name="check" size={11} />}
+                              </span>
+                              <span className="min-w-0">
+                                <span className="flex flex-wrap items-center gap-1.5 text-sm font-semibold">
+                                  {p === "payos" ? "Chuyển khoản / VietQR" : "Ví MoMo · thẻ ATM · thẻ quốc tế"}
+                                  {p === "momo" && momoSandbox && (
+                                    <span className="rounded-full bg-warn/10 px-2 py-0.5 text-xs font-bold text-warn">Thử nghiệm</span>
+                                  )}
+                                </span>
+                                <span className="mt-0.5 block text-xs leading-5 text-muted">
+                                  {p === "payos"
+                                    ? "Qua payOS — app ngân hàng nào cũng quét được."
+                                    : momoSandbox
+                                      ? "Cổng MoMo bản thử: tiền ảo, KHÔNG kích hoạt Premium thật."
+                                      : "Qua cổng thanh toán MoMo."}
+                                </span>
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  )}
+
                   <h3 className="mt-6 text-sm font-semibold">Thanh toán thế nào?</h3>
                   <ol className="mt-3 space-y-3">
-                    {[
-                      "Bấm “Thanh toán qua payOS” — trang thanh toán của payOS mở ra.",
-                      "Quét mã VietQR bằng app ngân hàng bất kỳ (hoặc chuyển khoản đúng nội dung trên trang).",
-                      "Xong là Premium tự kích hoạt, trang tự quay về Hanni.",
-                    ].map((t, i) => (
+                    {PAY_STEPS[provider].map((t, i) => (
                       <li key={t} className="flex gap-3 text-sm leading-6">
                         <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-bold">
                           {i + 1}
@@ -317,6 +381,12 @@ export function PremiumModal({
                       </li>
                     ))}
                   </ul>
+                  {provider === "momo" && momoSandbox && (
+                    <p className="mt-4 rounded-xl bg-warn/10 px-3.5 py-3 text-xs leading-5 text-warn">
+                      Bản thử nghiệm của MoMo dùng tiền ảo — trả xong không kích hoạt Premium. Thẻ ATM thử: 9704 0000 0000
+                      0018 · NGUYEN VAN A · 03/07 · mã OTP: OTP.
+                    </p>
+                  )}
                   {error && (
                     <div className="mt-4">
                       <ErrorNote>{error}</ErrorNote>
@@ -371,7 +441,7 @@ export function PremiumModal({
                   ) : (
                     <>
                       <Icon name="lock" size={16} />
-                      Thanh toán qua payOS
+                      Thanh toán qua {providerName}
                     </>
                   )}
                 </Button>

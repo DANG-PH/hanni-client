@@ -7,9 +7,27 @@ import { PremiumModal } from "@/components/premium-modal";
 import { getOrderStatus } from "@/lib/payments";
 import { usePremiumStatus } from "@/lib/premium";
 
-/** Hỏi lại trạng thái đơn tối đa 10 lần, cách nhau 3 giây (~30 giây chờ webhook payOS). */
+/** Hỏi lại trạng thái đơn tối đa 10 lần, cách nhau 3 giây — mỗi lần server tự hỏi lại payOS/MoMo nếu đơn còn PENDING. */
 const STATUS_POLL_TRIES = 10;
 const STATUS_POLL_MS = 3000;
+
+/** Đọc tham số quay về từ cổng thanh toán. Cổng tự nối thêm tham số của họ (payOS: code, status, cancel…; MoMo:
+ * resultCode, orderId…) — nếu cổng nối bằng "?" thay vì "&" thì giá trị `premium` thành "12?code=00", nên lấy phần số
+ * đầu (parseInt) thay vì Number(). */
+function readReturn(search: string) {
+  const params = new URLSearchParams(search);
+  const code = Number.parseInt(params.get("premium") ?? "", 10);
+  if (!Number.isFinite(code) || code <= 0) return null;
+  const momoResult = params.get("resultCode");
+  return {
+    code,
+    // payOS: cancelUrl có `&cancelled=1` (server tự thêm) + `cancel=true`; MoMo: resultCode 1006 = người dùng huỷ.
+    cancelled: !!params.get("cancelled") || params.get("cancel") === "true" || momoResult === "1006",
+    // MoMo báo lỗi khác (thẻ bị từ chối, hết hạn…) — chỉ để hiện lời nhắn, KHÔNG dùng để cộng Premium (tham số trên URL
+    // không có chữ ký; server mới là nơi xác nhận).
+    failed: momoResult !== null && momoResult !== "0" && momoResult !== "1006",
+  };
+}
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("vi-VN", {
@@ -28,40 +46,41 @@ function formatDate(iso: string): string {
 export function PremiumSection() {
   const { data, isLoading, mutate } = usePremiumStatus();
   const [open, setOpen] = useState(false);
-  // Bấm "Huỷ" ở trang payOS → quay về qua cancelUrl (`&cancelled=1`): biết ngay từ URL, không cần hỏi server.
+  // Bấm "Huỷ" ở trang payOS/MoMo → biết ngay từ URL, không cần hỏi server.
   const [note, setNote] = useState<{ text: string; ok: boolean } | null>(() => {
     if (typeof window === "undefined") return null;
-    const params = new URLSearchParams(window.location.search);
-    return params.get("premium") && params.get("cancelled")
-      ? { text: "Bạn đã huỷ thanh toán — chưa bị trừ tiền.", ok: false }
-      : null;
+    const back = readReturn(window.location.search);
+    if (back?.cancelled) return { text: "Bạn đã huỷ thanh toán — chưa bị trừ tiền.", ok: false };
+    if (back?.failed) return { text: "Thanh toán MoMo chưa thành công — chưa bị trừ tiền, thử lại nhé.", ok: false };
+    return null;
   });
 
-  // Vừa quay lại từ payOS (returnUrl `?premium=<mã đơn>`, cancelUrl thêm `&cancelled=1` — xem
-  // `PaymentsService.createPremiumCheckout` ở server) — đọc thẳng window.location cho 1 khối nhỏ,
-  // khỏi bọc cả trang trong <Suspense>.
-  // payOS đưa trình duyệt về NGAY khi chuyển khoản xong, còn webhook báo đã nhận tiền (thứ thật sự
-  // gia hạn Premium) có thể tới sau vài giây — nên đơn còn PENDING thì hỏi lại vài lần thay vì bắt
-  // người dùng tự tải lại trang.
+  // LUỒNG — vừa quay lại từ cổng thanh toán (`/account?premium=<mã đơn>`, xem `PaymentsService.createPremiumCheckout`
+  // ở server). Đọc thẳng window.location cho 1 khối nhỏ, khỏi bọc cả trang trong <Suspense>.
+  // Cổng đưa trình duyệt về NGAY khi trả xong, còn webhook có thể tới sau (hoặc không tới) — nên hỏi
+  // GET /payments/orders/:mã; đơn còn PENDING thì SERVER tự hỏi lại payOS/MoMo rồi mới trả lời. Vẫn PENDING thì hỏi lại
+  // vài lần; quá 30 giây thì job đối soát 5 phút/lần ở server sẽ tự cộng Premium.
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = Number(params.get("premium"));
-    if (!Number.isFinite(code) || code <= 0) return;
+    const back = readReturn(window.location.search);
+    if (!back) return;
     window.history.replaceState({}, "", window.location.pathname);
-    if (params.get("cancelled")) return; // lời nhắn đã đặt sẵn lúc khởi tạo state
+    if (back.cancelled || back.failed) return; // lời nhắn đã đặt sẵn lúc khởi tạo state
+    const code = back.code;
     let tries = 0;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const check = () => {
       void getOrderStatus(code)
         .then((order) => {
-          if (order.status === "PAID") {
+          if (order.status === "PAID" && order.sandbox) {
+            setNote({ text: "Thanh toán thử MoMo thành công (tiền ảo) — bản thử nghiệm không kích hoạt Premium.", ok: false });
+          } else if (order.status === "PAID") {
             setNote({ text: "Nâng cấp Premium thành công! Cảm ơn bạn đã ủng hộ Hanni.", ok: true });
             void mutate();
           } else if (order.status === "PENDING" && ++tries < STATUS_POLL_TRIES) {
             setNote({ text: "Đang chờ ngân hàng xác nhận thanh toán…", ok: true });
             timer = setTimeout(check, STATUS_POLL_MS);
           } else if (order.status === "PENDING") {
-            setNote({ text: "Chưa nhận được xác nhận thanh toán — thử tải lại trang sau ít phút.", ok: false });
+            setNote({ text: "Chưa nhận được xác nhận thanh toán — Hanni tự kiểm tra lại mỗi 5 phút, tải lại trang sau ít phút nhé.", ok: false });
           } else {
             setNote({ text: "Giao dịch đã huỷ hoặc hết hạn.", ok: false });
           }

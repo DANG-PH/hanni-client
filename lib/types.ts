@@ -664,9 +664,13 @@ export interface MinigameLeaderboardRow {
 /** Link thanh toán payOS của 1 đơn Premium — xem `hanni-server/CLAUDE.md` mục Premium. */
 export interface CheckoutResponse {
   checkoutUrl: string;
-  qrCode: string;
+  /** Chỉ payOS có (chuỗi VietQR); MoMo trả null — trang MoMo tự hiện mã. */
+  qrCode: string | null;
   orderCode: number;
 }
+
+/** Cổng thanh toán Premium — khớp `PaymentProvider` ở server. */
+export type PaymentProvider = "payos" | "momo";
 
 export type PaymentOrderStatus = "PENDING" | "PAID" | "CANCELLED" | "EXPIRED";
 
@@ -675,6 +679,9 @@ export interface PaymentOrder {
   amountVnd: number;
   premiumPlanKey: string | null;
   status: PaymentOrderStatus;
+  provider?: "PAYOS" | "MOMO";
+  /** Đơn MoMo SANDBOX trên production: đã trả bằng tiền ảo, KHÔNG cộng Premium thật. */
+  sandbox?: boolean;
 }
 
 /** Gợi ý quy luật thanh điệu Hán Việt → tiếng Trung cho 1 chữ (server tính). */
