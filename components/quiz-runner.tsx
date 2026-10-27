@@ -133,6 +133,7 @@ export function QuizRunner({
     setBusy(true);
     setError(null);
     try {
+      // API → POST /quiz/submit · server: modules/gamification/gamification.controller.ts → QuizService.submit()
       const res = await api.post<{ scorePct: number }>("/quiz/submit", {
         attemptId: quiz.attemptId,
         answers: nextAnswers,

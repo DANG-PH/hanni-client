@@ -1,4 +1,15 @@
 /**
+ * BẢN ĐỒ TRANG — GIỚI THIỆU HSK 3.0 (/hsk) — 9 cấp, số từ mỗi cấp
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /levels  ← chính trang này
+ *                  → server: modules/vocabulary/vocabulary.controller.ts → HskLevelsService.list()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
+/**
  * "HSK 3.0 là gì" — trang tra cứu cho người MỚI tìm hiểu tiếng Trung.
  *
  * Nhắm truy vấn đầu phễu ("HSK là gì", "HSK 3 cần bao nhiêu từ", "HSK 3.0
@@ -29,6 +40,7 @@ export const metadata: Metadata = {
 async function fetchLevels(): Promise<HskLevel[]> {
   // try/catch: fetch THROW khi API không phản hồi, không chỉ !res.ok
   try {
+    // API → GET /levels · server: modules/vocabulary/vocabulary.controller.ts → HskLevelsService.list()
     const res = await fetch(`${API_BASE}/levels`, { next: { revalidate } });
     if (!res.ok) return [];
     return (await res.json()) as HskLevel[];

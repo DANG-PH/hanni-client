@@ -1,3 +1,13 @@
+/**
+ * BẢN ĐỒ TRANG — NGUỒN DỮ LIỆU (/nguon-du-lieu) — ghi công giấy phép dữ liệu mở (trang tĩnh)
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   (Trang tĩnh — không gọi API nào.)
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
 import type { Metadata } from "next";
 import Link from "next/link";
 

@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — LUYỆN TẬP (/luyen-tap) — lưới công cụ: nghe, phát âm, nói AI, viết, video, trò chơi, phiên âm…
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   (Trang tĩnh — không gọi API nào.)
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import Link from "next/link";
 import { Icon } from "@/components/icon";
 import { PageHeading, Spinner } from "@/components/ui";

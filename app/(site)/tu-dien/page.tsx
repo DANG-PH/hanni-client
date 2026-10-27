@@ -1,4 +1,34 @@
 /**
+ * BẢN ĐỒ TRANG — TỪ ĐIỂN (/tu-dien) — trang chủ tra cứu; ?q= kết quả 4 tab (Từ vựng · Hán tự · Ví dụ · Ngữ pháp);
+ *   ?level= danh sách
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   POST /ai/analyze          ← analyzeText() ở lib/ai-tools.ts (← components/ai/sentence-analysis.tsx)
+ *                               → server: modules/ai-tools/ai-tools.controller.ts → AiToolsService.analyze()
+ *   GET /ai/segment           ← chính trang này
+ *                               → server: modules/ai-tools/ai-tools.controller.ts → AiToolsService.segment()
+ *   GET /dictionary/char/:c   ← chính trang này
+ *                               → server: modules/vocabulary/vocabulary.controller.ts → WordsService.charLookup()
+ *   GET /dictionary/examples  ← chính trang này
+ *                               → server: modules/vocabulary/vocabulary.controller.ts → WordsService.searchExamples()
+ *   GET /grammar/search       ← chính trang này
+ *                               → server: modules/grammar/grammar.controller.ts → GrammarService.search()
+ *   GET /learn/path           ← chính trang này
+ *                               → server: modules/learn/learn.controller.ts → LearnService.path()
+ *   GET /levels               ← chính trang này
+ *                               → server: modules/vocabulary/vocabulary.controller.ts → HskLevelsService.list()
+ *   GET /words                ← chính trang này · components/dictionary/dictionary-search.tsx
+ *                               → server: modules/vocabulary/vocabulary.controller.ts → WordsService.list()
+ *   GET /words/of-the-day     ← components/word-of-the-day.tsx
+ *                               → server: modules/vocabulary/vocabulary.controller.ts → WordsService.ofTheDay()
+ *   GET /words/stats          ← chính trang này
+ *                               → server: modules/vocabulary/vocabulary.controller.ts → WordsService.stats()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
+/**
  * Từ điển CÔNG KHAI `/tu-dien` — làm lại 2026-10-19 theo Hanzii (user: "phần từ điển đang thấy hơi đần").
  * 3 chế độ, đều Server Component (Google đọc được):
  * - không tham số: trang chủ tra cứu như Hanzii — ô tra lớn + 4 tab, lưới 3 cột (từ khoá phổ biến, tra gần
@@ -150,6 +180,7 @@ export default async function TuDienPage({ searchParams }: { searchParams: Promi
 
 async function DictionaryHome() {
   const [stats, path, levels] = await Promise.all([
+    // API → GET /words/stats · server: modules/vocabulary/vocabulary.controller.ts → WordsService.stats() | GET /learn/path · server: modules/learn/learn.controller.ts → LearnService.path() | GET /levels · server: modules/vocabulary/vocabulary.controller.ts → HskLevelsService.list()
     getJson<{ total: number; withHanViet: number }>("/words/stats"),
     getJson<LearnPath>("/learn/path?level=1"),
     getJson<{ level: number; wordsInDb: number }[]>("/levels"),
@@ -284,6 +315,7 @@ async function DictionaryHome() {
 }
 
 async function LevelList({ level, page }: { level: number; page: number }) {
+  // API → GET /words · server: modules/vocabulary/vocabulary.controller.ts → WordsService.list()
   const data = await fetchPublic<Paginated<Word>>(`/words?level=${level}&page=${page}&pageSize=40`, revalidate);
   return (
     <div className="page-wrap max-w-6xl! space-y-6 py-8!">
@@ -432,9 +464,11 @@ async function Results({ q, tab, page }: { q: string; tab: DictTab; page: number
 }
 
 async function WordResults({ q, page }: { q: string; page: number }) {
+  // API → GET /words · server: modules/vocabulary/vocabulary.controller.ts → WordsService.list()
   const data = await fetchPublic<Paginated<Word>>(`/words?q=${encodeURIComponent(q)}&page=${page}&pageSize=24`, revalidate);
   const items = data?.items ?? [];
   const offer = offerAnalysis(q, items);
+  // API → GET /ai/segment · server: modules/ai-tools/ai-tools.controller.ts → AiToolsService.segment()
   const seg =
     offer && page === 1 && /\p{Script=Han}/u.test(q)
       ? await getJson<{ tokens: SegToken[] }>(`/ai/segment?q=${encodeURIComponent(q)}`)
@@ -510,6 +544,7 @@ async function CharResults({ q }: { q: string }) {
   const chars = [...new Set(Array.from(q).filter((c) => /\p{Script=Han}/u.test(c)))].slice(0, 6);
   if (chars.length === 0)
     return <p className="panel p-6 text-center text-sm text-muted">Tab Hán tự cần chữ Hán — gõ hoặc dán một chữ, vd 学, 好, 爱.</p>;
+  // API → GET /dictionary/char/:c · server: modules/vocabulary/vocabulary.controller.ts → WordsService.charLookup()
   const infos = await Promise.all(chars.map((c) => getJson<CharInfo>(`/dictionary/char/${encodeURIComponent(c)}`)));
   return (
     <div className="space-y-4">
@@ -615,6 +650,7 @@ async function CharResults({ q }: { q: string }) {
 }
 
 async function ExampleResults({ q, page }: { q: string; page: number }) {
+  // API → GET /dictionary/examples · server: modules/vocabulary/vocabulary.controller.ts → WordsService.searchExamples()
   const data = await getJson<{ items: ExampleHit[]; total: number; page: number; pageSize: number }>(
     `/dictionary/examples?q=${encodeURIComponent(q)}&page=${page}`,
   );
@@ -655,6 +691,7 @@ async function ExampleResults({ q, page }: { q: string; page: number }) {
 }
 
 async function GrammarResults({ q }: { q: string }) {
+  // API → GET /grammar/search · server: modules/grammar/grammar.controller.ts → GrammarService.search()
   const items = (await getJson<GrammarHit[]>(`/grammar/search?q=${encodeURIComponent(q)}`)) ?? [];
   if (items.length === 0)
     return (

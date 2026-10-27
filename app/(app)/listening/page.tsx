@@ -1,5 +1,24 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — LUYỆN NGHE (/listening) — nghe từ của bài đang học, gõ lại pinyin
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /learn/current       ← useCurrentLesson() ở lib/hooks.ts (← components/practice/practice-library.tsx)
+ *                              → server: modules/learn/learn.controller.ts → LearnService.currentLesson()
+ *   GET /learn/lessons/:id   ← useLesson() ở lib/hooks.ts (← components/practice/practice-library.tsx)
+ *                              → server: modules/learn/learn.controller.ts → LearnService.lesson()
+ *   POST /practice/attempts  ← recordPracticeAttempt() ở lib/hooks.ts (← chính trang này)
+ *                              → server: modules/practice/practice.controller.ts → PracticeService.record()
+ *   GET /practice/stats      ← usePracticeStats() ở lib/hooks.ts (← chính trang này)
+ *                              → server: modules/practice/practice.controller.ts → PracticeService.stats()
+ *   GET /words               ← useWords() ở lib/hooks.ts (← components/practice/practice-library.tsx)
+ *                              → server: modules/vocabulary/vocabulary.controller.ts → WordsService.list()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { Icon } from "@/components/icon";

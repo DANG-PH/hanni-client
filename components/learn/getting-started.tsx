@@ -45,6 +45,7 @@ export function GettingStarted({ lessonHref }: { lessonHref: string }) {
   const local = useSyncExternalStore(subscribe, readLocal, () => SERVER_LOCAL);
   const stats = useStudyStats();
   const pronunciation = usePracticeStats("PRONUNCIATION");
+  // API → GET /mock-exams/attempts/me · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.history()
   const exams = useSWR<MockAttempt[]>(user ? "/mock-exams/attempts/me" : null, (p: string) => api.get<MockAttempt[]>(p));
 
   if (!user || local.hidden || !stats.data || !exams.data) return null;

@@ -13,6 +13,10 @@ import type { Paginated, Word } from "@/lib/types";
 /** Từ đã mở gần đây (trang từ ghi qua `rememberWord`) — chỉ trong trình duyệt này. */
 const HISTORY_KEY = "hanni:dict-history";
 const HISTORY_MAX = 12;
+/** Số từ gợi ý xổ xuống khi đang gõ (server giới hạn pageSize ≤ 100). */
+const SUGGEST_LIMIT = 6;
+/** Ngừng gõ bao lâu (ms) mới gọi API gợi ý — nhỏ quá thì mỗi phím một request, lớn quá thì thấy trễ. */
+const SUGGEST_DEBOUNCE_MS = 180;
 
 export interface HistoryItem {
   s: string; // chữ giản thể
@@ -85,11 +89,19 @@ export function DictionarySearch({
   const suggest = current === "tu-vung";
   const items = suggest && term && result.term === term ? result.items : [];
 
+  // LUỒNG "GÕ CHỮ → RA GỢI Ý" (thầy hay hỏi): mỗi phím gõ đổi `q` → effect này đặt hẹn giờ SUGGEST_DEBOUNCE_MS;
+  // gõ tiếp trước khi hết giờ thì hẹn giờ cũ bị huỷ (cleanup bên dưới) → chỉ gọi API khi người dùng NGỪNG gõ.
+  // → GET /words?q=…&pageSize=SUGGEST_LIMIT → server: vocabulary.controller.ts listWords() → WordsService.list() →
+  //   search(): bảng ~11k từ cache trong RAM → word-search.util.ts prepareQuery() (bỏ dấu, pinyin viết liền) +
+  //   rankWords() (chấm bậc khớp: mặt chữ → âm Hán Việt/pinyin → nghĩa…) → trả 6 từ tốt nhất.
+  // `seq` bỏ qua phản hồi CŨ về muộn (gõ "ho" rồi "hoc": kết quả "ho" về sau không được ghi đè "hoc").
+  // Bấm Enter / nút → → form GET sang /tu-dien?q=… (trang server, app/(site)/tu-dien/page.tsx WordResults).
   useEffect(() => {
     if (!term || !suggest) return;
     const id = ++seq.current;
     const timer = setTimeout(() => {
-      fetch(`${API_BASE}/words?q=${encodeURIComponent(term)}&pageSize=6`)
+      // API → GET /words · server: modules/vocabulary/vocabulary.controller.ts → WordsService.list()
+      fetch(`${API_BASE}/words?q=${encodeURIComponent(term)}&pageSize=${SUGGEST_LIMIT}`)
         .then((r) => (r.ok ? (r.json() as Promise<Paginated<Word>>) : null))
         .then((data) => {
           if (id === seq.current) {
@@ -98,7 +110,7 @@ export function DictionarySearch({
           }
         })
         .catch(() => undefined);
-    }, 180);
+    }, SUGGEST_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [term, suggest]);
 

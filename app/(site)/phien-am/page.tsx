@@ -1,4 +1,15 @@
 /**
+ * BẢN ĐỒ TRANG — BẢNG PHIÊN ÂM (/phien-am) — thanh điệu, thanh mẫu/vận mẫu, bảng ghép âm bấm nghe, luyện nghe thanh
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /pinyin/overview  ← chính trang này · components/pinyin/use-pinyin.ts
+ *                           → server: modules/pinyin/pinyin.controller.ts → PinyinService.overview()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
+/**
  * Bảng phiên âm (pinyin) cho người mới — bước 拼/声 của "Sáu chặng" mà trước
  * đây chỉ trỏ sang từ điển/luyện phát âm từ (hứa suông). Đối thủ đều có trang
  * này (Hanbeego "Người mới bắt đầu", HiHSK "Lộ trình Pinyin"), và "bảng phiên
@@ -33,6 +44,7 @@ export const metadata: Metadata = {
 // tự tải lại phía client).
 async function fetchOverview(): Promise<PinyinOverview | null> {
   try {
+    // API → GET /pinyin/overview · server: modules/pinyin/pinyin.controller.ts → PinyinService.overview()
     const res = await fetch(`${API_BASE}/pinyin/overview`, { next: { revalidate } });
     if (!res.ok) return null;
     return (await res.json()) as PinyinOverview;

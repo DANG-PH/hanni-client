@@ -14,6 +14,9 @@ const STREAK_CODE = /^STREAK_(\d+)$/;
 
 const fetcher = <T>(path: string) => apiFetch<T>(path);
 
+/**
+ * API → GET /notifications · server: modules/notifications/notifications.controller.ts → NotificationsService.list()
+ */
 const NOTIFICATIONS_KEY = "/notifications?pageSize=15";
 
 export function useNotifications() {
@@ -73,7 +76,10 @@ export function useNotificationSocket() {
   }, [user]);
 }
 
-/** Đánh dấu đã đọc 1 dòng của chuông — dòng gộp nhiều huy hiệu thì nhiều id. */
+/**
+ * Đánh dấu đã đọc 1 dòng của chuông — dòng gộp nhiều huy hiệu thì nhiều id.
+ * API → PATCH /notifications/:id/read · server: modules/notifications/notifications.controller.ts → NotificationsService.markRead()
+ */
 export async function markNotificationsRead(ids: string[]) {
   if (ids.length === 0) return;
   const now = new Date().toISOString();
@@ -88,6 +94,9 @@ export async function markNotificationsRead(ids: string[]) {
   await Promise.all(ids.map((id) => api.patch(`/notifications/${id}/read`).catch(() => undefined)));
 }
 
+/**
+ * API → POST /notifications/read-all · server: modules/notifications/notifications.controller.ts → NotificationsService.markAllRead()
+ */
 export async function markAllNotificationsRead() {
   patchCache((current) => ({
     ...current,

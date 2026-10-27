@@ -70,6 +70,7 @@ export function PlacementTest() {
   async function start() {
     setPhase("loading");
     try {
+      // API → GET /learn/placement · server: modules/learn/learn.controller.ts → PlacementService.questions()
       const t = await apiFetch<Test>("/learn/placement");
       const levels = t.levels.filter((l) => l.steps.length > 0);
       if (levels.length === 0) throw new Error("Đề trống");

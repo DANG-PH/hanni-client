@@ -1,4 +1,15 @@
 /**
+ * BẢN ĐỒ TRANG — TỪ BẠN ĐÃ BIẾT SẴN (/tu-da-biet) — từ có âm Hán Việt trùng nghĩa tiếng Việt
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /words/familiar  ← chính trang này
+ *                          → server: modules/vocabulary/vocabulary.controller.ts → WordsService.familiarWords()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
+/**
  * "Từ tiếng Trung bạn đã biết sẵn" — hook thu hút NGƯỜI CHƯA HỌC tiếng Trung.
  *
  * Khác mọi trang khác ở chỗ nhắm vào người chưa từng học: thay vì mời họ bắt
@@ -35,6 +46,7 @@ export const revalidate = 86400;
 async function fetchFamiliar(): Promise<FamiliarResult | null> {
   // try/catch: fetch THROW khi API không phản hồi, không chỉ !res.ok
   try {
+    // API → GET /words/familiar · server: modules/vocabulary/vocabulary.controller.ts → WordsService.familiarWords()
     const res = await fetch(`${API_BASE}/words/familiar`, {
       next: { revalidate },
     });

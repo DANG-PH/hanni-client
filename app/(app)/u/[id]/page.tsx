@@ -1,5 +1,16 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — HỒ SƠ CÔNG KHAI (/u/[id]) — chuỗi ngày, số liệu, huy hiệu của 1 người
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /users/:id/profile  ← usePublicProfile() ở lib/hooks.ts (← chính trang này)
+ *                             → server: modules/users/users.controller.ts → UsersService.getPublicProfile()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Avatar } from "@/components/avatar";

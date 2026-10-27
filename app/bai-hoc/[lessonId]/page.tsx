@@ -1,5 +1,16 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — PHIÊN HỌC 1 BÀI (/bai-hoc/[id]) — giới thiệu từ → trắc nghiệm → ghép cặp → điền câu → hoàn thành
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   POST /learn/lessons/:id/complete  ← components/lesson-session/session-runner.tsx
+ *                                       → server: modules/learn/learn.controller.ts → LessonSessionService.complete()
+ *   GET /learn/lessons/:id/session    ← chính trang này
+ *                                       → server: modules/learn/learn.controller.ts → LessonSessionService.session()
+ */
+
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
@@ -18,6 +29,7 @@ export default function LessonSessionPage() {
   const { lessonId } = useParams<{ lessonId: string }>();
   // Server trộn câu hỏi ngẫu nhiên mỗi lần gọi — tải lại giữa chừng (đổi tab
   // rồi quay lại) là đổi đề ngay trong lúc đang làm.
+  // API → GET /learn/lessons/:id/session · server: modules/learn/learn.controller.ts → LessonSessionService.session()
   const { data, error } = useSWR<LessonSession>(
     `/learn/lessons/${lessonId}/session`,
     (path: string) => apiFetch<LessonSession>(path),

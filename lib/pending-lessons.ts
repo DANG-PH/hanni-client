@@ -57,7 +57,10 @@ export function savePendingCourseLevel(level: number) {
   }
 }
 
-/** Đặt cấp lộ trình theo kết quả kiểm tra (nếu có) rồi XOÁ. */
+/**
+ * Đặt cấp lộ trình theo kết quả kiểm tra (nếu có) rồi XOÁ.
+ * API → PATCH /users/me/settings · server: modules/users/users.controller.ts → UserSettingsService.update()
+ */
 export async function drainPendingCourseLevel(): Promise<boolean> {
   let level = 0;
   try {
@@ -75,7 +78,10 @@ export async function drainPendingCourseLevel(): Promise<boolean> {
 
 /** Nạp mọi bài đã học lúc chưa đăng nhập rồi XOÁ (chỉ nạp đúng 1 lần). Cấp
  * của bài đầu tiên thành cấp lộ trình — người vừa học thử HSK1 thì vào app
- * là thấy đúng lộ trình HSK1, không phải tự chọn lại. Trả về số bài đã lưu. */
+ * là thấy đúng lộ trình HSK1, không phải tự chọn lại. Trả về số bài đã lưu.
+ * API → POST /learn/lessons/:id/complete · server: modules/learn/learn.controller.ts → LessonSessionService.complete()
+ * API → PATCH /users/me/settings · server: modules/users/users.controller.ts → UserSettingsService.update()
+ */
 export async function drainPendingLessons(): Promise<number> {
   const lessons = read();
   if (lessons.length === 0) return 0;
@@ -123,6 +129,9 @@ export function savePendingExam(exam: PendingExam) {
   }
 }
 
+/**
+ * API → POST /mock-exams/:slug/submit · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.submit()
+ */
 export async function drainPendingExam(): Promise<boolean> {
   let exam: PendingExam | null = null;
   try {

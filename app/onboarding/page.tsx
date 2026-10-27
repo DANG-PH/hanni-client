@@ -1,5 +1,18 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — KHẢO SÁT ĐẦU VÀO (/onboarding) — 3 câu → lộ trình đề xuất (khách làm được)
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /onboarding           ← useOnboarding() ở lib/hooks.ts (← chính trang này)
+ *                               → server: modules/onboarding/onboarding.controller.ts → OnboardingService.get()
+ *   POST /onboarding          ← submitOnboarding() ở lib/hooks.ts (← chính trang này)
+ *                               → server: modules/onboarding/onboarding.controller.ts → OnboardingService.submit()
+ *   POST /onboarding/preview  ← previewOnboarding() ở lib/hooks.ts (← chính trang này)
+ *                               → server: modules/onboarding/onboarding.controller.ts → OnboardingService.preview()
+ */
+
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";

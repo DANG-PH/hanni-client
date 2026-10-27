@@ -1,3 +1,16 @@
+/**
+ * BẢN ĐỒ TRANG — Layout GỐC của mọi trang: <html>, AuthProvider (hỏi "ai đang đăng nhập"), lời mời cài app, theme
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   POST /auth/logout   ← AuthProvider() ở lib/auth.tsx (← chính trang này)
+ *                         → server: modules/auth/auth.controller.ts → AuthService.logout()
+ *   POST /auth/refresh  ← refreshSession() ở lib/api.ts (← chính trang này)
+ *                         → server: modules/auth/auth.controller.ts → AuthService.refresh()
+ *   GET /auth/session   ← AuthProvider() ở lib/auth.tsx (← chính trang này)
+ *                         → server: modules/auth/auth.controller.ts → UsersService.getProfile()
+ */
+
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";

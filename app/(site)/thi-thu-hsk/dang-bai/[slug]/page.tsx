@@ -1,4 +1,42 @@
 /**
+ * BẢN ĐỒ TRANG — Luyện 1 dạng bài (/thi-thu-hsk/dang-bai/[slug]) — chấm + chữa ngay từng câu
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /assistant/ask/stream                    ← streamAssistant() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.askStream()
+ *   GET /assistant/sessions                      ← useAssistantSessions() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.listSessions()
+ *   POST /assistant/sessions                     ← createAssistantSession() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.createSession()
+ *   DELETE /assistant/sessions/:sessionId        ← deleteAssistantSession() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.deleteSession()
+ *   GET /assistant/sessions/:sessionId/messages  ← useAssistantMessages() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.getMessages()
+ *   GET /mock-exams/practice                     ← chính trang này
+ *                                                  → server: modules/mock-exams/mock-exams.controller.ts →
+ *                                                    MockExamsService.practiceList()
+ *   GET /mock-exams/practice/:slug               ← chính trang này
+ *                                                  → server: modules/mock-exams/mock-exams.controller.ts →
+ *                                                    MockExamsService.practiceSet()
+ *   POST /mock-exams/practice/check              ← components/mock-exam/practice-runner.tsx
+ *                                                  → server: modules/mock-exams/mock-exams.controller.ts →
+ *                                                    MockExamsService.practiceCheck()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
+/**
  * Luyện từng dạng bài HSK — 1 phần đề (vd "HSK 3 · Viết · Phần 1 · Sắp xếp từ
  * thành câu") gom từ mọi đề cùng cấp, làm câu nào chấm câu đó (như "Luyện từng
  * dạng bài" của Migii HSK). Trang công khai cho SEO: đề render sẵn từ server.
@@ -24,12 +62,14 @@ export function generateStaticParams() {
 const PART_ZH = ["第一部分", "第二部分", "第三部分", "第四部分"];
 
 function setOf(slug: string) {
+  // API → GET /mock-exams/practice/:slug · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.practiceSet()
   return fetchPublic<MockPracticeSet>(`/mock-exams/practice/${encodeURIComponent(slug)}`, revalidate);
 }
 
 /** Các dạng khác cùng cấp — để chuyển dạng; lỗi thì bỏ qua (chỉ là liên kết phụ). */
 async function siblingsOf(level: number): Promise<MockPracticeSetMeta[]> {
   try {
+    // API → GET /mock-exams/practice · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.practiceList()
     const res = await fetch(`${API_BASE}/mock-exams/practice`, { next: { revalidate } });
     if (!res.ok) return [];
     return ((await res.json()) as MockPracticeSetMeta[]).filter((s) => s.level === level);

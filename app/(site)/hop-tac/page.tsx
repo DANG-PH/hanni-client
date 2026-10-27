@@ -1,3 +1,18 @@
+/**
+ * BẢN ĐỒ TRANG — DÀNH CHO GIÁO VIÊN (/hop-tac) — giới thiệu lớp học + form liên hệ cho trung tâm
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /mock-exams       ← chính trang này
+ *                           → server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.list()
+ *   POST /partners/leads  ← components/partners/partner-lead-form.tsx
+ *                           → server: modules/partners/partners.controller.ts → PartnersService.createLead()
+ *   GET /words/stats      ← chính trang này
+ *                           → server: modules/vocabulary/vocabulary.controller.ts → WordsService.stats()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/icon";
@@ -24,6 +39,7 @@ async function stats() {
     }
   };
   const [words, exams] = await Promise.all([
+    // API → GET /words/stats · server: modules/vocabulary/vocabulary.controller.ts → WordsService.stats() | GET /mock-exams · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.list()
     get<{ total: number; withHanViet: number }>("/words/stats"),
     get<unknown[]>("/mock-exams"),
   ]);

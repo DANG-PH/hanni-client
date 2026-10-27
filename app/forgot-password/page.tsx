@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — QUÊN MẬT KHẨU (/forgot-password) — gửi email đặt lại (cần MAIL_HOST)
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   POST /auth/forgot-password  ← chính trang này
+ *                                 → server: modules/auth/auth.controller.ts → AuthService.forgotPassword()
+ */
+
 import Link from "next/link";
 import { useState } from "react";
 import { LoginShell } from "@/components/login-shell";
@@ -19,6 +28,7 @@ export default function ForgotPasswordPage() {
     setBusy(true);
     setError(null);
     try {
+      // API → POST /auth/forgot-password · server: modules/auth/auth.controller.ts → AuthService.forgotPassword()
       await api.post("/auth/forgot-password", { email });
       setSent(true);
     } catch (err) {

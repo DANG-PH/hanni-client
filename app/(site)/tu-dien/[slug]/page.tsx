@@ -1,4 +1,29 @@
 /**
+ * BẢN ĐỒ TRANG — Trang 1 TỪ (/tu-dien/[slug]) — nghĩa, Hán Việt, phân tích từng chữ, nét viết, lượng từ, ví dụ, luyện
+ *   tập
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   POST /ai/mnemonic/:wordId          ← generateMnemonic() ở lib/ai-tools.ts (← components/ai/word-mnemonic.tsx)
+ *                                        → server: modules/ai-tools/ai-tools.controller.ts →
+ *                                          AiToolsService.mnemonic()
+ *   POST /ai/sentence-check            ← checkSentence() ở lib/ai-tools.ts (← components/ai/sentence-practice.tsx)
+ *                                        → server: modules/ai-tools/ai-tools.controller.ts →
+ *                                          AiToolsService.checkSentence()
+ *   GET /dictionary/:slug              ← chính trang này
+ *                                        → server: modules/vocabulary/vocabulary.controller.ts →
+ *                                          WordsService.lookup()
+ *   POST /study/add-word               ← addWordToSrs() ở lib/hooks.ts (← components/save-word-button.tsx)
+ *                                        → server: modules/srs/srs.controller.ts → ReviewService.addWord()
+ *   POST /study/words/:wordId/suspend  ← suspendWord() ở lib/hooks.ts (← components/save-word-button.tsx)
+ *                                        → server: modules/srs/srs.controller.ts → ReviewService.setSuspended()
+ *   GET /words                         ← components/dictionary/dictionary-search.tsx
+ *                                        → server: modules/vocabulary/vocabulary.controller.ts → WordsService.list()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
+/**
  * Trang từ điển CÔNG KHAI cho 1 từ — `/tu-dien/[Hán tự]`.
  *
  * Server Component có chủ đích (KHÔNG "use client"): nội dung nằm sẵn trong HTML để Google index
@@ -105,6 +130,7 @@ export function generateStaticParams() {
 
 const lookup = cache(async (slug: string) =>
   // Lỗi tạm thời của API phải ném ra, không biến thành 404 — xem lib/public-fetch.ts.
+  // API → GET /dictionary/:slug · server: modules/vocabulary/vocabulary.controller.ts → WordsService.lookup()
   fetchPublic<LookupResult>(`/dictionary/${encodeURIComponent(slug)}`, revalidate),
 );
 

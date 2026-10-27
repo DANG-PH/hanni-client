@@ -1,5 +1,18 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — LUYỆN VIẾT (/writing) — xem / tô / tự viết thứ tự nét (hanzi-writer)
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /learn/current      ← useCurrentLesson() ở lib/hooks.ts (← chính trang này)
+ *                             → server: modules/learn/learn.controller.ts → LearnService.currentLesson()
+ *   GET /learn/lessons/:id  ← useLesson() ở lib/hooks.ts (← chính trang này)
+ *                             → server: modules/learn/learn.controller.ts → LearnService.lesson()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import {
   FeatureTour,
   TourButton,

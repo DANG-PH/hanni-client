@@ -1,5 +1,38 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — 1 LỚP (/lop-hoc/[id]) — giáo viên: mã mời, giao bài, bảng tiến độ; học viên: bài tập
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /classrooms/:id                               ← useClassroom() ở lib/classrooms.ts (← chính trang này)
+ *                                                       → server: modules/classrooms/classrooms.controller.ts →
+ *                                                         ClassroomsService.detail()
+ *   DELETE /classrooms/:id                            ← deleteClassroom() ở lib/classrooms.ts (← chính trang này)
+ *                                                       → server: modules/classrooms/classrooms.controller.ts →
+ *                                                         ClassroomsService.remove()
+ *   POST /classrooms/:id/assignments                  ← addAssignment() ở lib/classrooms.ts (← chính trang này)
+ *                                                       → server: modules/classrooms/classrooms.controller.ts →
+ *                                                         ClassroomsService.addAssignment()
+ *   DELETE /classrooms/:id/assignments/:assignmentId  ← removeAssignment() ở lib/classrooms.ts (← chính trang này)
+ *                                                       → server: modules/classrooms/classrooms.controller.ts →
+ *                                                         ClassroomsService.removeAssignment()
+ *   POST /classrooms/:id/leave                        ← leaveClassroom() ở lib/classrooms.ts (← chính trang này)
+ *                                                       → server: modules/classrooms/classrooms.controller.ts →
+ *                                                         ClassroomsService.leave()
+ *   DELETE /classrooms/:id/members/:userId            ← removeMember() ở lib/classrooms.ts (← chính trang này)
+ *                                                       → server: modules/classrooms/classrooms.controller.ts →
+ *                                                         ClassroomsService.removeMember()
+ *   GET /learn/path                                   ← useLearnPath() ở lib/hooks.ts (← chính trang này)
+ *                                                       → server: modules/learn/learn.controller.ts →
+ *                                                         LearnService.path()
+ *   GET /mock-exams                                   ← chính trang này
+ *                                                       → server: modules/mock-exams/mock-exams.controller.ts →
+ *                                                         MockExamsService.list()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState, type FormEvent, type ReactNode } from "react";
@@ -196,6 +229,7 @@ function AssignForm({ data }: { data: OwnerView }) {
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<{ ok: boolean; text: string } | null>(null);
   const path = useLearnPath(level);
+  // API → GET /mock-exams · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.list()
   const exams = useSWR<MockExamMeta[]>("/mock-exams", (p: string) => apiFetch<MockExamMeta[]>(p));
   const lessons = path.data?.level === level ? path.data.lessons : [];
   const levelExams = (exams.data ?? []).filter((e) => e.level === level);

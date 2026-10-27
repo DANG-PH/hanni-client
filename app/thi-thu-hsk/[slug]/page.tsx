@@ -1,3 +1,39 @@
+/**
+ * BẢN ĐỒ TRANG — PHÒNG THI (/thi-thu-hsk/[slug]) — làm 1 đề có đồng hồ, nộp bài, chữa bài
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /assistant/ask/stream                    ← streamAssistant() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.askStream()
+ *   GET /assistant/sessions                      ← useAssistantSessions() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.listSessions()
+ *   POST /assistant/sessions                     ← createAssistantSession() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.createSession()
+ *   DELETE /assistant/sessions/:sessionId        ← deleteAssistantSession() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.deleteSession()
+ *   GET /assistant/sessions/:sessionId/messages  ← useAssistantMessages() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.getMessages()
+ *   GET /mock-exams/:slug                        ← chính trang này · components/mock-exam/exam-runner.tsx
+ *                                                  → server: modules/mock-exams/mock-exams.controller.ts →
+ *                                                    MockExamsService.paper()
+ *   POST /mock-exams/:slug/submit                ← components/mock-exam/exam-runner.tsx
+ *                                                  → server: modules/mock-exams/mock-exams.controller.ts →
+ *                                                    MockExamsService.submit()
+ *   POST /study/add-word                         ← addWordToSrs() ở lib/hooks.ts (←
+ *                                                  components/mock-exam/exam-runner.tsx)
+ *                                                  → server: modules/srs/srs.controller.ts → ReviewService.addWord()
+ */
+
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MockExamRunner } from "@/components/mock-exam/exam-runner";
@@ -17,6 +53,7 @@ export function generateStaticParams() {
  * nên đề vừa ra mắt bị 404 tới 1 giờ (gặp thật lúc ra HSK 2). `fetchPublic` chỉ
  * trả null khi API báo 404 cho đúng đề này. */
 async function paperOf(slug: string) {
+  // API → GET /mock-exams/:slug · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.paper()
   return fetchPublic<MockPaper>(`/mock-exams/${encodeURIComponent(slug)}`, revalidate);
 }
 

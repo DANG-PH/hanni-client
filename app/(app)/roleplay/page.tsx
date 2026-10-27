@@ -1,5 +1,38 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — LUYỆN NÓI VỚI AI (/roleplay) — chọn tình huống, hội thoại, gợi ý, nhận xét cuối buổi
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /roleplay/scenarios                      ← useRoleplayScenarios() ở lib/roleplay.ts (← chính trang này)
+ *                                                  → server: modules/roleplay/roleplay.controller.ts →
+ *                                                    RoleplayService.listScenarios()
+ *   GET /roleplay/sessions                       ← useRoleplaySessions() ở lib/roleplay.ts (← chính trang này)
+ *                                                  → server: modules/roleplay/roleplay.controller.ts →
+ *                                                    RoleplayService.listSessions()
+ *   POST /roleplay/sessions                      ← startRoleplaySession() ở lib/roleplay.ts (← chính trang này)
+ *                                                  → server: modules/roleplay/roleplay.controller.ts →
+ *                                                    RoleplayService.startSession()
+ *   DELETE /roleplay/sessions/:sessionId         ← deleteRoleplaySession() ở lib/roleplay.ts (← chính trang này)
+ *                                                  → server: modules/roleplay/roleplay.controller.ts →
+ *                                                    RoleplayService.deleteSession()
+ *   POST /roleplay/sessions/:sessionId/feedback  ← feedbackRoleplay() ở lib/roleplay.ts (← chính trang này)
+ *                                                  → server: modules/roleplay/roleplay.controller.ts →
+ *                                                    RoleplayService.feedback()
+ *   POST /roleplay/sessions/:sessionId/hint      ← hintRoleplay() ở lib/roleplay.ts (← chính trang này)
+ *                                                  → server: modules/roleplay/roleplay.controller.ts →
+ *                                                    RoleplayService.hint()
+ *   GET /roleplay/sessions/:sessionId/messages   ← useRoleplayMessages() ở lib/roleplay.ts (← chính trang này)
+ *                                                  → server: modules/roleplay/roleplay.controller.ts →
+ *                                                    RoleplayService.getMessages()
+ *   POST /roleplay/sessions/:sessionId/reply     ← replyRoleplay() ở lib/roleplay.ts (← chính trang này)
+ *                                                  → server: modules/roleplay/roleplay.controller.ts →
+ *                                                    RoleplayService.reply()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import {
   FeatureTour,
   TourButton,

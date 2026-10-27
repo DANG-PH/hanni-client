@@ -14,6 +14,7 @@ import type { MockAnalysis, MockAttempt, MockExamMeta, MockPracticeSetMeta } fro
  * để gắn điểm cao nhất của người đang đăng nhập. Cùng khoá SWR với màn kết quả
  * (`mutate("/mock-exams")`) nên vừa nộp bài quay lại là thấy điểm mới. */
 function useExams(initial: MockExamMeta[]) {
+  // API → GET /mock-exams · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.list()
   const { data } = useSWR<MockExamMeta[]>("/mock-exams", (p: string) => apiFetch<MockExamMeta[]>(p), {
     fallbackData: initial,
     revalidateOnFocus: false,
@@ -267,9 +268,11 @@ const SECTION_SHORT = { listening: "Nghe", reading: "Đọc", writing: "Viết" 
 export function MockExamInsights({ exams: initial }: { exams: MockExamMeta[] }) {
   const { user, loading } = useAuth();
   const exams = useExams(initial);
+  // API → GET /mock-exams/analysis/me · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.analysis()
   const { data: analysis } = useSWR<MockAnalysis>(user ? "/mock-exams/analysis/me" : null, (p: string) =>
     apiFetch<MockAnalysis>(p),
   );
+  // API → GET /mock-exams/attempts/me · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.history()
   const { data: attempts } = useSWR<MockAttempt[]>(user ? "/mock-exams/attempts/me" : null, (p: string) =>
     apiFetch<MockAttempt[]>(p),
   );

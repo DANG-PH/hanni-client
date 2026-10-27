@@ -7,6 +7,7 @@ import type { PinyinOverview } from "@/lib/types";
 /** Dữ liệu dựng sẵn ở server (HTML cho Google); build trúng lúc API lỗi thì
  * tự tải lại phía client thay vì để bảng trống. */
 export function usePinyinOverview(initial: PinyinOverview | null) {
+  // API → GET /pinyin/overview · server: modules/pinyin/pinyin.controller.ts → PinyinService.overview()
   const { data } = useSWR<PinyinOverview>(
     "/pinyin/overview",
     (p: string) => apiFetch<PinyinOverview>(p),

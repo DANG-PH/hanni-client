@@ -16,6 +16,7 @@ const fetcher = (path: string) => apiFetch<Word>(path);
  * xem `WordsService.ofTheDay()`. Im lặng ẩn đi nếu lỗi/chưa tải xong — đây là
  * nội dung phụ, không đáng để hiện lỗi làm rối dashboard. */
 export function WordOfTheDayCard({ level }: { level?: number }) {
+  // API → GET /words/of-the-day · server: modules/vocabulary/vocabulary.controller.ts → WordsService.ofTheDay()
   const { data } = useSWR<Word>(`/words/of-the-day${level ? `?level=${level}` : ""}`, fetcher);
   if (!data) return null;
 

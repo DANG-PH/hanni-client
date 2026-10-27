@@ -4,10 +4,16 @@ import useSWR from "swr";
 import { api, apiFetch } from "./api";
 import type { ScanResult, ScanUsage } from "./types";
 
+/**
+ * API → GET /scan/usage · server: modules/scan/scan.controller.ts → ScanService.usage()
+ */
 export function useScanUsage(enabled: boolean) {
   return useSWR<ScanUsage>(enabled ? "/scan/usage" : null, (p: string) => apiFetch<ScanUsage>(p));
 }
 
+/**
+ * API → POST /scan · server: modules/scan/scan.controller.ts → ScanService.scan()
+ */
 export function scanImage(image: Blob) {
   const form = new FormData();
   form.append("image", image, "scan.jpg");

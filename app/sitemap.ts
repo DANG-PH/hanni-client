@@ -1,3 +1,19 @@
+/**
+ * BẢN ĐỒ TRANG — sitemap.xml cho Google — liệt kê trang công khai + mọi trang từ/ngữ pháp/đề thi
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /dictionary/slugs     ← chính trang này
+ *                               → server: modules/vocabulary/vocabulary.controller.ts → WordsService.publicSlugs()
+ *   GET /grammar              ← chính trang này
+ *                               → server: modules/grammar/grammar.controller.ts → GrammarService.list()
+ *   GET /mock-exams           ← chính trang này
+ *                               → server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.list()
+ *   GET /mock-exams/practice  ← chính trang này
+ *                               → server: modules/mock-exams/mock-exams.controller.ts →
+ *                                 MockExamsService.practiceList()
+ */
+
 import type { MetadataRoute } from "next";
 import { API_BASE } from "@/lib/api";
 
@@ -21,6 +37,7 @@ interface SlugRow {
  * trả về mảng rỗng: sitemap vẫn hợp lệ với các trang tĩnh, không làm sập build. */
 async function dictionaryEntries(): Promise<MetadataRoute.Sitemap> {
   try {
+    // API → GET /dictionary/slugs · server: modules/vocabulary/vocabulary.controller.ts → WordsService.publicSlugs()
     const res = await fetch(`${API_BASE}/dictionary/slugs`, {
       next: { revalidate },
     });
@@ -46,6 +63,7 @@ interface GrammarRow {
  * ngõ cụt nên không mời Google index. */
 async function grammarEntries(): Promise<MetadataRoute.Sitemap> {
   try {
+    // API → GET /grammar · server: modules/grammar/grammar.controller.ts → GrammarService.list()
     const res = await fetch(`${API_BASE}/grammar`, { next: { revalidate } });
     if (!res.ok) return [];
     const rows = (await res.json()) as GrammarRow[];
@@ -65,6 +83,7 @@ async function grammarEntries(): Promise<MetadataRoute.Sitemap> {
 /** Từng đề thi thử — "đề thi thử HSK 1 đề 2" là truy vấn có thật. */
 async function mockExamEntries(): Promise<MetadataRoute.Sitemap> {
   try {
+    // API → GET /mock-exams · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.list()
     const res = await fetch(`${API_BASE}/mock-exams`, { next: { revalidate } });
     if (!res.ok) return [];
     const rows = (await res.json()) as { slug: string }[];
@@ -82,6 +101,7 @@ async function mockExamEntries(): Promise<MetadataRoute.Sitemap> {
 /** Trang "luyện từng dạng bài" (1 phần đề gom từ mọi đề cùng cấp). */
 async function practiceEntries(): Promise<MetadataRoute.Sitemap> {
   try {
+    // API → GET /mock-exams/practice · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.practiceList()
     const res = await fetch(`${API_BASE}/mock-exams/practice`, { next: { revalidate } });
     if (!res.ok) return [];
     const rows = (await res.json()) as { slug: string }[];

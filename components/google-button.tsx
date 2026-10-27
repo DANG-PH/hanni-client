@@ -82,6 +82,7 @@ export function GoogleButton({
           client_id: CLIENT_ID,
           callback: (res) => {
             if (cancelled || !res.credential) return;
+            // API → POST /auth/google · server: modules/auth/auth.controller.ts → AuthService.loginWithGoogle()
             void api
               .post<{ isNewUser: boolean }>("/auth/google", {
                 idToken: res.credential,

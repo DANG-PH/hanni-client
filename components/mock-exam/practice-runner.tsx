@@ -37,6 +37,7 @@ export function PracticeRunner({ set }: { set: MockPracticeSet }) {
     setChecking((c) => ({ ...c, [k]: true }));
     setFailed((f) => ({ ...f, [k]: false }));
     try {
+      // API → POST /mock-exams/practice/check · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.practiceCheck()
       const r = await api.post<MockReviewItem>("/mock-exams/practice/check", { examSlug, no, answer: v });
       setReviews((rv) => ({ ...rv, [k]: r }));
     } catch {

@@ -1,4 +1,15 @@
 /**
+ * BẢN ĐỒ TRANG — 1 điểm ngữ pháp (/ngu-phap/[slug]) — giải thích + ví dụ
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /grammar/:slug  ← chính trang này
+ *                         → server: modules/grammar/grammar.controller.ts → GrammarService.get()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
+/**
  * Trang ngữ pháp CÔNG KHAI — `/ngu-phap/[slug]`.
  *
  * 235 điểm ngữ pháp có giải thích soạn tay là tài sản hiếm nhất của Hanni
@@ -45,6 +56,7 @@ export function generateStaticParams() {
 
 const fetchPoint = cache(async (slug: string) => {
   // Lỗi tạm thời ném ra thay vì hoá thành 404 — xem lib/public-fetch.ts.
+  // API → GET /grammar/:slug · server: modules/grammar/grammar.controller.ts → GrammarService.get()
   return fetchPublic<GrammarPoint>(
     `/grammar/${encodeURIComponent(slug)}`,
     revalidate,

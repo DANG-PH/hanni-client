@@ -46,6 +46,15 @@ function refreshAfterLesson() {
   );
 }
 
+/**
+ * LUỒNG 1 PHIÊN HỌC BÀI (trang /bai-hoc/[id]): server dựng sẵn MỌI bước một lần (GET /learn/lessons/:id/session →
+ * hanni-server lesson-session.util.ts buildLessonSession) — trang chỉ chạy lần lượt `queue`:
+ *   intro (giới thiệu từ) → choice (trắc nghiệm nghĩa / nghe / Hán tự) → match (ghép cặp) → sentence (điền câu).
+ * Trả lời sai: tăng `mistakes` của từ đó + đẩy câu hỏi xuống cuối hàng (tối đa MAX_RETRIES_PER_WORD lần/từ, như Duolingo).
+ * Hết hàng → POST /learn/lessons/:id/complete { results: [{ wordId, mistakes }] } → server đưa từ vào lịch ôn SRS
+ * (0 lỗi = "Nhớ", 1 lỗi = "Khó", ≥2 = "Quên") + giữ chuỗi ngày. Khách (chưa đăng nhập): kết quả giữ tạm ở
+ * sessionStorage (lib/pending-lessons.ts), đăng ký/đăng nhập xong mới nộp (components/auth-form-card.tsx).
+ */
 export function SessionRunner({ session }: { session: LessonSession }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -106,6 +115,7 @@ export function SessionRunner({ session }: { session: LessonSession }) {
       return;
     }
     try {
+      // API → POST /learn/lessons/:id/complete · server: modules/learn/learn.controller.ts → LessonSessionService.complete()
       const result = await api.post<LessonCompleteResult>(
         `/learn/lessons/${session.lesson.id}/complete`,
         { results, durationMs },

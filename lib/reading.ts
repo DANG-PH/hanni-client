@@ -28,6 +28,10 @@ export interface LessonReadingData {
   enabled: boolean;
 }
 
+/**
+ * API → GET /ai/reading/:lessonId · server: modules/ai-tools/ai-tools.controller.ts → AiToolsService.reading()
+ * API → POST /ai/reading/:lessonId · server: modules/ai-tools/ai-tools.controller.ts → AiToolsService.createReading()
+ */
 const key = (lessonId: string) => `/ai/reading/${lessonId}`;
 
 export function useLessonReading(lessonId: string | null) {

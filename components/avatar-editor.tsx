@@ -37,6 +37,7 @@ export function AvatarEditor({
       const blob = await resizeImage(file, 512);
       const fd = new FormData();
       fd.append("file", blob, "avatar.webp");
+      // API → POST /users/me/avatar · server: modules/users/users.controller.ts → UsersService.setAvatarFile()
       await api.upload("/users/me/avatar", fd);
       await Promise.resolve(onChange());
     } catch (e) {
@@ -54,6 +55,7 @@ export function AvatarEditor({
     setError(null);
     setPreview(null);
     try {
+      // API → DELETE /users/me/avatar · server: modules/users/users.controller.ts → UsersService.clearAvatar()
       await api.del("/users/me/avatar");
       await Promise.resolve(onChange());
     } catch {

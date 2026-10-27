@@ -1,5 +1,20 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — XEM VIDEO (/watch/[id]) — phụ đề song ngữ chạy theo video, bấm từ để tra + lưu
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   POST /study/add-word        ← addWordToSrs() ở lib/hooks.ts (← chính trang này)
+ *                                 → server: modules/srs/srs.controller.ts → ReviewService.addWord()
+ *   GET /videos/:id             ← useVideo() ở lib/hooks.ts (← chính trang này)
+ *                                 → server: modules/videos/videos.controller.ts → VideosService.get()
+ *   PATCH /videos/:id/progress  ← chính trang này
+ *                                 → server: modules/videos/videos.controller.ts → VideosService.updateProgress()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -164,6 +179,7 @@ export default function WatchDetailPage() {
       if (!user) return;
       if (!force && now - savedAt.current < 2500) return;
       savedAt.current = now;
+      // API → PATCH /videos/:id/progress · server: modules/videos/videos.controller.ts → VideosService.updateProgress()
       void api
         .patch(`/videos/${id}/progress`, {
           lastLineIndex: index,

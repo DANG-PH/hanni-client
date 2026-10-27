@@ -1,5 +1,18 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — LỚP HỌC (/lop-hoc) — lớp tôi dạy / lớp tôi học, tạo lớp, nhập mã
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   POST /classrooms      ← createClassroom() ở lib/classrooms.ts (← chính trang này)
+ *                           → server: modules/classrooms/classrooms.controller.ts → ClassroomsService.create()
+ *   GET /classrooms/mine  ← useMyClassrooms() ở lib/classrooms.ts (← chính trang này)
+ *                           → server: modules/classrooms/classrooms.controller.ts → ClassroomsService.mine()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";

@@ -25,6 +25,7 @@ export function PartnerLeadForm() {
     setState("sending");
     setError(null);
     try {
+      // API → POST /partners/leads · server: modules/partners/partners.controller.ts → PartnersService.createLead()
       await api.post("/partners/leads", form);
       setState("sent");
     } catch (err) {

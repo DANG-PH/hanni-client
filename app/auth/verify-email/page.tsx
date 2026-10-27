@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — XÁC MINH EMAIL (/auth/verify-email?token=…) — mở từ link trong email
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   POST /auth/verify-email  ← chính trang này
+ *                              → server: modules/auth/auth.controller.ts → AuthService.verifyEmail()
+ */
+
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
@@ -15,6 +24,7 @@ function VerifyInner() {
       setState("fail");
       return;
     }
+    // API → POST /auth/verify-email · server: modules/auth/auth.controller.ts → AuthService.verifyEmail()
     void api
       .post("/auth/verify-email", { token })
       .then(() => setState("ok"))

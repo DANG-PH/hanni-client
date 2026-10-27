@@ -146,6 +146,7 @@ export function AuthFormCard({
     setBusy(true);
     setError(null);
     try {
+      // API → POST /auth/login · server: modules/auth/auth.controller.ts → AuthService.login()
       await api.post("/auth/login", {
         email: loginEmail,
         password: loginPassword,
@@ -175,6 +176,7 @@ export function AuthFormCard({
     try {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const isUuid = ref && /^[0-9a-f-]{36}$/i.test(ref);
+      // API → POST /auth/register · server: modules/auth/auth.controller.ts → AuthService.register()
       await api.post("/auth/register", {
         displayName: regDisplayName,
         email: regEmail,

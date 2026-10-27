@@ -1,4 +1,15 @@
 /**
+ * BẢN ĐỒ TRANG — Danh sách NGỮ PHÁP (/ngu-phap) theo cấp
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /grammar  ← chính trang này
+ *                   → server: modules/grammar/grammar.controller.ts → GrammarService.list()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
+/**
  * Danh sách ngữ pháp CÔNG KHAI — điểm vào để Google crawl tới từng điểm.
  * Lọc theo cấp qua `searchParams` nên mỗi cấp cũng là 1 URL index được.
  */
@@ -48,6 +59,7 @@ async function fetchList(level?: number): Promise<GrammarListItem[]> {
   // Lỗi tạm thời ném ra thay vì hoá thành danh sách rỗng bị cache 24h — xem
   // lib/public-fetch.ts.
   const qs = level ? `?level=${level}` : "";
+  // API → GET /grammar · server: modules/grammar/grammar.controller.ts → GrammarService.list()
   return (
     (await fetchPublic<GrammarListItem[]>(`/grammar${qs}`, revalidate)) ?? []
   );

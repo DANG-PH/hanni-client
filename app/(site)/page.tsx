@@ -1,5 +1,20 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — Trang chủ cho KHÁCH (/) — thông điệp Hán Việt, ô tra từ, "Học bài đầu tiên", chấm thanh điệu thử
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /levels       ← useLevels() ở lib/hooks.ts (← chính trang này)
+ *                       → server: modules/vocabulary/vocabulary.controller.ts → HskLevelsService.list()
+ *   GET /words        ← components/dictionary/dictionary-search.tsx
+ *                       → server: modules/vocabulary/vocabulary.controller.ts → WordsService.list()
+ *   GET /words/stats  ← useWordStats() ở lib/hooks.ts (← chính trang này)
+ *                       → server: modules/vocabulary/vocabulary.controller.ts → WordsService.stats()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
 import Link from "next/link";
 import { DictionarySearch } from "@/components/dictionary/dictionary-search";
 import { Icon, type IconName } from "@/components/icon";

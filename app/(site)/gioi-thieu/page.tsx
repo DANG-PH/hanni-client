@@ -1,3 +1,14 @@
+/**
+ * BẢN ĐỒ TRANG — GIỚI THIỆU (/gioi-thieu)
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /words/stats  ← chính trang này
+ *                       → server: modules/vocabulary/vocabulary.controller.ts → WordsService.stats()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/icon";
@@ -14,6 +25,7 @@ export const revalidate = 86400;
 
 async function wordStats() {
   try {
+    // API → GET /words/stats · server: modules/vocabulary/vocabulary.controller.ts → WordsService.stats()
     const r = await fetch(`${API_BASE}/words/stats`, { next: { revalidate } });
     return r.ok ? ((await r.json()) as { total: number; withHanViet: number }) : null;
   } catch {

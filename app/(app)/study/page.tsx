@@ -1,5 +1,44 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — ÔN TẬP (/study) — chọn bộ thẻ, buổi ôn flashcard SRS (4 nút đánh giá), quiz cuối buổi
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /learn/current                 ← useCurrentLesson() ở lib/hooks.ts (← chính trang này)
+ *                                        → server: modules/learn/learn.controller.ts → LearnService.currentLesson()
+ *   GET /learn/lessons/:id             ← chính trang này · useLesson() ở lib/hooks.ts (←
+ *                                        components/learn/topic-explorer.tsx)
+ *                                        → server: modules/learn/learn.controller.ts → LearnService.lesson()
+ *   GET /learn/path                    ← useLearnPath() ở lib/hooks.ts (← components/study/study-hub.tsx)
+ *                                        → server: modules/learn/learn.controller.ts → LearnService.path()
+ *   POST /quiz/generate                ← chính trang này
+ *                                        → server: modules/gamification/gamification.controller.ts →
+ *                                          QuizService.generate()
+ *   POST /quiz/submit                  ← components/quiz-runner.tsx
+ *                                        → server: modules/gamification/gamification.controller.ts →
+ *                                          QuizService.submit()
+ *   GET /streak                        ← useStreak() ở lib/hooks.ts (← chính trang này)
+ *                                        → server: modules/gamification/gamification.controller.ts →
+ *                                          StreakService.getStreak()
+ *   GET /study/leeches                 ← chính trang này
+ *                                        → server: modules/srs/srs.controller.ts → ReviewService.getLeeches()
+ *   GET /study/queue                   ← chính trang này
+ *                                        → server: modules/srs/srs.controller.ts → ReviewService.getQueue()
+ *   POST /study/review                 ← chính trang này
+ *                                        → server: modules/srs/srs.controller.ts → ReviewService.review()
+ *   POST /study/session                ← chính trang này
+ *                                        → server: modules/srs/srs.controller.ts → StudySessionService.start()
+ *   POST /study/session/:id/end        ← chính trang này
+ *                                        → server: modules/srs/srs.controller.ts → StudySessionService.end()
+ *   GET /study/stats                   ← useStudyStats() ở lib/hooks.ts (← components/study/study-hub.tsx)
+ *                                        → server: modules/srs/srs.controller.ts → ReviewService.getStats()
+ *   POST /study/words/:wordId/suspend  ← suspendWord() ở lib/hooks.ts (← chính trang này)
+ *                                        → server: modules/srs/srs.controller.ts → ReviewService.setSuspended()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
@@ -76,6 +115,7 @@ function StudyInner({
     if (loading || !user || started.current) return;
     started.current = true;
     void (async () => {
+      // API → POST /study/session · server: modules/srs/srs.controller.ts → StudySessionService.start()
       const session = await api
         .post<{ id: string }>("/study/session", {
           source: lessonId ? "LEARN" : "REVIEW",
@@ -85,9 +125,11 @@ function StudyInner({
 
       let list: Item[];
       if (leechMode) {
+        // API → GET /study/leeches · server: modules/srs/srs.controller.ts → ReviewService.getLeeches()
         const leeches = await api.get<LeechWord[]>("/study/leeches");
         list = leeches.map((l) => ({ word: l.word, isNew: false }));
       } else {
+        // API → GET /study/queue · server: modules/srs/srs.controller.ts → ReviewService.getQueue()
         const q = lessonId
           ? `/study/queue?limit=40&lessonId=${lessonId}`
           : "/study/queue?limit=40";
@@ -100,6 +142,7 @@ function StudyInner({
         // không chỉ thẻ đến hạn: bài vừa học xong thì mai mới có thẻ đến hạn,
         // bấm "Ôn bằng flashcard" mà ra "không có từ cần ôn" là cụt đường.
         if (lessonId) {
+          // API → GET /learn/lessons/:id · server: modules/learn/learn.controller.ts → LearnService.lesson()
           const detail = await api.get<LessonDetail>(`/learn/lessons/${lessonId}`);
           const seen = new Set(list.map((i) => i.word.id));
           for (const w of detail.words)
@@ -112,6 +155,11 @@ function StudyInner({
     })().catch(() => setError("Chưa tải được buổi học. Vui lòng thử lại."));
   }, [loading, user, lessonId, leechMode]);
 
+  // LUỒNG ÔN FLASHCARD: mở trang → POST /study/session (mốc tính phút học) + GET /study/queue (thẻ đến hạn; ?lesson=
+  // thì mọi từ của bài, ?leeches=1 thì từ khó nhớ) → lật thẻ (components/flashcard.tsx) → bấm Quên/Khó/Nhớ/Dễ → hàm
+  // này gửi POST /study/review → server tính ngày gặp lại (hanni-server srs/review.service.ts review(), SM-2/FSRS)
+  // → thẻ kế tiếp; hết thẻ → quiz cuối buổi (POST /quiz/generate từ chính các từ vừa ôn) → POST /study/session/:id/end.
+  // `ratingLock` chặn bấm 2 lần liền cho cùng 1 thẻ (2 lượt ôn sẽ làm lệch lịch SRS).
   const onRate = useCallback(
     async (rating: Rating, durationMs: number) => {
       const item = items[pos];
@@ -120,6 +168,7 @@ function StudyInner({
       setBusy(true);
       setError(null);
       try {
+        // API → POST /study/review · server: modules/srs/srs.controller.ts → ReviewService.review()
         const res = await api.post<{ isCorrect: boolean }>("/study/review", {
           wordId: item.word.id,
           rating,
@@ -138,6 +187,7 @@ function StudyInner({
         setPos(pos + 1);
       } else {
         if (sessionId.current) {
+          // API → POST /study/session/:id/end · server: modules/srs/srs.controller.ts → StudySessionService.end()
           await api
             .post(`/study/session/${sessionId.current}/end`)
             .catch(() => undefined);
@@ -171,6 +221,7 @@ function StudyInner({
     setItems(rest);
     if (pos >= rest.length) {
       if (sessionId.current) {
+        // API → POST /study/session/:id/end · server: modules/srs/srs.controller.ts → StudySessionService.end()
         await api
           .post(`/study/session/${sessionId.current}/end`)
           .catch(() => undefined);
@@ -187,6 +238,7 @@ function StudyInner({
     setError(null);
     const ids = [...reviewedIds.current];
     try {
+      // API → POST /quiz/generate · server: modules/gamification/gamification.controller.ts → QuizService.generate()
       const q = await api.post<Quiz>("/quiz/generate", {
         wordIds: ids.length ? ids : undefined,
         size: Math.min(10, Math.max(4, ids.length)),

@@ -1,5 +1,34 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — CÀI ĐẶT (/settings) — mục tiêu ngày, thuật toán SRS, múi giờ, giờ nhắc học, thông báo đẩy, lịch học
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /mail/configured      ← chính trang này
+ *                               → server: modules/mail/mail.controller.ts
+ *   GET /push/public-key      ← subscribeToPush() ở lib/pwa/push.ts (← components/pwa/notification-card.tsx)
+ *                               → server: modules/push/push.controller.ts → PushService.getPublicKey()
+ *   POST /push/subscribe      ← subscribeToPush() ở lib/pwa/push.ts (← components/pwa/notification-card.tsx)
+ *                               → server: modules/push/push.controller.ts → PushService.subscribe()
+ *   DELETE /push/subscribe    ← unsubscribeFromPush() ở lib/pwa/push.ts (← components/pwa/notification-card.tsx)
+ *                               → server: modules/push/push.controller.ts → PushService.unsubscribe()
+ *   POST /push/test           ← sendTestPush() ở lib/pwa/push.ts (← components/pwa/notification-card.tsx)
+ *                               → server: modules/push/push.controller.ts → PushService.sendTest()
+ *   PATCH /users/me           ← chính trang này
+ *                               → server: modules/users/users.controller.ts → UsersService.updateProfile()
+ *   POST /users/me/avatar     ← components/avatar-editor.tsx
+ *                               → server: modules/users/users.controller.ts → UsersService.setAvatarFile()
+ *   DELETE /users/me/avatar   ← components/avatar-editor.tsx
+ *                               → server: modules/users/users.controller.ts → UsersService.clearAvatar()
+ *   GET /users/me/settings    ← chính trang này
+ *                               → server: modules/users/users.controller.ts → UserSettingsService.get()
+ *   PATCH /users/me/settings  ← chính trang này
+ *                               → server: modules/users/users.controller.ts → UserSettingsService.update()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import Link from "next/link";
 import { CalendarReminder } from "@/components/calendar-reminder";
 import { useState, type FormEvent } from "react";
@@ -16,6 +45,7 @@ import type { Me, UserSettings } from "@/lib/types";
 
 export default function SettingsPage() {
   const { user, loading, refresh } = useRequireAuth();
+  // API → GET /users/me/settings · server: modules/users/users.controller.ts → UserSettingsService.get()
   const { data, mutate, error } = useSWR<UserSettings>(
     user ? "/users/me/settings" : null,
     (path: string) => apiFetch<UserSettings>(path),
@@ -48,6 +78,7 @@ export default function SettingsPage() {
           onSubscribed={() => void mutate()}
           reminderHour={data?.reminderHour ?? null}
           onChangeReminderHour={async (hour) => {
+            // API → PATCH /users/me/settings · server: modules/users/users.controller.ts → UserSettingsService.update()
             const next = await api.patch<UserSettings>("/users/me/settings", {
               reminderHour: hour,
             });
@@ -99,6 +130,7 @@ function SettingsForm({
   onSaved: (settings: UserSettings) => Promise<void>;
   refreshUser: () => Promise<void>;
 }) {
+  // API → GET /mail/configured · server: modules/mail/mail.controller.ts
   const mail = useSWR<{ configured: boolean }>(
     "/mail/configured",
     (path: string) => apiFetch<{ configured: boolean }>(path),
@@ -137,6 +169,7 @@ function SettingsForm({
     }
     setSaving(true);
     try {
+      // API → PATCH /users/me/settings · server: modules/users/users.controller.ts → UserSettingsService.update()
       const next = await api.patch<UserSettings>("/users/me/settings", {
         dailyGoalType: form.dailyGoalType,
         dailyGoalValue: form.dailyGoalValue,
@@ -149,6 +182,7 @@ function SettingsForm({
       setForm(next);
       await onSaved(next);
       if (timezone && timezone !== user.timezone) {
+        // API → PATCH /users/me · server: modules/users/users.controller.ts → UsersService.updateProfile()
         await api.patch("/users/me", { timezone });
       }
       await refreshUser();

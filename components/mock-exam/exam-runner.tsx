@@ -87,9 +87,17 @@ function instruction(section: MockSectionKind, part: MockPart): string {
 const mmss = (sec: number) =>
   `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`;
 
+/**
+ * LUỒNG PHÒNG THI (/thi-thu-hsk/[slug]): GET /mock-exams/:slug lấy đề KHÔNG kèm đáp án → màn giới thiệu → "Bắt đầu"
+ * bật đồng hồ (durationMin của đề) → mỗi lần chọn đáp án lưu bài làm dở vào localStorage (tải lại trang vẫn "Làm
+ * tiếp") → bấm Nộp bài hoặc hết giờ → POST /mock-exams/:slug/submit { answers, durationSec } → server chấm
+ * (hanni-server mock-exam.content.ts scorePaper) → màn kết quả: điểm từng phần, bảng đáp án, chữa bài, luyện lại câu
+ * sai, lưu từ sai vào ôn tập. Phần nghe đọc bằng giọng tiếng Trung của trình duyệt (lib/listening-audio.ts).
+ */
 export function MockExamRunner({ slug }: { slug: string }) {
   const { user } = useAuth();
   const router = useRouter();
+  // API → GET /mock-exams/:slug · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.paper()
   const { data: paper, error } = useSWR<MockPaper>(
     `/mock-exams/${slug}`,
     (p: string) => apiFetch<MockPaper>(p),
@@ -148,6 +156,7 @@ export function MockExamRunner({ slug }: { slug: string }) {
     stopListening();
     const durationSec = Math.min(paper.durationMin * 60, Math.round((Date.now() - startedAt) / 1000));
     try {
+      // API → POST /mock-exams/:slug/submit · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.submit()
       const r = await api.post<MockExamResult>(`/mock-exams/${slug}/submit`, { answers, durationSec });
       if (!user) savePendingExam({ slug, answers, durationSec });
       clearSaved(slug);

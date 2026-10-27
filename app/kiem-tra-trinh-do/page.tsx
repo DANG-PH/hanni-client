@@ -1,3 +1,26 @@
+/**
+ * BẢN ĐỒ TRANG — KIỂM TRA TRÌNH ĐỘ (/kiem-tra-trinh-do) — hỏi dần theo cấp, đề xuất cấp bắt đầu
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /learn/placement             ← components/placement-test.tsx
+ *                                      → server: modules/learn/learn.controller.ts → PlacementService.questions()
+ *   GET /payments/configured         ← usePaymentsConfigured() ở lib/payments.ts (← components/premium-modal.tsx)
+ *                                      → server: modules/payments/payments.controller.ts →
+ *                                        PaymentsService.isConfigured()
+ *   GET /payments/orders/:orderCode  ← getOrderStatus() ở lib/payments.ts
+ *                                      → server: modules/payments/payments.controller.ts →
+ *                                        PaymentsService.getOrderStatus()
+ *   POST /payments/premium-checkout  ← createPremiumCheckout() ở lib/payments.ts (← components/premium-modal.tsx)
+ *                                      → server: modules/payments/payments.controller.ts →
+ *                                        PaymentsService.createPremiumCheckout()
+ *   GET /premium/status              ← usePremiumStatus() ở lib/premium.ts (← components/premium-modal.tsx,
+ *                                      components/premium-nav-card.tsx)
+ *                                      → server: modules/premium/premium.controller.ts → PremiumService.getStatus()
+ *   GET /study/stats                 ← useStudyStats() ở lib/hooks.ts (← components/sidebar.tsx)
+ *                                      → server: modules/srs/srs.controller.ts → ReviewService.getStats()
+ */
+
 import type { Metadata } from "next";
 import { PlacementTest } from "@/components/placement-test";
 

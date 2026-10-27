@@ -1,5 +1,21 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — XẾP HẠNG (/leaderboard) — giải đấu tuần + bảng xếp hạng theo tiêu chí
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /leaderboard          ← useLeaderboard() ở lib/hooks.ts (← chính trang này)
+ *                               → server: modules/leaderboard/leaderboard.controller.ts → LeaderboardService.top()
+ *   GET /leaderboard/league   ← useWeeklyLeague() ở lib/hooks.ts (← components/weekly-league-card.tsx)
+ *                               → server: modules/leaderboard/leaderboard.controller.ts → LeagueService.getMyLeague()
+ *   GET /leaderboard/metrics  ← useLeaderboardMetrics() ở lib/hooks.ts (← chính trang này)
+ *                               → server: modules/leaderboard/leaderboard.controller.ts →
+ *                                 LeaderboardService.metrics()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import {
   FeatureTour,
   TourButton,

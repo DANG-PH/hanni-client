@@ -1,4 +1,54 @@
 /**
+ * BẢN ĐỒ TRANG — QUÉT ẢNH HỌC TỪ (/tu-dien/quet) — chụp ảnh → AI đọc chữ Hán + gọi tên đồ vật → lưu từ
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /assistant/ask/stream                    ← streamAssistant() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.askStream()
+ *   GET /assistant/sessions                      ← useAssistantSessions() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.listSessions()
+ *   POST /assistant/sessions                     ← createAssistantSession() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.createSession()
+ *   DELETE /assistant/sessions/:sessionId        ← deleteAssistantSession() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.deleteSession()
+ *   GET /assistant/sessions/:sessionId/messages  ← useAssistantMessages() ở lib/hooks.ts (←
+ *                                                  components/assistant-widget.tsx)
+ *                                                  → server: modules/assistant/assistant.controller.ts →
+ *                                                    AssistantService.getMessages()
+ *   GET /payments/configured                     ← usePaymentsConfigured() ở lib/payments.ts (←
+ *                                                  components/premium-modal.tsx)
+ *                                                  → server: modules/payments/payments.controller.ts →
+ *                                                    PaymentsService.isConfigured()
+ *   GET /payments/orders/:orderCode              ← getOrderStatus() ở lib/payments.ts
+ *                                                  → server: modules/payments/payments.controller.ts →
+ *                                                    PaymentsService.getOrderStatus()
+ *   POST /payments/premium-checkout              ← createPremiumCheckout() ở lib/payments.ts (←
+ *                                                  components/premium-modal.tsx)
+ *                                                  → server: modules/payments/payments.controller.ts →
+ *                                                    PaymentsService.createPremiumCheckout()
+ *   GET /premium/status                          ← usePremiumStatus() ở lib/premium.ts (←
+ *                                                  components/premium-modal.tsx, components/scan/scan-tool.tsx)
+ *                                                  → server: modules/premium/premium.controller.ts →
+ *                                                    PremiumService.getStatus()
+ *   POST /scan                                   ← scanImage() ở lib/scan.ts (← components/scan/scan-tool.tsx)
+ *                                                  → server: modules/scan/scan.controller.ts → ScanService.scan()
+ *   GET /scan/usage                              ← useScanUsage() ở lib/scan.ts (← components/scan/scan-tool.tsx)
+ *                                                  → server: modules/scan/scan.controller.ts → ScanService.usage()
+ *   POST /study/add-word                         ← addWordToSrs() ở lib/hooks.ts (← components/scan/scan-tool.tsx)
+ *                                                  → server: modules/srs/srs.controller.ts → ReviewService.addWord()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
+/**
  * Quét ảnh học từ — trang CÔNG KHAI (Google index được, nhắm truy vấn "dịch
  * tiếng Trung qua ảnh"), công cụ chạy sau khi đăng nhập (mỗi người 3 ảnh/ngày,
  * Premium 100). Khác Google Dịch ở chỗ mỗi từ trong ảnh nối thẳng vào từ điển

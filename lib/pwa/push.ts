@@ -26,7 +26,11 @@ export async function getPushSubscription(): Promise<PushSubscription | null> {
   return (await registration?.pushManager.getSubscription()) ?? null;
 }
 
-/** Xin quyền, đăng ký push với trình duyệt rồi lưu subscription lên server. */
+/**
+ * Xin quyền, đăng ký push với trình duyệt rồi lưu subscription lên server.
+ * API → GET /push/public-key · server: modules/push/push.controller.ts → PushService.getPublicKey()
+ * API → POST /push/subscribe · server: modules/push/push.controller.ts → PushService.subscribe()
+ */
 export async function subscribeToPush(): Promise<PushSubscription> {
   if (!pushSupported()) {
     throw new Error("Trình duyệt này không hỗ trợ thông báo đẩy.");
@@ -53,7 +57,10 @@ export async function subscribeToPush(): Promise<PushSubscription> {
   return subscription;
 }
 
-/** Huỷ subscription ở cả trình duyệt lẫn server. */
+/**
+ * Huỷ subscription ở cả trình duyệt lẫn server.
+ * API → DELETE /push/subscribe · server: modules/push/push.controller.ts → PushService.unsubscribe()
+ */
 export async function unsubscribeFromPush(): Promise<void> {
   const subscription = await getPushSubscription();
   if (!subscription) return;
@@ -62,6 +69,9 @@ export async function unsubscribeFromPush(): Promise<void> {
   await api.del("/push/subscribe", { endpoint });
 }
 
+/**
+ * API → POST /push/test · server: modules/push/push.controller.ts → PushService.sendTest()
+ */
 export function sendTestPush(): Promise<{ sent: number; total: number }> {
   return api.post("/push/test");
 }

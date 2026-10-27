@@ -1,5 +1,16 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — /bat-dau — nút "Học bài đầu tiên": khách → bài 1 của cấp; đã đăng nhập → lưu cấp rồi về /learn
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /learn/start          ← chính trang này
+ *                               → server: modules/learn/learn.controller.ts → LearnService.firstLesson()
+ *   PATCH /users/me/settings  ← chính trang này
+ *                               → server: modules/users/users.controller.ts → UserSettingsService.update()
+ */
+
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import { StudyLoader } from "@/components/study-loader";
@@ -23,10 +34,12 @@ function Start() {
     if (user) {
       const go = () => router.replace("/learn");
       if (params.get("level"))
+        // API → PATCH /users/me/settings · server: modules/users/users.controller.ts → UserSettingsService.update()
         void api.patch("/users/me/settings", { courseLevel: level }).finally(go);
       else go();
       return;
     }
+    // API → GET /learn/start · server: modules/learn/learn.controller.ts → LearnService.firstLesson()
     apiFetch<{ id: string }>(`/learn/start?level=${level}`)
       .then((l) => router.replace(`/bai-hoc/${l.id}`))
       .catch(() => router.replace("/hoc-thu"));

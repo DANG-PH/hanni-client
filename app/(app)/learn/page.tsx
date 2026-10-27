@@ -1,5 +1,50 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — TRANG CHỦ HỌC (/learn) — thẻ "Học tiếp", lộ trình chủ đề, chuỗi ngày, nhiệm vụ, từ vựng hôm nay
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /classrooms/assignments/me  ← useMyAssignments() ở lib/classrooms.ts (←
+ *                                     components/classrooms/class-assignments-card.tsx)
+ *                                     → server: modules/classrooms/classrooms.controller.ts →
+ *                                       ClassroomsService.myAssignments()
+ *   GET /learn/lessons/:id          ← useLesson() ở lib/hooks.ts (← components/learn/topic-explorer.tsx)
+ *                                     → server: modules/learn/learn.controller.ts → LearnService.lesson()
+ *   GET /learn/path                 ← preloadLearnHome() ở lib/hooks.ts (← chính trang này) · useLearnPath() ở
+ *                                     lib/hooks.ts (← chính trang này)
+ *                                     → server: modules/learn/learn.controller.ts → LearnService.path()
+ *   GET /levels                     ← preloadLearnHome() ở lib/hooks.ts (← chính trang này) · useLevels() ở
+ *                                     lib/hooks.ts (← chính trang này)
+ *                                     → server: modules/vocabulary/vocabulary.controller.ts → HskLevelsService.list()
+ *   GET /mock-exams/attempts/me     ← components/learn/getting-started.tsx
+ *                                     → server: modules/mock-exams/mock-exams.controller.ts →
+ *                                       MockExamsService.history()
+ *   GET /practice/stats             ← usePracticeStats() ở lib/hooks.ts (← components/learn/getting-started.tsx)
+ *                                     → server: modules/practice/practice.controller.ts → PracticeService.stats()
+ *   GET /push/public-key            ← subscribeToPush() ở lib/pwa/push.ts (← components/pwa/notification-nudge.tsx)
+ *                                     → server: modules/push/push.controller.ts → PushService.getPublicKey()
+ *   POST /push/subscribe            ← subscribeToPush() ở lib/pwa/push.ts (← components/pwa/notification-nudge.tsx)
+ *                                     → server: modules/push/push.controller.ts → PushService.subscribe()
+ *   GET /quests/today               ← useTodayQuests() ở lib/hooks.ts (← components/daily-quest-card.tsx)
+ *                                     → server: modules/quests/quests.controller.ts → QuestsService.getToday()
+ *   GET /streak                     ← useStreak() ở lib/hooks.ts (← components/learn/today-card.tsx)
+ *                                     → server: modules/gamification/gamification.controller.ts →
+ *                                       StreakService.getStreak()
+ *   GET /streak/history             ← useStreakHistory() ở lib/hooks.ts (← components/learn/today-card.tsx)
+ *                                     → server: modules/gamification/gamification.controller.ts →
+ *                                       StreakService.history()
+ *   GET /study/stats                ← useStudyStats() ở lib/hooks.ts (← components/learn/getting-started.tsx,
+ *                                     components/learn/today-card.tsx)
+ *                                     → server: modules/srs/srs.controller.ts → ReviewService.getStats()
+ *   PATCH /users/me/settings        ← chính trang này
+ *                                     → server: modules/users/users.controller.ts → UserSettingsService.update()
+ *   GET /words/of-the-day           ← components/word-of-the-day.tsx
+ *                                     → server: modules/vocabulary/vocabulary.controller.ts → WordsService.ofTheDay()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { mutate } from "swr";
@@ -188,6 +233,7 @@ function LearnHome() {
   async function chooseLevel(lvl: number) {
     setSwitching(true);
     try {
+      // API → PATCH /users/me/settings · server: modules/users/users.controller.ts → UserSettingsService.update()
       await api.patch("/users/me/settings", { courseLevel: lvl });
       setViewLevel(undefined);
       await mutate((key) => typeof key === "string" && key.startsWith("/learn"));
@@ -202,6 +248,7 @@ function LearnHome() {
     if (!user || !course.data || !Number.isInteger(wanted) || wanted < 1) return;
     const lvl = Math.min(wanted, 7);
     if (lvl !== course.data.level && course.data.levels.includes(lvl)) {
+      // API → PATCH /users/me/settings · server: modules/users/users.controller.ts → UserSettingsService.update()
       void api
         .patch("/users/me/settings", { courseLevel: lvl })
         .then(() => mutate((key) => typeof key === "string" && key.startsWith("/learn")));

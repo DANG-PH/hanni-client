@@ -285,6 +285,21 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
       (SWR + socket.io-client) · time.ts (timeAgo) · types.ts
 ```
 
+## Bản đồ giao diện → API (2026-10-27 — thầy chỉ vào giao diện là tìm ra code)
+- **Khối `BẢN ĐỒ TRANG`** đầu MỖI `page.tsx` / `layout.tsx` (+ `sitemap.ts`): trang làm gì, gọi API nào (← component/hook nào gây ra
+  lời gọi), code server ở đâu (→ controller · Service.method()). Khung app (sidebar, chuông, trợ lý AI) liệt kê ở `app/(app)/layout.tsx`.
+- **`API → METHOD /path · server: …`** trong JSDoc mỗi hàm `lib/*.ts` có gọi API, và dòng `// API → …` ngay trên mỗi chỗ component/trang
+  tự gọi (`fetch`, `api.post`, `useSWR`…). Khoá SWR chính là đường dẫn API.
+- **Khối `LUỒNG`** ở điểm vào: ô tra từ (`components/dictionary/dictionary-search.tsx` — gợi ý khi gõ, hằng `SUGGEST_LIMIT`/
+  `SUGGEST_DEBOUNCE_MS`), phiên học (`session-runner.tsx`), ôn flashcard (`app/(app)/study/page.tsx` `onRate`), phòng thi
+  (`exam-runner.tsx`), thanh toán (`premium-section.tsx`).
+- **Thêm/sửa lời gọi API thì sửa các khối này cho khớp** (sinh từ mã nguồn ngày 27/10 bằng script quét import từng trang, cấp HÀM với
+  `lib/`). Sửa cùng ngày: Ôn tập mở sẵn chủ đề ĐÃ học xa nhất (`TopicExplorer` variant review — trước đó mở bài nên học tiếp, vừa học xong
+  bài 1 vào Ôn tập là thấy bài 2 "Học trước"); nút đầu `/progress` ghi đúng "Ôn N từ đến hạn" / "Ôn flashcard"; `/thi-thu-hsk` có bảng
+  cấu trúc đề HSK 4; `/account?premium=` hỏi lại trạng thái đơn 10 lần × 3 giây (webhook payOS về sau trình duyệt vài giây), quay về từ
+  nút Huỷ (`&cancelled=1`) báo "chưa bị trừ tiền" thay vì "đang chờ". Gỡ hàm không trang nào dùng: `useAiUsage`, `renameClassroom`
+  (cùng route server). `.env.example` thêm `NEXT_PUBLIC_SITE_URL`, `GOOGLE_SITE_VERIFICATION`.
+
 ## Convention
 - Mọi request qua `lib/api.ts` (`api.get/post/patch`) — `credentials: "include"`, tự refresh 401 một lần.
 - Trang cần đăng nhập: gọi `useRequireAuth()` ở đầu component.

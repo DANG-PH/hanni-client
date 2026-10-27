@@ -1,5 +1,20 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — HUY HIỆU (/achievements) — lưới huy chương + danh hiệu
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /achievements        ← useAchievements() ở lib/hooks.ts (← chính trang này)
+ *                              → server: modules/gamification/gamification.controller.ts → AchievementsService.list()
+ *   GET /shop/titles         ← useTitleShop() ở lib/shop.ts (← components/title-shop.tsx)
+ *                              → server: modules/shop/shop.controller.ts → TitleService.getCatalog()
+ *   POST /shop/titles/equip  ← equipTitle() ở lib/shop.ts (← components/title-shop.tsx)
+ *                              → server: modules/shop/shop.controller.ts → TitleService.equip()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import { useState } from "react";
 import {
   EmptyState,
