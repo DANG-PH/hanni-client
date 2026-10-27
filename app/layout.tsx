@@ -5,7 +5,8 @@
  *
  *   POST /auth/logout   ← AuthProvider() ở lib/auth.tsx (← chính trang này)
  *                         → server: modules/auth/auth.controller.ts → AuthService.logout()
- *   POST /auth/refresh  ← refreshSession() ở lib/api.ts (← chính trang này)
+ *   POST /auth/refresh  ← lib/api.ts tự gọi khi 1 request bị 401 (refreshSession(), mọi request đang chờ dùng chung
+ *                         1 lượt)
  *                         → server: modules/auth/auth.controller.ts → AuthService.refresh()
  *   GET /auth/session   ← AuthProvider() ở lib/auth.tsx (← chính trang này)
  *                         → server: modules/auth/auth.controller.ts → UsersService.getProfile()

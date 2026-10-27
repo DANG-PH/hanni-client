@@ -26,10 +26,7 @@
  *   GET /payments/configured                     ← usePaymentsConfigured() ở lib/payments.ts (←
  *                                                  components/premium-modal.tsx)
  *                                                  → server: modules/payments/payments.controller.ts →
- *                                                    PaymentsService.isConfigured()
- *   GET /payments/orders/:orderCode              ← getOrderStatus() ở lib/payments.ts
- *                                                  → server: modules/payments/payments.controller.ts →
- *                                                    PaymentsService.getOrderStatus()
+ *                                                    PaymentsService.providers()
  *   POST /payments/premium-checkout              ← createPremiumCheckout() ở lib/payments.ts (←
  *                                                  components/premium-modal.tsx)
  *                                                  → server: modules/payments/payments.controller.ts →

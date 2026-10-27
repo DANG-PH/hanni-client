@@ -10,12 +10,11 @@
  *                                        ClassroomsService.mine()
  *   GET /payments/configured         ← usePaymentsConfigured() ở lib/payments.ts (← components/premium-modal.tsx)
  *                                      → server: modules/payments/payments.controller.ts →
- *                                        PaymentsService.isConfigured()
+ *                                        PaymentsService.providers()
  *   GET /payments/orders/:orderCode  ← getOrderStatus() ở lib/payments.ts (← components/premium-section.tsx)
  *                                      → server: modules/payments/payments.controller.ts →
  *                                        PaymentsService.getOrderStatus()
- *   POST /payments/premium-checkout  ← createPremiumCheckout() ở lib/payments.ts (← components/premium-modal.tsx,
- *                                      components/premium-section.tsx)
+ *   POST /payments/premium-checkout  ← createPremiumCheckout() ở lib/payments.ts (← components/premium-modal.tsx)
  *                                      → server: modules/payments/payments.controller.ts →
  *                                        PaymentsService.createPremiumCheckout()
  *   GET /premium/status              ← usePremiumStatus() ở lib/premium.ts (← components/premium-modal.tsx,

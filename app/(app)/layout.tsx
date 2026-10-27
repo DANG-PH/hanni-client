@@ -23,7 +23,8 @@
  *                                                  components/assistant-widget.tsx)
  *                                                  → server: modules/assistant/assistant.controller.ts →
  *                                                    AssistantService.getMessages()
- *   GET /notifications                           ← NOTIFICATIONS_KEY() ở lib/notifications.ts (← chính trang này)
+ *   GET /notifications                           ← useNotifications() ở lib/notifications.ts (←
+ *                                                  components/notification-bell.tsx)
  *                                                  → server: modules/notifications/notifications.controller.ts →
  *                                                    NotificationsService.list()
  *   PATCH /notifications/:id/read                ← markNotificationsRead() ở lib/notifications.ts (←
@@ -37,10 +38,7 @@
  *   GET /payments/configured                     ← usePaymentsConfigured() ở lib/payments.ts (←
  *                                                  components/premium-modal.tsx)
  *                                                  → server: modules/payments/payments.controller.ts →
- *                                                    PaymentsService.isConfigured()
- *   GET /payments/orders/:orderCode              ← getOrderStatus() ở lib/payments.ts
- *                                                  → server: modules/payments/payments.controller.ts →
- *                                                    PaymentsService.getOrderStatus()
+ *                                                    PaymentsService.providers()
  *   POST /payments/premium-checkout              ← createPremiumCheckout() ở lib/payments.ts (←
  *                                                  components/premium-modal.tsx)
  *                                                  → server: modules/payments/payments.controller.ts →

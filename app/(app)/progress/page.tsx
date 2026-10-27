@@ -10,17 +10,9 @@
  *                                        → server: modules/insights/insights.controller.ts → InsightsService.report()
  *   POST /insights/report/coach        ← useCoach() ở lib/insights.ts (← components/insights/period-report.tsx)
  *                                        → server: modules/insights/insights.controller.ts → InsightsService.coach()
- *   GET /learn/path                    ← useLearnPath() ở lib/hooks.ts (← chính trang này)
- *                                        → server: modules/learn/learn.controller.ts → LearnService.path()
- *   GET /levels                        ← useLevels() ở lib/hooks.ts (← chính trang này)
- *                                        → server: modules/vocabulary/vocabulary.controller.ts →
- *                                          HskLevelsService.list()
  *   GET /payments/configured           ← usePaymentsConfigured() ở lib/payments.ts (← components/premium-modal.tsx)
  *                                        → server: modules/payments/payments.controller.ts →
- *                                          PaymentsService.isConfigured()
- *   GET /payments/orders/:orderCode    ← getOrderStatus() ở lib/payments.ts
- *                                        → server: modules/payments/payments.controller.ts →
- *                                          PaymentsService.getOrderStatus()
+ *                                          PaymentsService.providers()
  *   POST /payments/premium-checkout    ← createPremiumCheckout() ở lib/payments.ts (← components/premium-modal.tsx)
  *                                        → server: modules/payments/payments.controller.ts →
  *                                          PaymentsService.createPremiumCheckout()

@@ -5,12 +5,11 @@
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
  * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
  *
- *   GET /ai/reading/:lessonId                    ← key() ở lib/reading.ts (← components/assistant-widget.tsx,
- *                                                  components/chat/chat-composer.tsx, components/markdown-lite.tsx)
+ *   GET /ai/reading/:lessonId                    ← useLessonReading() ở lib/reading.ts (← chính trang này)
  *                                                  → server: modules/ai-tools/ai-tools.controller.ts →
  *                                                    AiToolsService.reading()
- *   POST /ai/reading/:lessonId                   ← key() ở lib/reading.ts (← components/assistant-widget.tsx,
- *                                                  components/chat/chat-composer.tsx, components/markdown-lite.tsx)
+ *   POST /ai/reading/:lessonId                   ← createLessonReading() ở lib/reading.ts (← nút "Viết bài đọc" ở
+ *                                                  chính trang này)
  *                                                  → server: modules/ai-tools/ai-tools.controller.ts →
  *                                                    AiToolsService.createReading()
  *   GET /assistant/ask/stream                    ← streamAssistant() ở lib/hooks.ts (←
