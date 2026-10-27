@@ -71,9 +71,7 @@ export function PremiumSection() {
     const check = () => {
       void getOrderStatus(code)
         .then((order) => {
-          if (order.status === "PAID" && order.sandbox) {
-            setNote({ text: "Thanh toán thử MoMo thành công (tiền ảo) — bản thử nghiệm không kích hoạt Premium.", ok: false });
-          } else if (order.status === "PAID") {
+          if (order.status === "PAID") {
             setNote({ text: "Nâng cấp Premium thành công! Cảm ơn bạn đã ủng hộ Hanni.", ok: true });
             void mutate();
           } else if (order.status === "PENDING" && ++tries < STATUS_POLL_TRIES) {

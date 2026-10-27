@@ -202,9 +202,6 @@ export default function AccountPage() {
                       : "từ ôn / ngày"}
                   </span>
                 </p>
-                <p className="mt-2 text-sm text-muted">
-                  Thêm {user.settings.newCardsPerDay} từ mới mỗi ngày.
-                </p>
               </>
             ) : (
               <p className="text-sm leading-6 text-muted">

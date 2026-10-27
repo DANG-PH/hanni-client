@@ -70,7 +70,7 @@ const TECH: { icon: IconName; title: string; body: string }[] = [
   {
     icon: "cards",
     title: "Lặp lại ngắt quãng",
-    body: "Lịch ôn theo SM-2 và FSRS (thuật toán của Anki hiện đại) — ôn ít mà nhớ lâu.",
+    body: "Lịch ôn tự sắp đúng lúc bạn sắp quên (cách Anki dùng) — ôn ít mà nhớ lâu.",
   },
   {
     icon: "chart",

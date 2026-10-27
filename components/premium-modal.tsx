@@ -26,14 +26,14 @@ const FAQ: { q: string; a: string }[] = [
   { q: "Không mua Premium thì học được gì?", a: "Tất cả bài học: 9 cấp HSK, từ điển, ngữ pháp, ôn tập, đề thi thử. Premium chỉ mở thêm tiện ích AI ở trên." },
   { q: "Có tự động trừ tiền gia hạn không?", a: "Không. Bạn trả 1 lần cho đúng thời hạn đã chọn, hết hạn app tự về bản thường — dữ liệu học vẫn giữ nguyên." },
   { q: "Đang Premium mà mua thêm thì sao?", a: "Thời gian mới được cộng nối tiếp vào hạn hiện tại, không mất ngày nào." },
-  { q: "Thanh toán bằng cách nào?", a: "Qua cổng payOS: quét mã VietQR bằng app ngân hàng bất kỳ (app MoMo cũng quét được). Premium kích hoạt tự động ngay khi giao dịch thành công." },
+  { q: "Thanh toán bằng cách nào?", a: "Quét mã QR bằng app ngân hàng bất kỳ (app MoMo cũng quét được) — số tiền và nội dung đã điền sẵn, không cần nhập thẻ. Giao dịch do đối tác thanh toán payOS xử lý; Premium tự kích hoạt ngay khi chuyển khoản thành công." },
 ];
 
 /** Cách thanh toán của từng cổng — hiện ở bước xác nhận. */
 const PAY_STEPS: Record<PaymentProvider, string[]> = {
   payos: [
-    "Bấm “Thanh toán qua payOS” — trang thanh toán của payOS mở ra.",
-    "Quét mã VietQR bằng app ngân hàng bất kỳ hoặc app MoMo (hoặc chuyển khoản đúng nội dung trên trang).",
+    "Bấm “Thanh toán bằng mã QR” — trang thanh toán hiện mã QR với số tiền đã điền sẵn.",
+    "Mở app ngân hàng bất kỳ (hoặc app MoMo), quét mã và xác nhận chuyển khoản.",
     "Xong là Premium tự kích hoạt, trang tự quay về Hanni.",
   ],
   momo: [
@@ -96,7 +96,7 @@ export function PremiumModal({
     : [];
   const provider = providers.includes(picked) ? picked : (providers[0] ?? "payos");
   const momoSandbox = configured.data?.momoSandbox === true;
-  const providerName = provider === "momo" ? "MoMo" : "payOS";
+  const payLabel = provider === "momo" ? "Thanh toán qua MoMo" : "Thanh toán bằng mã QR";
 
   useEffect(() => {
     panel.current?.focus();
@@ -335,17 +335,15 @@ export function PremiumModal({
                               </span>
                               <span className="min-w-0">
                                 <span className="flex flex-wrap items-center gap-1.5 text-sm font-semibold">
-                                  {p === "payos" ? "Chuyển khoản / VietQR" : "Ví MoMo · thẻ ATM · thẻ quốc tế"}
+                                  {p === "payos" ? "Quét mã QR ngân hàng" : "Ví MoMo · thẻ ATM · thẻ Visa"}
                                   {p === "momo" && momoSandbox && (
                                     <span className="rounded-full bg-warn/10 px-2 py-0.5 text-xs font-bold text-warn">Thử nghiệm</span>
                                   )}
                                 </span>
                                 <span className="mt-0.5 block text-xs leading-5 text-muted">
                                   {p === "payos"
-                                    ? "Qua payOS — app ngân hàng nào cũng quét được."
-                                    : momoSandbox
-                                      ? "Cổng MoMo bản thử: tiền ảo, KHÔNG kích hoạt Premium thật."
-                                      : "Qua cổng thanh toán MoMo."}
+                                    ? "Dùng app ngân hàng bất kỳ hoặc app MoMo để quét."
+                                    : "Thanh toán trên trang của MoMo."}
                                 </span>
                               </span>
                             </button>
@@ -383,8 +381,8 @@ export function PremiumModal({
                   </ul>
                   {provider === "momo" && momoSandbox && (
                     <p className="mt-4 rounded-xl bg-warn/10 px-3.5 py-3 text-xs leading-5 text-warn">
-                      Bản thử nghiệm của MoMo dùng tiền ảo — trả xong không kích hoạt Premium. Thẻ ATM thử: 9704 0000 0000
-                      0018 · NGUYEN VAN A · 03/07 · mã OTP: OTP.
+                      Đang dùng bản thử của MoMo (tiền ảo). Thẻ ATM thử: 9704 0000 0000 0018 · NGUYEN VAN A · 03/07 ·
+                      mã OTP: OTP.
                     </p>
                   )}
                   {error && (
@@ -441,7 +439,7 @@ export function PremiumModal({
                   ) : (
                     <>
                       <Icon name="lock" size={16} />
-                      Thanh toán qua {providerName}
+                      {payLabel}
                     </>
                   )}
                 </Button>

@@ -53,7 +53,7 @@ function ResetInner() {
   return (
     <Card className="mt-6">
       {!token ? (
-        <ErrorNote>Thiếu token đặt lại mật khẩu.</ErrorNote>
+        <ErrorNote>Liên kết đặt lại mật khẩu không đúng — hãy mở lại liên kết trong email hoặc yêu cầu gửi lại.</ErrorNote>
       ) : (
         <form onSubmit={onSubmit} className="space-y-3">
           <input

@@ -16,7 +16,6 @@ export interface Me {
 export interface UserSettings {
   dailyGoalType: "WORDS" | "MINUTES";
   dailyGoalValue: number;
-  newCardsPerDay: number;
   maxReviewsPerDay: number | null;
   srsScheduler: "sm2" | "fsrs";
   targetRetention: number;
@@ -27,15 +26,11 @@ export interface UserSettings {
 export interface HskLevel {
   level: number;
   band: "ELEMENTARY" | "INTERMEDIATE" | "ADVANCED";
-  isSharedBand: boolean;
   nameVi: string;
-  newWords2021: number;
-  cumulative2021: number;
   newWords2025: number;
   cumulative2025: number;
   readingChars: number | null;
   writingChars: number | null;
-  skills: string[];
   wordsInDb: number;
 }
 
@@ -137,8 +132,6 @@ export interface StudyQueue {
   newCards: QueueItem[];
   counts: {
     due: number;
-    newRemaining: number;
-    newDoneToday: number;
     reviewsDoneToday: number;
   };
 }
@@ -150,21 +143,12 @@ export interface StudyStats {
   learnedTotal: number;
   inProgress: number;
   reviewsDoneToday: number;
-  newDoneToday: number;
-  newRemaining: number;
   leechCount: number;
   /** số từ người dùng đã tự ẩn khỏi hàng đợi ôn */
   suspendedCount: number;
 }
 
 export type Rating = "AGAIN" | "HARD" | "GOOD" | "EASY";
-
-export interface ReviewResult {
-  isCorrect: boolean;
-  dueAt: string;
-  intervalDays: number;
-  state: string;
-}
 
 export interface StreakInfo {
   currentStreak: number;
@@ -356,11 +340,6 @@ export interface PracticeStats {
   accuracyPct: number | null;
 }
 
-export interface GrammarLevel {
-  level: number;
-  count: number;
-}
-
 export interface GrammarListItem {
   slug: string;
   hskLevel: number;
@@ -374,13 +353,6 @@ export interface GrammarExample {
   zh: string;
   pinyin: string;
   vi: string;
-}
-
-export interface GrammarDetail extends GrammarListItem {
-  orderIndex: number;
-  explanationVi: string;
-  patterns: string[];
-  examples: GrammarExample[];
 }
 
 export type LeaderboardMetricKey =
@@ -680,8 +652,6 @@ export interface PaymentOrder {
   premiumPlanKey: string | null;
   status: PaymentOrderStatus;
   provider?: "PAYOS" | "MOMO";
-  /** Đơn MoMo SANDBOX trên production: đã trả bằng tiền ảo, KHÔNG cộng Premium thật. */
-  sandbox?: boolean;
 }
 
 /** Gợi ý quy luật thanh điệu Hán Việt → tiếng Trung cho 1 chữ (server tính). */

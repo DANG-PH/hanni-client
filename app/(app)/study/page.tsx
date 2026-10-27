@@ -27,10 +27,6 @@
  *                                        → server: modules/srs/srs.controller.ts → ReviewService.getQueue()
  *   POST /study/review                 ← chính trang này
  *                                        → server: modules/srs/srs.controller.ts → ReviewService.review()
- *   POST /study/session                ← chính trang này
- *                                        → server: modules/srs/srs.controller.ts → StudySessionService.start()
- *   POST /study/session/:id/end        ← chính trang này
- *                                        → server: modules/srs/srs.controller.ts → StudySessionService.end()
  *   GET /study/stats                   ← useStudyStats() ở lib/hooks.ts (← components/study/study-hub.tsx)
  *                                        → server: modules/srs/srs.controller.ts → ReviewService.getStats()
  *   POST /study/words/:wordId/suspend  ← suspendWord() ở lib/hooks.ts (← chính trang này)
@@ -102,7 +98,6 @@ function StudyInner({
   const [items, setItems] = useState<Item[]>([]);
   const [pos, setPos] = useState(0);
   const [correct, setCorrect] = useState(0);
-  const sessionId = useRef<string | null>(null);
   const reviewedIds = useRef<Set<string>>(new Set());
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [quizScore, setQuizScore] = useState<number | null>(null);
@@ -115,14 +110,6 @@ function StudyInner({
     if (loading || !user || started.current) return;
     started.current = true;
     void (async () => {
-      // API → POST /study/session · server: modules/srs/srs.controller.ts → StudySessionService.start()
-      const session = await api
-        .post<{ id: string }>("/study/session", {
-          source: lessonId ? "LEARN" : "REVIEW",
-        })
-        .catch(() => null);
-      sessionId.current = session?.id ?? null;
-
       let list: Item[];
       if (leechMode) {
         // API → GET /study/leeches · server: modules/srs/srs.controller.ts → ReviewService.getLeeches()
@@ -155,10 +142,10 @@ function StudyInner({
     })().catch(() => setError("Chưa tải được buổi học. Vui lòng thử lại."));
   }, [loading, user, lessonId, leechMode]);
 
-  // LUỒNG ÔN FLASHCARD: mở trang → POST /study/session (mốc tính phút học) + GET /study/queue (thẻ đến hạn; ?lesson=
-  // thì mọi từ của bài, ?leeches=1 thì từ khó nhớ) → lật thẻ (components/flashcard.tsx) → bấm Quên/Khó/Nhớ/Dễ → hàm
-  // này gửi POST /study/review → server tính ngày gặp lại (hanni-server srs/review.service.ts review(), SM-2/FSRS)
-  // → thẻ kế tiếp; hết thẻ → quiz cuối buổi (POST /quiz/generate từ chính các từ vừa ôn) → POST /study/session/:id/end.
+  // LUỒNG ÔN FLASHCARD: mở trang → GET /study/queue (thẻ đến hạn; ?lesson= thì mọi từ của bài, ?leeches=1 thì từ khó
+  // nhớ) → lật thẻ (components/flashcard.tsx) → bấm Quên/Khó/Nhớ/Dễ → hàm này gửi POST /study/review (kèm thời gian
+  // nhìn thẻ — số phút học tính từ đây) → server tính ngày gặp lại (hanni-server srs/review.service.ts review(),
+  // SM-2/FSRS) → thẻ kế tiếp; hết thẻ → quiz cuối buổi (POST /quiz/generate từ chính các từ vừa ôn).
   // `ratingLock` chặn bấm 2 lần liền cho cùng 1 thẻ (2 lượt ôn sẽ làm lệch lịch SRS).
   const onRate = useCallback(
     async (rating: Rating, durationMs: number) => {
@@ -173,7 +160,6 @@ function StudyInner({
           wordId: item.word.id,
           rating,
           durationMs,
-          studySessionId: sessionId.current ?? undefined,
         });
         reviewedIds.current.add(item.word.id);
         if (res.isCorrect) setCorrect((c) => c + 1);
@@ -186,12 +172,6 @@ function StudyInner({
       if (pos + 1 < items.length) {
         setPos(pos + 1);
       } else {
-        if (sessionId.current) {
-          // API → POST /study/session/:id/end · server: modules/srs/srs.controller.ts → StudySessionService.end()
-          await api
-            .post(`/study/session/${sessionId.current}/end`)
-            .catch(() => undefined);
-        }
         setPhase("review-done");
       }
       ratingLock.current = false;
@@ -219,15 +199,7 @@ function StudyInner({
     }
     const rest = items.filter((_, i) => i !== pos);
     setItems(rest);
-    if (pos >= rest.length) {
-      if (sessionId.current) {
-        // API → POST /study/session/:id/end · server: modules/srs/srs.controller.ts → StudySessionService.end()
-        await api
-          .post(`/study/session/${sessionId.current}/end`)
-          .catch(() => undefined);
-      }
-      setPhase("review-done");
-    }
+    if (pos >= rest.length) setPhase("review-done");
     ratingLock.current = false;
     setBusy(false);
   }, [items, pos]);

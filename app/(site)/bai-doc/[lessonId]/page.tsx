@@ -136,7 +136,7 @@ export default function LessonReadingPage() {
           </div>
           {writeError && <ErrorNote>{writeError}</ErrorNote>}
           {!data.enabled ? (
-            <p className="text-sm text-muted">Tiện ích AI chưa được bật trên máy chủ.</p>
+            <p className="text-sm text-muted">Bài đọc AI đang tạm đóng — bạn thử lại sau nhé.</p>
           ) : user ? (
             <Button onClick={() => void write()} disabled={writing}>
               <Icon name="spark" size={16} />

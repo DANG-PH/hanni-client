@@ -22,7 +22,6 @@ app/
 │                        nhập → lưu cấp rồi về /learn
 ├── bai-hoc/[lessonId]   PHIÊN HỌC 1 BÀI — lõi học từ mới (khung tập trung, không sidebar, dùng
 │                        chung khách/đã đăng nhập), xem "Lộ trình một nút bấm" ở Trạng thái
-├── auth/callback        nhận redirect sau Google OAuth
 ├── auth/verify-email
 ├── (app)/learn          TRANG CHỦ sau đăng nhập (dashboard đã gộp vào, /dashboard → 308)
 ├── thi-thu-hsk/[slug]   LÀM 1 ĐỀ THI THỬ — khung tập trung như phòng thi (ngoài `(site)`, không
@@ -300,13 +299,22 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
   nút Huỷ (`&cancelled=1`) báo "chưa bị trừ tiền" thay vì "đang chờ". Gỡ hàm không trang nào dùng: `useAiUsage`, `renameClassroom`
   (cùng route server). `.env.example` thêm `NEXT_PUBLIC_SITE_URL`, `GOOGLE_SITE_VERIFICATION`.
 
+## Dọn theo server (2026-10-28 — xem `hanni-server/CLAUDE.md` mục "Dọn cơ sở dữ liệu")
+- `/study` không còn mở/đóng buổi ôn (`POST /study/session…` đã gỡ ở server — chỉ ghi, không ai đọc); số phút học tính từ `durationMs`
+  gửi kèm mỗi lượt ôn.
+- `/settings` bỏ ô **"Số từ mới mỗi ngày"** (không điều khiển gì — từ mới chỉ đến từ bài học); `/account` bỏ dòng "Thêm N từ mới mỗi
+  ngày". Kiểu `UserSettings`, `HskLevel`, `StudyStats`, `StudyQueue`, `PaymentOrder` gọt theo cột đã xoá; bỏ 3 kiểu không ai dùng.
+- Chữ người dùng thấy không còn thuật ngữ: "Thiếu token…" → hướng dẫn mở lại liên kết; trang giới thiệu bỏ "SM-2/FSRS".
+
 ## Thanh toán: chọn cổng + quay về (2026-10-27)
 - Popup Premium bước 2 có ô **"Cách thanh toán"** khi server bật ≥ 2 cổng (`GET /payments/configured` → `{configured, payos, momo,
   momoSandbox}`; server cũ chỉ trả `configured` = payOS): "Chuyển khoản / VietQR" (payOS) · "Ví MoMo · thẻ ATM · thẻ quốc tế" (nhãn
   "Thử nghiệm" + ghi chú thẻ test khi `momoSandbox`). Cách thanh toán 3 bước đổi theo cổng (`PAY_STEPS`), nút "Thanh toán qua payOS/MoMo".
 - `premium-section.tsx` `readReturn()`: mã đơn lấy bằng `parseInt` (cổng nối thêm tham số của họ — MoMo nối bằng `&` đã thử thật), huỷ =
   `cancelled=1` / payOS `cancel=true` / MoMo `resultCode=1006`, MoMo lỗi khác báo "chưa bị trừ tiền"; tham số URL KHÔNG có chữ ký nên chỉ
-  để hiện lời nhắn — Premium chỉ cộng ở server. Đơn sandbox đã trả: "Thanh toán thử MoMo thành công (tiền ảo) — không kích hoạt Premium".
+  để hiện lời nhắn — Premium chỉ cộng ở server. Từ 28/10 production KHÔNG hiện MoMo khoá thử (server ẩn); `momoSandbox` chỉ còn
+  đúng khi chạy local → hiện thẻ ATM thử. Chữ thân thiện: lựa chọn "Quét mã QR ngân hàng" / nút "Thanh toán bằng mã QR" — không
+  bắt người dùng biết payOS/VietQR là gì (payOS chỉ nhắc 1 lần ở câu hỏi thường gặp, "đối tác thanh toán").
   Hết 10 lượt hỏi mà vẫn PENDING: báo job đối soát 5 phút sẽ tự cộng.
 - Kiểm tra: popup với API giả (390/1440, 0 tràn, 0 lỗi); trọn luồng MoMo sandbox trên production bằng thẻ ATM test.
 - Bộ sinh khối BẢN ĐỒ TRANG sửa để chỉ tính hàm lib khi file có `import` thật — 7 trang từng ghi nhầm (`/progress` không gọi `/learn/path`,

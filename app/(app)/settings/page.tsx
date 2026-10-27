@@ -157,13 +157,11 @@ function SettingsForm({
     if (
       !Number.isInteger(form.dailyGoalValue) ||
       form.dailyGoalValue < 1 ||
-      !Number.isInteger(form.newCardsPerDay) ||
-      form.newCardsPerDay < 0 ||
       (form.maxReviewsPerDay != null &&
         (!Number.isInteger(form.maxReviewsPerDay) || form.maxReviewsPerDay < 0))
     ) {
       setSaveError(
-        "Mục tiêu cần là số nguyên lớn hơn 0; số từ mới/giới hạn lượt ôn không được âm.",
+        "Mục tiêu cần là số nguyên lớn hơn 0; giới hạn lượt ôn không được âm.",
       );
       return;
     }
@@ -173,7 +171,6 @@ function SettingsForm({
       const next = await api.patch<UserSettings>("/users/me/settings", {
         dailyGoalType: form.dailyGoalType,
         dailyGoalValue: form.dailyGoalValue,
-        newCardsPerDay: form.newCardsPerDay,
         maxReviewsPerDay: form.maxReviewsPerDay,
         srsScheduler: form.srsScheduler,
         targetRetention: form.targetRetention,
@@ -248,23 +245,6 @@ function SettingsForm({
                 />
               </label>
               <label className="block text-sm font-medium">
-                Số từ mới mỗi ngày
-                <input
-                  required
-                  type="number"
-                  min={0}
-                  step={1}
-                  value={form.newCardsPerDay}
-                  onChange={(event) =>
-                    update("newCardsPerDay", Number(event.target.value))
-                  }
-                  className="field mt-2"
-                />
-                <span className="mt-2 block text-xs font-normal text-muted">
-                  Đặt bằng 0 nếu bạn chỉ muốn ôn từ đã học.
-                </span>
-              </label>
-              <label className="block text-sm font-medium sm:col-span-2">
                 Giới hạn số lượt ôn mỗi ngày{" "}
                 <span className="font-normal text-muted">(tuỳ chọn)</span>
                 <input
@@ -284,8 +264,8 @@ function SettingsForm({
                   className="field mt-2"
                 />
                 <span className="mt-2 block text-xs font-normal text-muted">
-                  Để trống nếu không muốn giới hạn. Chỉ áp dụng cho lượt ôn từ
-                  đã học, không tính số từ mới ở trên.
+                  Để trống nếu không muốn giới hạn. Từ mới đến từ bài học trong
+                  lộ trình, không tính vào giới hạn này.
                 </span>
               </label>
             </div>

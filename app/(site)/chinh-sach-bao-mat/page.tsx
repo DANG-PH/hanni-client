@@ -62,12 +62,12 @@ export default function PrivacyPage() {
           body: (
             <>
               {ul([
-                "Google Gemini API — xử lý nội dung bạn gửi cho tính năng AI (trợ lý, luyện nói, chấm câu, phân tích câu, mẹo nhớ, bài đọc, quét ảnh, nhận xét học tập). Chỉ phần nội dung cần cho lượt đó được gửi đi, kèm số liệu học tập liên quan nếu tính năng cần.",
+                "Google Gemini (dịch vụ AI của Google) — xử lý nội dung bạn gửi cho tính năng AI (trợ lý, luyện nói, chấm câu, phân tích câu, mẹo nhớ, bài đọc, quét ảnh, nhận xét học tập). Chỉ phần nội dung cần cho lượt đó được gửi đi, kèm số liệu học tập liên quan nếu tính năng cần.",
                 "Nhận dạng giọng nói của trình duyệt — khi bạn bấm micro (tra từ, luyện phát âm, nói với AI), trình duyệt Chrome/Edge gửi âm thanh tới máy chủ của Google/Microsoft để chuyển thành chữ; Hanni chỉ nhận lại phần chữ.",
                 "Đăng nhập bằng Google; YouTube (video nhúng trong mục Học qua video); Wikimedia Commons/Wikipedia (ảnh minh hoạ từ vựng).",
                 "Dịch máy (Google Translate, MyMemory) cho phụ đề video — chỉ gửi lời thoại của video, không gửi dữ liệu của bạn.",
                 "Vercel (phục vụ giao diện web) và máy chủ riêng (VPS) của Hanni — nơi lưu tài khoản và tiến độ học.",
-                "payOS — chỉ khi bạn thanh toán Premium (đang chuẩn bị mở bán); Hanni không lưu số thẻ hay tài khoản ngân hàng.",
+                "payOS (đối tác thanh toán) — chỉ khi bạn thanh toán Premium; Hanni không lưu số thẻ hay tài khoản ngân hàng.",
               ])}
             </>
           ),

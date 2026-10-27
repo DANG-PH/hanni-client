@@ -7,7 +7,8 @@ import type { CheckoutResponse, PaymentOrder, PaymentProvider } from "./types";
 const fetcher = <T>(path: string) => apiFetch<T>(path);
 
 /** Cổng nào đã cấu hình ở server (PAYOS_* / MOMO_* trong .env) — chưa cổng nào thì popup Premium hiện "Sắp mở bán"
- * thay vì nút bấm vào báo lỗi. `momoSandbox`: MoMo đang dùng khoá thử nghiệm (tiền ảo, không cộng Premium thật).
+ * thay vì nút bấm vào báo lỗi. MoMo khoá thử chỉ hiện khi chạy local (`momoSandbox` → hiện thẻ ATM thử); production
+ * chỉ hiện MoMo khi có khoá thật.
  * API → GET /payments/configured · server: modules/payments/payments.controller.ts → PaymentsService.providers()
  */
 export function usePaymentsConfigured() {
