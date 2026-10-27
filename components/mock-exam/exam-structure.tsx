@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 /** Cấu trúc đề HSK hiện hành theo cấp. Mọi bảng đều nằm sẵn trong HTML (bảng
- * đang ẩn chỉ gắn `hidden`) để Google đọc được "cấu trúc đề HSK 3", HSK 2, HSK 1. */
+ * đang ẩn chỉ gắn `hidden`) để Google đọc được "cấu trúc đề HSK 4", HSK 3, HSK 2, HSK 1.
+ * Số câu từng phần phải khớp đề ở server (`STRUCTURE` trong mock-exam.content.spec.ts). */
 const STRUCTURES: { level: number; rows: { part: string; task: string; n: number }[]; total: string }[] = [
   {
     level: 1,
@@ -47,6 +48,20 @@ const STRUCTURES: { level: number; rows: { part: string; task: string; n: number
       { part: "Viết — Phần 2", task: "Nhìn pinyin viết chữ Hán", n: 5 },
     ],
     total: "Tổng 80 câu · 85 phút làm bài · 300 điểm · đạt từ 180 điểm.",
+  },
+  {
+    level: 4,
+    rows: [
+      { part: "Nghe — Phần 1", task: "Nghe 1 đoạn, xét câu ★ đúng / sai", n: 10 },
+      { part: "Nghe — Phần 2", task: "Hội thoại ngắn + câu hỏi, chọn A/B/C/D", n: 15 },
+      { part: "Nghe — Phần 3", task: "Hội thoại dài hoặc đoạn văn + câu hỏi, chọn A/B/C/D", n: 20 },
+      { part: "Đọc — Phần 1", task: "Chọn từ điền chỗ trống (2 bộ)", n: 10 },
+      { part: "Đọc — Phần 2", task: "Sắp xếp 3 câu thành đoạn văn", n: 10 },
+      { part: "Đọc — Phần 3", task: "Đọc đoạn văn, chọn đáp án A/B/C/D", n: 20 },
+      { part: "Viết — Phần 1", task: "Sắp xếp từ thành câu", n: 10 },
+      { part: "Viết — Phần 2", task: "Nhìn tranh, dùng từ cho sẵn đặt câu", n: 5 },
+    ],
+    total: "Tổng 100 câu · 100 phút làm bài · 300 điểm · đạt từ 180 điểm.",
   },
 ];
 

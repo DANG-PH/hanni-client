@@ -41,6 +41,10 @@ export function TopicExplorer({
     0,
     units.findIndex((u) => u.lessons.some((l) => l.lesson.id === currentLessonId)),
   );
+  // Ôn tập: mặc định mở chủ đề đã học xa nhất (có bài đã học) — trước đó mở chủ đề của bài NÊN HỌC TIẾP, nên vừa học
+  // xong bài 1 vào Ôn tập là thấy bài 2 chưa học ("Học trước"), bộ thẻ vừa học bị cuộn khuất. Lộ trình: bài học tiếp.
+  const lastStudied = variant === "review" ? units.findLastIndex((u) => u.lessons.some((l) => l.lesson.startedWords > 0)) : -1;
+  const defaultUnit = lastStudied >= 0 ? lastStudied : currentUnit;
   const [picked, setPicked] = useState<number | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const currentRef = useRef<HTMLLIElement>(null);
@@ -54,7 +58,7 @@ export function TopicExplorer({
     if (list.scrollHeight > list.clientHeight) list.scrollTop = item.offsetTop - list.offsetTop - 8;
     if (list.scrollWidth > list.clientWidth) list.scrollLeft = item.offsetLeft - list.offsetLeft - 8;
   }, []);
-  const active = units[picked ?? currentUnit] ?? units[0];
+  const active = units[picked ?? defaultUnit] ?? units[0];
   if (!active) return null;
   const activeDone = active.lessons.filter((l) => isDone(l.lesson, variant)).length;
   // Bài để xem trước từ vựng: lộ trình → bài nên học tiếp (hoặc bài đầu chưa
@@ -87,7 +91,7 @@ export function TopicExplorer({
               const selected = u === active;
               const finished = done === u.lessons.length;
               return (
-                <li key={`${u.title}-${i}`} ref={i === currentUnit ? currentRef : undefined} className="shrink-0 lg:shrink">
+                <li key={`${u.title}-${i}`} ref={i === defaultUnit ? currentRef : undefined} className="shrink-0 lg:shrink">
                   <button
                     type="button"
                     onClick={() => setPicked(i)}

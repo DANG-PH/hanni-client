@@ -1,5 +1,51 @@
 "use client";
 
+/**
+ * BẢN ĐỒ TRANG — TIẾN ĐỘ (/progress) — vốn từ, báo cáo tuần/tháng/quý, Hanni Coach, từ khó nhớ, từ đã ẩn
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /insights/report               ← useInsightsReport() ở lib/insights.ts (←
+ *                                        components/insights/period-report.tsx)
+ *                                        → server: modules/insights/insights.controller.ts → InsightsService.report()
+ *   POST /insights/report/coach        ← useCoach() ở lib/insights.ts (← components/insights/period-report.tsx)
+ *                                        → server: modules/insights/insights.controller.ts → InsightsService.coach()
+ *   GET /learn/path                    ← useLearnPath() ở lib/hooks.ts (← chính trang này)
+ *                                        → server: modules/learn/learn.controller.ts → LearnService.path()
+ *   GET /levels                        ← useLevels() ở lib/hooks.ts (← chính trang này)
+ *                                        → server: modules/vocabulary/vocabulary.controller.ts →
+ *                                          HskLevelsService.list()
+ *   GET /payments/configured           ← usePaymentsConfigured() ở lib/payments.ts (← components/premium-modal.tsx)
+ *                                        → server: modules/payments/payments.controller.ts →
+ *                                          PaymentsService.isConfigured()
+ *   GET /payments/orders/:orderCode    ← getOrderStatus() ở lib/payments.ts
+ *                                        → server: modules/payments/payments.controller.ts →
+ *                                          PaymentsService.getOrderStatus()
+ *   POST /payments/premium-checkout    ← createPremiumCheckout() ở lib/payments.ts (← components/premium-modal.tsx)
+ *                                        → server: modules/payments/payments.controller.ts →
+ *                                          PaymentsService.createPremiumCheckout()
+ *   GET /premium/status                ← usePremiumStatus() ở lib/premium.ts (←
+ *                                        components/insights/period-report.tsx, components/premium-modal.tsx)
+ *                                        → server: modules/premium/premium.controller.ts → PremiumService.getStatus()
+ *   GET /progress/overview             ← useProgress() ở lib/hooks.ts (← chính trang này)
+ *                                        → server: modules/progress/progress.controller.ts →
+ *                                          ProgressService.overview()
+ *   GET /quiz/recent                   ← useRecentQuizzes() ở lib/hooks.ts (← chính trang này)
+ *                                        → server: modules/gamification/gamification.controller.ts →
+ *                                          QuizService.recent()
+ *   GET /streak/history                ← useStreakHistory() ở lib/hooks.ts (← components/activity-calendar.tsx)
+ *                                        → server: modules/gamification/gamification.controller.ts →
+ *                                          StreakService.history()
+ *   GET /study/leeches                 ← useLeeches() ở lib/hooks.ts (← chính trang này)
+ *                                        → server: modules/srs/srs.controller.ts → ReviewService.getLeeches()
+ *   GET /study/suspended               ← useSuspendedWords() ở lib/hooks.ts (← chính trang này)
+ *                                        → server: modules/srs/srs.controller.ts → ReviewService.getSuspended()
+ *   POST /study/words/:wordId/suspend  ← suspendWord() ở lib/hooks.ts (← chính trang này)
+ *                                        → server: modules/srs/srs.controller.ts → ReviewService.setSuspended()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
+ */
+
 import { useState } from "react";
 import {
   FeatureTour,
@@ -99,9 +145,11 @@ export default function ProgressPage() {
         title="Tiến độ học tập"
         description="Bạn đã học được gì và nên ôn gì tiếp."
       >
+        {/* Nhãn theo số liệu thật: 0 từ đến hạn mà ghi "Tiếp tục ôn tập" là hứa suông (vào chỉ thấy "không có từ cần
+         * ôn"); màn /study luôn có việc — ôn flashcard theo bài đã học. "Học tiếp" nằm ở thẻ gợi ý bên dưới. */}
         <LinkButton href="/study">
           <Icon name="cards" size={17} />
-          Tiếp tục ôn tập
+          {data && data.totals.due > 0 ? `Ôn ${data.totals.due} từ đến hạn` : "Ôn flashcard"}
         </LinkButton>
         {/* Huy hiệu không có mục riêng ở sidebar (xem lib/nav.ts) — cùng trả
          * lời "mình đang ở đâu" với trang này nên gom lối vào tại đây. */}

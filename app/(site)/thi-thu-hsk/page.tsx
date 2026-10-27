@@ -1,4 +1,23 @@
 /**
+ * BẢN ĐỒ TRANG — LUYỆN THI HSK (/thi-thu-hsk) — danh sách đề, lịch sử + phân tích điểm, luyện từng dạng bài
+ * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ *
+ *   GET /mock-exams              ← chính trang này · components/mock-exam/exam-list.tsx
+ *                                  → server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.list()
+ *   GET /mock-exams/analysis/me  ← components/mock-exam/exam-list.tsx
+ *                                  → server: modules/mock-exams/mock-exams.controller.ts →
+ *                                    MockExamsService.analysis()
+ *   GET /mock-exams/attempts/me  ← components/mock-exam/exam-list.tsx
+ *                                  → server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.history()
+ *   GET /mock-exams/practice     ← chính trang này
+ *                                  → server: modules/mock-exams/mock-exams.controller.ts →
+ *                                    MockExamsService.practiceList()
+ *
+ * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
+ */
+
+/**
  * Luyện thi HSK — danh sách đề thi thử đúng cấu trúc đề thật (Hanbeego,
  * HiHSK, XieHanzi đều có; trước đây `/exams` của Hanni chỉ là trắc nghiệm từ
  * vựng). Trang công khai cho SEO ("đề thi thử HSK 1", "cấu trúc đề HSK 1" là
@@ -25,6 +44,7 @@ export const metadata: Metadata = {
 // lại phía client).
 async function fetchExams(): Promise<MockExamMeta[]> {
   try {
+    // API → GET /mock-exams · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.list()
     const res = await fetch(`${API_BASE}/mock-exams`, { next: { revalidate } });
     if (!res.ok) return [];
     return (await res.json()) as MockExamMeta[];
@@ -35,6 +55,7 @@ async function fetchExams(): Promise<MockExamMeta[]> {
 
 async function fetchPracticeSets(): Promise<MockPracticeSetMeta[]> {
   try {
+    // API → GET /mock-exams/practice · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.practiceList()
     const res = await fetch(`${API_BASE}/mock-exams/practice`, { next: { revalidate } });
     if (!res.ok) return [];
     return (await res.json()) as MockPracticeSetMeta[];
@@ -99,7 +120,7 @@ export default async function MockExamHubPage() {
             Đúng cấu trúc đề thật, nộp bài là có điểm và chữa từng câu bằng tiếng Việt.
             <span className="max-sm:hidden">
               {" "}
-              Phần nghe có giọng đọc, phần đọc in pinyin như đề HSK 1–2, HSK 3 có thêm phần viết.
+              Phần nghe có giọng đọc, phần đọc in pinyin như đề HSK 1–2, HSK 3–4 có thêm phần viết.
             </span>
           </p>
           <ul className="mt-4 flex flex-wrap gap-2 text-xs font-semibold sm:mt-5">
