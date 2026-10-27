@@ -3,7 +3,7 @@
 /**
  * BẢN ĐỒ TRANG — ÔN TẬP (/study) — chọn bộ thẻ, buổi ôn flashcard SRS (4 nút đánh giá), quiz cuối buổi
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
- * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: tài liệu tra cứu kỹ thuật (tab Tra cứu).
  *
  *   GET /learn/current                 ← useCurrentLesson() ở lib/hooks.ts (← chính trang này)
  *                                        → server: modules/learn/learn.controller.ts → LearnService.currentLesson()

@@ -3,7 +3,7 @@
 /**
  * BẢN ĐỒ TRANG — PHIÊN HỌC 1 BÀI (/bai-hoc/[id]) — giới thiệu từ → trắc nghiệm → ghép cặp → điền câu → hoàn thành
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
- * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: tài liệu tra cứu kỹ thuật (tab Tra cứu).
  *
  *   POST /learn/lessons/:id/complete  ← components/lesson-session/session-runner.tsx
  *                                       → server: modules/learn/learn.controller.ts → LessonSessionService.complete()

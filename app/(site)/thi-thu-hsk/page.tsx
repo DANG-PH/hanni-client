@@ -1,7 +1,7 @@
 /**
  * BẢN ĐỒ TRANG — LUYỆN THI HSK (/thi-thu-hsk) — danh sách đề, lịch sử + phân tích điểm, luyện từng dạng bài
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
- * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: tài liệu tra cứu kỹ thuật (tab Tra cứu).
  *
  *   GET /mock-exams              ← chính trang này · components/mock-exam/exam-list.tsx
  *                                  → server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.list()

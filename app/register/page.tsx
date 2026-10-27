@@ -3,7 +3,7 @@
 /**
  * BẢN ĐỒ TRANG — ĐĂNG KÝ (/register) — tạo tài khoản; xong thì nạp bài học/đề thi/từ đã làm khi còn là khách
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
- * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: tài liệu tra cứu kỹ thuật (tab Tra cứu).
  *
  *   POST /auth/google                 ← components/google-button.tsx
  *                                       → server: modules/auth/auth.controller.ts → AuthService.loginWithGoogle()

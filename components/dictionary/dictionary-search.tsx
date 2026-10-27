@@ -89,7 +89,7 @@ export function DictionarySearch({
   const suggest = current === "tu-vung";
   const items = suggest && term && result.term === term ? result.items : [];
 
-  // LUỒNG "GÕ CHỮ → RA GỢI Ý" (thầy hay hỏi): mỗi phím gõ đổi `q` → effect này đặt hẹn giờ SUGGEST_DEBOUNCE_MS;
+  // LUỒNG "GÕ CHỮ → RA GỢI Ý" (câu hay được hỏi): mỗi phím gõ đổi `q` → effect này đặt hẹn giờ SUGGEST_DEBOUNCE_MS;
   // gõ tiếp trước khi hết giờ thì hẹn giờ cũ bị huỷ (cleanup bên dưới) → chỉ gọi API khi người dùng NGỪNG gõ.
   // → GET /words?q=…&pageSize=SUGGEST_LIMIT → server: vocabulary.controller.ts listWords() → WordsService.list() →
   //   search(): bảng ~11k từ cache trong RAM → word-search.util.ts prepareQuery() (bỏ dấu, pinyin viết liền) +

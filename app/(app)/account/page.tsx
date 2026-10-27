@@ -3,7 +3,7 @@
 /**
  * BẢN ĐỒ TRANG — TÀI KHOẢN (/account) — ảnh đại diện, Premium, lớp học, mời bạn, đổi mật khẩu, xoá tài khoản
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
- * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: tài liệu tra cứu kỹ thuật (tab Tra cứu).
  *
  *   GET /classrooms/mine             ← useMyClassrooms() ở lib/classrooms.ts (← chính trang này)
  *                                      → server: modules/classrooms/classrooms.controller.ts →

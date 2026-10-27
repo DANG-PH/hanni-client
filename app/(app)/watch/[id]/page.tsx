@@ -3,7 +3,7 @@
 /**
  * BẢN ĐỒ TRANG — XEM VIDEO (/watch/[id]) — phụ đề song ngữ chạy theo video, bấm từ để tra + lưu
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
- * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: tài liệu tra cứu kỹ thuật (tab Tra cứu).
  *
  *   POST /study/add-word        ← addWordToSrs() ở lib/hooks.ts (← chính trang này)
  *                                 → server: modules/srs/srs.controller.ts → ReviewService.addWord()
@@ -86,7 +86,7 @@ const WATCH_TOUR_STEPS: TourStep[] = [
 
 export default function WatchDetailPage() {
   // Khách xem được video + bản chép (2026-10-18); lưu từ, tiến độ cần tài khoản. Thích + bình luận đã ẩn
-  // (2026-10-19 — mục bình luận trống, gọn trang trước buổi thuyết trình; code + dữ liệu giữ nguyên).
+  // (2026-10-19 — mục bình luận trống, gọn trang; code + dữ liệu giữ nguyên).
   const { user, loading } = useAuth();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, error } = useVideo(id);

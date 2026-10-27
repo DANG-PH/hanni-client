@@ -2,7 +2,7 @@
  * BẢN ĐỒ TRANG — TỪ ĐIỂN (/tu-dien) — trang chủ tra cứu; ?q= kết quả 4 tab (Từ vựng · Hán tự · Ví dụ · Ngữ pháp);
  *   ?level= danh sách
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
- * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: tài liệu tra cứu kỹ thuật (tab Tra cứu).
  *
  *   POST /ai/analyze          ← analyzeText() ở lib/ai-tools.ts (← components/ai/sentence-analysis.tsx)
  *                               → server: modules/ai-tools/ai-tools.controller.ts → AiToolsService.analyze()

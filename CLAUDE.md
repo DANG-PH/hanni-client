@@ -285,7 +285,7 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
       (SWR + socket.io-client) · time.ts (timeAgo) · types.ts
 ```
 
-## Bản đồ giao diện → API (2026-10-27 — thầy chỉ vào giao diện là tìm ra code)
+## Bản đồ giao diện → API (2026-10-27 — chỉ vào giao diện là tìm ra code)
 - **Khối `BẢN ĐỒ TRANG`** đầu MỖI `page.tsx` / `layout.tsx` (+ `sitemap.ts`): trang làm gì, gọi API nào (← component/hook nào gây ra
   lời gọi), code server ở đâu (→ controller · Service.method()). Khung app (sidebar, chuông, trợ lý AI) liệt kê ở `app/(app)/layout.tsx`.
 - **`API → METHOD /path · server: …`** trong JSDoc mỗi hàm `lib/*.ts` có gọi API, và dòng `// API → …` ngay trên mỗi chỗ component/trang
@@ -310,7 +310,7 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
   Hết 10 lượt hỏi mà vẫn PENDING: báo job đối soát 5 phút sẽ tự cộng.
 - Kiểm tra: popup với API giả (390/1440, 0 tràn, 0 lỗi); trọn luồng MoMo sandbox trên production bằng thẻ ATM test.
 - Bộ sinh khối BẢN ĐỒ TRANG sửa để chỉ tính hàm lib khi file có `import` thật — 7 trang từng ghi nhầm (`/progress` không gọi `/learn/path`,
-  `/levels`; bài đọc, chuông thông báo…). Nguồn bộ sinh + sổ tay: `../tai-lieu/.nguon/so-tay/`.
+  `/levels`; bài đọc, chuông thông báo…). Nguồn bộ sinh + tài liệu tra cứu kỹ thuật: `~/Hanni-tra-cuu/` (ngoài mọi repo).
 
 ## Convention
 - Mọi request qua `lib/api.ts` (`api.get/post/patch`) — `credentials: "include"`, tự refresh 401 một lần.

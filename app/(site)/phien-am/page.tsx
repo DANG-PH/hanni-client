@@ -1,7 +1,7 @@
 /**
  * BẢN ĐỒ TRANG — BẢNG PHIÊN ÂM (/phien-am) — thanh điệu, thanh mẫu/vận mẫu, bảng ghép âm bấm nghe, luyện nghe thanh
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
- * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: sổ tay thuyết trình (tab Tra cứu).
+ * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: tài liệu tra cứu kỹ thuật (tab Tra cứu).
  *
  *   GET /pinyin/overview  ← chính trang này · components/pinyin/use-pinyin.ts
  *                           → server: modules/pinyin/pinyin.controller.ts → PinyinService.overview()
