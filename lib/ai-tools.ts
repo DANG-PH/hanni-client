@@ -1,17 +1,9 @@
 "use client";
 
-import useSWR from "swr";
-import { api, apiFetch } from "./api";
+import { api } from "./api";
 
 /** Tiện ích AI trong luồng học — mẹo nhớ, chấm câu, phân tích câu (xem
  * `hanni-server/CLAUDE.md` mục "Tiện ích AI"). Chung 1 hạn mức/ngày. */
-
-export interface AiUsage {
-  used: number;
-  limit: number;
-  premium: boolean;
-  enabled: boolean;
-}
 
 export interface SentenceCheckResult {
   score: number;
@@ -47,20 +39,23 @@ export interface AnalysisResult {
   cached: boolean;
 }
 
-const fetcher = <T>(path: string) => apiFetch<T>(path);
-
-export function useAiUsage(enabled: boolean) {
-  return useSWR<AiUsage>(enabled ? "/ai/usage" : null, fetcher);
-}
-
+/**
+ * API → POST /ai/mnemonic/:wordId · server: modules/ai-tools/ai-tools.controller.ts → AiToolsService.mnemonic()
+ */
 export function generateMnemonic(wordId: string) {
   return api.post<{ mnemonicVi: string; cached: boolean }>(`/ai/mnemonic/${wordId}`);
 }
 
+/**
+ * API → POST /ai/sentence-check · server: modules/ai-tools/ai-tools.controller.ts → AiToolsService.checkSentence()
+ */
 export function checkSentence(wordId: string, sentence: string) {
   return api.post<SentenceCheckResult>("/ai/sentence-check", { wordId, sentence });
 }
 
+/**
+ * API → POST /ai/analyze · server: modules/ai-tools/ai-tools.controller.ts → AiToolsService.analyze()
+ */
 export function analyzeText(text: string) {
   return api.post<AnalysisResult>("/ai/analyze", { text });
 }

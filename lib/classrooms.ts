@@ -103,16 +103,25 @@ export type ClassDetail =
 
 const fetcher = <T>(path: string) => apiFetch<T>(path);
 
+/**
+ * API → GET /classrooms/mine · server: modules/classrooms/classrooms.controller.ts → ClassroomsService.mine()
+ */
 export function useMyClassrooms() {
   const { user } = useAuth();
   return useSWR<{ owned: OwnedClass[]; joined: JoinedClass[] }>(user ? "/classrooms/mine" : null, fetcher);
 }
 
+/**
+ * API → GET /classrooms/:id · server: modules/classrooms/classrooms.controller.ts → ClassroomsService.detail()
+ */
 export function useClassroom(id: string | null) {
   return useSWR<ClassDetail>(id ? `/classrooms/${id}` : null, fetcher);
 }
 
-/** Khách cũng xem được (trang `/lop/[mã]`). */
+/**
+ * Khách cũng xem được (trang `/lop/[mã]`).
+ * API → GET /classrooms/code/:code · server: modules/classrooms/classrooms.controller.ts → ClassroomsService.preview()
+ */
 export function useClassPreview(code: string | null) {
   const { user, loading } = useAuth();
   return useSWR<ClassPreview>(code && !loading ? [`/classrooms/code/${encodeURIComponent(code)}`, user?.id ?? "khach"] : null, ([path]: [string]) =>
@@ -120,7 +129,10 @@ export function useClassPreview(code: string | null) {
   );
 }
 
-/** Bài giao chưa làm ở mọi lớp — thẻ "Bài tập của lớp" ở trang chủ. */
+/**
+ * Bài giao chưa làm ở mọi lớp — thẻ "Bài tập của lớp" ở trang chủ.
+ * API → GET /classrooms/assignments/me · server: modules/classrooms/classrooms.controller.ts → ClassroomsService.myAssignments()
+ */
 export function useMyAssignments() {
   const { user } = useAuth();
   return useSWR<PendingAssignment[]>(user ? "/classrooms/assignments/me" : null, fetcher);
@@ -132,38 +144,51 @@ function refreshAll(id?: string) {
   if (id) void mutate(`/classrooms/${id}`);
 }
 
+/**
+ * API → POST /classrooms · server: modules/classrooms/classrooms.controller.ts → ClassroomsService.create()
+ */
 export async function createClassroom(input: { name: string; hskLevel?: number }) {
   const created = await api.post<{ id: string; name: string; code: string; hskLevel: number | null }>("/classrooms", input);
   refreshAll();
   return created;
 }
 
+/**
+ * API → POST /classrooms/code/:code/join · server: modules/classrooms/classrooms.controller.ts → ClassroomsService.join()
+ */
 export async function joinClassroom(code: string) {
   const r = await api.post<{ id: string }>(`/classrooms/code/${encodeURIComponent(code)}/join`);
   refreshAll(r.id);
   return r;
 }
 
+/**
+ * API → POST /classrooms/:id/leave · server: modules/classrooms/classrooms.controller.ts → ClassroomsService.leave()
+ */
 export async function leaveClassroom(id: string) {
   await api.post(`/classrooms/${id}/leave`);
   refreshAll();
 }
 
+/**
+ * API → DELETE /classrooms/:id · server: modules/classrooms/classrooms.controller.ts → ClassroomsService.remove()
+ */
 export async function deleteClassroom(id: string) {
   await api.del(`/classrooms/${id}`);
   refreshAll();
 }
 
-export async function renameClassroom(id: string, input: { name?: string; hskLevel?: number }) {
-  await api.patch(`/classrooms/${id}`, input);
-  refreshAll(id);
-}
-
+/**
+ * API → DELETE /classrooms/:id/members/:userId · server: modules/classrooms/classrooms.controller.ts → ClassroomsService.removeMember()
+ */
 export async function removeMember(id: string, userId: string) {
   await api.del(`/classrooms/${id}/members/${userId}`);
   refreshAll(id);
 }
 
+/**
+ * API → POST /classrooms/:id/assignments · server: modules/classrooms/classrooms.controller.ts → ClassroomsService.addAssignment()
+ */
 export async function addAssignment(
   id: string,
   input: { kind: "LESSON"; lessonId: string; dueAt?: string } | { kind: "MOCK_EXAM"; examSlug: string; dueAt?: string },
@@ -172,6 +197,9 @@ export async function addAssignment(
   refreshAll(id);
 }
 
+/**
+ * API → DELETE /classrooms/:id/assignments/:assignmentId · server: modules/classrooms/classrooms.controller.ts → ClassroomsService.removeAssignment()
+ */
 export async function removeAssignment(id: string, assignmentId: string) {
   await api.del(`/classrooms/${id}/assignments/${assignmentId}`);
   refreshAll(id);
