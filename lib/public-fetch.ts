@@ -18,7 +18,7 @@ import { API_BASE } from "./api";
  * tiếp của bot sẽ dựng lại trang đúng.
  *
  * CHỈ dùng cho trang render theo yêu cầu (dynamic). Trang prerender lúc build
- * (`/hoc-thu`, `/hsk`, `/tu-da-biet`, `sitemap`) vẫn phải tự nuốt lỗi, nếu
+ * (`/hsk`, `/tu-da-biet`, `sitemap`) vẫn phải tự nuốt lỗi, nếu
  * không API chưa chạy là sập cả bản build.
  */
 export async function fetchPublic<T>(

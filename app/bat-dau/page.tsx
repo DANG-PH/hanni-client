@@ -42,7 +42,7 @@ function Start() {
     // API → GET /learn/start · server: modules/learn/learn.controller.ts → LearnService.firstLesson()
     apiFetch<{ id: string }>(`/learn/start?level=${level}`)
       .then((l) => router.replace(`/bai-hoc/${l.id}`))
-      .catch(() => router.replace("/hoc-thu"));
+      .catch(() => router.replace("/learn")); // không mở được bài 1 → lộ trình (khách vẫn xem + chọn bài được)
   }, [loading, user, level, params, router]);
 
   return <StudyLoader variant="startup" label="Đang mở bài học đầu tiên…" />;

@@ -198,7 +198,7 @@ export default function Home() {
                   <Link
                     key={q}
                     href={`/tu-dien?q=${encodeURIComponent(q)}`}
-                    className="rounded-lg bg-surface-2 px-2.5 py-1 text-xs text-muted hover:text-primary"
+                    className="inline-flex min-h-8 items-center rounded-lg bg-surface-2 px-2.5 text-xs text-muted hover:text-primary"
                   >
                     {q}
                   </Link>

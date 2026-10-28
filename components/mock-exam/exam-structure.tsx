@@ -79,7 +79,7 @@ export function ExamStructure() {
               role="tab"
               aria-selected={s.level === level}
               onClick={() => setLevel(s.level)}
-              className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+              className={`min-h-8 rounded-full px-3 text-xs font-semibold ${
                 s.level === level ? "chip-on" : "bg-surface-2 text-muted hover:text-foreground"
               }`}
             >

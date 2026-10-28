@@ -19,10 +19,9 @@ import {
 import { drainPendingWords } from "@/lib/pending-words";
 import type { SubmitOnboardingInput } from "@/lib/types";
 
-/** Đưa các từ vừa học ở `/hoc-thu` vào hàng đợi ôn của tài khoản mới.
+/** Đưa các từ khách đã bấm "Lưu để ôn tập" (video, chữa bài thi thử…) vào hàng đợi ôn của tài khoản mới.
  *
- * Màn kết học thử có nút "Lưu N từ này vào tài khoản" — trước 2026-09-22
- * đăng ký xong CHẲNG có gì được lưu, N từ đó biến mất. Chạy song song và
+ * Trước 2026-09-22 đăng ký xong CHẲNG có gì được lưu, các từ đó biến mất. Chạy song song và
  * nuốt lỗi từng từ: không được để việc phụ này chặn đường vào app ngay
  * sau khi người ta vừa quyết định đăng ký. `addWordToSrs` vốn idempotent
  * nên gọi trùng cũng vô hại.
@@ -187,7 +186,7 @@ export function AuthFormCard({
       manualRedirect.current = true;
       await refresh();
       const saved = await saveGuestProgress();
-      // Đã học thử (bài học hoặc 8 từ ở /hoc-thu) là đã thể hiện rõ ý định
+      // Đã học thử (bài học hoặc đã lưu từ) là đã thể hiện rõ ý định
       // học — bắt đi qua khảo sát 3 bước nữa trước khi chạm được vào chính
       // tiến độ của mình là thêm ma sát đúng khoảnh khắc ý định mạnh nhất.
       // Vào thẳng lộ trình; chỉ người đăng ký "tay trắng" mới qua khảo sát
@@ -282,7 +281,7 @@ export function AuthFormCard({
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-xs font-medium text-primary hover:underline underline-offset-4"
+                  className="inline-flex min-h-8 items-center text-xs font-medium text-primary hover:underline underline-offset-4"
                 >
                   Quên mật khẩu?
                 </Link>
@@ -335,7 +334,7 @@ export function AuthFormCard({
             <button
               type="button"
               onClick={() => switchMode("register")}
-              className="font-semibold text-primary underline-offset-4 hover:underline cursor-pointer"
+              className="inline-flex min-h-8 items-center font-semibold text-primary underline-offset-4 hover:underline cursor-pointer"
             >
               Đăng ký ngay
             </button>
@@ -476,7 +475,7 @@ export function AuthFormCard({
             <button
               type="button"
               onClick={() => switchMode("login")}
-              className="font-semibold text-primary underline-offset-4 hover:underline cursor-pointer"
+              className="inline-flex min-h-8 items-center font-semibold text-primary underline-offset-4 hover:underline cursor-pointer"
             >
               Đăng nhập
             </button>

@@ -89,7 +89,7 @@ export function HanVietTips() {
       </div>
       <p className="mt-2 min-h-[4.5rem] text-sm leading-6 text-muted">{tip.body}</p>
       <div className="mt-3 flex items-center justify-between">
-        <Link href={tip.href} className="text-xs font-semibold text-primary hover:underline">
+        <Link href={tip.href} className="inline-flex min-h-8 items-center text-xs font-semibold text-primary hover:underline">
           {tip.cta} →
         </Link>
         <div className="flex gap-1.5">

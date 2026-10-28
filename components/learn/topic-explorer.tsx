@@ -243,7 +243,7 @@ function LessonWords({ lesson, part, variant }: { lesson: LessonNode; part: stri
         : "Học bài này";
   return (
     <div className="border-t border-border/70 px-3 pt-3.5 pb-4 sm:px-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
         <h4 className="text-sm font-bold">
           Từ vựng bài {lesson.orderIndex}
           {part ? ` · phần ${part}` : ""}
@@ -251,7 +251,7 @@ function LessonWords({ lesson, part, variant }: { lesson: LessonNode; part: stri
         </h4>
         <Link
           href={lessonHref(lesson, variant)}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+          className="inline-flex min-h-8 items-center gap-1 text-xs font-semibold text-primary hover:underline"
         >
           {cta} <Icon name="arrow" size={13} />
         </Link>
@@ -301,7 +301,7 @@ function LessonWords({ lesson, part, variant }: { lesson: LessonNode; part: stri
             )}
             <Link
               href={`/learn/${lesson.id}`}
-              className="ml-auto inline-flex items-center gap-1 font-semibold text-muted hover:text-primary"
+              className="ml-auto inline-flex min-h-8 items-center gap-1 font-semibold text-muted hover:text-primary"
             >
               Xem câu ví dụ <Icon name="arrow" size={12} />
             </Link>

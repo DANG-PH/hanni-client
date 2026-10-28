@@ -305,6 +305,19 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
 - `/settings` bỏ ô **"Số từ mới mỗi ngày"** (không điều khiển gì — từ mới chỉ đến từ bài học); `/account` bỏ dòng "Thêm N từ mới mỗi
   ngày". Kiểu `UserSettings`, `HskLevel`, `StudyStats`, `StudyQueue`, `PaymentOrder` gọt theo cột đã xoá; bỏ 3 kiểu không ai dùng.
 - Chữ người dùng thấy không còn thuật ngữ: "Thiếu token…" → hướng dẫn mở lại liên kết; trang giới thiệu bỏ "SM-2/FSRS".
+- **Đợt 2 cùng ngày**: gỡ **danh hiệu** (`components/title-shop.tsx`, `lib/shop.ts`, bộ chọn ở `/achievements`, nhãn ở bảng xếp hạng +
+  `/u/[id]`); gỡ trang **`/hoc-thu`** (bộ thẻ học thử 8 từ, trùng học thử bài 1) — `/hoc-thu` → 308 `/bat-dau`, `/bat-dau` lỗi thì về
+  `/learn`; `lib/pending-words.ts` giữ (từ khách lưu ở video/chữa bài); bảng xếp hạng bỏ `useLeaderboardMetrics` (dùng thẳng
+  `LEADERBOARD_METRICS`, kiểu chỉ còn `"streak" | "lessons"`).
+- **MoMo "Sắp ra mắt"** (`premium-modal.tsx` `isOpen()`): bước 2 LUÔN hiện 2 cách — "Quét mã QR ngân hàng" (payOS) và "Ví MoMo · thẻ ATM ·
+  thẻ Visa"; MoMo chưa mở (`configured.momo` false — production chưa có khoá thật) thì khung nét đứt + nhãn "Sắp ra mắt" + `disabled`,
+  kèm lời "Có ví MoMo? Chọn quét mã QR rồi quét bằng app MoMo". Nút trả tiền ghi "Thanh toán" (bản "Thanh toán bằng mã QR" gãy 2 dòng ở
+  360px); bước 1 ghi "Mã có hiệu lực 15 phút" (khớp hạn link payOS ở server).
+- **Vùng chạm trên điện thoại**: quét 25 trang ở 360px (Pixel 5, cảm ứng) — 0 tràn ngang, 0 phần tử bị cắt, 0 chữ < 12px, 0 lỗi JS; mọi
+  link/nút đứng riêng < 24px (Quên mật khẩu, Đăng ký ngay, Học cả bài →, Xem bảng phiên âm, Học bài này, Xem câu ví dụ, Tạo tài khoản ở
+  dải khách, tên ở bảng xếp hạng, Đăng nhập ở thi thử) nới lên ≥ 32px (`inline-flex min-h-8 items-center`; lời mời chính `min-h-11`), tab
+  cấp ở cấu trúc đề + mục lục trang từ/bảng phiên âm + chip từ khoá trang chủ ≥ 32px. Còn 24–31px (đạt WCAG 2.2 AA): chân trang 28px,
+  nút nghe ở bảng ghép âm 28px.
 
 ## Thanh toán: chọn cổng + quay về (2026-10-27)
 - Popup Premium bước 2 có ô **"Cách thanh toán"** khi server bật ≥ 2 cổng (`GET /payments/configured` → `{configured, payos, momo,
@@ -313,7 +326,7 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
 - `premium-section.tsx` `readReturn()`: mã đơn lấy bằng `parseInt` (cổng nối thêm tham số của họ — MoMo nối bằng `&` đã thử thật), huỷ =
   `cancelled=1` / payOS `cancel=true` / MoMo `resultCode=1006`, MoMo lỗi khác báo "chưa bị trừ tiền"; tham số URL KHÔNG có chữ ký nên chỉ
   để hiện lời nhắn — Premium chỉ cộng ở server. Từ 28/10 production KHÔNG hiện MoMo khoá thử (server ẩn); `momoSandbox` chỉ còn
-  đúng khi chạy local → hiện thẻ ATM thử. Chữ thân thiện: lựa chọn "Quét mã QR ngân hàng" / nút "Thanh toán bằng mã QR" — không
+  đúng khi chạy local → hiện thẻ ATM thử. Chữ thân thiện: lựa chọn "Quét mã QR ngân hàng" / nút "Thanh toán" — không
   bắt người dùng biết payOS/VietQR là gì (payOS chỉ nhắc 1 lần ở câu hỏi thường gặp, "đối tác thanh toán").
   Hết 10 lượt hỏi mà vẫn PENDING: báo job đối soát 5 phút sẽ tự cộng.
 - Kiểm tra: popup với API giả (390/1440, 0 tràn, 0 lỗi); trọn luồng MoMo sandbox trên production bằng thẻ ATM test.

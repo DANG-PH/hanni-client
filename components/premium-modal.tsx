@@ -32,8 +32,8 @@ const FAQ: { q: string; a: string }[] = [
 /** Cách thanh toán của từng cổng — hiện ở bước xác nhận. */
 const PAY_STEPS: Record<PaymentProvider, string[]> = {
   payos: [
-    "Bấm “Thanh toán bằng mã QR” — trang thanh toán hiện mã QR với số tiền đã điền sẵn.",
-    "Mở app ngân hàng bất kỳ (hoặc app MoMo), quét mã và xác nhận chuyển khoản.",
+    "Bấm “Thanh toán” — trang thanh toán hiện mã QR với số tiền đã điền sẵn.",
+    "Mở app ngân hàng bất kỳ (hoặc app MoMo), quét mã và xác nhận chuyển khoản. Mã có hiệu lực 15 phút.",
     "Xong là Premium tự kích hoạt, trang tự quay về Hanni.",
   ],
   momo: [
@@ -90,13 +90,12 @@ export function PremiumModal({
 
   const selected = plans.find((p) => p.key === selectedKey) ?? null;
   const ready = configured.data?.configured === true;
-  // Server cũ chỉ trả { configured } (= payOS). Chỉ hiện cổng đã cấu hình; chỉ 1 cổng thì không cần ô chọn.
-  const providers: PaymentProvider[] = ready
-    ? (["payos", "momo"] as const).filter((p) => configured.data?.[p] ?? p === "payos")
-    : [];
-  const provider = providers.includes(picked) ? picked : (providers[0] ?? "payos");
+  // Cổng đang nhận tiền thật. Server cũ chỉ trả { configured } (= payOS). MoMo chưa có khoá thật thì vẫn hiện nhưng khoá
+  // lại với nhãn "Sắp ra mắt" — người dùng biết sắp có, và biết hiện tại quét mã QR bằng app MoMo vẫn trả được.
+  const isOpen = (p: PaymentProvider) => (p === "payos" ? (configured.data?.payos ?? ready) : configured.data?.momo === true);
+  const provider = isOpen(picked) ? picked : "payos";
   const momoSandbox = configured.data?.momoSandbox === true;
-  const payLabel = provider === "momo" ? "Thanh toán qua MoMo" : "Thanh toán bằng mã QR";
+  const payLabel = provider === "momo" ? "Thanh toán qua MoMo" : "Thanh toán";
 
   useEffect(() => {
     panel.current?.focus();
@@ -309,49 +308,58 @@ export function PremiumModal({
                     </div>
                   </div>
 
-                  {providers.length > 1 && (
-                    <section aria-labelledby="pay-method" className="mt-6">
-                      <h3 id="pay-method" className="text-sm font-semibold">Cách thanh toán</h3>
-                      <div role="radiogroup" aria-labelledby="pay-method" className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                        {providers.map((p) => {
-                          const on = p === provider;
-                          return (
-                            <button
-                              key={p}
-                              type="button"
-                              role="radio"
-                              aria-checked={on}
-                              onClick={() => setPicked(p)}
-                              className={`flex items-start gap-3 rounded-2xl border-2 p-3.5 text-left transition-colors ${
-                                on ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"
+                  <section aria-labelledby="pay-method" className="mt-6">
+                    <h3 id="pay-method" className="text-sm font-semibold">Cách thanh toán</h3>
+                    <div role="radiogroup" aria-labelledby="pay-method" className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                      {(["payos", "momo"] as const).map((p) => {
+                        const open = isOpen(p);
+                        const on = open && p === provider;
+                        return (
+                          <button
+                            key={p}
+                            type="button"
+                            role="radio"
+                            aria-checked={on}
+                            disabled={!open}
+                            onClick={() => setPicked(p)}
+                            className={`flex min-h-[64px] items-start gap-3 rounded-2xl border-2 p-3.5 text-left transition-colors ${
+                              on
+                                ? "border-accent bg-accent/5"
+                                : open
+                                  ? "border-border hover:border-accent/40"
+                                  : "cursor-not-allowed border-dashed border-border bg-surface-2/50"
+                            }`}
+                          >
+                            <span
+                              className={`mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border-2 ${
+                                on ? "border-accent bg-accent text-white" : "border-border"
                               }`}
                             >
-                              <span
-                                className={`mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border-2 ${
-                                  on ? "border-accent bg-accent text-white" : "border-border"
-                                }`}
-                              >
-                                {on && <Icon name="check" size={11} />}
+                              {on && <Icon name="check" size={11} />}
+                            </span>
+                            <span className="min-w-0">
+                              <span className={`flex flex-wrap items-center gap-1.5 text-sm font-semibold ${open ? "" : "text-muted"}`}>
+                                {p === "payos" ? "Quét mã QR ngân hàng" : "Ví MoMo · thẻ ATM · thẻ Visa"}
+                                {!open && (
+                                  <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-bold text-muted">Sắp ra mắt</span>
+                                )}
+                                {open && p === "momo" && momoSandbox && (
+                                  <span className="rounded-full bg-warn/10 px-2 py-0.5 text-xs font-bold text-warn">Thử nghiệm</span>
+                                )}
                               </span>
-                              <span className="min-w-0">
-                                <span className="flex flex-wrap items-center gap-1.5 text-sm font-semibold">
-                                  {p === "payos" ? "Quét mã QR ngân hàng" : "Ví MoMo · thẻ ATM · thẻ Visa"}
-                                  {p === "momo" && momoSandbox && (
-                                    <span className="rounded-full bg-warn/10 px-2 py-0.5 text-xs font-bold text-warn">Thử nghiệm</span>
-                                  )}
-                                </span>
-                                <span className="mt-0.5 block text-xs leading-5 text-muted">
-                                  {p === "payos"
-                                    ? "Dùng app ngân hàng bất kỳ hoặc app MoMo để quét."
-                                    : "Thanh toán trên trang của MoMo."}
-                                </span>
+                              <span className="mt-0.5 block text-xs leading-5 text-muted">
+                                {p === "payos"
+                                  ? "Dùng app ngân hàng bất kỳ hoặc app MoMo để quét."
+                                  : open
+                                    ? "Thanh toán trên trang của MoMo."
+                                    : "Đang hoàn thiện. Có ví MoMo? Chọn quét mã QR rồi quét bằng app MoMo."}
                               </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </section>
-                  )}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </section>
 
                   <h3 className="mt-6 text-sm font-semibold">Thanh toán thế nào?</h3>
                   <ol className="mt-3 space-y-3">

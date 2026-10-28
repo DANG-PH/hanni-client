@@ -55,7 +55,7 @@ function GuestNote() {
         <span className="min-w-0 flex-1">
           Bạn đang luyện thử — kết quả chưa được lưu. Tạo tài khoản miễn phí để Hanni ghi lại từ bạn hay sai và nhắc ôn đúng lúc.
         </span>
-        <Link href="/register?next=/learn" className="shrink-0 font-semibold text-primary hover:underline">
+        <Link href="/register?next=/learn" className="inline-flex min-h-11 shrink-0 items-center font-semibold text-primary hover:underline">
           Tạo tài khoản
         </Link>
       </p>

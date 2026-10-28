@@ -9,7 +9,7 @@ import { HOME_PATH } from "@/lib/auth-redirect";
 
 /**
  * Khung cho các trang CÔNG KHAI (`(site)`): `/tu-dien`, `/ngu-phap`,
- * `/hoc-thu`, `/tu-da-biet`, `/hsk`…
+ * `/tu-da-biet`, `/hsk`…
  *
  * Lý do tồn tại: những trang này vừa là trang SEO cho người lạ, vừa là trang
  * tra cứu hằng ngày của người ĐÃ đăng nhập (sidebar có mục "Từ điển" và "Ngữ

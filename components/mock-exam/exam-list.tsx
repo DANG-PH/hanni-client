@@ -102,7 +102,7 @@ export function MockExamList({
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <Link href={`/thi-thu-hsk/${e.slug}`} className="font-bold hover:text-primary">
+                  <Link href={`/thi-thu-hsk/${e.slug}`} className="inline-flex min-h-8 items-center font-bold hover:text-primary">
                     {e.title}
                   </Link>
                   {doing ? (
@@ -292,7 +292,7 @@ export function MockExamInsights({ exams: initial }: { exams: MockExamMeta[] }) 
         </p>
         <Link
           href="/login?next=/thi-thu-hsk"
-          className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+          className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary hover:underline"
         >
           Đăng nhập <Icon name="arrow" size={14} />
         </Link>

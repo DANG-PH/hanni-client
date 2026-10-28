@@ -263,16 +263,11 @@ export function LeaderboardRankings({ board }: { board: Leaderboard }) {
                   <div className="min-w-0">
                     <Link
                       href={`/u/${row.userId}`}
-                      className="flex flex-wrap items-center gap-x-2 gap-y-0.5 hover:underline"
+                      className="flex min-h-8 flex-wrap items-center gap-x-2 gap-y-0.5 hover:underline"
                     >
                       <span className="break-words text-sm font-semibold [overflow-wrap:anywhere]">
                         {row.displayName}
                       </span>
-                      {row.title && (
-                        <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-xs font-semibold text-accent">
-                          {row.title}
-                        </span>
-                      )}
                       {row.isMe && (
                         <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary">
                           Bạn

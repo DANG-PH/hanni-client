@@ -110,7 +110,7 @@ export default async function PinyinPage() {
         </ul>
         <nav aria-label="Mục lục" className="mt-5 flex flex-wrap gap-2">
           {SECTIONS.map(([id, label]) => (
-            <a key={id} href={`#${id}`} className="rounded-full bg-surface px-3 py-1.5 text-xs font-semibold text-muted hover:text-primary">
+            <a key={id} href={`#${id}`} className="inline-flex min-h-9 items-center rounded-full bg-surface px-3 text-xs font-semibold text-muted hover:text-primary">
               {label}
             </a>
           ))}

@@ -7,10 +7,6 @@
  *
  *   GET /achievements        ← useAchievements() ở lib/hooks.ts (← chính trang này)
  *                              → server: modules/gamification/gamification.controller.ts → AchievementsService.list()
- *   GET /shop/titles         ← useTitleShop() ở lib/shop.ts (← components/title-shop.tsx)
- *                              → server: modules/shop/shop.controller.ts → TitleService.getCatalog()
- *   POST /shop/titles/equip  ← equipTitle() ở lib/shop.ts (← components/title-shop.tsx)
- *                              → server: modules/shop/shop.controller.ts → TitleService.equip()
  *
  * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
  */
@@ -22,11 +18,9 @@ import {
   LinkButton,
   PageHeading,
   ProgressBar,
-  SectionHeading,
   Spinner,
 } from "@/components/ui";
 import { Icon, type IconName } from "@/components/icon";
-import { TitlePicker } from "@/components/title-shop";
 import { ShareButton } from "@/components/share-button";
 import { useRequireAuth } from "@/lib/auth";
 import { useAchievements } from "@/lib/hooks";
@@ -120,7 +114,7 @@ export default function AchievementsPage() {
         tone="accent"
         eyebrow="Những cột mốc của bạn"
         title="Bộ sưu tập huy hiệu"
-        description="Đạt mốc là mở huy hiệu — mỗi huy hiệu mở thêm một danh hiệu."
+        description="Mỗi mốc học thật — chuỗi ngày, số lượt ôn, số từ, xong cấp — mở một huy hiệu."
       >
         <LinkButton href="/learn" variant="secondary">
           Tiếp tục học <Icon name="arrow" size={16} />
@@ -252,16 +246,6 @@ export default function AchievementsPage() {
                   </LinkButton>
                 </EmptyState>
               )}
-              {/* Danh hiệu xuống dưới lưới huy chương — trước đó 9 dòng danh hiệu đẩy huy chương khỏi màn đầu. */}
-              <section className="space-y-4">
-                <SectionHeading
-                  icon="trophy"
-                  tone="accent"
-                  title="Danh hiệu"
-                  description="Mỗi danh hiệu mở khi bạn đạt một huy hiệu ở trên — học thật mới có, không mua bằng xu."
-                />
-                <TitlePicker />
-              </section>
             </>
           ) : (
             <EmptyState

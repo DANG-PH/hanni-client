@@ -123,8 +123,8 @@ export default function NguonDuLieuPage() {
           tra từ điển
         </Link>{" "}
         ·{" "}
-        <Link href="/hoc-thu" className="text-primary hover:underline">
-          học thử 8 từ
+        <Link href="/bat-dau" className="text-primary hover:underline">
+          học thử bài đầu tiên
         </Link>
       </p>
     </div>

@@ -1,14 +1,7 @@
 /**
- * Giữ tạm danh sách từ người dùng học ở bộ thẻ "học thử" (`/hoc-thu`) để
- * sau khi đăng ký thì đưa thẳng vào hàng đợi ôn.
- *
- * Lý do có: màn kết học thử có nút "Lưu N từ này vào tài khoản" — nhưng
- * trước 2026-09-22 đăng ký xong CHẲNG có gì được lưu cả, N từ vừa học biến
- * mất. Đó là lời hứa bị gãy ngay tại khoảnh khắc quan trọng nhất của cả
- * phễu: đúng lúc người lạ quyết định tạo tài khoản.
- *
- * Dùng `sessionStorage` y như `hanni:pending-onboarding` (khảo sát làm
- * trước khi có tài khoản) — cùng một bài toán, giữ cùng một cách.
+ * Giữ tạm các từ KHÁCH bấm "Lưu để ôn tập" (từ trong video, chữa bài thi thử, quét ảnh…) để đăng ký/đăng nhập xong
+ * đưa thẳng vào hàng đợi ôn (`auth-form-card.tsx` → `drainPendingWords()`). `sessionStorage` y như khảo sát làm trước
+ * khi có tài khoản — cùng một bài toán, cùng một cách. Tên khoá giữ nguyên để từ đã lưu tạm không mất khi cập nhật.
  */
 const KEY = "hanni:pending-trial-words";
 

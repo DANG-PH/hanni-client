@@ -20,7 +20,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: [
         "/",
         "/tu-dien",
-        "/hoc-thu",
         "/tu-da-biet",
         "/hsk",
         "/ngu-phap",

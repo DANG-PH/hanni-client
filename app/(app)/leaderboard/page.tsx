@@ -9,9 +9,6 @@
  *                               → server: modules/leaderboard/leaderboard.controller.ts → LeaderboardService.top()
  *   GET /leaderboard/league   ← useWeeklyLeague() ở lib/hooks.ts (← components/weekly-league-card.tsx)
  *                               → server: modules/leaderboard/leaderboard.controller.ts → LeagueService.getMyLeague()
- *   GET /leaderboard/metrics  ← useLeaderboardMetrics() ở lib/hooks.ts (← chính trang này)
- *                               → server: modules/leaderboard/leaderboard.controller.ts →
- *                                 LeaderboardService.metrics()
  *
  * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
  */
@@ -39,7 +36,7 @@ import {
 } from "@/components/ui";
 import { WeeklyLeagueCard } from "@/components/weekly-league-card";
 import { useAuth } from "@/lib/auth";
-import { useLeaderboard, useLeaderboardMetrics } from "@/lib/hooks";
+import { useLeaderboard } from "@/lib/hooks";
 import type { LeaderboardMetricKey } from "@/lib/types";
 
 const LEADERBOARD_TOUR_STEPS: TourStep[] = [
@@ -65,17 +62,13 @@ const LEADERBOARD_TOUR_STEPS: TourStep[] = [
 export default function LeaderboardPage() {
   // Khách xem được bảng chung (2026-10-18); hạng của mình cần tài khoản.
   const { user, loading } = useAuth();
-  const metrics = useLeaderboardMetrics();
   // Chỉ còn "Chuỗi hiện tại" (mặc định) + "Bài đã xong" (2026-10-19): "Từ đã thuộc" cần ôn đều ~21 ngày
   // mới tính nên trống với mọi người, "Chuỗi dài nhất" trùng ý "Chuỗi hiện tại" (`LEADERBOARD_METRICS`).
   const [selectedMetric, setMetric] = useState<LeaderboardMetricKey>("streak");
   const [focusedMetric, setFocusedMetric] =
     useState<LeaderboardMetricKey>("streak");
   const tablist = useRef<HTMLDivElement>(null);
-  const availableTabs = metrics.data?.filter((tab) =>
-    LEADERBOARD_METRICS.some((supported) => supported.key === tab.key),
-  );
-  const tabs = availableTabs?.length ? availableTabs : LEADERBOARD_METRICS;
+  const tabs = LEADERBOARD_METRICS;
   const metric = tabs.some((tab) => tab.key === selectedMetric)
     ? selectedMetric
     : tabs[0].key;

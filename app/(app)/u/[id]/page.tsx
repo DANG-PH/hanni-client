@@ -60,11 +60,6 @@ export default function PublicProfilePage() {
             <div>
               <h1 className="flex flex-wrap items-center gap-1.5 text-lg font-bold">
                 {p.displayName}
-                {p.equippedTitle && (
-                  <span className="rounded-full bg-good/10 px-2 py-0.5 text-xs font-bold text-good">
-                    {p.equippedTitle}
-                  </span>
-                )}
                 {p.isPremium && (
                   <span
                     title="Hanni Premium"

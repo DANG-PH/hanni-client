@@ -12,7 +12,6 @@ import type {
   DayActivity,
   CurrentLesson,
   Leaderboard,
-  LeaderboardMetric,
   LeaderboardMetricKey,
   HskLevel,
   LearnPath,
@@ -227,13 +226,6 @@ export function usePublicProfile(userId: string | null) {
  */
 export function useReferralStats() {
   return useSWR<ReferralStats>("/referrals/me", fetcher);
-}
-
-/**
- * API → GET /leaderboard/metrics · server: modules/leaderboard/leaderboard.controller.ts → LeaderboardService.metrics()
- */
-export function useLeaderboardMetrics() {
-  return useSWR<LeaderboardMetric[]>("/leaderboard/metrics", fetcher);
 }
 
 /**
