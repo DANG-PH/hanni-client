@@ -158,7 +158,7 @@ luyện viết") mà lưới không có. **Bẫy khi thêm**: `GOAL_PERSONA[*].o
 href — thiếu cái nào thì `indexOf` trả `-1` và mảng đó bị đẩy lên ĐẦU cho mọi persona.
 `.skillsGrid` đổi 4 → 3 cột để 6 thẻ thành 2 hàng đều (breakpoint nhỏ vốn đã 2 cột / 1 cột).
 
-**Ảnh minh hoạ: dữ liệu có sẵn nhưng luồng học không render (sửa 2026-09-22)****Ảnh minh hoạ: dữ liệu có sẵn nhưng luồng học không render (sửa 2026-09-22)** — user hỏi
+**[LỊCH SỬ — ảnh minh hoạ đã GỠ 2026-10-28] Ảnh minh hoạ: dữ liệu có sẵn nhưng luồng học không render (sửa 2026-09-22)** — user hỏi
 "chưa thấy ảnh trên production, nó ở đâu". Đo: 1.652 từ ĐÃ có ảnh, nhưng chỉ render ở từ điển
 công khai, popup bấm từ trong video, thẻ "Từ vựng hôm nay" và bộ thẻ học thử — đúng 2 chỗ người
 học ngồi lâu nhất (`components/flashcard.tsx`, `/learn/[lessonId]`) thì không có gì. Thêm 2 chỗ
@@ -309,6 +309,9 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
   `/u/[id]`); gỡ trang **`/hoc-thu`** (bộ thẻ học thử 8 từ, trùng học thử bài 1) — `/hoc-thu` → 308 `/bat-dau`, `/bat-dau` lỗi thì về
   `/learn`; `lib/pending-words.ts` giữ (từ khách lưu ở video/chữa bài); bảng xếp hạng bỏ `useLeaderboardMetrics` (dùng thẳng
   `LEADERBOARD_METRICS`, kiểu chỉ còn `"streak" | "lessons"`).
+- **Đợt 3 — gỡ ảnh minh hoạ từ vựng** (khoảng một nửa ảnh tự lấy từ Wikimedia sai nghĩa, xem server "Dọn cơ sở dữ liệu"): thẻ giới thiệu
+  từ (`lesson-session/steps.tsx`), flashcard (+ CSS `.illustration`), `/learn/[lessonId]`, popup từ ở video, "Từ vựng hôm nay", kiểu
+  `imageUrl`; chính sách bảo mật bỏ Wikimedia khỏi danh sách bên thứ ba. Cặp client/server cũ–mới chạy lẫn được (trường tuỳ chọn).
 - **MoMo "Sắp ra mắt"** (`premium-modal.tsx` `isOpen()`): bước 2 LUÔN hiện 2 cách — "Quét mã QR ngân hàng" (payOS) và "Ví MoMo · thẻ ATM ·
   thẻ Visa"; MoMo chưa mở (`configured.momo` false — production chưa có khoá thật) thì khung nét đứt + nhãn "Sắp ra mắt" + `disabled`,
   kèm lời "Có ví MoMo? Chọn quét mã QR rồi quét bằng app MoMo". Nút trả tiền ghi "Thanh toán" (bản "Thanh toán bằng mã QR" gãy 2 dòng ở

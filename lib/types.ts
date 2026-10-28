@@ -48,7 +48,6 @@ export interface Word {
   hanViet: string | null;
   translationStatus: string;
   audioUrl: string | null;
-  imageUrl?: string | null;
   /** mẹo nhớ theo âm Hán Việt do AI viết (tạo 1 lần, dùng chung) */
   mnemonicVi?: string | null;
   lessonId?: string | null;
@@ -276,7 +275,6 @@ export interface WordMatch {
   pinyin: string;
   meaningVi: string | null;
   hskLevel: number;
-  imageUrl: string | null;
 }
 
 export interface LineToken {
@@ -652,7 +650,6 @@ export interface SessionWord {
   meaningVi: string | null;
   meaningEn: string | null;
   audioUrl: string | null;
-  imageUrl: string | null;
   mnemonicVi?: string | null;
   examples: { zh: string; pinyin: string | null; vi: string | null }[];
   toneHints: ToneHint[] | null;

@@ -48,16 +48,6 @@ export function WordOfTheDayCard({ level }: { level?: number }) {
           )}
           <p className={styles.meaning}>{data.meaningVi}</p>
         </div>
-        {data.imageUrl && (
-          // eslint-disable-next-line @next/next/no-img-element -- ảnh Pexels ngoài miền, chưa cần next/image cho tính năng còn đang thử nghiệm
-          <img
-            src={data.imageUrl}
-            // Ảnh Wikimedia tải không kèm cookie — nếu không, trang bị tính "dùng cookie bên thứ ba" (Wikimedia trả CORS *).
-            crossOrigin="anonymous"
-            alt={data.meaningVi ?? data.simplified}
-            className="ml-auto h-16 w-16 shrink-0 rounded-xl object-cover"
-          />
-        )}
       </div>
       {/* Câu ví dụ (HSK 1–3 đã có câu Hanni soạn) — lấp chỗ trống bằng cách dùng từ thật trong câu. */}
       {data.examples?.[0] && (

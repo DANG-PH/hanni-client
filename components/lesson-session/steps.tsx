@@ -57,16 +57,6 @@ export function IntroStep({ word }: { word: SessionWord }) {
       <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold tracking-wide text-primary">
         TỪ MỚI
       </span>
-      {word.imageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={word.imageUrl}
-          // Ảnh Wikimedia tải không kèm cookie — nếu không, trang bị tính "dùng cookie bên thứ ba" (Wikimedia trả CORS *).
-          crossOrigin="anonymous"
-          alt=""
-          className="mt-5 h-28 w-40 rounded-2xl object-cover shadow-sm"
-        />
-      )}
       <div className="mt-5 flex items-end gap-4">
         <TonePinyin
           zh={word.simplified}

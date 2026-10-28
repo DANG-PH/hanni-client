@@ -186,17 +186,6 @@
   font-size: 16px;
   color: var(--primary);
 }
-.illustration {
-  width: 100%;
-  max-width: 260px;
-  height: 104px;
-  margin-top: 14px;
-  border-radius: 14px;
-  object-fit: cover;
-  /* Ảnh lấy từ nguồn ngoài, tỉ lệ rất khác nhau — cắt cố định để thẻ không
-   * nhảy chiều cao giữa các từ. */
-}
-
 .meaning {
   margin-top: 15px;
 }
@@ -368,12 +357,6 @@
   .face {
     min-height: 310px;
     padding: 26px 20px;
-  }
-  /* Thẻ tự cao thêm theo ảnh (2 mặt dùng chung 1 ô lưới), trên điện thoại
-   * cao quá thì 4 nút đánh giá bị đẩy xuống dưới màn hình — thu ảnh lại. */
-  .illustration {
-    height: 78px;
-    margin-top: 10px;
   }
   .character {
     font-size: 58px;
