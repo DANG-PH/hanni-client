@@ -612,7 +612,7 @@ async function CharResults({ q }: { q: string }) {
                 )}
               </dl>
               {info.wordSlug && (
-                <Link href={`/tu-dien/${encodeURIComponent(info.wordSlug)}`} className="mt-2 inline-block text-xs font-semibold text-primary hover:underline">
+                <Link href={`/tu-dien/${encodeURIComponent(info.wordSlug)}`} className="mt-1 inline-flex min-h-8 items-center text-xs font-semibold text-primary hover:underline">
                   Xem mục từ{" "}
                   <span lang="zh" className="hanzi">
                     {info.wordSlug}

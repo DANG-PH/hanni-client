@@ -318,8 +318,8 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
   dải khách, tên ở bảng xếp hạng, Đăng nhập ở thi thử) nới lên ≥ 32px (`inline-flex min-h-8 items-center`; lời mời chính `min-h-11`), tab
   cấp ở cấu trúc đề + mục lục trang từ/bảng phiên âm + chip từ khoá trang chủ ≥ 32px. Còn 24–31px (đạt WCAG 2.2 AA): chân trang 28px,
   nút nghe ở bảng ghép âm 28px. Sau deploy quét thêm 13 trang khi ĐÃ đăng nhập (tài khoản tạm, xoá ngay) → 5 chỗ; quét mã nguồn
-  tìm link/nút chữ nhỏ không có chiều cao → 19 chỗ ở trạng thái lượt quét không mở tới (trang lỗi, phòng thi, luyện nói, lớp có bài
-  giao, kết quả quét ảnh) — cũng ≥ 32px. Chữ trục biểu đồ `/progress` 10px là ngoại lệ có chủ ý (xem "Quy tắc giao diện").
+  tìm link/nút chữ nhỏ không có chiều cao → 21 chỗ ở trạng thái lượt quét không mở tới (trang lỗi, phòng thi, luyện nói, lớp có bài
+  giao, kết quả quét ảnh, tab Hán tự, đường dẫn trang luyện dạng bài) — cũng ≥ 32px. Chữ trục biểu đồ `/progress` 10px là ngoại lệ có chủ ý (xem "Quy tắc giao diện").
 
 ## Thanh toán: chọn cổng + quay về (2026-10-27)
 - Popup Premium bước 2 có ô **"Cách thanh toán"** khi server bật ≥ 2 cổng (`GET /payments/configured` → `{configured, payos, momo,

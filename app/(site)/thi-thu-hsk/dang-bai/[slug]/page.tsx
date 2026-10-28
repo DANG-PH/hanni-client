@@ -101,7 +101,7 @@ export default async function PracticeSetPage({ params }: { params: Promise<{ sl
   return (
     <div className="page-wrap max-w-4xl! space-y-6 py-8!">
       <nav aria-label="Đường dẫn" className="flex flex-wrap items-center gap-1.5 text-sm text-muted">
-        <Link href="/thi-thu-hsk" className="hover:text-primary">
+        <Link href="/thi-thu-hsk" className="inline-flex min-h-8 items-center hover:text-primary">
           Luyện thi HSK
         </Link>
         <Icon name="chevron" size={14} className="-rotate-90" />
