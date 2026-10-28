@@ -40,7 +40,7 @@ export default function LessonSessionPage() {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-6 text-center">
         <p className="text-sm text-muted">Chưa tải được bài học. Bạn thử lại sau nhé.</p>
-        <Link href="/learn" className="text-sm font-semibold text-primary hover:underline">
+        <Link href="/learn" className="inline-flex min-h-8 items-center text-sm font-semibold text-primary hover:underline">
           Về lộ trình
         </Link>
       </div>

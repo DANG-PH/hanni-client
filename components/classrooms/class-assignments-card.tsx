@@ -17,7 +17,7 @@ export function ClassAssignmentsCard() {
           <Icon name="flag" size={16} className="text-primary" /> Bài tập của lớp
           <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-primary-fg">{data.length}</span>
         </h2>
-        <Link href="/lop-hoc" className="text-xs font-semibold text-primary hover:underline">
+        <Link href="/lop-hoc" className="inline-flex min-h-8 items-center text-xs font-semibold text-primary hover:underline">
           Lớp học →
         </Link>
       </div>

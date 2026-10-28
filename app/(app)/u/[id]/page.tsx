@@ -40,7 +40,7 @@ export default function PublicProfilePage() {
     return (
       <div className="page-wrap max-w-xl space-y-4">
         <ErrorNote>Không tải được hồ sơ này.</ErrorNote>
-        <Link href="/leaderboard" className="text-sm font-semibold text-primary">
+        <Link href="/leaderboard" className="inline-flex min-h-8 items-center text-sm font-semibold text-primary">
           ← Về bảng xếp hạng
         </Link>
       </div>

@@ -469,7 +469,7 @@ function WordPanel({ word, saved, saving, onSave }: { word: ScanWord; saved: boo
       {word.meaningVi && <p className="mt-1 text-sm leading-6 text-muted">{word.meaningVi}</p>}
       <div className="mt-2.5 flex flex-wrap items-center gap-3">
         <SaveButton saved={saved} saving={saving} onSave={onSave} />
-        <Link href={`/tu-dien/${encodeURIComponent(word.simplified)}`} className="text-xs font-semibold text-primary hover:underline">
+        <Link href={`/tu-dien/${encodeURIComponent(word.simplified)}`} className="inline-flex min-h-8 items-center text-xs font-semibold text-primary hover:underline">
           Xem trong từ điển
         </Link>
       </div>

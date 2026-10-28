@@ -92,7 +92,7 @@ function Header({ data, children }: { data: ClassDetail; children?: ReactNode })
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        <Link href="/lop-hoc" className="inline-flex items-center gap-1 text-xs font-semibold text-muted hover:text-primary">
+        <Link href="/lop-hoc" className="inline-flex min-h-8 items-center gap-1 text-xs font-semibold text-muted hover:text-primary">
           <Icon name="back" size={14} /> Lớp học
         </Link>
         <h1 className="mt-1 text-2xl font-extrabold tracking-tight break-words">{data.class.name}</h1>
@@ -390,7 +390,7 @@ function AssignmentList({ data }: { data: OwnerView }) {
                     <button
                       type="button"
                       onClick={() => setOpen(open === a.id ? null : a.id)}
-                      className="mt-1.5 text-xs font-semibold text-primary"
+                      className="mt-1 inline-flex min-h-8 items-center text-xs font-semibold text-primary"
                     >
                       {open === a.id ? "Ẩn" : `Xem ${pending.length} bạn chưa làm`}
                     </button>

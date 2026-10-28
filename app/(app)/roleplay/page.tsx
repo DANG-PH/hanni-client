@@ -420,7 +420,7 @@ function ChatView({
         <button
           type="button"
           onClick={onExit}
-          className="flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-muted hover:text-foreground"
+          className="flex min-h-8 items-center gap-1.5 whitespace-nowrap text-sm font-medium text-muted hover:text-foreground"
         >
           <Icon name="back" size={16} />
           <span className="max-sm:hidden">Chọn tình huống khác</span>
@@ -544,7 +544,7 @@ function ChatView({
               <button
                 type="button"
                 onClick={useHint}
-                className="shrink-0 text-xs font-semibold text-accent hover:underline"
+                className="inline-flex min-h-8 shrink-0 items-center text-xs font-semibold text-accent hover:underline"
               >
                 Dùng câu này
               </button>

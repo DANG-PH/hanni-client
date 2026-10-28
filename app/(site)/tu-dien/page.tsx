@@ -232,7 +232,7 @@ async function DictionaryHome() {
             title="Từ vựng theo chủ đề · HSK 1"
             icon="route"
             action={
-              <Link href="/learn" className="text-xs font-semibold text-primary hover:underline">
+              <Link href="/learn" className="inline-flex min-h-8 items-center text-xs font-semibold text-primary hover:underline">
                 Lộ trình →
               </Link>
             }
@@ -561,7 +561,7 @@ async function CharResults({ q }: { q: string }) {
           <article key={info.char} className="panel grid gap-5 p-5 sm:grid-cols-[auto_1fr] sm:p-6">
             <div className="flex flex-col items-center gap-2">
               <StrokeAnimation char={info.char} />
-              <Link href={`/writing?c=${encodeURIComponent(info.char)}`} className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+              <Link href={`/writing?c=${encodeURIComponent(info.char)}`} className="inline-flex min-h-8 items-center gap-1 text-xs font-semibold text-primary hover:underline">
                 <Icon name="pencil" size={13} /> Tập viết
               </Link>
             </div>
@@ -675,7 +675,7 @@ async function ExampleResults({ q, page }: { q: string; page: number }) {
             </p>
             {ex.pinyin && <p className="text-xs text-muted">{ex.pinyin}</p>}
             {ex.vi && <p className="mt-0.5 text-sm">{ex.vi}</p>}
-            <Link href={`/tu-dien/${encodeURIComponent(ex.word.simplified)}`} className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted hover:text-primary">
+            <Link href={`/tu-dien/${encodeURIComponent(ex.word.simplified)}`} className="mt-1 inline-flex min-h-8 items-center gap-1.5 text-xs text-muted hover:text-primary">
               Ví dụ của{" "}
               <span lang="zh" className="hanzi text-sm text-primary">
                 {ex.word.simplified}

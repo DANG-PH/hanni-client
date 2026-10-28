@@ -117,7 +117,7 @@ export function GettingStarted({ lessonHref }: { lessonHref: string }) {
           <span className="text-sm font-bold text-primary">
             {doneCount}/{steps.length}
           </span>
-          <button type="button" onClick={hide} className="text-xs text-muted hover:text-foreground">
+          <button type="button" onClick={hide} className="inline-flex min-h-8 min-w-8 items-center justify-center rounded-lg px-2 text-xs text-muted hover:bg-surface-2 hover:text-foreground">
             Ẩn
           </button>
         </div>

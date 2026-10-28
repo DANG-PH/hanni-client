@@ -227,7 +227,7 @@ export default function ProgressPage() {
                 </p>
                 <Link
                   href={data.totals.due > 0 ? "/study?review=1" : "/learn"}
-                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary"
+                  className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary"
                 >
                   {data.totals.due > 0 ? "Mở buổi ôn tập" : "Học tiếp lộ trình"}
                   <Icon name="arrow" size={16} />
@@ -486,7 +486,7 @@ export default function ProgressPage() {
                         </span>
                         <Link
                           href={`/tu-dien?level=${l.level}`}
-                          className="inline-flex items-center gap-1.5 font-semibold text-primary"
+                          className="inline-flex min-h-8 items-center gap-1.5 font-semibold text-primary"
                         >
                           Khám phá từ vựng <Icon name="arrow" size={14} />
                         </Link>

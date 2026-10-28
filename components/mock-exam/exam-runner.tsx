@@ -211,7 +211,7 @@ export function MockExamRunner({ slug }: { slug: string }) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-3 p-6 text-center">
         <p className="text-sm text-muted">Chưa tải được đề thi. Bạn thử lại sau nhé.</p>
-        <Link href="/thi-thu-hsk" className="text-sm font-semibold text-primary hover:underline">
+        <Link href="/thi-thu-hsk" className="inline-flex min-h-8 items-center text-sm font-semibold text-primary hover:underline">
           Về danh sách đề
         </Link>
       </div>
@@ -493,7 +493,7 @@ function Intro({
     <div className="min-h-dvh bg-background">
       <header className="border-b border-border bg-surface">
         <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
-          <Link href="/thi-thu-hsk" className="flex items-center gap-1 text-sm text-muted hover:text-foreground">
+          <Link href="/thi-thu-hsk" className="flex min-h-8 items-center gap-1 text-sm text-muted hover:text-foreground">
             <Icon name="back" size={18} /> Danh sách đề
           </Link>
         </div>
@@ -686,7 +686,7 @@ function Result({
     <div className="min-h-dvh bg-background">
       <header className="border-b border-border bg-surface">
         <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
-          <Link href="/thi-thu-hsk" className="flex items-center gap-1 text-sm text-muted hover:text-foreground">
+          <Link href="/thi-thu-hsk" className="flex min-h-8 items-center gap-1 text-sm text-muted hover:text-foreground">
             <Icon name="back" size={18} /> Danh sách đề
           </Link>
         </div>

@@ -124,7 +124,7 @@ export function WeeklyLeagueCard() {
       )}
       <Link
         href="/study"
-        className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+        className="mt-4 inline-flex min-h-8 items-center gap-1.5 text-xs font-medium text-primary hover:underline"
       >
         Ôn tập ngay để giữ hạng <Icon name="arrow" size={13} />
       </Link>

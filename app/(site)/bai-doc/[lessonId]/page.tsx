@@ -111,7 +111,7 @@ export default function LessonReadingPage() {
   return (
     <div className="page-wrap max-w-3xl! space-y-5 py-8! sm:py-10!">
       <div>
-        <Link href={`/learn/${lesson.id}`} className="inline-flex items-center gap-1 text-xs font-semibold text-muted hover:text-primary">
+        <Link href={`/learn/${lesson.id}`} className="inline-flex min-h-8 items-center gap-1 text-xs font-semibold text-muted hover:text-primary">
           <Icon name="back" size={14} /> {hskLabel(lesson.hskLevel)} · Bài {lesson.orderIndex}: {lesson.title}
         </Link>
         <p className="eyebrow mt-3">BÀI ĐỌC AI · CHỈ DÙNG TỪ {hskLabel(lesson.hskLevel).toUpperCase()}</p>

@@ -97,7 +97,7 @@ export function PracticeRunner({ set }: { set: MockPracticeSet }) {
                 · câu {first}
                 {last !== first ? `–${last}` : ""}
               </span>
-              <Link href={`/thi-thu-hsk/${g.examSlug}`} className="ml-auto text-xs font-semibold text-primary hover:underline">
+              <Link href={`/thi-thu-hsk/${g.examSlug}`} className="ml-auto inline-flex min-h-8 items-center text-xs font-semibold text-primary hover:underline">
                 Làm cả đề
               </Link>
             </h2>

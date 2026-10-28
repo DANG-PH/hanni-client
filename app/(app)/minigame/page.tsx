@@ -755,7 +755,7 @@ function GameWorkspace({
       <button
         type="button"
         onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted hover:text-foreground"
+        className="inline-flex min-h-8 items-center gap-1.5 text-sm font-medium text-muted hover:text-foreground"
       >
         <Icon name="back" size={15} /> Chọn minigame khác
       </button>

@@ -63,7 +63,7 @@ export default function SettingsPage() {
       >
         <Link
           href="/account"
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-primary"
+          className="inline-flex min-h-8 items-center gap-2 text-sm font-medium text-muted hover:text-primary"
         >
           <Icon name="back" size={16} />
           Tài khoản của tôi
@@ -473,7 +473,7 @@ function SettingsForm({
           </p>
           <Link
             href="/progress"
-            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary"
+            className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary"
           >
             Xem tiến độ của tôi <Icon name="arrow" size={16} />
           </Link>

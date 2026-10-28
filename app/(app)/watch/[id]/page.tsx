@@ -221,7 +221,7 @@ export default function WatchDetailPage() {
     return (
       <div className="page-wrap max-w-xl space-y-4">
         <ErrorNote>Không tải được video này.</ErrorNote>
-        <Link href="/watch" className="text-sm font-semibold text-primary">
+        <Link href="/watch" className="inline-flex min-h-8 items-center text-sm font-semibold text-primary">
           ← Về danh sách
         </Link>
       </div>

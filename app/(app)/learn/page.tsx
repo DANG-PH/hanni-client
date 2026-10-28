@@ -386,7 +386,7 @@ function LearnHome() {
             </div>
             <Link
               href="/kiem-tra-trinh-do"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+              className="inline-flex min-h-8 items-center gap-1 text-sm font-semibold text-primary hover:underline"
             >
               Không chắc nên học cấp nào? Kiểm tra trình độ
               <Icon name="arrow" size={14} />
