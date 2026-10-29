@@ -386,8 +386,11 @@ Bộ emote v11 của repo `DANG-PH/hanni-mascot` (12 biểu cảm × 6 hình v�
 - `Mascot` (`<picture>` + `<img>`, không JS, dùng được trong Server Component) · `preloadMascots()` trước chỗ sắp đổi biểu cảm ·
   `LauncherFox` (`components/mascot-launcher.tsx`): nút trợ lý là cáo trong bát đỏ, 5 giây đầu nháy mắt rồi 12–20 giây/lần (nháy mắt →
   vẫy tay → ló lên), rê chuột vào thì vẫy (nghỉ ≥ 8 giây), tab ẩn/giảm chuyển động thì đứng yên — đúng luật `launcher-idle.js` repo mascot.
-- Chỗ gắn: trợ lý AI (đầu khung đổi theo lúc — chờ E00, đang gõ E42, đang nghĩ E02, đang trả lời E10 — kèm dòng trạng thái; chưa nói gì
-  thì E01 vẫy chào), phiên học (thẻ từ mới: E11 cạnh âm Hán Việt; đúng E04 / sai E05 trong tấm phản hồi), xong bài + thi đạt + kiểm tra
+- Chỗ gắn: trợ lý AI — **sân khấu cáo TO ở giữa khung** (`MascotStage`, user 29/10: "cáo nhỏ ở góc trên hơi xàm"), đổi biểu cảm ngay
+  tại chỗ: chưa nói gì E01 vẫy chào, bấm vào ô gõ/đang gõ E42, đang nghĩ E02, đang trả lời E10, chờ E00; dòng trạng thái + quầng màu theo
+  lúc (`.assistant-stage[data-mood]`). Khung thấp < 540px (điện thoại bật bàn phím) → sân khấu gọn (cáo 64px cạnh dòng trạng thái); trên
+  điện thoại khung bám `visualViewport` (`useVisibleViewport`) — `fixed inset-0` cũ cao cả màn nên bàn phím bật là cáo + tiêu đề bị cuộn
+  khuất. Phiên học (thẻ từ mới: E11 cạnh âm Hán Việt; đúng E04 / sai E05 trong tấm phản hồi), xong bài + thi đạt + kiểm tra
   trình độ + mừng cột mốc chuỗi ngày (E04), thi chưa đạt (E05), đang thu âm chấm thanh (E09), quét ảnh đang soi (E19), Hanni Coach + bài
   đọc AI đang viết (E39), bài đọc (E16), trạng thái rỗng `EmptyState` + từ điển không khớp + 404 (E19), trang chủ khách (E01 trong hình đầu trang).
 - Không phải cáo: `lib/confetti.ts` (pháo giấy canvas ~2 giây — CHỈ xong bài, thi đạt, cột mốc chuỗi ngày), `lib/use-count-up.ts` (số

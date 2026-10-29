@@ -440,6 +440,85 @@
   }
 }
 
+/* Sân khấu cáo trong trợ lý AI (`MascotStage`): quầng màu đổi theo lúc — chào/chờ vàng đồng, đang gõ vàng, đang nghĩ
+ * tím, đang trả lời đỏ. */
+.assistant-stage {
+  --stage-glow: var(--hanviet);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 5%, var(--surface)), var(--surface));
+}
+.assistant-stage::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 46%;
+  width: 230px;
+  height: 230px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background-color: var(--stage-glow);
+  opacity: 0.2;
+  filter: blur(38px);
+  transition: background-color 500ms ease;
+}
+.assistant-stage[data-mood="typing"] { --stage-glow: var(--accent); }
+.assistant-stage[data-mood="thinking"] { --stage-glow: var(--lavender); }
+.assistant-stage[data-mood="answering"] { --stage-glow: var(--primary); }
+.assistant-stage-char {
+  position: absolute;
+  z-index: -1;
+  font-size: 44px;
+  line-height: 1;
+  color: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+.assistant-stage-floor {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  width: 46%;
+  height: 9%;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--foreground) 18%, transparent), transparent);
+}
+.assistant-stage-status {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 2px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  box-shadow: 0 4px 12px -8px color-mix(in srgb, var(--foreground) 40%, transparent);
+}
+.assistant-stage[data-mood="answering"] .assistant-stage-status { color: var(--primary); }
+.assistant-stage-compact {
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+  padding: 4px 16px;
+}
+.assistant-stage-compact::before {
+  width: 120px;
+  height: 120px;
+  left: 30%;
+}
+.assistant-stage-compact .assistant-stage-status {
+  margin-top: 0;
+}
+
 /* Trang chủ: nền giấy sáng, những khối học tập gọn và điểm nhấn đỏ. */
 .home-hero {
   background:

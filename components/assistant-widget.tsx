@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { mutate as revalidate } from "swr";
 import { ChatComposer } from "./chat/chat-composer";
 import { JumpToLatest, useStickToBottom } from "./chat/use-stick-to-bottom";
@@ -64,13 +64,72 @@ function useTuckOnScroll(): boolean {
 
 const ASK_EVENT = "hanni:ask-assistant";
 
-/** Biểu cảm của cáo ở đầu khung chat theo từng lúc (bảng tình huống ở manifest-v11 của repo hanni-mascot). */
-const MOOD: Record<"idle" | "typing" | "thinking" | "answering", { emote: MascotEmote; status: string }> = {
-  idle: { emote: "e00-nghi", status: "Hỏi về tiếng Trung, ngữ pháp, lộ trình học" },
-  typing: { emote: "e42-cham-chu", status: "Hanni đang chờ bạn gõ xong…" },
-  thinking: { emote: "e02-suy-nghi", status: "Hanni đang suy nghĩ…" },
-  answering: { emote: "e10-doc-mau", status: "Hanni đang trả lời…" },
+/** Biểu cảm của cáo trên "sân khấu" giữa khung chat theo từng lúc (bảng tình huống ở manifest-v11 của repo hanni-mascot). */
+type Mood = "greet" | "idle" | "typing" | "thinking" | "answering";
+const MOOD: Record<Mood, { emote: MascotEmote; status: string }> = {
+  greet: { emote: "e01-chao", status: "Xin chào! 你好 — hỏi mình bất cứ điều gì nhé" },
+  idle: { emote: "e00-nghi", status: "Hanni đang chờ câu hỏi tiếp theo" },
+  typing: { emote: "e42-cham-chu", status: "Hanni đang chăm chú nghe bạn hỏi…" },
+  thinking: { emote: "e02-suy-nghi", status: "Để mình nghĩ một chút" },
+  answering: { emote: "e10-doc-mau", status: "Hanni đang giải thích…" },
 };
+
+/** Sân khấu của cáo: to, ở giữa, đổi biểu cảm ngay tại chỗ + quầng màu theo lúc. `compact` (điện thoại đang bật bàn
+ * phím, khung thấp) = cáo nhỏ lại nằm cạnh dòng trạng thái để vẫn thấy được cáo phản ứng khi gõ. */
+function MascotStage({ mood, size, compact }: { mood: Mood; size: number; compact: boolean }) {
+  const { emote, status } = MOOD[mood];
+  return (
+    <div className={`assistant-stage ${compact ? "assistant-stage-compact" : ""}`} data-mood={mood}>
+      {!compact && (
+        <>
+          <span aria-hidden="true" className="hanzi assistant-stage-char left-5 top-4">你</span>
+          <span aria-hidden="true" className="hanzi assistant-stage-char right-5 bottom-10">好</span>
+        </>
+      )}
+      <div className="relative">
+        <Mascot key={emote} emote={emote} size={size} priority className="mascot-pop relative z-10" />
+        <span aria-hidden="true" className="assistant-stage-floor" />
+      </div>
+      <p className="assistant-stage-status" aria-live="polite">
+        {status}
+        {mood === "thinking" && (
+          <span className="ml-1 inline-flex gap-0.5" aria-hidden="true">
+            {[0, 1, 2].map((i) => (
+              <span key={i} className="h-1 w-1 animate-bounce rounded-full bg-current" style={{ animationDelay: `${i * 120}ms` }} />
+            ))}
+          </span>
+        )}
+      </p>
+    </div>
+  );
+}
+
+/** Điện thoại: bàn phím ảo bật thì vùng nhìn thấy (`visualViewport`) thấp lại nhưng khung `fixed inset-0` vẫn cao cả
+ * màn — trình duyệt cuộn để thấy ô nhập, đẩy đầu khung (cáo, tiêu đề) khuất lên trên. Khung bám đúng vùng nhìn thấy. */
+function useVisibleViewport(active: boolean): { top: number; height: number } | undefined {
+  const subscribe = useCallback((onChange: () => void) => {
+    const vv = window.visualViewport;
+    vv?.addEventListener("resize", onChange);
+    vv?.addEventListener("scroll", onChange);
+    window.addEventListener("resize", onChange);
+    return () => {
+      vv?.removeEventListener("resize", onChange);
+      vv?.removeEventListener("scroll", onChange);
+      window.removeEventListener("resize", onChange);
+    };
+  }, []);
+  const snap = useSyncExternalStore(
+    subscribe,
+    () => {
+      const vv = window.visualViewport;
+      return vv && window.innerWidth < 640 ? `${Math.round(vv.offsetTop)}|${Math.round(vv.height)}` : "";
+    },
+    () => "",
+  );
+  if (!active || !snap) return undefined;
+  const [top, height] = snap.split("|").map(Number);
+  return { top, height };
+}
 
 /** Câu hỏi gợi ý khi chưa nói gì — người mới thường không biết hỏi trợ lý cái gì. */
 const STARTERS = [
@@ -146,12 +205,32 @@ export function AssistantWidget() {
   const [streamingId, setStreamingId] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const closeStreamRef = useRef<(() => void) | null>(null);
+  const [composerFocused, setComposerFocused] = useState(false);
   const streamingText = streamingId ? (pending.find((m) => m.id === streamingId)?.text ?? "") : "";
-  const mood = MOOD[streamingId ? (streamingText ? "answering" : "thinking") : input.trim() ? "typing" : "idle"];
+  const mood: Mood = streamingId
+    ? streamingText
+      ? "answering"
+      : "thinking"
+    : input.trim() || composerFocused
+      ? "typing"
+      : messages.length === 0
+        ? "greet"
+        : "idle";
+  const viewport = useVisibleViewport(open);
+  // Khung thấp (điện thoại bật bàn phím, màn máy tính thấp) → sân khấu gọn để còn chỗ cho tin nhắn.
+  const [panelHeight, setPanelHeight] = useState(0);
+  const panelObserver = useRef<ResizeObserver | null>(null);
+  const panelRef = useCallback((el: HTMLDivElement | null) => {
+    panelObserver.current?.disconnect();
+    if (!el) return;
+    panelObserver.current = new ResizeObserver(([entry]) => setPanelHeight(entry.contentRect.height));
+    panelObserver.current.observe(el);
+  }, []);
+  const compactStage = panelHeight > 0 && panelHeight < 540;
 
   // Mở khung lần đầu mới tải các biểu cảm sẽ đổi qua — không bắt mọi trang tải trước.
   useEffect(() => {
-    if (open) preloadMascots(["e00-nghi", "e01-chao", "e02-suy-nghi", "e10-doc-mau", "e42-cham-chu"], 48);
+    if (open) preloadMascots(["e00-nghi", "e01-chao", "e02-suy-nghi", "e10-doc-mau", "e42-cham-chu"], 160);
   }, [open]);
 
   // Tin mới: đang ở cuối thì tự cuộn, đang đọc lại câu trả lời cũ thì hiện nút
@@ -343,19 +422,16 @@ export function AssistantWidget() {
 
       {open && (
         <div
+          ref={panelRef}
           role="dialog"
           aria-label="Trợ lý Hanni"
-          className={`fixed z-40 flex flex-col overflow-hidden bg-surface max-sm:inset-0 max-sm:pt-[env(safe-area-inset-top)] max-sm:pb-[env(safe-area-inset-bottom)] sm:right-5 sm:h-[min(32rem,calc(100dvh_-_var(--bottom-nav-h,0px)_-_11rem))] sm:w-[min(23rem,90vw)] sm:rounded-2xl sm:border sm:border-border sm:shadow-2xl ${promptDialogVisible ? "sm:bottom-[calc(var(--bottom-nav-h,0px)_+_18rem)]" : "sm:bottom-[calc(var(--bottom-nav-h,0px)_+_6rem)]"}`}
+          style={viewport}
+          className={`fixed z-40 flex flex-col overflow-hidden bg-surface max-sm:inset-x-0 max-sm:top-0 max-sm:h-dvh max-sm:pt-[env(safe-area-inset-top)] max-sm:pb-[env(safe-area-inset-bottom)] sm:right-5 sm:h-[min(42rem,calc(100dvh_-_var(--bottom-nav-h,0px)_-_8rem))] sm:w-[min(25rem,92vw)] sm:rounded-2xl sm:border sm:border-border sm:shadow-2xl ${promptDialogVisible ? "sm:bottom-[calc(var(--bottom-nav-h,0px)_+_18rem)]" : "sm:bottom-[calc(var(--bottom-nav-h,0px)_+_6rem)]"}`}
         >
-          <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
-            <div className="flex min-w-0 items-center gap-2">
-              <Mascot key={mood.emote} emote={mood.emote} size={48} priority className="mascot-pop -my-2 -ml-1" />
-              <div className="min-w-0">
-                <p className="text-sm font-bold">Trợ lý Hanni</p>
-                <p className="truncate text-xs text-muted" aria-live="polite">
-                  {mood.status}
-                </p>
-              </div>
+          <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-2.5">
+            <div className="min-w-0">
+              <p className="text-sm font-bold">Trợ lý Hanni</p>
+              <p className="truncate text-xs text-muted">Hỏi về tiếng Trung, ngữ pháp, lộ trình học</p>
             </div>
             <div className="flex items-center gap-1">
               <button
@@ -427,6 +503,7 @@ export function AssistantWidget() {
             </div>
           ) : (
             <>
+              <MascotStage mood={mood} size={compactStage ? 64 : messages.length === 0 ? 176 : 128} compact={compactStage} />
               <div className="relative flex min-h-0 flex-1 flex-col">
               <div
                 ref={listRef}
@@ -436,15 +513,13 @@ export function AssistantWidget() {
                   <p className="text-center text-xs text-muted">Đang tải…</p>
                 ) : messages.length === 0 ? (
                   <div className="flex flex-col items-center gap-2.5">
-                    {/* Lần đầu mở / cuộc trò chuyện mới: cáo vẫy tay chào (E01). */}
-                    <Mascot emote="e01-chao" size={112} priority className="mascot-pop" />
                     <div className="min-w-0 space-y-2.5">
-                      <p className="rounded-xl bg-surface-2 px-3 py-2.5 text-sm leading-6">
+                      <p className="rounded-xl bg-surface-2 px-3 py-2.5 text-center text-sm leading-6">
                         Chào {user?.displayName ?? "bạn"}! Mình là Hanni 👋 Mình
                         có thể giúp gì cho bạn hôm nay — hỏi về từ vựng, ngữ
                         pháp, phát âm, hay lộ trình học đều được nhé.
                       </p>
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="flex flex-wrap justify-center gap-1.5">
                         {STARTERS.map((q) => (
                           <button
                             key={q}
@@ -510,15 +585,17 @@ export function AssistantWidget() {
                 <JumpToLatest unseen={stick.unseen} onClick={() => stick.scrollToBottom(true)} />
               )}
               </div>
-              {/* Server nhận tối đa 1.000 ký tự (MaxLength ở ask-assistant.dto.ts). */}
-              <ChatComposer
-                value={input}
-                onChange={setInput}
-                onSubmit={() => send()}
-                maxLength={1000}
-                placeholder="Nhập câu hỏi…"
-                busy={sending}
-              />
+              {/* Server nhận tối đa 1.000 ký tự (MaxLength ở ask-assistant.dto.ts). Bấm vào ô là cáo chuyển sang chăm chú. */}
+              <div onFocus={() => setComposerFocused(true)} onBlur={() => setComposerFocused(false)}>
+                <ChatComposer
+                  value={input}
+                  onChange={setInput}
+                  onSubmit={() => send()}
+                  maxLength={1000}
+                  placeholder="Nhập câu hỏi…"
+                  busy={sending}
+                />
+              </div>
             </>
           )}
         </div>
