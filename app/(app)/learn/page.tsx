@@ -317,7 +317,7 @@ function LearnHome() {
                       Đã xong {data.completedLessons}/{data.totalLessons} bài · {unitsDone}/{units.length} chủ đề
                     </p>
                     <div className="mt-4 flex flex-wrap gap-2.5">
-                      <LinkButton href={`/bai-hoc/${current.id}`} className="min-w-52 uppercase tracking-wide">
+                      <LinkButton href={`/bai-hoc/${current.id}`} className="cta-shine min-w-52 uppercase tracking-wide">
                         <Icon name="play" size={16} />
                         {data.completedLessons === 0 ? "Bắt đầu học" : "Học tiếp"}
                       </LinkButton>

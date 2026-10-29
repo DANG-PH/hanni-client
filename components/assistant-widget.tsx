@@ -8,6 +8,8 @@ import { ChatComposer } from "./chat/chat-composer";
 import { JumpToLatest, useStickToBottom } from "./chat/use-stick-to-bottom";
 import { Icon } from "./icon";
 import { MarkdownLite } from "./markdown-lite";
+import { Mascot, preloadMascots, type MascotEmote } from "./mascot";
+import { LauncherFox } from "./mascot-launcher";
 import { useAuth } from "@/lib/auth";
 import {
   createAssistantSession,
@@ -20,7 +22,7 @@ import { usePwaState } from "@/lib/pwa/store";
 import { timeAgo } from "@/lib/time";
 import type { AssistantAction, AssistantMessage } from "@/lib/types";
 
-function HanniLogo({ size, fill = false }: { size: number; fill?: boolean }) {
+function HanniLogo({ size }: { size: number }) {
   return (
     <Image
       src="/brand/fox-mark.png"
@@ -28,7 +30,7 @@ function HanniLogo({ size, fill = false }: { size: number; fill?: boolean }) {
       width={size}
       height={size}
       className="shrink-0 rounded-full object-cover"
-      style={fill ? { width: "100%", height: "100%" } : { width: size, height: size }}
+      style={{ width: size, height: size }}
       sizes={`${size}px`}
     />
   );
@@ -61,6 +63,14 @@ function useTuckOnScroll(): boolean {
 }
 
 const ASK_EVENT = "hanni:ask-assistant";
+
+/** Biểu cảm của cáo ở đầu khung chat theo từng lúc (bảng tình huống ở manifest-v11 của repo hanni-mascot). */
+const MOOD: Record<"idle" | "typing" | "thinking" | "answering", { emote: MascotEmote; status: string }> = {
+  idle: { emote: "e00-nghi", status: "Hỏi về tiếng Trung, ngữ pháp, lộ trình học" },
+  typing: { emote: "e42-cham-chu", status: "Hanni đang chờ bạn gõ xong…" },
+  thinking: { emote: "e02-suy-nghi", status: "Hanni đang suy nghĩ…" },
+  answering: { emote: "e10-doc-mau", status: "Hanni đang trả lời…" },
+};
 
 /** Câu hỏi gợi ý khi chưa nói gì — người mới thường không biết hỏi trợ lý cái gì. */
 const STARTERS = [
@@ -136,6 +146,13 @@ export function AssistantWidget() {
   const [streamingId, setStreamingId] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const closeStreamRef = useRef<(() => void) | null>(null);
+  const streamingText = streamingId ? (pending.find((m) => m.id === streamingId)?.text ?? "") : "";
+  const mood = MOOD[streamingId ? (streamingText ? "answering" : "thinking") : input.trim() ? "typing" : "idle"];
+
+  // Mở khung lần đầu mới tải các biểu cảm sẽ đổi qua — không bắt mọi trang tải trước.
+  useEffect(() => {
+    if (open) preloadMascots(["e00-nghi", "e01-chao", "e02-suy-nghi", "e10-doc-mau", "e42-cham-chu"], 48);
+  }, [open]);
 
   // Tin mới: đang ở cuối thì tự cuộn, đang đọc lại câu trả lời cũ thì hiện nút
   // "Xuống tin mới"; câu trả lời đang hiện dần (stream) chỉ kéo theo khi đang ở cuối.
@@ -314,9 +331,14 @@ export function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Đóng trợ lý Hanni" : "Mở trợ lý Hanni"}
         aria-expanded={open}
-        className={`motion-button fixed right-4 z-40 flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-fg shadow-lg shadow-black/15 transition-[translate,opacity] duration-300 hover:bg-primary/90 sm:right-5 sm:h-14 sm:w-14 ${open ? "max-sm:hidden" : ""} ${tucked && !open ? "max-lg:pointer-events-none max-lg:translate-y-24 max-lg:opacity-0" : ""} ${promptDialogVisible ? "max-sm:hidden bottom-[calc(var(--bottom-nav-h,0px)_+_14rem)]" : "bottom-[calc(var(--bottom-nav-h,0px)_+_1rem)]"}`}
+        className={`motion-button fixed right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full transition-[translate,opacity] duration-300 sm:right-5 sm:h-14 sm:w-14 ${open ? "bg-primary text-primary-fg shadow-lg shadow-black/15 hover:bg-primary/90 max-sm:hidden" : ""} ${tucked && !open ? "max-lg:pointer-events-none max-lg:translate-y-24 max-lg:opacity-0" : ""} ${promptDialogVisible ? "max-sm:hidden bottom-[calc(var(--bottom-nav-h,0px)_+_14rem)]" : "bottom-[calc(var(--bottom-nav-h,0px)_+_1rem)]"}`}
       >
-        {open ? <Icon name="close" size={24} /> : <HanniLogo size={56} fill />}
+        {/* Đóng: cáo trong bát đỏ (ảnh đã có hình tròn đỏ) thỉnh thoảng nháy mắt, vẫy tay, ló lên. */}
+        {open ? (
+          <Icon name="close" size={24} />
+        ) : (
+          <LauncherFox />
+        )}
       </button>
 
       {open && (
@@ -326,12 +348,12 @@ export function AssistantWidget() {
           className={`fixed z-40 flex flex-col overflow-hidden bg-surface max-sm:inset-0 max-sm:pt-[env(safe-area-inset-top)] max-sm:pb-[env(safe-area-inset-bottom)] sm:right-5 sm:h-[min(32rem,calc(100dvh_-_var(--bottom-nav-h,0px)_-_11rem))] sm:w-[min(23rem,90vw)] sm:rounded-2xl sm:border sm:border-border sm:shadow-2xl ${promptDialogVisible ? "sm:bottom-[calc(var(--bottom-nav-h,0px)_+_18rem)]" : "sm:bottom-[calc(var(--bottom-nav-h,0px)_+_6rem)]"}`}
         >
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
-            <div className="flex items-center gap-2">
-              <HanniLogo size={32} />
-              <div>
+            <div className="flex min-w-0 items-center gap-2">
+              <Mascot key={mood.emote} emote={mood.emote} size={48} priority className="mascot-pop -my-2 -ml-1" />
+              <div className="min-w-0">
                 <p className="text-sm font-bold">Trợ lý Hanni</p>
-                <p className="text-xs text-muted">
-                  Hỏi về tiếng Trung, ngữ pháp, lộ trình học
+                <p className="truncate text-xs text-muted" aria-live="polite">
+                  {mood.status}
                 </p>
               </div>
             </div>
@@ -413,8 +435,9 @@ export function AssistantWidget() {
                 {isLoading && messages.length === 0 ? (
                   <p className="text-center text-xs text-muted">Đang tải…</p>
                 ) : messages.length === 0 ? (
-                  <div className="flex items-start gap-2.5">
-                    <HanniLogo size={28} />
+                  <div className="flex flex-col items-center gap-2.5">
+                    {/* Lần đầu mở / cuộc trò chuyện mới: cáo vẫy tay chào (E01). */}
+                    <Mascot emote="e01-chao" size={112} priority className="mascot-pop" />
                     <div className="min-w-0 space-y-2.5">
                       <p className="rounded-xl bg-surface-2 px-3 py-2.5 text-sm leading-6">
                         Chào {user?.displayName ?? "bạn"}! Mình là Hanni 👋 Mình

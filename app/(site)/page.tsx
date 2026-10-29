@@ -172,7 +172,7 @@ export default function Home() {
               {/* Khách: vào thẳng bài 1 (học trước, đăng ký sau — kiểu
                * Duolingo). Người đã biết một chút làm bài kiểm tra trình độ
                * thay vì tự khai cấp ở khảo sát. */}
-              <LinkButton href={user ? "/learn" : "/bat-dau"} className="px-6!">
+              <LinkButton href={user ? "/learn" : "/bat-dau"} className="cta-shine px-6!">
                 {user ? "Tiếp tục học" : "Học bài đầu tiên — miễn phí"}
                 <Icon name="arrow" size={17} />
               </LinkButton>

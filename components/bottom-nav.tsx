@@ -43,7 +43,8 @@ export function BottomNav({ onMore }: { onMore: () => void }) {
               className={`${cell} ${active ? "text-primary" : "text-muted"}`}
             >
               <span className={pill(active)}>
-                <Icon name={tab.icon} size={21} />
+                {/* `key` đổi khi tab vừa được chọn → biểu tượng nảy 1 lần. */}
+                <Icon key={String(active)} name={tab.icon} size={21} className={active ? "tab-bounce" : undefined} />
               </span>
               <span className="max-w-full truncate">{tab.label}</span>
               {tab.href === "/study" && due > 0 && (

@@ -377,6 +377,27 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 
 ## Trạng thái hiện tại
 
+### Linh vật cáo động + phản hồi sống động (2026-10-29 — user: "tích hợp hanni mascot… dự án trông hơi tĩnh… đủ độ wow")
+Bộ emote v11 của repo `DANG-PH/hanni-mascot` (12 biểu cảm × 6 hình vẽ riêng, nút trợ lý 3 cử động). Ảnh ở `public/mascot/`: `<id>.webp`
+(WebP động 256px tự lặp, ~80 KB), `<id>.still.webp` (ảnh tĩnh cho máy bật giảm chuyển động), `@512` cho e01/e04/e05, `launcher-*.webp`
+(dải 6 ô 160px). Dựng lại từ repo mascot: copy `assets/emotes/v11/webp/*@256.webp`, poster PNG → WebP q85, dải nút từ `frames/<clip>@256`.
+- **Luật dùng**: mỗi emote gắn 1 TÌNH HUỐNG (bảng ở `components/mascot.tsx`), cáo phản ứng theo việc người học đang làm — KHÔNG làm hình
+  trang trí, KHÔNG ở vòng tải (lý do đợt 17/10 vẫn đúng: thấy ở mọi lần mở trang là thành nhàm). Thay cho luật "cáo chỉ 3 vai" cũ.
+- `Mascot` (`<picture>` + `<img>`, không JS, dùng được trong Server Component) · `preloadMascots()` trước chỗ sắp đổi biểu cảm ·
+  `LauncherFox` (`components/mascot-launcher.tsx`): nút trợ lý là cáo trong bát đỏ, 5 giây đầu nháy mắt rồi 12–20 giây/lần (nháy mắt →
+  vẫy tay → ló lên), rê chuột vào thì vẫy (nghỉ ≥ 8 giây), tab ẩn/giảm chuyển động thì đứng yên — đúng luật `launcher-idle.js` repo mascot.
+- Chỗ gắn: trợ lý AI (đầu khung đổi theo lúc — chờ E00, đang gõ E42, đang nghĩ E02, đang trả lời E10 — kèm dòng trạng thái; chưa nói gì
+  thì E01 vẫy chào), phiên học (thẻ từ mới: E11 cạnh âm Hán Việt; đúng E04 / sai E05 trong tấm phản hồi), xong bài + thi đạt + kiểm tra
+  trình độ + mừng cột mốc chuỗi ngày (E04), thi chưa đạt (E05), đang thu âm chấm thanh (E09), quét ảnh đang soi (E19), Hanni Coach + bài
+  đọc AI đang viết (E39), bài đọc (E16), trạng thái rỗng `EmptyState` + từ điển không khớp + 404 (E19), trang chủ khách (E01 trong hình đầu trang).
+- Không phải cáo: `lib/confetti.ts` (pháo giấy canvas ~2 giây — CHỈ xong bài, thi đạt, cột mốc chuỗi ngày), `lib/use-count-up.ts` (số
+  màn xong bài chạy lên), lớp CSS ở `globals.css` mục "Phản hồi theo thao tác": `.answer-pop`/`.answer-shake` (phương án đúng nảy, sai
+  lắc; cặp ghép đúng nảy), `.sheet-up` (tấm đúng/sai trượt lên), `.mascot-pop`, `.flame-live` (lửa chuỗi ngày ở thanh trên + thẻ chuỗi
+  CHỈ khi đã học hôm nay), `.tab-bounce` (tab dưới đáy vừa chọn), `.cta-shine` (vệt sáng — chỉ nút "Học tiếp" `/learn` và nút học bài 1
+  ở trang chủ khách). Mọi hiệu ứng nằm trong `prefers-reduced-motion: no-preference`.
+- Xem thử local: `next dev` ở :3000 + proxy `~/Hanni-demo/tools/proxy.cjs` (`UPSTREAM=3000 PORT=8092`, trả CORS cho :3000) với
+  `NEXT_PUBLIC_API_URL=http://localhost:8092/api` — mở web QUA proxy thì bản dev chặn tài nguyên khác cổng (trang không hydrate).
+
 ### Nâng tiêu chí sau đợt chấm điểm (2026-10-21 tối — user: "nâng tất cả tiêu chí min 9… triển khai nhé")
 Đã nói thẳng với user: người dùng thật, sẵn sàng kinh doanh (payOS/email/billing Gemini/Bộ Công Thương), giữ chân (cần dữ liệu
 thật) không nâng được bằng code; luyện thi + độ dày nội dung muốn 9 cần hàng chục đề/cấp và câu ví dụ cho cả 10k từ. Đã làm:
@@ -484,7 +505,7 @@ khách xem không cần đăng nhập. Đợt 1 đã làm:
   giờ là `TitlePicker` ở đầu `/achievements` (9 danh hiệu mở theo huy hiệu đã đạt, chưa đạt thì ghi rõ
   huy hiệu cần đạt); khung Phượng Hoàng bật/tắt trong thẻ Premium (`PremiumFrame`); danh hiệu hiện cạnh
   tên ở bảng xếp hạng. Ví xu chỉ còn mua lá chắn streak. Người đã mua được hoàn xu (migration server).
-- **Linh vật cáo chỉ còn 3 vai** (chào mừng, chúc mừng, trạng thái rỗng): vòng tải `StudyLoader` dùng logo
+- **[ĐÃ ĐỔI 2026-10-29 — xem "Linh vật cáo động"] Linh vật cáo chỉ còn 3 vai** (chào mừng, chúc mừng, trạng thái rỗng): vòng tải `StudyLoader` dùng logo
   chữ 汉 (nó hiện ở MỌI lần mở app, mở bài, mở đề); bỏ thẻ "Mỗi ngày một chút" ở sidebar, cáo ở thẻ học
   tiếp `/learn`, màn mở đầu kiểm tra trình độ, danh sách đề (thay bằng icon-tile). Giữ: video cáo ở màn
   đăng nhập/đăng ký (logo góc trên đổi sang chữ 汉 cho khớp site), xong bài, kết quả kiểm tra trình độ,

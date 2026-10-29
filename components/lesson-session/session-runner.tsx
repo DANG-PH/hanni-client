@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { mutate } from "swr";
 import { Icon } from "@/components/icon";
+import { Mascot, preloadMascots } from "@/components/mascot";
 import { Overlay } from "@/components/overlay";
 import { Button, ProgressBar } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -80,6 +81,8 @@ export function SessionRunner({ session }: { session: LessonSession }) {
 
   useEffect(() => {
     startedAt.current = Date.now();
+    // Cáo đúng/sai hiện ngay lần trả lời đầu, không chờ tải ảnh.
+    preloadMascots(["e04-vui-mung", "e05-co-len"], 64);
   }, []);
 
   const item = queue[index];
@@ -232,28 +235,38 @@ export function SessionRunner({ session }: { session: LessonSession }) {
             correct === null
               ? "border-border bg-surface"
               : correct
-                ? "border-good/30 bg-good/10"
-                : "border-danger/30 bg-danger/10"
+                ? "sheet-up border-good/30 bg-good/10"
+                : "sheet-up border-danger/30 bg-danger/10"
           }`}
         >
           <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center">
             {correct !== null && word && (
-              <div className="min-w-0 flex-1">
-                <p
-                  className={`flex items-center gap-1.5 font-bold ${
-                    correct ? "text-good" : "text-danger"
-                  }`}
-                >
-                  <Icon name={correct ? "check" : "close"} size={18} />
-                  {correct ? "Chính xác!" : "Chưa đúng"}
-                </p>
-                <p className="mt-0.5 truncate text-sm">
-                  <span lang="zh" className="hanzi">
-                    {word.simplified}
-                  </span>{" "}
-                  <span className="text-muted">{word.pinyin}</span> —{" "}
-                  {shortMeaning(word.meaningVi ?? "")}
-                </p>
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                {/* Cáo phản ứng theo câu trả lời: vỗ tay khi đúng, nắm tay cổ vũ khi sai. */}
+                <Mascot
+                  key={`${item.key}-${correct}`}
+                  emote={correct ? "e04-vui-mung" : "e05-co-len"}
+                  size={64}
+                  priority
+                  className="mascot-pop -my-3"
+                />
+                <div className="min-w-0 flex-1">
+                  <p
+                    className={`flex items-center gap-1.5 font-bold ${
+                      correct ? "text-good" : "text-danger"
+                    }`}
+                  >
+                    <Icon name={correct ? "check" : "close"} size={18} />
+                    {correct ? "Chính xác!" : "Chưa đúng"}
+                  </p>
+                  <p className="mt-0.5 truncate text-sm">
+                    <span lang="zh" className="hanzi">
+                      {word.simplified}
+                    </span>{" "}
+                    <span className="text-muted">{word.pinyin}</span> —{" "}
+                    {shortMeaning(word.meaningVi ?? "")}
+                  </p>
+                </div>
               </div>
             )}
             <Button

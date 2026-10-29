@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/icon";
+import { Mascot } from "@/components/mascot";
 import { TONE_CLASS } from "@/components/tone-pinyin";
 import { mediaUrl } from "@/lib/api";
 import { markToneTried } from "@/lib/getting-started";
@@ -384,24 +385,28 @@ export function ToneCheck({
 
   return (
     <div className={`w-full ${className}`}>
-      <button
-        type="button"
-        onClick={() => void start()}
-        disabled={phase === "analyzing"}
-        aria-pressed={phase === "recording"}
-        className={`motion-button flex min-h-11 items-center gap-2 rounded-2xl px-4 text-sm font-semibold transition-colors disabled:opacity-60 ${align === "center" ? "mx-auto" : ""} ${
-          phase === "recording" ? "bg-primary text-primary-fg" : "border border-border bg-surface hover:border-primary/40 hover:text-primary"
-        }`}
-      >
-        <Icon name="mic" size={17} />
-        {phase === "recording"
-          ? "Đang nghe… (bấm để dừng)"
-          : phase === "analyzing"
-            ? "Đang chấm…"
-            : result
-              ? "Đọc lại"
-              : "Đọc thử — chấm thanh điệu"}
-      </button>
+      <div className={`flex items-center gap-1 ${align === "center" ? "justify-center" : ""}`}>
+        {/* Đang thu âm: cáo khum tay sau tai (E09) — cao bằng nút nhờ margin âm, không đẩy nội dung bên dưới. */}
+        {phase === "recording" && <Mascot emote="e09-lang-nghe" size={56} priority className="mascot-pop -my-1.5" />}
+        <button
+          type="button"
+          onClick={() => void start()}
+          disabled={phase === "analyzing"}
+          aria-pressed={phase === "recording"}
+          className={`motion-button flex min-h-11 items-center gap-2 rounded-2xl px-4 text-sm font-semibold transition-colors disabled:opacity-60 ${
+            phase === "recording" ? "bg-primary text-primary-fg" : "border border-border bg-surface hover:border-primary/40 hover:text-primary"
+          }`}
+        >
+          <Icon name="mic" size={17} />
+          {phase === "recording"
+            ? "Đang nghe… (bấm để dừng)"
+            : phase === "analyzing"
+              ? "Đang chấm…"
+              : result
+                ? "Đọc lại"
+                : "Đọc thử — chấm thanh điệu"}
+        </button>
+      </div>
       {phase === "recording" && (
         <span className={`mt-2 block h-1.5 w-40 overflow-hidden rounded-full bg-surface-2 ${align === "center" ? "mx-auto" : ""}`} aria-hidden="true">
           <span ref={meter} className="block h-full origin-left rounded-full bg-primary transition-transform duration-75" style={{ transform: "scaleX(0)" }} />

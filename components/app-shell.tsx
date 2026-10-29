@@ -95,7 +95,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                 title="Chuỗi ngày học"
                 className={`flex items-center gap-1.5 rounded-full bg-primary/8 px-3 py-2 text-xs font-semibold text-primary ${styles.streak}`}
               >
-                <Icon name="flame" size={16} />
+                {/* Lửa bập bùng khi hôm nay đã học — nhìn là biết chuỗi đang "cháy". */}
+                <Icon name="flame" size={16} className={streak.data.activeToday ? "flame-live" : undefined} />
                 {streak.data.currentStreak}
                 <span className="hidden md:inline">ngày</span>
                 {/* Lá chắn kiếm được (mốc 7 ngày, mời bạn, xong nhiệm vụ ngày)

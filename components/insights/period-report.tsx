@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/icon";
+import { Mascot } from "@/components/mascot";
 import { PremiumModal } from "@/components/premium-modal";
 import { Button, Card, ErrorNote, LinkButton, SectionHeading } from "@/components/ui";
 import { useCoach, useInsightsReport } from "@/lib/insights";
@@ -257,8 +258,8 @@ function CoachCard({ report, name, next }: { report: InsightsReport; name: strin
           ) : !summary ? (
             <div role="status" className="space-y-3">
               <p className="flex items-center gap-2 text-sm text-muted">
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-accent" />
-                Hanni Coach đang đọc số liệu của bạn… (khoảng 10–15 giây)
+                <Mascot emote="e39-ghi-chu" size={56} priority className="-my-2" />
+                Hanni Coach đang đọc số liệu và ghi nhận xét… (khoảng 10–15 giây)
               </p>
               {[92, 80, 86, 60].map((w) => (
                 <div key={w} className="h-3 animate-pulse rounded bg-surface-2" style={{ width: `${w}%` }} />

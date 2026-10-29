@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/icon";
+import { Mascot } from "@/components/mascot";
 import { TONE_CLASS, TonePinyin } from "@/components/tone-pinyin";
 import { ToneCheck } from "@/components/tone/tone-check";
 import { mediaUrl } from "@/lib/api";
@@ -70,32 +71,36 @@ export function IntroStep({ word }: { word: SessionWord }) {
         {word.meaningVi ?? word.meaningEn ?? "Đang cập nhật nghĩa"}
       </p>
       {word.hanViet && (
-        <div className="mt-4 w-full max-w-sm rounded-2xl border border-hanviet/20 bg-hanviet/5 px-4 py-3">
-          <p className="text-sm">
-            Âm Hán Việt:{" "}
-            <strong className="text-hanviet">{word.hanViet}</strong>
-          </p>
-          {hints.length > 0 && (
-            <ul className="mt-2 flex flex-wrap justify-center gap-1.5">
-              {hints.map((h, i) => (
-                <li
-                  key={`${h.char}-${i}`}
-                  title={
-                    h.follows
-                      ? TONE_RULE_TEXT[h.rule]
-                      : "Ngoại lệ — chữ này không theo quy luật, nhớ riêng nhé"
-                  }
-                  className="rounded-lg bg-surface px-2 py-1 text-xs text-muted"
-                >
-                  {h.hanViet} →{" "}
-                  <span className={`font-bold ${TONE_CLASS[String(h.tone)]}`}>
-                    thanh {h.tone}
-                  </span>
-                  {h.follows ? " ✓" : " (ngoại lệ)"}
-                </li>
-              ))}
-            </ul>
-          )}
+        // Cáo "À ha!" chỉ vào âm Hán Việt — lợi thế riêng của người Việt, đáng được chú ý nhất trên thẻ.
+        <div className="mt-4 flex w-full max-w-sm items-center gap-2 rounded-2xl border border-hanviet/20 bg-hanviet/5 py-2 pl-1 pr-4 text-left">
+          <Mascot emote="e11-a-ha" size={60} priority className="-my-1" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm">
+              Âm Hán Việt:{" "}
+              <strong className="text-hanviet">{word.hanViet}</strong>
+            </p>
+            {hints.length > 0 && (
+              <ul className="mt-2 flex flex-wrap gap-1.5">
+                {hints.map((h, i) => (
+                  <li
+                    key={`${h.char}-${i}`}
+                    title={
+                      h.follows
+                        ? TONE_RULE_TEXT[h.rule]
+                        : "Ngoại lệ — chữ này không theo quy luật, nhớ riêng nhé"
+                    }
+                    className="rounded-lg bg-surface px-2 py-1 text-xs text-muted"
+                  >
+                    {h.hanViet} →{" "}
+                    <span className={`font-bold ${TONE_CLASS[String(h.tone)]}`}>
+                      thanh {h.tone}
+                    </span>
+                    {h.follows ? " ✓" : " (ngoại lệ)"}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       )}
       {word.mnemonicVi && (
@@ -168,9 +173,9 @@ function OptionGrid({
               state === "idle"
                 ? "border-border bg-surface hover:border-primary/40 hover:bg-primary/5"
                 : state === "right"
-                  ? "border-good bg-good/10"
+                  ? "answer-pop border-good bg-good/10"
                   : state === "wrong"
-                    ? "border-danger bg-danger/10"
+                    ? "answer-shake border-danger bg-danger/10"
                     : "border-border bg-surface opacity-50"
             }`}
           >
@@ -342,7 +347,7 @@ export function MatchStep({
       wrong &&
       ((t.side === "zh" && wrong.startsWith(`${t.wordId}|`)) ||
         (t.side === "vi" && wrong.endsWith(`|${t.wordId}`)));
-    if (matched.has(t.wordId)) return "border-good/40 bg-good/10 text-good opacity-60";
+    if (matched.has(t.wordId)) return "answer-pop border-good/40 bg-good/10 text-good opacity-60";
     if (isWrong) return "border-danger bg-danger/10 animate-[shake_0.35s]";
     if (selected) return "border-primary bg-primary/10";
     return "border-border bg-surface hover:border-primary/40";

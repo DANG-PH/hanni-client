@@ -1,13 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/icon";
+import { Mascot } from "@/components/mascot";
 import { signalInstallMoment } from "@/components/pwa/install-prompt";
 import { ShareButton } from "@/components/share-button";
 import { LinkButton } from "@/components/ui";
+import { confetti } from "@/lib/confetti";
 import type { LessonCompleteResult, LessonSession } from "@/lib/types";
+import { useCountUp } from "@/lib/use-count-up";
 import { shortMeaning } from "./steps";
 
 function formatDuration(ms: number) {
@@ -32,9 +34,12 @@ export function SessionComplete({
 }) {
   // Vừa xong bài là lúc dễ đồng ý cài app nhất.
   useEffect(() => signalInstallMoment(), []);
+  useEffect(() => confetti(), []);
   const next = result?.nextLesson ?? session.nextLesson;
   const total = session.words.length;
   const pct = Math.round(accuracy * 100);
+  const shownWords = useCountUp(result?.newWords ?? total);
+  const shownPct = useCountUp(pct);
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
@@ -42,13 +47,12 @@ export function SessionComplete({
         className="mx-auto w-full max-w-xl flex-1 px-4 py-10 text-center"
         style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
       >
-        <Image
-          src="/anhloading.png"
-          alt="Cáo Hanni chúc mừng bạn"
-          width={180}
-          height={150}
+        <Mascot
+          emote="e04-vui-mung"
+          size={168}
+          alt="Cáo Hanni vỗ tay chúc mừng bạn"
           priority
-          className="mx-auto h-36 w-auto"
+          className="mascot-pop mx-auto -mb-2"
         />
         <p className="mt-5 text-xs font-bold tracking-wider text-primary">
           HOÀN THÀNH BÀI {session.lesson.orderIndex}/{session.lesson.totalLessons}
@@ -66,20 +70,20 @@ export function SessionComplete({
 
         <dl className="mt-7 grid grid-cols-3 gap-3">
           {[
-            { label: "Từ mới", value: String(result?.newWords ?? total) },
-            { label: "Chính xác", value: `${pct}%` },
+            { label: "Từ mới", value: String(shownWords) },
+            { label: "Chính xác", value: `${shownPct}%` },
             { label: "Thời gian", value: formatDuration(durationMs) },
           ].map((s) => (
             <div key={s.label} className="panel px-2 py-4">
               <dt className="text-xs text-muted">{s.label}</dt>
-              <dd className="mt-1 text-xl font-bold">{s.value}</dd>
+              <dd className="mt-1 text-xl font-bold tabular-nums">{s.value}</dd>
             </div>
           ))}
         </dl>
 
         {result && result.currentStreak > 0 && (
           <p className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-danger/10 px-4 py-2 text-sm font-semibold text-danger">
-            <Icon name="flame" size={16} /> Chuỗi {result.currentStreak} ngày học
+            <Icon name="flame" size={16} className="flame-live" /> Chuỗi {result.currentStreak} ngày học
           </p>
         )}
         {saveError && (

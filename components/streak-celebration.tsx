@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { Icon } from "@/components/icon";
+import { Mascot } from "@/components/mascot";
 import { Overlay } from "@/components/overlay";
+import { confetti } from "@/lib/confetti";
 import { onStreakMilestone } from "@/lib/streak-celebration";
 
 /** Chỉ 5 cột mốc — khớp `STREAK_1/3/7/30/100` trong achievement-catalog.ts
@@ -50,6 +52,9 @@ export function StreakCelebration() {
   const [milestone, setMilestone] = useState<number | null>(null);
 
   useEffect(() => onStreakMilestone(setMilestone), []);
+  useEffect(() => {
+    if (milestone != null) confetti();
+  }, [milestone]);
 
   if (milestone == null) return null;
 
@@ -78,12 +83,14 @@ export function StreakCelebration() {
             <Icon name="close" size={16} />
           </button>
 
-          <span
-            className="icon-tile mx-auto flex h-20 w-20 items-center justify-center bg-danger/10 text-danger"
-            style={{ animation: "reveal-in 600ms var(--motion-ease) both" }}
-          >
-            <Icon name="flame" size={40} />
-          </span>
+          {/* Cáo vỗ tay + huy hiệu lửa mang số ngày ở góc. */}
+          <div className="relative mx-auto w-fit">
+            <Mascot emote="e04-vui-mung" size={150} priority className="mascot-pop" />
+            <span className="absolute -right-2 bottom-3 flex h-12 min-w-12 items-center justify-center gap-0.5 rounded-full border-2 border-surface bg-danger px-2 text-sm font-extrabold text-primary-fg shadow-lg">
+              <Icon name="flame" size={16} className="flame-live" />
+              {milestone}
+            </span>
+          </div>
 
           <p className="mt-5 text-xs font-bold uppercase tracking-wider text-danger">
             {copy.eyebrow}

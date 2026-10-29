@@ -48,6 +48,7 @@ import { StrokeAnimation } from "@/components/dictionary/glyph-panel";
 import { HanVietTips } from "@/components/dictionary/hanviet-tips";
 import { RecentSearches } from "@/components/dictionary/recent-searches";
 import { Icon, type IconName } from "@/components/icon";
+import { Mascot } from "@/components/mascot";
 import { LinkButton } from "@/components/ui";
 import { WordOfTheDayCard } from "@/components/word-of-the-day";
 import { API_BASE } from "@/lib/api";
@@ -513,12 +514,15 @@ async function WordResults({ q, page }: { q: string; page: number }) {
       {items.length === 0 ? (
         // Dán cả câu: khối phiên âm ở trên đã là kết quả — báo "không khớp" ở đây chỉ gây rối.
         seg?.tokens.some((t) => t.simplified) ? null : (
-          <div className="panel p-6 text-center text-sm text-muted">
-            Không có từ nào khớp &ldquo;{q}&rdquo;. Thử tab{" "}
-            <Link href={dictHref(q, "vi-du")} className="font-semibold text-primary">
-              Ví dụ
-            </Link>{" "}
-            hoặc gõ Hán tự, pinyin, âm Hán Việt.
+          <div className="panel flex flex-col items-center p-6 text-center text-sm text-muted">
+            <Mascot emote="e19-tim-kiem" size={96} className="mb-2" />
+            <p>
+              Không có từ nào khớp &ldquo;{q}&rdquo;. Thử tab{" "}
+              <Link href={dictHref(q, "vi-du")} className="font-semibold text-primary">
+                Ví dụ
+              </Link>{" "}
+              hoặc gõ Hán tự, pinyin, âm Hán Việt.
+            </p>
           </div>
         )
       ) : (

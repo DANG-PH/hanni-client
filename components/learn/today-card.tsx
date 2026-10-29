@@ -74,7 +74,7 @@ export function TodayCard() {
             s?.activeToday ? "bg-danger/12 text-danger" : "bg-surface-2 text-muted"
           }`}
         >
-          <Icon name="flame" size={26} />
+          <Icon name="flame" size={26} className={s?.activeToday ? "flame-live" : undefined} />
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-2xl font-extrabold leading-none">

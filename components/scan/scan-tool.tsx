@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { askAssistant } from "@/components/assistant-widget";
 import { AudioButton } from "@/components/audio-button";
 import { Icon } from "@/components/icon";
+import { Mascot } from "@/components/mascot";
 import { PremiumModal } from "@/components/premium-modal";
 import { Button, ErrorNote, LinkButton } from "@/components/ui";
 import { ApiError } from "@/lib/api";
@@ -236,8 +237,8 @@ export function ScanTool() {
           {busy ? (
             <div role="status" className="panel space-y-3 p-5">
               <p className="flex items-center gap-2 text-sm font-semibold">
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
-                Hanni đang đọc ảnh… (khoảng 5–10 giây)
+                <Mascot emote="e19-tim-kiem" size={56} priority className="-my-2" />
+                Hanni đang soi ảnh… (khoảng 5–10 giây)
               </p>
               {[88, 72, 80, 64].map((w) => (
                 <div key={w} className="h-3 animate-pulse rounded bg-surface-2" style={{ width: `${w}%` }} />

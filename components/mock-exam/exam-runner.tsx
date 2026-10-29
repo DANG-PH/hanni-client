@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useSWR, { mutate } from "swr";
 import { Icon } from "@/components/icon";
+import { Mascot } from "@/components/mascot";
 import { Overlay } from "@/components/overlay";
 import { ShareButton } from "@/components/share-button";
 import { StudyLoader } from "@/components/study-loader";
@@ -13,6 +13,7 @@ import { signalInstallMoment } from "@/components/pwa/install-prompt";
 import { Button, LinkButton } from "@/components/ui";
 import { api, apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { confetti } from "@/lib/confetti";
 import { addWordToSrs } from "@/lib/hooks";
 import { hasChineseVoice, playListening, stopListening } from "@/lib/listening-audio";
 import {
@@ -619,6 +620,9 @@ function Result({
   onRetry: () => void;
 }) {
   useEffect(() => signalInstallMoment(), []);
+  useEffect(() => {
+    if (result.passed) confetti();
+  }, [result.passed]);
   const [filter, setFilter] = useState<"all" | "wrong">("wrong");
   const [mode, setMode] = useState<"review" | "practice">("review");
   const [practice, setPractice] = useState<Record<number, MockAnswer>>({});
@@ -693,7 +697,13 @@ function Result({
       </header>
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
         <section className="rounded-2xl border border-border bg-surface p-6 text-center sm:p-8">
-          <Image src="/anhloading.png" alt="Cáo Hanni" width={150} height={125} className="mx-auto h-28 w-auto" />
+          <Mascot
+            emote={result.passed ? "e04-vui-mung" : "e05-co-len"}
+            size={136}
+            alt={result.passed ? "Cáo Hanni vỗ tay chúc mừng" : "Cáo Hanni cổ vũ bạn"}
+            priority
+            className="mascot-pop mx-auto"
+          />
           <p className="mt-3 text-xs font-bold tracking-wider text-primary">KẾT QUẢ · {paper.title.toUpperCase()}</p>
           <p className="mt-2 text-5xl font-extrabold tracking-tight">
             {result.score}

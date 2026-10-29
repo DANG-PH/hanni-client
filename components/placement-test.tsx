@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/icon";
+import { Mascot } from "@/components/mascot";
 import { signalInstallMoment } from "@/components/pwa/install-prompt";
 import { ChoiceStep, playWord, shortMeaning } from "@/components/lesson-session/steps";
 import { ShareButton } from "@/components/share-button";
@@ -335,13 +335,12 @@ function Result({
         className="mx-auto w-full max-w-xl flex-1 px-4 py-10 text-center"
         style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
       >
-        <Image
-          src="/anhloading.png"
-          alt="Cáo Hanni"
-          width={180}
-          height={150}
+        <Mascot
+          emote="e04-vui-mung"
+          size={140}
+          alt="Cáo Hanni vỗ tay"
           priority
-          className="mx-auto h-32 w-auto"
+          className="mascot-pop mx-auto"
         />
         <p className="mt-5 text-xs font-bold tracking-wider text-primary">
           KẾT QUẢ KIỂM TRA TRÌNH ĐỘ

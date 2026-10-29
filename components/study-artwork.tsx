@@ -1,4 +1,6 @@
-/** Hình trang trí bằng CSS, không phải bài học hay số liệu mẫu. */
+import { Mascot } from "./mascot";
+
+/** Hình trang trí bằng CSS, không phải bài học hay số liệu mẫu. Cáo Hanni vẫy tay chào khách (E01) đứng cạnh bàn. */
 export function StudyArtwork() {
   return (
     <div className="study-artwork reveal" aria-hidden="true">
@@ -33,6 +35,9 @@ export function StudyArtwork() {
       </div>
       <div className="art-teacup">
         <span />
+      </div>
+      <div className="art-fox float-y">
+        <Mascot emote="e01-chao" size={210} priority />
       </div>
       <div className="art-caption">
         <span className="art-seal hanzi">汉</span>

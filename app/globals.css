@@ -385,6 +385,61 @@
   }
 }
 
+/* ===== Phản hồi theo thao tác (2026-10-29 — user: "dự án trông hơi tĩnh") =====
+ * Chỉ chạy khi người học vừa làm gì đó (chọn đáp án, xong bài, cáo đổi biểu cảm); lặp mãi chỉ có lửa chuỗi ngày
+ * khi ĐÃ học hôm nay và vệt sáng trên đúng 1 nút chính của trang. */
+@keyframes answer-pop {
+  0% { scale: 1; }
+  40% { scale: 1.045; }
+  100% { scale: 1; }
+}
+@keyframes sheet-up {
+  from { translate: 0 100%; }
+  to { translate: 0 0; }
+}
+@keyframes mascot-pop {
+  0% { opacity: 0; scale: 0.6; }
+  60% { opacity: 1; scale: 1.08; }
+  100% { opacity: 1; scale: 1; }
+}
+@keyframes flame-flicker {
+  0%, 100% { scale: 1; rotate: 0deg; }
+  30% { scale: 1.08 1.14; rotate: -4deg; }
+  60% { scale: 0.96 1.04; rotate: 3deg; }
+}
+@keyframes float-y {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -6px; }
+}
+@keyframes cta-shine {
+  0%, 70% { translate: -120% 0; }
+  100% { translate: 260% 0; }
+}
+@keyframes tab-bounce {
+  0% { scale: 1; }
+  40% { scale: 1.2; }
+  100% { scale: 1; }
+}
+@media screen and (prefers-reduced-motion: no-preference) {
+  .answer-pop { animation: answer-pop 380ms var(--motion-ease); }
+  .answer-shake { animation: shake 300ms ease-in-out; }
+  .sheet-up { animation: sheet-up 280ms var(--motion-ease) both; }
+  .mascot-pop { animation: mascot-pop 420ms var(--motion-ease) both; }
+  .flame-live { animation: flame-flicker 1.6s ease-in-out infinite; transform-origin: 50% 85%; }
+  .float-y { animation: float-y 4s ease-in-out infinite; }
+  .tab-bounce { animation: tab-bounce 320ms var(--motion-ease); }
+  .cta-shine { position: relative; overflow: hidden; }
+  .cta-shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.38), transparent);
+    animation: cta-shine 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+
 /* Trang chủ: nền giấy sáng, những khối học tập gọn và điểm nhấn đỏ. */
 .home-hero {
   background:
@@ -637,6 +692,13 @@
   top: 30%;
   right: -40px;
   transform: scale(0.5);
+}
+.art-fox {
+  position: absolute;
+  z-index: 2;
+  left: -3%;
+  bottom: 22px;
+  filter: drop-shadow(6px 12px 10px #62402830);
 }
 .art-caption {
   display: flex;
