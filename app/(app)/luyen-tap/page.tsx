@@ -69,14 +69,12 @@ export default function PracticeHubPage() {
                   className="panel hover-card flex h-full flex-col overflow-hidden"
                 >
                   <SceneCover kind={item.scene} />
-                  <span className="flex items-start gap-3 p-4">
-                  <span className="icon-tile flex h-10 w-10 shrink-0 items-center justify-center">
-                    <Icon name={item.icon} size={20} />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-sm font-bold">{item.label}</span>
-                    <span className="mt-0.5 block text-xs leading-5 text-muted">{item.description}</span>
-                  </span>
+                  <span className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
+                    <span className="flex items-start gap-2 text-sm font-bold">
+                      <Icon name={item.icon} size={16} className="mt-0.5 shrink-0 text-primary" />
+                      <span>{item.label}</span>
+                    </span>
+                    <span className="text-xs leading-5 text-muted">{item.description}</span>
                   </span>
                 </Link>
               </li>
