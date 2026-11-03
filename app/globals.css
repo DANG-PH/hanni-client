@@ -88,7 +88,7 @@
   --color-danger: var(--danger);
   --color-lavender: var(--lavender);
   --color-hanviet: var(--hanviet);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), var(--font-hanzi-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
