@@ -7,3 +7,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## UI verification on this machine
+
+The user has explicitly requested production-based UI verification because this machine has limited RAM. Do not start local dev servers, Metro, emulators, or local build/test jobs for UI changes. Use the existing cloud build/deployment pipeline and verify the production website. Run local servers or builds only when the user explicitly asks for them. Preserve other projects' processes.

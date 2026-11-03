@@ -15,6 +15,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "./brand-refresh.css";
 import { AuthProvider } from "@/lib/auth";
 import { PwaRuntime } from "@/components/pwa/pwa-runtime";
 import { ConnectivityNotice } from "@/components/pwa/connectivity-notice";

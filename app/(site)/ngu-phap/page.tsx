@@ -1,3 +1,4 @@
+import { SceneArt } from "@/components/learning-scenes";
 /**
  * BẢN ĐỒ TRANG — Danh sách NGỮ PHÁP (/ngu-phap) theo cấp
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
@@ -80,7 +81,8 @@ export default async function NguPhapIndexPage({
 
   return (
     <div className="page-wrap max-w-4xl! space-y-7 py-10!">
-      <section className="text-center">
+      <section className="cultural-intro text-center">
+        <div className="cultural-intro-copy">
         <span className="eyebrow">NGỮ PHÁP TIẾNG TRUNG</span>
         <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
           Ngữ pháp HSK {level}
@@ -89,6 +91,8 @@ export default async function NguPhapIndexPage({
           Giải thích bằng tiếng Việt, kèm mẫu câu và ví dụ có pinyin — không
           phải bản dịch máy. Tra cứu miễn phí, không cần đăng nhập.
         </p>
+        </div>
+        <SceneArt kind="grammar" className="cultural-intro-art" />
       </section>
 
       <nav aria-label="Lọc theo cấp HSK" className="flex flex-wrap gap-2">

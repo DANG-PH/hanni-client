@@ -75,6 +75,7 @@ export default function WatchPage() {
   return (
     <div className="page-wrap learning-workspace">
       <PageHeading
+        scene="video"
         icon="play"
         tone="good"
         eyebrow="Tiếng Trung trong cuộc sống"

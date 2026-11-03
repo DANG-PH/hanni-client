@@ -119,6 +119,8 @@ function LibraryContent({
   return (
     <div className="page-wrap learning-workspace">
       <PageHeading
+        scene={skill === "pronunciation" ? "pronunciation" : skill === "listening" ? "listening" : "grammar"}
+        illustrated={!started}
         icon={skillIcons[skill]}
         tone={skill === "listening" ? "accent" : "primary"}
         eyebrow="Luyện tập mỗi ngày"

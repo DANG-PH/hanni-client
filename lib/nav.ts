@@ -1,7 +1,7 @@
 import type { IconName } from "@/components/icon";
 
 export type NavLink = { href: string; label: string; icon: IconName };
-export type PracticeLink = NavLink & { description: string };
+export type PracticeLink = NavLink & { description: string; scene: import("@/components/learning-scenes").SceneKind };
 
 /**
  * Menu NGẮN, phẳng (2026-10-15). Bản nhóm thu gọn kiểu web Hanbeego (06/10)
@@ -44,26 +44,26 @@ export const PRACTICE_SECTIONS: { title: string; items: PracticeLink[] }[] = [
   {
     title: "Luyện 4 kỹ năng",
     items: [
-      { href: "/listening", label: "Luyện nghe", description: "Nghe từ của bài đang học, gõ lại bằng pinyin", icon: "headphones" },
-      { href: "/pronunciation", label: "Luyện phát âm", description: "Đọc to, Hanni chấm xem bạn nói đúng chưa", icon: "mic" },
-      { href: "/roleplay", label: "Luyện nói với AI", description: "Gọi món, hỏi đường, mua sắm — nói như thật", icon: "message" },
-      { href: "/writing", label: "Luyện viết chữ Hán", description: "Xem thứ tự nét rồi tự tô từng chữ", icon: "pencil" },
+      { href: "/listening", scene: "listening", label: "Luyện nghe", description: "Nghe từ của bài đang học, gõ lại bằng pinyin", icon: "headphones" },
+      { href: "/pronunciation", scene: "pronunciation", label: "Luyện phát âm", description: "Đọc to, Hanni chấm xem bạn nói đúng chưa", icon: "mic" },
+      { href: "/roleplay", scene: "speaking", label: "Luyện nói với AI", description: "Gọi món, hỏi đường, mua sắm — nói như thật", icon: "message" },
+      { href: "/writing", scene: "writing", label: "Luyện viết chữ Hán", description: "Xem thứ tự nét rồi tự tô từng chữ", icon: "pencil" },
     ],
   },
   {
     title: "Học mà chơi",
     items: [
-      { href: "/watch", label: "Học qua video", description: "Phim ngắn, phụ đề song ngữ, bấm từ để tra", icon: "play" },
-      { href: "/minigame", label: "Trò chơi luyện từ", description: "Dịch tốc độ, nghe đoán từ, ghép cặp, chọn pinyin", icon: "trophy" },
+      { href: "/watch", scene: "video", label: "Học qua video", description: "Phim ngắn, phụ đề song ngữ, bấm từ để tra", icon: "play" },
+      { href: "/minigame", scene: "game", label: "Trò chơi luyện từ", description: "Dịch tốc độ, nghe đoán từ, ghép cặp, chọn pinyin", icon: "trophy" },
     ],
   },
   {
     title: "Nền tảng & tra cứu",
     items: [
-      { href: "/phien-am", label: "Bảng phiên âm", description: "Thanh điệu, phụ âm, vần — bấm nghe từng âm", icon: "sound" },
-      { href: "/ngu-phap", label: "Ngữ pháp & mẫu câu", description: "235 điểm ngữ pháp giải thích bằng tiếng Việt", icon: "book" },
-      { href: "/tu-dien/quet", label: "Quét ảnh học từ", description: "Chụp thực đơn, biển hiệu, đồ vật — ra từ kèm Hán Việt", icon: "camera" },
-      { href: "/tu-da-biet", label: "Từ bạn đã biết sẵn", description: "Từ trùng nghĩa với tiếng Việt nhờ âm Hán Việt", icon: "heart" },
+      { href: "/phien-am", scene: "pinyin", label: "Bảng phiên âm", description: "Thanh điệu, phụ âm, vần — bấm nghe từng âm", icon: "sound" },
+      { href: "/ngu-phap", scene: "grammar", label: "Ngữ pháp & mẫu câu", description: "235 điểm ngữ pháp giải thích bằng tiếng Việt", icon: "book" },
+      { href: "/tu-dien/quet", scene: "scan", label: "Quét ảnh học từ", description: "Chụp thực đơn, biển hiệu, đồ vật — ra từ kèm Hán Việt", icon: "camera" },
+      { href: "/tu-da-biet", scene: "hanviet", label: "Từ bạn đã biết sẵn", description: "Từ trùng nghĩa với tiếng Việt nhờ âm Hán Việt", icon: "heart" },
       // "Kiểm tra trình độ" bỏ khỏi đây (2026-10-20): làm 1 lần để chọn cấp, không phải công cụ luyện — lối vào ở
       // trang chủ ("Không chắc nên học cấp nào?"), thi thử, trang giới thiệu, khảo sát, trợ lý AI.
     ],

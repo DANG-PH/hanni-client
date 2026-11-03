@@ -1,3 +1,4 @@
+import { SceneArt } from "@/components/learning-scenes";
 /**
  * BẢN ĐỒ TRANG — BẢNG PHIÊN ÂM (/phien-am) — thanh điệu, thanh mẫu/vận mẫu, bảng ghép âm bấm nghe, luyện nghe thanh
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
@@ -87,7 +88,8 @@ export default async function PinyinPage() {
 
   return (
     <div className="page-wrap max-w-5xl! space-y-10 py-8!">
-      <section className="panel tint-primary p-5 sm:p-8">
+      <section className="cultural-intro panel tint-primary p-5 sm:p-8">
+        <div className="cultural-intro-copy">
         <span className="eyebrow max-sm:hidden">PHÁT ÂM CHO NGƯỜI MỚI</span>
         <h1 className="text-2xl font-extrabold tracking-tight sm:mt-3 sm:text-4xl">
           Bảng phiên âm tiếng Trung (pinyin)
@@ -115,6 +117,8 @@ export default async function PinyinPage() {
             </a>
           ))}
         </nav>
+        </div>
+        <SceneArt kind="pinyin" className="cultural-intro-art" />
       </section>
 
       <section id="thanh-dieu" className="scroll-mt-24 space-y-4">

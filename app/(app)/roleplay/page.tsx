@@ -103,6 +103,7 @@ export default function RoleplayPage() {
        * vừa màn hình (trước đó ô soạn nằm dưới mép, bị thanh tab che). */}
       <div className={activeSessionId ? "max-md:hidden" : undefined}>
         <PageHeading
+        scene="speaking"
           icon="message"
           tone="accent"
           eyebrow="Luyện phản xạ"

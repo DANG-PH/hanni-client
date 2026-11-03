@@ -28,6 +28,7 @@ export function StudyHub() {
   return (
     <div className="page-wrap space-y-6">
       <PageHeading
+        scene="review"
         icon="cards"
         title="Ôn tập"
         description="Từ đã học quay lại đúng lúc sắp quên — hoặc chọn một bài để ôn bằng flashcard."

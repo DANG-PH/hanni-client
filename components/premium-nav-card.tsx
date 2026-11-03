@@ -54,7 +54,7 @@ export function PremiumNavCard({
           <Icon name="crown" size={18} />
         </button>
       ) : (
-        <div className="mb-3 rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/15 via-surface to-primary/8 p-3.5">
+        <div className="mb-3 rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/15 via-surface to-accent/5 p-3.5">
           <p className="flex items-center gap-2 text-sm font-bold">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/15 text-accent">
               <Icon name="crown" size={16} />
@@ -67,7 +67,7 @@ export function PremiumNavCard({
           <button
             type="button"
             onClick={upgrade}
-            className="motion-button mt-3 flex min-h-9 w-full items-center justify-center gap-1.5 rounded-xl border border-primary bg-primary text-xs font-bold text-primary-fg shadow-[0_3px_0_0_color-mix(in_srgb,var(--primary)_62%,#000)] hover:brightness-105 active:translate-y-[2px] active:shadow-none"
+            className="motion-button mt-3 flex min-h-9 w-full items-center justify-center gap-1.5 rounded-xl border border-accent bg-accent text-xs font-bold text-primary-fg shadow-[0_3px_0_0_color-mix(in_srgb,var(--accent)_62%,#000)] hover:brightness-105 active:translate-y-[2px] active:shadow-none"
           >
             Nâng cấp
             <Icon name="arrow" size={13} />

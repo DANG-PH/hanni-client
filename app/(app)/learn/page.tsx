@@ -49,6 +49,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { mutate } from "swr";
 import Link from "next/link";
+import { LearningWelcome } from "@/components/learning-welcome";
 import { ClassAssignmentsCard } from "@/components/classrooms/class-assignments-card";
 import { DailyQuestCard } from "@/components/daily-quest-card";
 import { Icon, type IconName } from "@/components/icon";
@@ -271,9 +272,10 @@ function LearnHome() {
   const nextLevel = data ? data.levels.find((l) => l > data.level) : undefined;
 
   return (
-    <div className="page-wrap space-y-5">
+    <div className="page-wrap learn-home space-y-6">
+      <LearningWelcome />
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <section className="panel tint-primary relative flex flex-col gap-5 overflow-hidden p-5 sm:flex-row sm:items-center sm:p-6" aria-labelledby="next-lesson">
+        <section className="panel lesson-hero relative flex flex-col gap-5 overflow-hidden p-5 sm:flex-row sm:items-center sm:p-7" aria-labelledby="next-lesson">
           {error ? (
             <div className="space-y-3">
               <ErrorNote>Chưa tải được lộ trình. Vui lòng thử lại.</ErrorNote>

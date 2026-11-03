@@ -4,18 +4,20 @@ import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { Icon, type IconName } from "./icon";
 import { Mascot } from "./mascot";
+import { SceneArt, type SceneKind } from "./learning-scenes";
 import headingStyles from "./headings.module.css";
 import { StudyLoader } from "./study-loader";
 import loaderStyles from "./study-loader.module.css";
 
-type Variant = "primary" | "secondary" | "ghost" | "danger";
-// Nút "nổi khối" (bóng đáy đặc, bấm thì lún xuống) như Duolingo/Hanbeego —
-// nhìn là biết bấm được, cảm giác chơi chứ không như form hành chính.
+type Variant = "primary" | "premium" | "secondary" | "ghost" | "danger";
+// Shared controls: warm colors, clear borders and a soft elevation.
 const VARIANTS: Record<Variant, string> = {
   primary:
-    "border border-primary bg-primary font-bold text-primary-fg shadow-[0_4px_0_0_color-mix(in_srgb,var(--primary)_62%,#000)] hover:brightness-105 active:translate-y-[3px] active:shadow-[0_1px_0_0_color-mix(in_srgb,var(--primary)_62%,#000)]",
+    "border border-primary bg-primary font-bold text-primary-fg shadow-[0_5px_14px_-7px_color-mix(in_srgb,var(--primary)_55%,transparent)] hover:brightness-105 active:translate-y-px active:shadow-none",
+  premium:
+    "border border-accent bg-accent font-bold text-primary-fg shadow-sm hover:brightness-105 active:translate-y-px",
   secondary:
-    "border border-border bg-surface text-foreground shadow-[0_3px_0_0_var(--border)] hover:bg-surface-2 hover:border-primary/30 active:translate-y-[2px] active:shadow-[0_1px_0_0_var(--border)]",
+    "border border-border bg-surface text-foreground shadow-xs hover:bg-surface-2 hover:border-primary/30 active:translate-y-px",
   ghost:
     "border border-transparent text-muted hover:bg-surface-2 hover:text-foreground active:translate-y-0.5",
   danger:
@@ -169,16 +171,20 @@ export function PageHeading({
   description,
   children,
   tone = "primary",
+  illustrated = true,
+  scene,
 }: {
   icon?: IconName;
   eyebrow?: string;
   title: string;
   description: string;
   children?: ReactNode;
+  illustrated?: boolean;
+  scene?: SceneKind;
   tone?: "primary" | "good" | "accent" | "lavender";
 }) {
   return (
-    <header className={headingStyles.page} data-tone={tone}>
+    <header className={`${headingStyles.page} ${!illustrated || !scene ? headingStyles.withoutScene : ""}`} data-tone={tone}>
       <div className={headingStyles.identity}>
         <span className={headingStyles.pageIcon}>
           <Icon name={icon} size={22} />
@@ -190,6 +196,7 @@ export function PageHeading({
         </div>
       </div>
       {children && <div className={headingStyles.pageActions}>{children}</div>}
+      {illustrated && scene && <SceneArt kind={scene} className={headingStyles.scene} />}
     </header>
   );
 }

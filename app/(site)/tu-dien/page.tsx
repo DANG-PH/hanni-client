@@ -1,3 +1,4 @@
+import { SceneArt } from "@/components/learning-scenes";
 /**
  * BẢN ĐỒ TRANG — TỪ ĐIỂN (/tu-dien) — trang chủ tra cứu; ?q= kết quả 4 tab (Từ vựng · Hán tự · Ví dụ · Ngữ pháp);
  *   ?level= danh sách
@@ -198,7 +199,8 @@ async function DictionaryHome() {
 
   return (
     <div className="page-wrap max-w-7xl! space-y-7 py-8! sm:py-10!">
-      <section className="text-center">
+      <section className="cultural-intro text-center">
+        <div className="cultural-intro-copy">
         <p className="eyebrow">TỪ ĐIỂN TRUNG – VIỆT</p>
         <h1 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">
           Tra từ tiếng Trung, có <span className="text-primary">âm Hán Việt</span>
@@ -207,6 +209,8 @@ async function DictionaryHome() {
           {fmt(stats?.total) ?? "10.900+"} từ chuẩn HSK 3.0 · {fmt(stats?.withHanViet) ?? "9.800+"} từ có âm Hán Việt · câu ví dụ, lượng
           từ, bộ thủ, cách viết, phát âm chuẩn. Gõ Hán tự, pinyin, tiếng Việt — hoặc nói, hoặc chụp ảnh.
         </p>
+        </div>
+        <SceneArt kind="dictionary" className="cultural-intro-art" />
       </section>
       <DictionarySearch />
 

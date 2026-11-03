@@ -780,6 +780,8 @@ export default function MinigamePage() {
     <div className="page-wrap space-y-6">
       <FeatureTour tourKey="minigame" steps={MINIGAME_TOUR_STEPS} />
       <PageHeading
+        scene="game"
+        illustrated={view.stage === "hub"}
         icon="spark"
         tone="accent"
         eyebrow="Vừa học vừa chơi"

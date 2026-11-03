@@ -1,3 +1,4 @@
+import { SceneArt } from "@/components/learning-scenes";
 /**
  * BẢN ĐỒ TRANG — LUYỆN THI HSK (/thi-thu-hsk) — danh sách đề, lịch sử + phân tích điểm, luyện từng dạng bài
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
@@ -112,7 +113,8 @@ export default async function MockExamHubPage() {
   return (
     <div className="page-wrap max-w-6xl! space-y-8 py-8!">
       <section className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <div className="panel tint-primary p-5 sm:p-8">
+        <div className="cultural-intro panel tint-primary p-5 sm:p-8">
+        <div className="cultural-intro-copy">
           <span className="eyebrow max-sm:hidden">LUYỆN THI HSK</span>
           <h1 className="text-2xl font-extrabold tracking-tight sm:mt-3 sm:text-4xl">Đề thi thử HSK online</h1>
           {/* Điện thoại: 1 câu — màn đầu phải thấy được danh sách đề (Hanzii đặt thẻ đề ngay đầu trang). */}
@@ -130,6 +132,8 @@ export default async function MockExamHubPage() {
               </li>
             ))}
           </ul>
+        </div>
+        <SceneArt kind="exam" className="cultural-intro-art" />
         </div>
         <MockExamProgress exams={exams} />
       </section>

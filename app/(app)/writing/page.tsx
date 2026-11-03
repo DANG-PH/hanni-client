@@ -182,6 +182,7 @@ function WritingPage() {
     <div className="page-wrap space-y-7">
       <FeatureTour tourKey="writing" steps={WRITING_TOUR_STEPS} />
       <PageHeading
+        scene="writing"
         icon="pencil"
         eyebrow="Luyện tay"
         title="Luyện viết Hán tự"

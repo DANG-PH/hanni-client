@@ -1,0 +1,4 @@
+.scene { position: relative; min-height: 470px; width: 100%; overflow: hidden; border: 1px solid var(--border); border-radius: 28px; background: var(--surface); }
+.image { object-fit: cover; object-position: center; }
+.caption { position: absolute; bottom: 16px; left: 16px; right: 16px; padding: 12px 16px; color: var(--foreground); border: 1px solid var(--border); border-radius: 12px; background: var(--surface); font-size: 13px; font-weight: 600; text-align: center; }
+@media (max-width: 1023px) { .scene { min-height: 430px; } }

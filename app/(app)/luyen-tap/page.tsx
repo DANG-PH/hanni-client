@@ -15,6 +15,7 @@ import { Icon } from "@/components/icon";
 import { PageHeading, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
 import { PRACTICE_SECTIONS } from "@/lib/nav";
+import { SceneCover } from "@/components/learning-scenes";
 
 /**
  * Mọi cách luyện thêm ngoài lộ trình, một chỗ — thay cho các nhóm xổ ra ở
@@ -65,14 +66,17 @@ export default function PracticeHubPage() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="panel hover-card flex h-full flex-col gap-3 p-4 sm:flex-row sm:items-start"
+                  className="panel hover-card flex h-full flex-col overflow-hidden"
                 >
-                  <span className="icon-tile flex h-11 w-11 shrink-0 items-center justify-center">
+                  <SceneCover kind={item.scene} />
+                  <span className="flex items-start gap-3 p-4">
+                  <span className="icon-tile flex h-10 w-10 shrink-0 items-center justify-center">
                     <Icon name={item.icon} size={20} />
                   </span>
                   <span className="min-w-0">
                     <span className="block text-sm font-bold">{item.label}</span>
                     <span className="mt-0.5 block text-xs leading-5 text-muted">{item.description}</span>
+                  </span>
                   </span>
                 </Link>
               </li>

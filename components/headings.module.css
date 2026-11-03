@@ -18,17 +18,20 @@
   --heading-accent: var(--lavender);
 }
 
-/* Đầu trang GỌN (2026-10-19): trước đây là một thẻ to (viền, nền chuyển màu, vòng tròn trang trí, ô biểu tượng
- * 64px xoay nghiêng, đường kẻ ngăn nút) chiếm gần hết màn đầu điện thoại — mở trang ra chưa thấy nội dung.
- * Giờ chỉ còn: biểu tượng nhỏ + tiêu đề + 1 câu mô tả + nút nhỏ bên phải, không khung. */
+/* Tiêu đề và tranh ghép gọn, chuyển thành một cột trên điện thoại. */
 .page {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
   align-items: center;
   justify-content: space-between;
   gap: 12px 24px;
-  padding: 2px 0;
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: linear-gradient(120deg, var(--surface), var(--hero-from));
 }
+.scene { grid-column: 2; grid-row: 1 / span 2; }
+.pageActions { grid-column: 1; }
 
 .identity {
   display: flex;
@@ -187,10 +190,13 @@
   box-shadow: 0 2px 0 color-mix(in srgb, var(--foreground) 5%, transparent), inset 0 1px 0 var(--surface);
 }
 
-@media (max-width: 639px) {
+@media (max-width: 767px) {
   .page {
+    grid-template-columns: minmax(0, 1fr);
     gap: 10px;
+    padding: 16px;
   }
+  .scene { grid-column: 1; grid-row: auto; }
 
   /* Nút nhỏ (vd "Hướng dẫn") nằm cùng hàng tiêu đề; nhiều nút thì tự xuống hàng dưới. */
   .identity {
@@ -235,3 +241,5 @@
     font-size: 16px;
   }
 }
+
+.withoutScene { grid-template-columns: minmax(0, 1fr); }

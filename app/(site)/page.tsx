@@ -21,6 +21,7 @@ import { Icon, type IconName } from "@/components/icon";
 import { ToneCheck } from "@/components/tone/tone-check";
 import { LinkButton } from "@/components/ui";
 import { StudyArtwork } from "@/components/study-artwork";
+import { SceneArt, SceneCover } from "@/components/learning-scenes";
 import { useAuth } from "@/lib/auth";
 import { useLevels, useWordStats } from "@/lib/hooks";
 
@@ -144,11 +145,11 @@ export default function Home() {
   const fmt = (n: number | undefined, fallback: string) =>
     n ? n.toLocaleString("vi-VN") : fallback;
   return (
-    <div>
+    <div className="hanni-home">
       <section className="home-hero overflow-hidden border-b border-border">
         {/* `grid-cols-1`: lưới không khai cột thì cột giãn theo bề rộng tối thiểu của ô tra (ô nhập + 4 nút) —
          * ở 390px cột hero rộng 463px, `overflow-hidden` cắt mất tiêu đề, mô tả, nút tra (2026-10-19). */}
-        <div className="page-wrap relative grid grid-cols-1 items-center gap-4 py-8! md:grid-cols-[1.05fr_1fr] md:py-12!">
+        <div className="page-wrap relative grid grid-cols-1 items-center gap-10 py-10! md:grid-cols-[1.05fr_1fr] md:py-14! lg:gap-16">
           <div className="reveal-group relative z-10 min-w-0 max-w-xl">
             <span className="section-label">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" /> HỌC
@@ -188,7 +189,7 @@ export default function Home() {
             </p>
             {/* Tra từ ngay trên trang chủ (audit S13) — Hanzii đặt ô tra cứu đầu trang
              * chủ; từ điển 10.900+ từ là thế mạnh của Hanni mà trước đó trang chủ không có. */}
-            <div className="mt-6 rounded-2xl border border-border bg-surface/80 p-3 shadow-sm backdrop-blur">
+            <div className="home-dictionary mt-7 rounded-2xl border border-border bg-surface/90 p-4 shadow-sm backdrop-blur">
               <p className="mb-2 px-1 text-xs font-semibold text-muted">
                 Tra từ: Hán tự, pinyin, tiếng Việt hoặc cả câu
               </p>
@@ -206,10 +207,11 @@ export default function Home() {
               </div>
             </div>
           </div>
-          {/* Điện thoại: bỏ hình minh hoạ (cao 370px) để màn đầu thấy ngay nút học + ô tra. */}
-          <div className="max-md:hidden">
+          {/* Điện thoại dùng tranh gọn để giữ nút học và ô tra ở gần đầu trang. */}
+          <div className="hidden md:block">
             <StudyArtwork />
           </div>
+          <div className="md:hidden"><SceneArt kind="learn" /></div>
         </div>
       </section>
 
@@ -241,9 +243,8 @@ export default function Home() {
         <ul className="reveal-group mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {PILLARS.map((p) => (
             <li key={p.id} className="reveal panel flex flex-col overflow-hidden">
-              <div className="border-b border-border bg-primary/4 p-4">
-                <PillarPreview kind={p.preview} />
-              </div>
+              {p.preview !== "lesson" && <SceneCover kind={p.preview === "speaking" ? "pronunciation" : p.preview === "exam" ? "exam" : "dictionary"} />}
+              {p.preview === "lesson" && <div className="border-b border-border bg-primary/4 p-4"><PillarPreview kind={p.preview} /></div>}
               <div className="flex flex-1 flex-col p-5">
                 <h3 className="flex items-center gap-2 text-base font-bold">
                   <Icon name={p.icon} size={18} className="shrink-0 text-primary" />
