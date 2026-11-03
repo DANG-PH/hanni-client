@@ -21,7 +21,7 @@ import { Icon, type IconName } from "@/components/icon";
 import { ToneCheck } from "@/components/tone/tone-check";
 import { LinkButton } from "@/components/ui";
 import { StudyArtwork } from "@/components/study-artwork";
-import { SceneArt, SceneCover } from "@/components/learning-scenes";
+import { SceneCover } from "@/components/learning-scenes";
 import { useAuth } from "@/lib/auth";
 import { useLevels, useWordStats } from "@/lib/hooks";
 
@@ -207,11 +207,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-          {/* Điện thoại dùng tranh gọn để giữ nút học và ô tra ở gần đầu trang. */}
-          <div className="hidden md:block">
-            <StudyArtwork />
-          </div>
-          <div className="md:hidden"><SceneArt kind="learn" /></div>
+          {/* Thẻ học thử có tương tác; cùng một bố cục trên web và điện thoại. */}
+          <StudyArtwork />
         </div>
       </section>
 
@@ -243,8 +240,7 @@ export default function Home() {
         <ul className="reveal-group mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {PILLARS.map((p) => (
             <li key={p.id} className="reveal panel flex flex-col overflow-hidden">
-              {p.preview !== "lesson" && <SceneCover kind={p.preview === "speaking" ? "pronunciation" : p.preview === "exam" ? "exam" : "dictionary"} />}
-              {p.preview === "lesson" && <div className="border-b border-border bg-primary/4 p-4"><PillarPreview kind={p.preview} /></div>}
+              <SceneCover kind={p.preview === "lesson" ? "learn" : p.preview === "speaking" ? "pronunciation" : p.preview === "exam" ? "exam" : "dictionary"} />
               <div className="flex flex-1 flex-col p-5">
                 <h3 className="flex items-center gap-2 text-base font-bold">
                   <Icon name={p.icon} size={18} className="shrink-0 text-primary" />
@@ -402,98 +398,3 @@ export default function Home() {
   );
 }
 /** Minh hoạ thu nhỏ cho từng trụ cột — dựng bằng HTML/SVG (không ảnh chụp màn hình), cao bằng nhau để 4 thẻ thẳng hàng. */
-function PillarPreview({ kind }: { kind: "lesson" | "exam" | "dictionary" | "speaking" }) {
-  if (kind === "lesson")
-    return (
-      <div className="flex h-28 items-center gap-4">
-        <span lang="zh" className="hanzi shrink-0 text-5xl text-primary">学生</span>
-        <div className="min-w-0 text-xs">
-          <p className="text-sm font-semibold">xué shēng</p>
-          <p className="mt-1">
-            Hán Việt: <b className="text-hanviet">HỌC SINH</b>
-          </p>
-          <p className="mt-2 flex flex-wrap gap-1">
-            {["học → thanh 2", "sinh → thanh 1"].map((t) => (
-              <span key={t} className="inline-flex items-center gap-1 rounded-full bg-good/10 px-2 py-0.5 text-good">
-                <Icon name="check" size={12} /> {t}
-              </span>
-            ))}
-          </p>
-        </div>
-      </div>
-    );
-  if (kind === "exam")
-    return (
-      <div className="relative flex h-28 items-center gap-4">
-        <span className="absolute top-0 right-0 text-xs text-muted">Ví dụ</span>
-        <span className="flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-full border-[6px] border-good/70 bg-surface">
-          <b className="text-lg leading-none">172</b>
-          <span className="text-xs text-muted">/200</span>
-        </span>
-        <div className="min-w-0 flex-1 space-y-2 text-xs">
-          <p className="font-semibold">
-            HSK 1 · Đề 1 <span className="ml-1 rounded-full bg-good/10 px-1.5 py-0.5 text-good">Đạt</span>
-          </p>
-          {[
-            ["Nghe", 90],
-            ["Đọc", 82],
-          ].map(([label, pct]) => (
-            <p key={label} className="flex items-center gap-2">
-              <span className="w-9 text-muted">{label}</span>
-              <span className="h-1.5 flex-1 rounded-full bg-surface-2">
-                <span className="block h-full rounded-full bg-good" style={{ width: `${pct}%` }} />
-              </span>
-            </p>
-          ))}
-        </div>
-      </div>
-    );
-  if (kind === "dictionary")
-    return (
-      <div className="flex h-28 flex-col items-center justify-center text-center">
-        <p className="flex items-baseline gap-2">
-          <span lang="zh" className="hanzi text-4xl text-primary">电</span>
-          <b className="text-sm text-hanviet">điện</b>
-          <span className="text-muted">+</span>
-          <span lang="zh" className="hanzi text-4xl text-primary">脑</span>
-          <b className="text-sm text-hanviet">não</b>
-        </p>
-        <p className="mt-2 text-xs text-muted">
-          “bộ não chạy bằng điện” → <b className="text-foreground">电脑 = máy tính</b>
-        </p>
-      </div>
-    );
-  // 4 thanh tiếng Trung: ngang cao, lên, xuống rồi lên, đi xuống — mỗi đường nằm giữa 1/4 bề ngang để thẳng hàng
-  // với nhãn bên dưới (SVG giãn theo khung, nét giữ nguyên độ dày).
-  const tones: [string, string][] = [
-    ["mā", "M8 14 H42"],
-    ["má", "M58 30 L92 10"],
-    ["mǎ", "M108 22 Q125 46 142 12"],
-    ["mà", "M158 8 L192 40"],
-  ];
-  return (
-    <div className="flex h-28 flex-col justify-center">
-      <svg viewBox="0 0 200 52" preserveAspectRatio="none" className="h-14 w-full" aria-hidden="true">
-        {tones.map(([, d]) => (
-          <path
-            key={d}
-            d={d}
-            fill="none"
-            stroke="var(--primary)"
-            strokeWidth="3"
-            strokeLinecap="round"
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
-      </svg>
-      <p className="mt-1 grid grid-cols-4 text-center text-xs font-semibold text-muted">
-        {tones.map(([label]) => (
-          <span key={label}>{label}</span>
-        ))}
-      </p>
-      <p className="mt-2 text-center text-xs text-muted">
-        Đường giọng bạn vẽ chồng lên giọng chuẩn — lệch thanh là thấy ngay
-      </p>
-    </div>
-  );
-}

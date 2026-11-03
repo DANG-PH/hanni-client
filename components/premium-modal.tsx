@@ -412,7 +412,7 @@ export function PremiumModal({
                   <span className="font-semibold">Sắp mở bán.</span>{" "}
                   <span className="text-muted">Trong lúc chờ, mọi bài học vẫn miễn phí.</span>
                 </p>
-                <Button variant="premium" disabled className="w-full justify-center sm:w-auto">
+                <Button disabled className="w-full justify-center sm:w-auto">
                   <Icon name="clock" size={16} />
                   Sắp mở bán
                 </Button>
@@ -433,7 +433,6 @@ export function PremiumModal({
                   )
                 )}
                 <Button
-                  variant="premium"
                   className={`justify-center ${step === "confirm" ? "flex-1" : ""}`}
                   disabled={!selected || busy || configured.isLoading}
                   onClick={() => (step === "choose" ? setStep("confirm") : void pay())}

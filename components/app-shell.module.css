@@ -1,8 +1,9 @@
 .workspace {
   /* `--bottom-nav-h` (chiều cao thanh tab dưới đáy) khai ở globals.css, cấp body. */
-  /* Thẻ và khối lớn 24px; nút và ô nhập 12px, cùng thang với mobile. */
-  --radius-section: 24px;
-  --radius-card: 24px;
+  /* Một thang bo góc cho cả app (2026-10-19): khối lớn = thẻ = 16px (= rounded-2xl của trang công khai),
+   * ô bên trong 12px, nút/ô nhập 12px — trước đó 26/20/14/12 cộng rounded-3xl lẻ tẻ, mỗi trang một kiểu. */
+  --radius-section: 16px;
+  --radius-card: 16px;
   --radius-inner: 12px;
   --radius-control: 12px;
   --section-gap: 28px;
@@ -10,7 +11,9 @@
   --section-padding: 26px;
   --workspace-shadow: 0 2px 3px -2px color-mix(in srgb, var(--foreground) 7%, transparent),
     0 12px 32px -20px color-mix(in srgb, var(--foreground) 18%, transparent);
-  background-image: radial-gradient(ellipse at 98% 2%, color-mix(in srgb, var(--good) 4%, transparent), transparent 45%);
+  background-image:
+    radial-gradient(ellipse at 98% 2%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 38%),
+    radial-gradient(ellipse at 20% 65%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 42%);
 }
 
 .workspace :global(.page-wrap) {
@@ -22,12 +25,12 @@
 .sidebar {
   position: relative;
   z-index: 31;
-  background: var(--surface);
+  background: linear-gradient(175deg, var(--surface) 70%, color-mix(in srgb, var(--hero-from) 55%, var(--surface)));
   box-shadow: 8px 0 32px -24px color-mix(in srgb, var(--foreground) 15%, transparent);
 }
 
 .workspace :global(.nav-item) {
-  min-height: 46px;
+  min-height: 44px;
   border: 1px solid transparent;
   border-radius: 13px;
   transition: background-color 220ms ease, border-color 220ms ease, box-shadow 250ms ease, color 220ms ease, transform 300ms var(--motion-ease);
@@ -35,7 +38,7 @@
 
 .workspace :global(.nav-item[aria-current="page"]) {
   border-color: color-mix(in srgb, var(--primary) 13%, transparent);
-  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+  background: linear-gradient(105deg, color-mix(in srgb, var(--primary) 11%, var(--surface)), color-mix(in srgb, var(--primary) 5%, var(--surface)));
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent),
     0 4px 9px -6px color-mix(in srgb, var(--primary) 30%, transparent);
 }
@@ -121,7 +124,10 @@
 }
 
 .workspace :global(.motion-button.bg-primary) {
-  box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--primary) 40%, transparent);
+  background-image: linear-gradient(165deg, color-mix(in srgb, var(--surface) 12%, transparent), transparent 60%);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--primary) 78%, var(--foreground)),
+    0 8px 16px -8px color-mix(in srgb, var(--primary) 45%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 20%, transparent);
 }
 
 .workspace :global(.field) {
@@ -175,7 +181,8 @@
   }
 
   .workspace :global(.motion-button.bg-primary):hover {
-    box-shadow: 0 10px 22px -10px color-mix(in srgb, var(--primary) 40%, transparent);
+    box-shadow: 0 4px 0 color-mix(in srgb, var(--primary) 78%, var(--foreground)),
+      0 14px 24px -10px color-mix(in srgb, var(--primary) 40%, transparent);
   }
 
   .topbar button:hover {
@@ -194,8 +201,8 @@
 
 @media (max-width: 639px) {
   .workspace {
-    --radius-section: 24px;
-    --radius-card: 24px;
+    --radius-section: 16px;
+    --radius-card: 16px;
     --radius-inner: 12px;
     --section-gap: 22px;
     --card-gap: 14px;

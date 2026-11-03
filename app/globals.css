@@ -167,9 +167,9 @@
     pointer-events: auto;
   }
   .panel {
-    @apply rounded-3xl border border-border/80 bg-surface;
-    box-shadow: 0 6px 24px -12px color-mix(in srgb, var(--foreground) 12%, transparent),
-      0 1px 3px -1px color-mix(in srgb, var(--foreground) 5%, transparent);
+    @apply rounded-2xl border border-border/80 bg-surface;
+    box-shadow: 0 4px 20px -12px color-mix(in srgb, var(--foreground) 16%, transparent),
+      0 1px 3px -1px color-mix(in srgb, var(--foreground) 8%, transparent);
     transition: transform 220ms var(--motion-ease), border-color 220ms ease, box-shadow 220ms ease;
   }
   .glass-card {

@@ -273,7 +273,7 @@ function LearnHome() {
 
   return (
     <div className="page-wrap learn-home space-y-6">
-      <LearningWelcome />
+      <LearningWelcome name={user?.displayName} />
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section className="panel lesson-hero relative flex flex-col gap-5 overflow-hidden p-5 sm:flex-row sm:items-center sm:p-7" aria-labelledby="next-lesson">
           {error ? (

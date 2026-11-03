@@ -1,10 +1,1 @@
- .welcome { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 24px; border: 1px solid var(--border); border-radius: 24px; background: var(--surface); }
-.welcome > div:first-child { min-width: 0; flex: 1; }
-.art { max-width: 280px; flex-shrink: 0; }
-@media (max-width: 767px) { .welcome { flex-direction: column; align-items: stretch; padding: 16px; gap: 12px; } .art { max-width: none; } }
-.eyebrow { color: var(--primary); font-size: 10px; font-weight: 700; letter-spacing: .16em; }
-.welcome h2 { margin-top: 8px; font-size: clamp(23px, 2.3vw, 32px); font-weight: 750; letter-spacing: -.045em; line-height: 1.35; text-wrap: balance; }
-.description { margin-top: 7px; font-size: 13px; color: var(--muted); }
-.note { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; align-items: flex-end; font-size: 11px; color: var(--muted); }
-.note > span:first-child { font-size: 26px; color: var(--good); letter-spacing: .2em; }
-@media (max-width: 767px) { .note { display: none; } .eyebrow { font-size: 9px; letter-spacing: .1em; } .welcome h2 { font-size: 24px; } }
+.welcome { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 3px 2px 6px; }.welcome > div { min-width: 0; }.eyebrow { color: var(--primary); font-size: 10px; font-weight: 700; letter-spacing: .09em; }.welcome h2 { margin-top: 7px; color: var(--foreground); font-size: clamp(23px,2.3vw,30px); font-weight: 750; letter-spacing: -.035em; line-height: 1.3; }.description { margin-top: 7px; color: var(--muted); font-size: 13px; line-height: 1.6; }.fox { flex-shrink: 0; }@media(max-width:639px){.welcome{gap:8px;}.welcome h2{font-size:22px;}.eyebrow{font-size:8px;}.description{font-size:12px;}.fox>picture{width:64px!important;height:64px!important;}}

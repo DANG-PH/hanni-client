@@ -28,7 +28,7 @@ export default function PracticeHubPage() {
   if (loading) return <Spinner />;
 
   return (
-    <div className="page-wrap space-y-7">
+    <div className="page-wrap practice-hub space-y-7">
       <PageHeading
         icon="grid"
         title="Luyện tập"
@@ -66,13 +66,14 @@ export default function PracticeHubPage() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="panel hover-card flex h-full flex-col overflow-hidden"
+                  className="panel hover-card practice-tool flex h-full flex-col overflow-hidden"
                 >
                   <SceneCover kind={item.scene} />
                   <span className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
                     <span className="flex items-start gap-2 text-sm font-bold">
                       <Icon name={item.icon} size={16} className="mt-0.5 shrink-0 text-primary" />
-                      <span>{item.label}</span>
+                      <span className="min-w-0 flex-1">{item.label}</span>
+                      <Icon name="chevron" size={13} className="mt-1 shrink-0 text-muted" />
                     </span>
                     <span className="text-xs leading-5 text-muted">{item.description}</span>
                   </span>

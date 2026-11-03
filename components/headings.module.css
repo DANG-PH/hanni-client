@@ -21,14 +21,13 @@
 /* Tiêu đề và tranh ghép gọn, chuyển thành một cột trên điện thoại. */
 .page {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
+  grid-template-columns: minmax(0, 1fr) 238px;
   align-items: center;
   justify-content: space-between;
   gap: 12px 24px;
-  padding: 20px 24px;
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  background: linear-gradient(120deg, var(--surface), var(--hero-from));
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 .scene { grid-column: 2; grid-row: 1 / span 2; }
 .pageActions { grid-column: 1; }
@@ -194,9 +193,9 @@
   .page {
     grid-template-columns: minmax(0, 1fr);
     gap: 10px;
-    padding: 16px;
+    padding: 0;
   }
-  .scene { grid-column: 1; grid-row: auto; }
+  .scene { display: none; }
 
   /* Nút nhỏ (vd "Hướng dẫn") nằm cùng hàng tiêu đề; nhiều nút thì tự xuống hàng dưới. */
   .identity {
