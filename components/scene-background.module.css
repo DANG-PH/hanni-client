@@ -1,0 +1,6 @@
+.backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: inherit; z-index: 0; }
+.image { object-fit: cover; object-position: var(--scene-focus, center); }
+:global([data-theme="dark"]) .image { filter: brightness(.46) saturate(.7); opacity: .45; }
+@media (prefers-color-scheme:dark) {
+  :global(html:not([data-theme="light"])) .image { filter: brightness(.46) saturate(.7); opacity: .45; }
+}

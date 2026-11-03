@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SceneBackground } from "@/components/scene-background";
 import { Icon } from "@/components/icon";
 import { TopicExplorer } from "@/components/learn/topic-explorer";
 import { LinkButton, PageHeading, Spinner } from "@/components/ui";
@@ -28,17 +29,16 @@ export function StudyHub() {
   return (
     <div className="page-wrap space-y-6">
       <PageHeading
-        scene="review"
+        illustrated={false}
         icon="cards"
         title="Ôn tập"
         description="Từ đã học quay lại đúng lúc sắp quên — hoặc chọn một bài để ôn bằng flashcard."
       />
 
-      <section className="panel tint-primary grid gap-5 p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:p-6">
-        <div className="flex items-center gap-4">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary">
-            <Icon name="cards" size={30} />
-          </span>
+      <section className="panel review-hero illustrated-banner" aria-label="Lịch ôn hôm nay">
+        <SceneBackground kind="review-desk" eager />
+        <div className="review-copy banner-copy">
+          <p className="banner-eyebrow">MỖI LẦN ÔN, NHỚ THÊM MỘT CHÚT</p>
           <div>
             <p className="text-3xl font-extrabold leading-none">
               {due}
@@ -50,8 +50,7 @@ export function StudyHub() {
                 : "Đang tải…"}
             </p>
           </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="mt-5 flex flex-wrap gap-2">
           {due > 0 ? (
             <LinkButton href="/study?review=1" className="min-w-44">
               <Icon name="play" size={16} /> Bắt đầu ôn
@@ -72,6 +71,7 @@ export function StudyHub() {
               Ôn {s.leechCount} từ hay quên
             </LinkButton>
           )}
+        </div>
         </div>
       </section>
 

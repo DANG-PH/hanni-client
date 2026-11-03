@@ -9,3 +9,6 @@
 @media (prefers-reduced-motion: reduce) { .wordCard { transition: none; } }
 
 .foxImage { object-fit: cover; }
+
+.scene > :not(:global(.learning-backdrop)) { position: relative; z-index: 1; }
+.scene > .fox, .scene > .foxNote { position: absolute; z-index: 2; }

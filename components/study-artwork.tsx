@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Icon } from "./icon";
 import Image from "next/image";
+import { SceneBackground } from "./scene-background";
 import styles from "./study-artwork.module.css";
 
 const words = [
@@ -19,6 +20,7 @@ export function StudyArtwork() {
   function next() { setIndex((index + 1) % words.length); setFlipped(false); }
   return (
     <section className={styles.scene} aria-label="Thử một thẻ từ Hanni">
+      <SceneBackground kind="home-study-room" eager />
       <div className={styles.top}><span><i/>THỬ MỘT THẺ TỪ</span><span>Ví dụ {index + 1}/{words.length}</span></div>
       <button type="button" className={`${styles.wordCard} ${flipped ? styles.flipped : ""}`} aria-pressed={flipped} aria-label={flipped ? `Xem lại chữ ${word.hanzi}` : `Xem nghĩa của ${word.hanzi}`} onClick={() => setFlipped(!flipped)}>
         <span className={styles.cardLabel}>{flipped ? "KẾT NỐI VỚI TIẾNG VIỆT" : "BẠN CÓ NHẬN RA TỪ NÀY?"}</span>

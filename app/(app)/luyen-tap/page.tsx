@@ -61,7 +61,7 @@ export default function PracticeHubPage() {
           <h2 id={`hub-${i}`} className="mb-3 text-sm font-bold text-muted">
             {section.title}
           </h2>
-          <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <ul className={`grid grid-cols-2 gap-3 lg:grid-cols-4 ${section.items.length === 2 ? "practice-pair" : ""}`}>
             {section.items.map((item) => (
               <li key={item.href}>
                 <Link

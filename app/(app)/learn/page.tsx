@@ -49,6 +49,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { mutate } from "swr";
 import Link from "next/link";
+import { SceneBackground } from "@/components/scene-background";
 import { LearningWelcome } from "@/components/learning-welcome";
 import { ClassAssignmentsCard } from "@/components/classrooms/class-assignments-card";
 import { DailyQuestCard } from "@/components/daily-quest-card";
@@ -113,37 +114,7 @@ function ProgressRing({ value }: { value: number }) {
   );
 }
 
-/** Các bước của phiên học bài (`buildLessonSession` ở server) — nói trước bấm "Học tiếp" sẽ làm gì. Chỉ màn
- * ≥1536px: ở 1920 nửa phải thẻ Học tiếp từng trống trơn, màn nhỏ hơn thì không có chỗ. */
-const LESSON_STEPS: [IconName, string, string][] = [
-  ["book", "Làm quen từ mới", "Pinyin, âm Hán Việt, mẹo đoán thanh điệu"],
-  ["headphones", "Luyện ngay", "Chọn nghĩa, nghe chọn từ, nhận mặt chữ"],
-  ["cards", "Ghép cặp", "Nối chữ Hán với nghĩa"],
-  ["refresh", "Ôn trộn cuối bài", "Hỏi lại bằng dạng khác, làm lại câu sai"],
-];
-
-function LessonSteps() {
-  return (
-    <div className="hidden w-80 shrink-0 self-stretch border-l border-primary/15 pl-6 2xl:block">
-      <p className="text-xs font-bold tracking-wider text-muted">MỘT BÀI GỒM</p>
-      <ol className="mt-3 space-y-3">
-        {LESSON_STEPS.map(([icon, title, desc]) => (
-          <li key={title} className="flex items-start gap-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-foreground/75">
-              <Icon name={icon} size={16} />
-            </span>
-            <span className="min-w-0">
-              <span className="block text-sm font-semibold">{title}</span>
-              <span className="block text-xs text-muted">{desc}</span>
-            </span>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-}
-
-/** Khách (chưa đăng nhập) — tài khoản chỉ để LƯU, mời ở cột phải. */
+/** Khách có thể học ngay; tài khoản giúp lưu tiến độ trên mọi thiết bị. */
 function GuestSaveCard({ learned }: { learned: number }) {
   return (
     <section className="panel flex flex-col p-5">
@@ -276,6 +247,7 @@ function LearnHome() {
       <LearningWelcome name={user?.displayName} />
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section className="panel lesson-hero relative flex flex-col gap-5 overflow-hidden p-5 sm:flex-row sm:items-center sm:p-7" aria-labelledby="next-lesson">
+          <SceneBackground kind="lesson-journey" eager />
           {error ? (
             <div className="space-y-3">
               <ErrorNote>Chưa tải được lộ trình. Vui lòng thử lại.</ErrorNote>
@@ -300,7 +272,7 @@ function LearnHome() {
           ) : (
             <>
               <ProgressRing value={pct} />
-              <div className="min-w-0 flex-1">
+              <div className="lesson-copy min-w-0 flex-1">
                 <p className="text-xs font-bold tracking-wider text-primary">
                   LỘ TRÌNH HSK {data.level === 7 ? "7–9" : data.level} · {levelName(data.level).toUpperCase()}
                 </p>
@@ -357,7 +329,6 @@ function LearnHome() {
                   </>
                 )}
               </div>
-              {current && <LessonSteps />}
             </>
           )}
         </section>

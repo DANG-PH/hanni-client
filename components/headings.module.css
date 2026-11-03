@@ -21,7 +21,7 @@
 /* Tiêu đề gọn; minh họa theo chức năng thu nhỏ thành điểm nhấn trên điện thoại. */
 .page {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 238px;
+  grid-template-columns: minmax(0, 1fr) 136px;
   align-items: center;
   justify-content: space-between;
   gap: 12px 24px;
@@ -29,7 +29,8 @@
   border: 0;
   background: transparent;
 }
-.scene { grid-column: 2; grid-row: 1 / span 2; }
+.page .scene { grid-column: 2; grid-row: 1; height: 100px; }
+.page:not(.withoutScene) .pageIcon { display: none; }
 .pageActions { grid-column: 1; }
 
 .identity {
