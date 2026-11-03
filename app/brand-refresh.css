@@ -32,3 +32,12 @@
   .cultural-intro-copy { flex-basis: 100%; }
   .cultural-intro-art { flex-basis: 100%; max-width: none; height: 140px; }
 }
+
+/* Typography: retain Geist, improve Vietnamese loading and Chinese text consistency. */
+.practice-hub .practice-tool { letter-spacing: 0; }
+.practice-hub .practice-tool > span { gap: 8px; }
+.practice-hub .practice-tool .text-xs { font-size: 13px; line-height: 1.6; }
+@media (max-width: 639px) {
+  .practice-hub .practice-tool .text-xs { font-size: 12px; line-height: 1.65; }
+  .practice-hub .practice-tool .text-sm { font-size: 14px; line-height: 1.45; }
+}

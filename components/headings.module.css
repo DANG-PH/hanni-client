@@ -18,7 +18,7 @@
   --heading-accent: var(--lavender);
 }
 
-/* Tiêu đề và tranh ghép gọn, chuyển thành một cột trên điện thoại. */
+/* Tiêu đề gọn; minh họa theo chức năng thu nhỏ thành điểm nhấn trên điện thoại. */
 .page {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 238px;
@@ -82,8 +82,8 @@
   margin: 0;
   color: var(--foreground);
   font-size: clamp(22px, 2.1vw, 28px);
-  font-weight: 750;
-  line-height: 1.25;
+  font-weight: 700;
+  line-height: 1.3;
   letter-spacing: -0.03em;
   text-wrap: balance;
   overflow-wrap: anywhere;
@@ -108,7 +108,7 @@
 }
 
 .pageActions > :is(a, button) {
-  min-height: 40px;
+  min-height: 44px;
   max-width: 100%;
 }
 
@@ -191,11 +191,15 @@
 
 @media (max-width: 767px) {
   .page {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) 88px;
     gap: 10px;
     padding: 0;
   }
-  .scene { display: none; }
+  .page:not(.withoutScene) .pageIcon { display: none; }
+  .page .scene { display: block; grid-column: 2; grid-row: 1; width: 88px; height: 88px; border: 0; background: transparent; }
+  .page .scene > span { display: none; }
+  .page .scene > div { inset: 0; }
+  .pageActions { grid-column: 1 / -1; }
 
   /* Nút nhỏ (vd "Hướng dẫn") nằm cùng hàng tiêu đề; nhiều nút thì tự xuống hàng dưới. */
   .identity {

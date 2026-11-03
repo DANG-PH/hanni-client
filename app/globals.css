@@ -209,7 +209,7 @@
     @apply inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-semibold tracking-wider text-primary shadow-2xs;
   }
   .hanzi {
-    font-family: "Kaiti SC", "KaiTi", "Noto Serif CJK SC", "Songti SC", serif;
+    font-family: var(--font-hanzi-sans), "PingFang SC", "Microsoft YaHei", sans-serif;
     font-feature-settings: normal;
   }
   /* item điều hướng trong sidebar */

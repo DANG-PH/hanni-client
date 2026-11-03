@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Icon } from "./icon";
-import { Mascot } from "./mascot";
+import Image from "next/image";
 import styles from "./study-artwork.module.css";
 
 const words = [
@@ -27,7 +27,7 @@ export function StudyArtwork() {
         {flipped ? <span className={styles.translation} aria-live="polite"><span>Hán Việt: <b>{word.hanviet}</b></span><strong>{word.meaning}</strong></span> : <span className={styles.tap}><Icon name="cards" size={15}/>Chạm để xem nghĩa</span>}
       </button>
       <div className={styles.bottom}><p>{flipped ? word.note : "Từ một chữ quen, mở ra một ngôn ngữ mới."}</p><button type="button" onClick={next} aria-label="Xem thẻ từ tiếp theo"><Icon name="arrow" size={19}/></button></div>
-      <div className={styles.fox} aria-hidden="true"><Mascot emote="e01-chao" size={154} priority/></div>
+      <div className={styles.fox} aria-hidden="true"><Image src="/illustrations/hanni/home-guide.webp" alt="" width={154} height={154} priority className={styles.foxImage}/></div>
       <span className={styles.foxNote}>Cùng học nhé!</span>
     </section>
   );

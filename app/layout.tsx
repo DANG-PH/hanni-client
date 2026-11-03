@@ -13,7 +13,7 @@
  */
 
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_SC } from "next/font/google";
 import "./globals.css";
 import "./brand-refresh.css";
 import { AuthProvider } from "@/lib/auth";
@@ -21,10 +21,18 @@ import { PwaRuntime } from "@/components/pwa/pwa-runtime";
 import { ConnectivityNotice } from "@/components/pwa/connectivity-notice";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin", "vietnamese"], display: "swap" });
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "vietnamese"],
+  display: "swap",
+});
+
+const hanziSans = Noto_Sans_SC({
+  variable: "--font-hanzi-sans",
+  weight: "variable",
+  display: "swap",
+  preload: false,
 });
 
 const title = "Hanni — Học tiếng Trung theo HSK 3.0";
@@ -97,7 +105,7 @@ export default function RootLayout({
     <html
       lang="vi"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${hanziSans.variable} h-full antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
