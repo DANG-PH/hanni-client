@@ -11,7 +11,7 @@ import { ShareButton } from "@/components/share-button";
 import { StudyLoader } from "@/components/study-loader";
 import { signalInstallMoment } from "@/components/pwa/install-prompt";
 import { Button, LinkButton } from "@/components/ui";
-import { api, apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { confetti } from "@/lib/confetti";
 import { addWordToSrs } from "@/lib/hooks";
