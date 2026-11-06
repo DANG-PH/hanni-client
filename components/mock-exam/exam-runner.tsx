@@ -158,7 +158,12 @@ export function MockExamRunner({ slug }: { slug: string }) {
     const durationSec = Math.min(paper.durationMin * 60, Math.round((Date.now() - startedAt) / 1000));
     try {
       // API → POST /mock-exams/:slug/submit · server: modules/mock-exams/mock-exams.controller.ts → MockExamsService.submit()
-      const r = await api.post<MockExamResult>(`/mock-exams/${slug}/submit`, { answers, durationSec });
+      // Cùng 1 lượt làm luôn ra cùng 1 khoá: hết giờ tự nộp lỗi mạng rồi bấm nộp lại, server không tính thành 2 lượt.
+      const r = await apiFetch<MockExamResult>(`/mock-exams/${slug}/submit`, {
+        method: "POST",
+        body: { answers, durationSec },
+        headers: { "Idempotency-Key": `${slug}-${startedAt}` },
+      });
       if (!user) savePendingExam({ slug, answers, durationSec });
       clearSaved(slug);
       setSavedVersion((v) => v + 1);
