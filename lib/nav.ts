@@ -62,6 +62,7 @@ export const PRACTICE_SECTIONS: { title: string; items: PracticeLink[] }[] = [
     items: [
       { href: "/phien-am", scene: "pinyin", label: "Bảng phiên âm", description: "Thanh điệu, phụ âm, vần — bấm nghe từng âm", icon: "sound" },
       { href: "/ngu-phap", scene: "grammar", label: "Ngữ pháp & mẫu câu", description: "235 điểm ngữ pháp giải thích bằng tiếng Việt", icon: "book" },
+      { href: "/hoc-lieu", scene: "learn", label: "Học liệu", description: "Video, bài nghe và tài liệu để xem hoặc tải về", icon: "download" },
       { href: "/tu-dien/quet", scene: "scan", label: "Quét ảnh học từ", description: "Chụp thực đơn, biển hiệu, đồ vật — ra từ kèm Hán Việt", icon: "camera" },
       { href: "/tu-da-biet", scene: "hanviet", label: "Từ bạn đã biết sẵn", description: "Từ trùng nghĩa với tiếng Việt nhờ âm Hán Việt", icon: "heart" },
       // "Kiểm tra trình độ" bỏ khỏi đây (2026-10-20): làm 1 lần để chọn cấp, không phải công cụ luyện — lối vào ở

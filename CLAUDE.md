@@ -324,6 +324,10 @@ lib/  api.ts (fetch + auto refresh 401) · auth.tsx · hooks.ts (SWR) · notific
   tìm link/nút chữ nhỏ không có chiều cao → 21 chỗ ở trạng thái lượt quét không mở tới (trang lỗi, phòng thi, luyện nói, lớp có bài
   giao, kết quả quét ảnh, tab Hán tự, đường dẫn trang luyện dạng bài) — cũng ≥ 32px. Chữ trục biểu đồ `/progress` 10px là ngoại lệ có chủ ý (xem "Quy tắc giao diện").
 
+## Học liệu `/hoc-lieu` (2026-11-06, nhánh `feat/hoc-lieu`, CHƯA gộp `main`, chưa thử trên trình duyệt)
+Trang danh sách video, bài nghe, PDF cho môn học. Lối vào là 1 ô ở `/luyen-tap`, không thêm mục sidebar. Khách xem được danh sách, tài nguyên cần đăng nhập thì hiện nút đăng
+nhập. Liên kết xin lúc bấm vì có hạn 10 phút. `hls.js` tải động lúc bấm xem để trang danh sách nhẹ; Safari phát HLS sẵn. Server: `hanni-server` nhánh `feat/scaling`.
+
 ## Thanh toán: chọn cổng + quay về (2026-10-27)
 - Popup Premium bước 2 có ô **"Cách thanh toán"** khi server bật ≥ 2 cổng (`GET /payments/configured` → `{configured, payos, momo,
   momoSandbox}`; server cũ chỉ trả `configured` = payOS): "Chuyển khoản / VietQR" (payOS) · "Ví MoMo · thẻ ATM · thẻ quốc tế" (nhãn
