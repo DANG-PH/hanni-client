@@ -21,7 +21,7 @@ export default function ResourcesPage() {
   const { data, error, isLoading, mutate } = useResources();
 
   return (
-    <div className="space-y-5">
+    <div className="page-wrap space-y-5">
       <PageHeading icon="book" title="Học liệu" description="Video, bài nghe và tài liệu để xem hoặc tải về học." />
       {isLoading && <Spinner />}
       {error && !data && (
