@@ -84,7 +84,7 @@ export function StudyHub() {
             <p className="text-sm text-muted">Chọn cấp, chọn chủ đề rồi chọn bài.</p>
           </div>
           {path.data && (
-            <div className="flex gap-1.5 overflow-x-auto pb-1" role="tablist" aria-label="Cấp HSK">
+            <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Cấp HSK">
               {path.data.levels.map((l) => (
                 <button
                   key={l}

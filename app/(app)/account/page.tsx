@@ -39,7 +39,6 @@ import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AvatarEditor } from "@/components/avatar-editor";
-import { JoinClassForm } from "@/components/classrooms/join-class-form";
 import { Icon } from "@/components/icon";
 import { PremiumSection } from "@/components/premium-section";
 import { ShareButton } from "@/components/share-button";
@@ -74,7 +73,7 @@ export default function AccountPage() {
   const language = locale.startsWith("vi") ? "Tiếng Việt" : locale.startsWith("en") ? "Tiếng Anh" : user.locale;
 
   return (
-    <div className="page-wrap space-y-5">
+    <div className="page-wrap max-w-[1240px]! space-y-5">
       <PageHeading
         scene="account"
         featured
@@ -83,11 +82,10 @@ export default function AccountPage() {
         description="Hồ sơ, mục tiêu học tập và các quyền lợi của bạn."
       >
         <LinkButton href="/settings" variant="secondary"><Icon name="settings" size={16} /> Cài đặt học tập</LinkButton>
-        <Link href="#bao-mat" className="inline-flex min-h-11 items-center gap-2 px-2 text-sm font-semibold text-muted hover:text-primary"><Icon name="lock" size={16} /> Bảo mật</Link>
       </PageHeading>
 
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(270px,1fr)]">
-        <section id="ho-so" className="panel min-w-0 scroll-mt-24 overflow-hidden shadow-none" aria-label="Hồ sơ">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <section id="ho-so" className="panel flex min-w-0 scroll-mt-24 flex-col overflow-hidden shadow-none" aria-label="Hồ sơ">
           <div className="flex items-center gap-3 bg-[#fffbf8] p-4 sm:gap-5 sm:p-5">
             <AvatarEditor user={user} size={64} onChange={refresh} />
             <div className="min-w-0 flex-1">
@@ -109,7 +107,7 @@ export default function AccountPage() {
               <dd className="mt-1 text-sm font-semibold [overflow-wrap:anywhere]">{language}</dd>
             </div>
           </dl>
-          <Link href={`/u/${user.id}`} className="flex min-h-11 items-center justify-between gap-2 px-4 text-sm font-semibold text-primary hover:bg-primary/5 sm:px-5">
+          <Link href={`/u/${user.id}`} className="mt-auto flex min-h-11 items-center justify-between gap-2 px-4 text-sm font-semibold text-primary hover:bg-primary/5 sm:px-5">
             Xem hồ sơ công khai <Icon name="arrow" size={16} />
           </Link>
         </section>
@@ -126,22 +124,24 @@ export default function AccountPage() {
           </Link>
         </section>
 
-        <section id="muc-tieu" className="panel min-w-0 scroll-mt-24 p-4 shadow-none sm:p-5" aria-labelledby="account-goal-title">
-          <h2 id="account-goal-title" className="flex items-center gap-2 font-bold">
-            <Icon name="target" size={18} className="text-primary" /> Mục tiêu mỗi ngày
-          </h2>
-          {user.settings ? (
-            <p className="mt-3 flex flex-wrap items-baseline gap-x-2">
-              <strong className="text-2xl tabular-nums">{user.settings.dailyGoalValue}</strong>
-              <span className="text-sm text-muted">{user.settings.dailyGoalType === "MINUTES" ? "phút học" : "từ ôn"}</span>
-            </p>
-          ) : (
-            <p className="mt-2 text-sm leading-6 text-muted">Chọn mục tiêu phù hợp trong cài đặt học tập.</p>
-          )}
-          <Link href="/settings" className="mt-1 inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-primary hover:underline">
-            Cài đặt học tập <Icon name="arrow" size={15} />
-          </Link>
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 border-t border-border pt-2">
+      </div>
+
+      <section aria-label="Cài đặt tài khoản" className="panel min-w-0 divide-y divide-border overflow-hidden shadow-none">
+        <div id="muc-tieu" className="scroll-mt-24 p-4 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="min-w-0">
+              <h2 className="flex items-center gap-2 font-bold">
+                <Icon name="target" size={18} className="shrink-0 text-primary" /> Mục tiêu mỗi ngày
+              </h2>
+              <p className="mt-1.5 text-sm text-muted">
+                {user.settings
+                  ? `${user.settings.dailyGoalValue} ${user.settings.dailyGoalType === "MINUTES" ? "phút học" : "từ cần ôn"} mỗi ngày`
+                  : "Chọn mục tiêu phù hợp với nhịp học của bạn."}
+              </p>
+            </div>
+            <LinkButton href="/settings" variant="secondary">Đổi mục tiêu <Icon name="arrow" size={16} /></LinkButton>
+          </div>
+          <nav aria-label="Kết quả học tập" className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
             {[
               ["/progress", "Tiến độ"],
               ["/achievements", "Huy hiệu"],
@@ -149,32 +149,31 @@ export default function AccountPage() {
             ].map(([href, label]) => (
               <Link key={href} href={href} className="inline-flex min-h-9 items-center text-sm font-semibold text-muted hover:text-primary">{label}</Link>
             ))}
-          </div>
-        </section>
+          </nav>
+        </div>
 
-        <section id="bao-mat" className="panel min-w-0 scroll-mt-24 p-4 shadow-none sm:p-5" aria-labelledby="account-security-title">
-          <h2 id="account-security-title" className="flex items-center gap-2 font-bold">
-            <Icon name="lock" size={18} className="text-primary" /> Bảo mật và đăng nhập
+        <div id="bao-mat" className="scroll-mt-24 p-4 sm:p-5">
+          <h2 className="flex items-center gap-2 font-bold">
+            <Icon name="lock" size={18} className="shrink-0 text-primary" /> Bảo mật và đăng nhập
           </h2>
-          <p className="mt-2 text-sm leading-6 text-muted">
-            {user.hasPassword ? "Đổi mật khẩu hoặc đặt lại qua email nếu bạn quên." : "Bạn có thể đặt thêm mật khẩu để đăng nhập bằng email."}
+          <p className="mt-1.5 text-sm leading-6 text-muted">
+            {user.hasPassword ? "Đổi mật khẩu đăng nhập hoặc gửi yêu cầu đặt lại qua email." : "Đặt mật khẩu để có thêm cách đăng nhập bằng email."}
           </p>
           <PasswordForm hasPassword={user.hasPassword} onChanged={() => void refresh()} />
-          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3">
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             {user.hasPassword && <LinkButton href="/forgot-password" variant="ghost">Quên mật khẩu?</LinkButton>}
             <Button variant="ghost" disabled={leaving} onClick={() => void signOut()}>
               <Icon name="logout" size={16} /> {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
             </Button>
           </div>
-        </section>
-        <section id="lop-va-ban" className="grid min-w-0 scroll-mt-24 items-start gap-4 md:grid-cols-2 lg:col-span-2" aria-label="Lớp học và bạn bè">
-          <ClassroomCard />
-          <ReferralCard userId={user.id} />
-        </section>
-        <div className="lg:col-span-2">
-          <DangerZone hasPassword={user.hasPassword} />
         </div>
-      </div>
+      </section>
+
+      <section id="lop-va-ban" className="panel min-w-0 scroll-mt-24 divide-y divide-border overflow-hidden shadow-none" aria-label="Lớp học và bạn bè">
+        <ClassroomRow />
+        <ReferralRow userId={user.id} />
+      </section>
+      <DangerZone hasPassword={user.hasPassword} />
     </div>
   );
 }
@@ -302,70 +301,50 @@ function PasswordForm({
   );
 }
 
-/** Thêm 1 lối vào lớp học ngoài mục "Lớp học" ở menu — như Duolingo:
- * học viên nhập mã lớp ở Cài đặt → Duolingo for Schools. */
-function ClassroomCard() {
+function ClassroomRow() {
   const { data } = useMyClassrooms();
-  const count = (data?.owned.length ?? 0) + (data?.joined.length ?? 0);
+  const joined = data?.joined.length ?? 0;
+  const owned = data?.owned.length ?? 0;
   return (
-    <Card>
-      <div className="flex items-start gap-3">
-        <span className="icon-tile">
-          <Icon name="users" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h2 className="font-semibold">Lớp học</h2>
-          <p className="mt-1 text-sm leading-6 text-muted">
-            {count > 0
-              ? `Bạn đang ở ${count} lớp.`
-              : "Giáo viên gửi mã lớp cho bạn? Nhập ở đây để nhận bài được giao ngay ở Trang chủ."}
-          </p>
-        </div>
+    <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 p-4 sm:p-5">
+      <div className="min-w-0 flex-1 basis-44">
+        <h2 className="flex items-center gap-2 font-bold"><Icon name="users" size={18} className="shrink-0 text-primary" /> Lớp học</h2>
+        <p className="mt-1.5 text-sm leading-6 text-muted">
+          {joined || owned ? `${joined} lớp đang học · ${owned} lớp đang dạy` : "Nhập mã giáo viên gửi hoặc tạo lớp để giao bài."}
+        </p>
       </div>
-      <div className="mt-4">
-        <JoinClassForm id="account-class-code" />
+      <div className="flex flex-wrap items-center gap-2">
+        <LinkButton href="/lop-hoc" variant="secondary">Mở Lớp học <Icon name="arrow" size={16} /></LinkButton>
+        <LinkButton href="/lop-hoc#nhap-ma-lop" variant="ghost">Nhập mã lớp</LinkButton>
       </div>
-      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold text-primary">
-        <Link href="/lop-hoc" className="inline-flex min-h-9 items-center hover:underline">Mở lớp học</Link>
-        <Link href="/lop-hoc#tao-lop" className="inline-flex min-h-9 items-center hover:underline">Tạo lớp miễn phí</Link>
-      </div>
-    </Card>
+    </div>
   );
 }
 
-function ReferralCard({ userId }: { userId: string }) {
+function ReferralRow({ userId }: { userId: string }) {
   const { data } = useReferralStats();
 
   return (
-    <Card>
-      <div className="flex items-start gap-3">
-        <span className="icon-tile">
-          <Icon name="spark" />
-        </span>
-        <div>
-          <h2 className="font-semibold">Mời bạn bè cùng học</h2>
-          <p className="mt-1 text-sm leading-6 text-muted">
-            Khi bạn mời hoàn thành ngày học đầu tiên, cả hai đều nhận thêm 1
-            lá chắn giữ chuỗi ngày học.
-          </p>
-        </div>
-      </div>
-      {data && data.totalReferred > 0 && (
-        <p className="mt-4 text-sm">
-          Đã mời <strong>{data.totalReferred}</strong> người ·{" "}
-          <strong className="text-good">{data.rewardedCount}</strong> đã nhận
-          thưởng
-          {data.pendingCount > 0 && ` · ${data.pendingCount} đang chờ`}
+    <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 p-4 sm:p-5">
+      <div className="min-w-0 flex-1 basis-44">
+        <h2 className="flex items-center gap-2 font-bold"><Icon name="spark" size={18} className="shrink-0 text-primary" /> Mời bạn cùng học</h2>
+        <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted">
+          Cả hai nhận một lá chắn giữ chuỗi khi người bạn mời học xong ngày đầu tiên.
         </p>
-      )}
-      <div className="mt-5">
-        <ShareButton
-          title="Học tiếng Trung cùng mình trên Hanni"
-          text="Mình đang học tiếng Trung theo chuẩn HSK 3.0 trên Hanni — vào học cùng mình nhé, cả hai sẽ nhận thêm lá chắn giữ chuỗi ngày học!"
-          path={`/register?ref=${userId}`}
-        />
+        {!!data?.totalReferred && (
+          <p className="mt-1 text-sm text-muted">
+            Đã mời <strong className="text-foreground">{data.totalReferred}</strong> người ·{" "}
+            <strong className="text-good">{data.rewardedCount}</strong> đã nhận thưởng
+            {data.pendingCount > 0 && ` · ${data.pendingCount} đang chờ`}
+          </p>
+        )}
       </div>
-    </Card>
+      <ShareButton
+        title="Học tiếng Trung cùng mình trên Hanni"
+        text="Mình đang học tiếng Trung theo chuẩn HSK 3.0 trên Hanni — vào học cùng mình nhé, cả hai sẽ nhận thêm lá chắn giữ chuỗi ngày học!"
+        path={`/register?ref=${userId}`}
+      />
+    </div>
   );
 }
 
@@ -403,7 +382,7 @@ function DangerZone({ hasPassword }: { hasPassword: boolean }) {
   }
 
   return (
-    <Card className="border-danger/20">
+    <Card className="border-danger/15 shadow-none">
       <div className="flex items-start gap-3">
         <span className="icon-tile bg-danger/10 text-danger">
           <Icon name="trash" />

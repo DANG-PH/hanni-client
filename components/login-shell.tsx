@@ -3,12 +3,26 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useState, useSyncExternalStore, type ReactNode } from "react";
 import { Icon } from "./icon";
+
+const motionQuery = "(prefers-reduced-motion: reduce)";
+
+function subscribeMotion(onChange: () => void) {
+  const media = window.matchMedia(motionQuery);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
 
 /** Bố cục đăng nhập riêng; video minh họa tự phát không tiếng và lặp liên tục. */
 export function LoginShell({ children }: { children: ReactNode }) {
   const [videoFailed, setVideoFailed] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const reduceMotion = useSyncExternalStore(
+    subscribeMotion,
+    () => window.matchMedia(motionQuery).matches,
+    () => true,
+  );
   const pathname = usePathname();
   const authMode = pathname.startsWith("/register")
     ? "register"
@@ -70,26 +84,27 @@ export function LoginShell({ children }: { children: ReactNode }) {
         </div>
         <div className="login-story-content">
           <div className="login-video-frame">
-            {videoFailed ? (
+            {paused || reduceMotion || videoFailed ? (
               <Image
-                src="/videologin-loop.webp"
+                src={paused || reduceMotion ? "/brand/welcome-still.webp" : "/videologin-loop.webp"}
                 alt=""
                 width={640}
                 height={360}
                 unoptimized
-                className="login-video login-video-fallback"
+                className="login-video"
               />
             ) : (
               <video
                 autoPlay
                 loop
+                poster="/brand/welcome-still.webp"
                 muted
                 playsInline
                 disablePictureInPicture
                 disableRemotePlayback
                 preload="auto"
-                width={1280}
-                height={720}
+                width={896}
+                height={504}
                 aria-hidden="true"
                 tabIndex={-1}
                 className="login-video"
@@ -98,6 +113,16 @@ export function LoginShell({ children }: { children: ReactNode }) {
                 <source src="/videologin.webm" type="video/webm" />
                 <source src="/videologin.mp4" type="video/mp4" onError={() => setVideoFailed(true)} />
               </video>
+            )}
+            {!reduceMotion && (
+              <button
+                type="button"
+                className="login-motion-toggle"
+                onClick={() => setPaused(!paused)}
+                aria-label={paused ? "Phát chuyển động" : "Dừng chuyển động"}
+              >
+                <Icon name={paused ? "play" : "pause"} size={16} />
+              </button>
             )}
           </div>
           <div className="login-story-copy-stack">

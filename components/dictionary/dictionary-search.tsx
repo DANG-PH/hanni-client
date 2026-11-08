@@ -352,7 +352,7 @@ export function DictionarySearch({
       )}
 
       {showTabs && (
-        <div role="tablist" aria-label="Kiểu tra" className="mt-3 flex justify-center gap-1 overflow-x-auto">
+        <div role="tablist" aria-label="Kiểu tra" className="mt-3 flex flex-wrap justify-center gap-1">
           {DICT_TABS.map((t) => (
             <button
               key={t.key}

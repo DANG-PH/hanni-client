@@ -47,7 +47,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           collapsed ? "w-[76px]" : "w-60"
         } ${styles.sidebar}`}
       >
-        <div className="app-sidebar-scroll sticky top-0 h-dvh overflow-y-auto">
+        <div className="sticky top-0 h-dvh overflow-y-auto">
           <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
         </div>
       </aside>

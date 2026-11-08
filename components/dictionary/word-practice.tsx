@@ -24,7 +24,7 @@ export function WordPractice({
   const firstChar = Array.from(word.simplified).find((c) => /\p{Script=Han}/u.test(c)) ?? word.simplified;
   return (
     <div>
-      <div role="tablist" aria-label="Cách luyện" className="mb-4 flex gap-1.5 overflow-x-auto">
+      <div role="tablist" aria-label="Cách luyện" className="mb-4 flex flex-wrap gap-1.5">
         {TABS.map((t) => (
           <button
             key={t.key}

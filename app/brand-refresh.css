@@ -8,10 +8,40 @@
 }
 .home-hero-visual {
   position: relative;
+  container-type: inline-size;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: clamp(16px, 2vw, 28px);
   background: #f6e7d8;
+}
+.home-hero-scene {
+  position: absolute;
+  inset: 0;
+  transform-origin: 64% 50%;
+}
+.home-hero-greeting {
+  position: absolute;
+  top: 50%;
+  left: 66.5%;
+  translate: -50% -50%;
+  rotate: 2deg;
+  color: #982a1e;
+  font-size: clamp(15px, 5.8cqi, 37px);
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero-scene { animation: home-hero-pan 4.6s ease-out both; }
+  .home-hero-greeting { animation: home-hero-write 750ms 400ms ease-out both; }
+}
+@keyframes home-hero-pan {
+  from { transform: scale(1.028); }
+  to { transform: scale(1); }
+}
+@keyframes home-hero-write {
+  from { clip-path: inset(0 100% 0 0); opacity: .25; }
+  to { clip-path: inset(0); opacity: 1; }
 }
 @media (min-width: 768px) {
   .home-hero-layout {

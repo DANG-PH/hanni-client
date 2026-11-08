@@ -136,7 +136,7 @@ export default async function PracticeSetPage({ params }: { params: Promise<{ sl
       </header>
 
       {siblings.length > 1 && (
-        <nav aria-label="Dạng bài khác" className="flex gap-2 overflow-x-auto pb-1">
+        <nav aria-label="Dạng bài khác" className="flex flex-wrap gap-2">
           {siblings.map((s) => (
             <Link
               key={s.slug}

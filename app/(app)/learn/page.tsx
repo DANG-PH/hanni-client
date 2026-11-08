@@ -336,7 +336,7 @@ function LearnHome() {
               <Icon name="arrow" size={14} />
             </Link>
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Cấp HSK">
+          <div className="flex flex-wrap gap-2" role="tablist" aria-label="Cấp HSK">
             {data.levels.map((l) => {
               const selected = l === viewing;
               return (

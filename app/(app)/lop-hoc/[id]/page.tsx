@@ -473,7 +473,7 @@ function Members({ data }: { data: OwnerView }) {
       ) : (
         <>
           {/* Máy tính: bảng; điện thoại: thẻ từng người (bảng 8 cột không vừa 390px). */}
-          <div className="hidden overflow-x-auto md:block">
+          <div tabIndex={0} role="region" aria-label="Bảng tiến độ học viên" className="hidden overflow-x-auto md:block">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-xs text-muted">

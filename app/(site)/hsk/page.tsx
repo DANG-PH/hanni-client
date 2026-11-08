@@ -88,7 +88,7 @@ export default async function HskPage() {
           Chưa tải được dữ liệu. Vui lòng thử lại sau.
         </p>
       ) : (
-        <section className="panel overflow-x-auto">
+        <section tabIndex={0} aria-label="Bảng từ vựng theo cấp HSK" className="panel overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs text-muted">

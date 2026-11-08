@@ -134,7 +134,7 @@ export function MobileVideoTranscript({
             )
               setFollowing(false);
           }}
-          className="relative h-full overflow-y-auto overscroll-y-contain p-2 [scrollbar-width:thin]"
+          className="relative h-full overflow-y-auto overscroll-y-contain p-2"
         >
           {active === null &&
             resumeAt > 1 &&

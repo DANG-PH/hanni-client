@@ -12,7 +12,9 @@ export function VideoShelf({ level }: { level?: number }) {
   const rail = useRef<HTMLUListElement>(null);
   const [autoScroll, setAutoScroll] = useState(false);
   const suitable = data?.filter((video) => video.hskLevel === null || !level || video.hskLevel <= level + 1) ?? [];
-  const videos = (suitable.length >= 2 ? suitable : data ?? []).slice(0, 6);
+  const byLevel = (a: (typeof suitable)[number], b: (typeof suitable)[number]) =>
+    (a.hskLevel ?? 1) - (b.hskLevel ?? 1);
+  const videos = (level && suitable.length >= 2 ? suitable : (data ?? []).toSorted(byLevel)).slice(0, 6);
 
   function move(direction: 1 | -1) {
     const list = rail.current;
@@ -56,9 +58,9 @@ export function VideoShelf({ level }: { level?: number }) {
           Tất cả video <Icon name="arrow" size={16} />
         </Link>
       </div>
-      <ul ref={rail} className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2">
+      <ul id="hanni-video-rail" ref={rail} className="flex snap-x snap-mandatory gap-3 overflow-x-auto">
         {videos.map((video) => (
-          <li key={video.id} className="w-[min(80%,260px)] shrink-0 snap-start">
+          <li key={video.id} className="w-[min(80%,260px)] shrink-0 snap-start [&>a]:h-full">
             <VideoCard video={video} />
           </li>
         ))}
@@ -68,8 +70,8 @@ export function VideoShelf({ level }: { level?: number }) {
           <Button variant="ghost" aria-pressed={autoScroll} onClick={() => setAutoScroll(!autoScroll)}>
             {autoScroll ? "Dừng tự cuộn" : "Tự cuộn"}
           </Button>
-          <Button variant="secondary" aria-label="Video trước" onClick={() => move(-1)}><Icon name="back" size={17} /></Button>
-          <Button variant="secondary" aria-label="Video sau" onClick={() => move(1)}><Icon name="arrow" size={17} /></Button>
+          <Button variant="secondary" aria-controls="hanni-video-rail" aria-label="Video trước" onClick={() => move(-1)}><Icon name="back" size={17} /></Button>
+          <Button variant="secondary" aria-controls="hanni-video-rail" aria-label="Video sau" onClick={() => move(1)}><Icon name="arrow" size={17} /></Button>
         </div>
       )}
     </section>

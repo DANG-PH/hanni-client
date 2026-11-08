@@ -186,15 +186,18 @@ export default function Home() {
             </p>
           </div>
           <div className="home-hero-visual">
-            <Image
-              src="/illustrations/hanni/front-door.webp"
-              alt="Cáo Hanni giơ thẻ từ bên bàn học, trước cửa sổ hoa văn Trung Hoa"
-              fill
-              sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1280px) 45vw, 570px"
-              loading="eager"
-              fetchPriority="high"
-              className="object-cover"
-            />
+            <div className="home-hero-scene">
+              <Image
+                src="/illustrations/hanni/front-door.webp"
+                alt="Cáo Hanni giơ thẻ từ bên bàn học, trước cửa sổ hoa văn Trung Hoa"
+                fill
+                sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1280px) 45vw, 570px"
+                loading="eager"
+                fetchPriority="high"
+                className="object-cover"
+              />
+              <span aria-hidden="true" lang="zh" className="home-hero-greeting hanzi">你好</span>
+            </div>
           </div>
           <div className="home-dictionary min-w-0 max-w-xl rounded-2xl border border-border p-4">
             <p className="mb-2 px-1 text-xs font-semibold text-muted">

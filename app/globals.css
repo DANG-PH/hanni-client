@@ -28,6 +28,10 @@
   --hero-to: #f9e8df;
 }
 
+/* Quiet scrollbars across the web shell. Overflow and native scrolling remain enabled. */
+:where(html, body, *) { scrollbar-width: none; }
+::-webkit-scrollbar { display: none; }
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
@@ -100,16 +104,11 @@
     flex-direction: column;
     gap: 28px;
   }
-  .app-sidebar-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-    scrollbar-gutter: stable;
-  }
   .app-workspace .page-wrap {
-    /* Desktop dùng container fluid; chỉ giới hạn ở màn hình siêu rộng để
+    /* Desktop dùng container fluid, giới hạn chiều rộng để
      * tránh dòng chữ và các card bị kéo quá dài. Các trang cần tập trung vẫn
      * có thể ghi đè bằng max-w-*! ngay tại page. */
-    max-width: 1680px;
+    max-width: 1360px;
   }
   .app-workspace {
     background: var(--background);
@@ -775,27 +774,38 @@ body:has([data-bottom-nav]) {
 }
 .login-video-frame {
   position: relative;
-  /* Khung trong suốt để cạnh video hòa trực tiếp vào gradient của panel. */
-  background: transparent;
+  width: min(100%, 480px);
+  aspect-ratio: 4 / 3;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid #ffffff40;
+  border-radius: 22px;
+  background: #c83c2d;
+  box-shadow: 0 14px 45px #6a21152b;
 }
 .login-video {
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 16/9;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
   pointer-events: none;
   user-select: none;
-  /* Chỉ làm mờ cạnh, giữ nguyên màu và độ sáng của nhân vật ở giữa. */
-  -webkit-mask-image:
-    linear-gradient(to right, transparent, #000 13%, #000 87%, transparent),
-    linear-gradient(to bottom, transparent, #000 7%, #000 84%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(to right, transparent, #000 13%, #000 87%, transparent),
-    linear-gradient(to bottom, transparent, #000 7%, #000 84%, transparent);
-  mask-composite: intersect;
 }
+.login-motion-toggle {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #fff6;
+  border-radius: 50%;
+  color: #fff;
+  background: #76251fc9;
+  cursor: pointer;
+}
+.login-motion-toggle:focus-visible { outline: 2px solid white; outline-offset: 2px; }
 .login-video::-webkit-media-controls,
 .login-video::-webkit-media-controls-start-playback-button {
   display: none;
@@ -928,13 +938,15 @@ body:has([data-bottom-nav]) {
   .login-story-note {
     display: none;
   }
-  .login-video {
-    -webkit-mask-image: radial-gradient(
-      circle closest-side,
-      #000 78%,
-      transparent
-    );
-    mask-image: radial-gradient(circle closest-side, #000 78%, transparent);
+  .login-video-frame {
+    width: 138px;
+    border-radius: 15px;
+  }
+  .login-motion-toggle {
+    right: 3px;
+    bottom: 3px;
+    width: 32px;
+    height: 32px;
   }
   .login-header img {
     width: 36px;

@@ -342,7 +342,7 @@ async function LevelList({ level, page }: { level: number; page: number }) {
         </div>
         <SceneArt kind="dictionary" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
       </section>
-      <nav aria-label="Chọn cấp HSK" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+      <nav aria-label="Chọn cấp HSK" className="flex flex-wrap gap-2">
         {LEVELS.map((l) => (
           <Link
             key={l}
