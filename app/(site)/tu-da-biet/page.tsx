@@ -21,6 +21,7 @@
  * âm Hán Việt + nghĩa tiếng Việt + phép so khớp), nên vừa là hook chia sẻ
  * vừa là trang SEO nhắm truy vấn "từ tiếng Trung giống tiếng Việt".
  */
+import { SceneArt } from "@/components/learning-scenes";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/icon";
@@ -72,18 +73,21 @@ export default async function TuDaBietPage() {
 
   return (
     <div className="page-wrap max-w-4xl! space-y-8 py-10!">
-      <section className="text-center">
-        <span className="eyebrow">LỢI THẾ CỦA NGƯỜI VIỆT</span>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-          {data ? `${data.total} từ tiếng Trung` : "Những từ tiếng Trung"}
-          <br className="hidden sm:block" /> bạn đã biết sẵn
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-muted">
-          Hơn 60% từ vựng tiếng Việt vay mượn từ tiếng Hán. Với những từ dưới
-          đây, <strong className="text-foreground">âm Hán Việt trùng khớp
-          luôn với nghĩa tiếng Việt</strong> — bạn chỉ cần biết mặt chữ, nghĩa
-          thì đã nằm sẵn trong đầu rồi.
-        </p>
+      <section className="cultural-intro feature-intro">
+        <div className="cultural-intro-copy">
+          <span className="eyebrow">LỢI THẾ CỦA NGƯỜI VIỆT</span>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+            {data ? `${data.total} từ tiếng Trung` : "Những từ tiếng Trung"}
+            <br className="hidden sm:block" /> bạn đã biết sẵn
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-muted">
+            Hơn 60% từ vựng tiếng Việt vay mượn từ tiếng Hán. Với những từ dưới
+            đây, <strong className="text-foreground">âm Hán Việt trùng khớp
+            luôn với nghĩa tiếng Việt</strong> — bạn chỉ cần biết mặt chữ, nghĩa
+            thì đã nằm sẵn trong đầu rồi.
+          </p>
+        </div>
+        <SceneArt kind="hanviet" className="cultural-intro-art" />
       </section>
 
       {!data ? (

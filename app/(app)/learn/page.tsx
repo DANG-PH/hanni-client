@@ -232,74 +232,74 @@ function LearnHome() {
             </div>
           ) : !data ? (
             <div className="lesson-copy w-full space-y-2" aria-hidden="true">
-                <div className="skeleton h-4 w-44 rounded" />
-                <div className="skeleton h-14 w-72 max-w-full rounded sm:h-8" />
-                <div className="skeleton h-5 w-56 max-w-full rounded" />
-                <div className="skeleton h-4 w-40 rounded" />
-                <div className="skeleton mt-4! h-12 w-52 rounded-xl" />
-                {!user && <div className="skeleton mt-2.5! h-12 w-52 rounded-xl sm:hidden" />}
+              <div className="skeleton h-4 w-44 rounded" />
+              <div className="skeleton h-14 w-72 max-w-full rounded sm:h-8" />
+              <div className="skeleton h-5 w-56 max-w-full rounded" />
+              <div className="skeleton h-4 w-40 rounded" />
+              <div className="skeleton mt-4! h-12 w-52 rounded-xl" />
+              {!user && <div className="skeleton mt-2.5! h-12 w-52 rounded-xl sm:hidden" />}
             </div>
           ) : (
             <div className="lesson-copy">
-                <p className="text-xs font-bold tracking-wider text-primary">
-                  LỘ TRÌNH HSK {data.level === 7 ? "7–9" : data.level} · {levelName(data.level).toUpperCase()}
-                </p>
-                {current ? (
-                  <>
-                    <h1 id="next-lesson" className="mt-1.5 text-xl font-extrabold tracking-tight sm:text-2xl">
-                      Bài {current.orderIndex}: {current.title}
-                    </h1>
-                    <p className="mt-1 text-sm text-muted">
-                      <span lang="zh" className="hanzi text-base text-primary">
-                        {current.previewWords.join(" · ")}
-                      </span>{" "}
-                      · {current.wordCount} từ · ~{lessonMinutes(current.wordCount)} phút
-                    </p>
-                    <div className="lesson-progress">
-                      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs">
-                        <span className="text-muted">{data.completedLessons}/{data.totalLessons} bài · {unitsDone}/{units.length} chủ đề</span>
-                        <span className="font-semibold tabular-nums text-primary">{Math.round(pct)}%</span>
-                      </div>
-                      <ProgressBar value={pct} label="Tiến độ lộ trình" />
+              <p className="text-xs font-bold tracking-wider text-primary">
+                LỘ TRÌNH HSK {data.level === 7 ? "7–9" : data.level} · {levelName(data.level).toUpperCase()}
+              </p>
+              {current ? (
+                <>
+                  <h1 id="next-lesson" className="mt-1.5 text-xl font-extrabold tracking-tight sm:text-2xl">
+                    Bài {current.orderIndex}: {current.title}
+                  </h1>
+                  <p className="mt-1 text-sm text-muted">
+                    <span lang="zh" className="hanzi text-base text-primary">
+                      {current.previewWords.join(" · ")}
+                    </span>{" "}
+                    · {current.wordCount} từ · ~{lessonMinutes(current.wordCount)} phút
+                  </p>
+                  <div className="lesson-progress">
+                    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs">
+                      <span className="text-muted">{data.completedLessons}/{data.totalLessons} bài · {unitsDone}/{units.length} chủ đề</span>
+                      <span className="font-semibold tabular-nums text-primary">{Math.round(pct)}%</span>
                     </div>
-                    <div className="mt-4 flex flex-wrap gap-2.5">
-                      <LinkButton href={`/bai-hoc/${current.id}`} className="lesson-start">
-                        <Icon name="play" size={16} />
-                        {data.completedLessons === 0 ? "Bắt đầu học" : "Học tiếp"}
+                    <ProgressBar value={pct} label="Tiến độ lộ trình" />
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2.5">
+                    <LinkButton href={`/bai-hoc/${current.id}`} className="lesson-start">
+                      <Icon name="play" size={16} />
+                      {data.completedLessons === 0 ? "Bắt đầu học" : "Học tiếp"}
+                    </LinkButton>
+                    {data.level === 1 && data.completedLessons === 0 && (
+                      <LinkButton href="/phien-am" variant="secondary">
+                        <Icon name="sound" size={16} />
+                        Học phát âm trước<span className="hidden sm:inline">(10 phút)</span>
                       </LinkButton>
-                      {data.level === 1 && data.completedLessons === 0 && (
-                        <LinkButton href="/phien-am" variant="secondary">
-                          <Icon name="sound" size={16} />
-                          Học phát âm trước (10 phút)
-                        </LinkButton>
-                      )}
-                      {user && !isCourse && (
-                        <Button variant="secondary" disabled={switching} onClick={() => void chooseLevel(data.level)}>
-                          Chọn học HSK {data.level === 7 ? "7–9" : data.level}
-                        </Button>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h1 id="next-lesson" className="mt-1.5 text-xl font-extrabold tracking-tight">
-                      Bạn đã học hết {data.totalLessons} bài!
-                    </h1>
-                    <p className="mt-1 text-sm text-muted">
-                      Từ đã học vẫn quay lại ở phần Ôn tập để bạn nhớ lâu.
-                    </p>
-                    {nextLevel && (
-                      <Button
-                        className="mt-4"
-                        disabled={switching}
-                        onClick={() => (user ? void chooseLevel(nextLevel) : setViewLevel(nextLevel))}
-                      >
-                        Lên HSK {nextLevel === 7 ? "7–9" : nextLevel}
-                        <Icon name="arrow" size={16} />
+                    )}
+                    {user && !isCourse && (
+                      <Button variant="secondary" disabled={switching} onClick={() => void chooseLevel(data.level)}>
+                        Chọn học HSK {data.level === 7 ? "7–9" : data.level}
                       </Button>
                     )}
-                  </>
-                )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h1 id="next-lesson" className="mt-1.5 text-xl font-extrabold tracking-tight">
+                    Bạn đã học hết {data.totalLessons} bài!
+                  </h1>
+                  <p className="mt-1 text-sm text-muted">
+                    Từ đã học vẫn quay lại ở phần Ôn tập để bạn nhớ lâu.
+                  </p>
+                  {nextLevel && (
+                    <Button
+                      className="mt-4"
+                      disabled={switching}
+                      onClick={() => (user ? void chooseLevel(nextLevel) : setViewLevel(nextLevel))}
+                    >
+                      Lên HSK {nextLevel === 7 ? "7–9" : nextLevel}
+                      <Icon name="arrow" size={16} />
+                    </Button>
+                  )}
+                </>
+              )}
             </div>
           )}
         </section>

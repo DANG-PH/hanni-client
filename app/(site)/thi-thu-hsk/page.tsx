@@ -112,28 +112,29 @@ export default async function MockExamHubPage() {
 
   return (
     <div className="page-wrap max-w-6xl! space-y-8 py-8!">
-      <section className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <div className="cultural-intro panel tint-primary p-5 sm:p-8">
-        <div className="cultural-intro-copy">
-          <span className="eyebrow max-sm:hidden">LUYỆN THI HSK</span>
-          <h1 className="text-2xl font-extrabold tracking-tight sm:mt-3 sm:text-4xl">Đề thi thử HSK online</h1>
-          {/* Điện thoại: 1 câu — màn đầu phải thấy được danh sách đề (Hanzii đặt thẻ đề ngay đầu trang). */}
-          <p className="mt-2 max-w-xl text-sm leading-6 text-muted sm:mt-3 sm:leading-7">
+      <section className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="panel exam-intro p-5 sm:p-7">
+          <div className="exam-intro-title">
+            <div className="min-w-0">
+              <span className="eyebrow max-sm:hidden">LUYỆN THI HSK</span>
+              <h1 className="text-2xl font-bold tracking-tight sm:mt-2 sm:text-4xl">Đề thi thử HSK online</h1>
+            </div>
+            <SceneArt kind="exam" className="exam-intro-art" />
+          </div>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
             Đúng cấu trúc đề thật, nộp bài là có điểm và chữa từng câu bằng tiếng Việt.
             <span className="max-sm:hidden">
               {" "}
               Phần nghe có giọng đọc, phần đọc in pinyin như đề HSK 1–2, HSK 3–4 có thêm phần viết.
             </span>
           </p>
-          <ul className="mt-4 flex flex-wrap gap-2 text-xs font-semibold sm:mt-5">
-            {["HSK 1 · 2 · 3 · 4", "Nghe · Đọc · Viết", "Chữa bài tiếng Việt", "Miễn phí"].map((t) => (
-              <li key={t} className="rounded-full border border-primary/20 bg-surface/70 px-3 py-1.5">
-                {t}
+          <ul className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
+            {["HSK 1–4", "Nghe · Đọc · Viết", "Chữa bài tiếng Việt", "Miễn phí"].map((label) => (
+              <li key={label} className="rounded-full border border-primary/20 bg-surface/70 px-2.5 py-1">
+                {label}
               </li>
             ))}
           </ul>
-        </div>
-        <SceneArt kind="exam" className="cultural-intro-art" />
         </div>
         <MockExamProgress exams={exams} />
       </section>

@@ -58,7 +58,7 @@ export function MockExamList({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Cấp HSK">
+      <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap" role="tablist" aria-label="Cấp HSK">
         {ALL_LEVELS.map((l) => {
           const has = levels.has(l);
           const selected = l === level;
@@ -182,7 +182,7 @@ export function MockExamList({
           </p>
           {[...new Set(sets.map((x) => x.level))].map((l) => (
             <div key={l} hidden={l !== level}>
-              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {sets
                   .filter((x) => x.level === l)
                   .map((x) => (

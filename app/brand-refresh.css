@@ -134,3 +134,41 @@
   .practice-tool-title > svg:last-child { display: none; }
   .practice-tool-description { font-size: 12px; }
 }
+
+.exam-intro, .feature-intro {
+  background: #fffbf8;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: none;
+}
+.exam-intro-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.exam-intro-title .exam-intro-art {
+  flex: 0 0 clamp(72px, 13vw, 120px);
+  height: clamp(58px, 12vw, 88px);
+}
+.feature-intro { padding: clamp(18px, 3vw, 28px); }
+
+@media (max-width: 767px) {
+  .dictionary-intro .learning-backdrop {
+    inset-block: 0 auto;
+    width: 118px;
+    height: 116px;
+    opacity: .86;
+    mask-image: linear-gradient(to right, transparent, #000 45%),
+      linear-gradient(to top, transparent, #000 38%);
+    mask-composite: intersect;
+  }
+  .dictionary-intro h1 {
+    max-width: calc(100% - 74px);
+    font-size: 24px;
+  }
+  .lesson-hero .learning-backdrop {
+    width: 48%;
+    height: 125px;
+  }
+}
