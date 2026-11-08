@@ -562,8 +562,8 @@ function StudentView({ data }: { data: MemberView }) {
   return (
     <div className="page-wrap space-y-6">
       <Header data={data} />
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <section className="panel p-5 sm:p-6" aria-labelledby="bai-tap">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+        <section className="panel min-w-0 p-4 shadow-none sm:p-6" aria-labelledby="bai-tap">
           <h2 id="bai-tap" className="mb-3 flex items-center gap-2 font-bold">
             <Icon name="flag" size={18} className="text-primary" /> Bài tập của lớp
           </h2>
@@ -579,7 +579,7 @@ function StudentView({ data }: { data: MemberView }) {
                       <Icon name={a.done ? "check" : a.kind === "LESSON" ? "cards" : "target"} size={15} />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-semibold break-words">{a.label}</span>
+                      <span className="block text-sm font-semibold [overflow-wrap:anywhere]">{a.label}</span>
                       <span className={`block text-xs ${due?.overdue && !a.done ? "text-danger" : "text-muted"}`}>
                         {a.done ? "Đã xong" : due ? due.text : "Không có hạn"}
                       </span>
@@ -596,7 +596,7 @@ function StudentView({ data }: { data: MemberView }) {
           )}
         </section>
 
-        <section className="panel p-5 sm:p-6" aria-labelledby="bang-tuan">
+        <section className="panel min-w-0 p-4 shadow-none sm:p-6" aria-labelledby="bang-tuan">
           <h2 id="bang-tuan" className="flex items-center gap-2 font-bold">
             <Icon name="trophy" size={18} className="text-primary" /> Phút học tuần này
           </h2>
@@ -613,7 +613,7 @@ function StudentView({ data }: { data: MemberView }) {
                 <span className="text-xs text-muted tabular-nums">
                   <Icon name="flame" size={12} className="inline" /> {m.currentStreak}
                 </span>
-                <span className="w-14 text-right text-sm font-bold tabular-nums">{m.minutes7d}′</span>
+                <span className="shrink-0 text-right text-sm font-bold tabular-nums">{m.minutes7d}′</span>
               </li>
             ))}
           </ol>
