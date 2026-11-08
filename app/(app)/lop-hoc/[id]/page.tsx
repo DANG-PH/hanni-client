@@ -194,12 +194,12 @@ function TeacherView({ data }: { data: OwnerView }) {
       </div>
 
       {/* Điện thoại: tiến độ học viên lên trước (việc giáo viên mở trang để xem), giao bài sau. */}
-      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
-        <div className="order-2 space-y-5 xl:order-1">
+      <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
+        <div className="order-2 min-w-0 space-y-5 xl:order-1">
           <AssignForm data={data} />
           <AssignmentList data={data} />
         </div>
-        <div className="order-1 xl:order-2">
+        <div className="order-1 min-w-0 xl:order-2">
           <Members data={data} />
         </div>
       </div>
@@ -292,7 +292,7 @@ function AssignForm({ data }: { data: OwnerView }) {
           </button>
         ))}
       </div>
-      <div className="grid gap-3 sm:grid-cols-[8rem_1fr]">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[8rem_minmax(0,1fr)]">
         <label className="text-xs font-medium text-muted">
           Cấp
           <select
@@ -301,7 +301,7 @@ function AssignForm({ data }: { data: OwnerView }) {
               setLevel(Number(e.target.value));
               setTarget("");
             }}
-            className="field mt-1 h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-foreground"
+            className="field mt-1 h-11 w-full min-w-0 max-w-full rounded-xl border border-border bg-surface px-3 text-sm text-foreground"
           >
             {HSK_LEVELS.map((l) => (
               <option key={l} value={l}>
@@ -315,7 +315,7 @@ function AssignForm({ data }: { data: OwnerView }) {
           <select
             value={target}
             onChange={(e) => setTarget(e.target.value)}
-            className="field mt-1 h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-foreground"
+            className="field mt-1 h-11 w-full min-w-0 max-w-full rounded-xl border border-border bg-surface px-3 text-sm text-foreground"
           >
             <option value="">— Chọn —</option>
             {kind === "LESSON"
@@ -342,7 +342,7 @@ function AssignForm({ data }: { data: OwnerView }) {
           value={due}
           min={new Date().toISOString().slice(0, 10)}
           onChange={(e) => setDue(e.target.value)}
-          className="field mt-1 h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-foreground"
+          className="field mt-1 h-11 w-full min-w-0 max-w-full rounded-xl border border-border bg-surface px-3 text-sm text-foreground"
         />
       </label>
       {note && <p className={`text-xs ${note.ok ? "text-good" : "text-danger"}`}>{note.text}</p>}
@@ -448,12 +448,12 @@ function Members({ data }: { data: OwnerView }) {
         <h2 id="hoc-vien" className="font-bold">
           Tiến độ học viên
         </h2>
-        <label className="flex items-center gap-2 text-xs whitespace-nowrap text-muted">
+        <label className="flex min-w-0 max-w-full items-center gap-2 text-xs text-muted">
           Xếp theo
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as typeof sort)}
-            className="field h-9 rounded-lg border border-border bg-surface px-2 text-xs text-foreground"
+            className="field h-9 min-w-0 max-w-full rounded-lg border border-border bg-surface px-2 text-xs text-foreground"
           >
             <option value="recent">Học gần nhất</option>
             <option value="minutes">Phút học tuần này</option>

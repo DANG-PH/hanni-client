@@ -1,5 +1,6 @@
 .overview { display: grid; gap: 14px; }
 .leaders, .personal { min-width: 0; padding: clamp(13px, 2vw, 20px); box-shadow: none; }
+.leaders { container-type: inline-size; }
 .personal { background: #fffbf8; }
 .podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
 .leader {
@@ -38,6 +39,22 @@
   font-weight: 650;
 }
 @media (min-width: 1150px) { .overview { grid-template-columns: minmax(0, 1fr) minmax(220px, 28%); align-items: start; } }
+
+@container (min-width: 680px) {
+  .leader {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: center;
+    justify-items: start;
+    column-gap: 10px;
+    row-gap: 4px;
+    padding: 10px;
+    text-align: left;
+  }
+  .leader > :nth-child(2) { grid-column: 1; grid-row: 1 / span 2; }
+  .leader > .medal { grid-column: 2; grid-row: 1; }
+  .leader > .podiumName { grid-column: 2; grid-row: 2; min-height: 0; }
+  .leader > :last-child { grid-column: 3; grid-row: 1 / span 2; }
+}
 
 .table {
   width: 100%;

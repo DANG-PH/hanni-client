@@ -234,12 +234,13 @@ export default function ProgressPage() {
                 <div className="panel divide-y divide-border overflow-hidden shadow-none">
                   {data.levels.map((level) => {
                     const label = level.level >= 7 ? "HSK 7–9" : `HSK ${level.level}`;
+                    const band = BAND_VI[level.band] ?? level.band;
                     return (
                       <details key={level.level} open={level.level === focus?.level} className="group">
                         <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 marker:hidden hover:bg-primary/5 sm:px-5">
                           <span className="min-w-0">
                             <span className="block break-words text-sm font-bold">{label} · {level.nameVi}</span>
-                            <span className="mt-1 block text-xs text-muted">{BAND_VI[level.band] ?? level.band}</span>
+                            {band !== level.nameVi && <span className="mt-1 block text-xs text-muted">{band}</span>}
                           </span>
                           <span className="flex shrink-0 items-center gap-2">
                             <span className="text-right">
