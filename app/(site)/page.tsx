@@ -156,17 +156,16 @@ export default function Home() {
              * chung "Học thêm mỗi ngày", còn lợi thế Hán Việt nằm ở dòng phụ
              * mà phần lớn khách không đọc tới. */}
             <h1 className="mt-5 text-[34px] font-extrabold leading-[1.12] tracking-tight sm:text-5xl lg:text-[56px]">
-              Bạn đã biết <span className="whitespace-nowrap">tiếng Trung</span>
+              Bạn đã biết <span className="whitespace-nowrap">tiếng Trung</span>{" "}
               <br />
               <span className="text-primary">nhiều hơn bạn nghĩ.</span>
             </h1>
-            <p className="mt-5 max-w-md text-sm leading-7 text-muted sm:text-base">
+            <p className="mt-4 max-w-md text-sm leading-6 text-muted sm:mt-5 sm:text-base sm:leading-7">
               <span lang="zh" className="hanzi">电话</span> là điện thoại,{" "}
-              <span lang="zh" className="hanzi">世界</span> là thế giới — hàng
-              trăm từ tiếng Trung đọc gần giống tiếng Việt nhờ âm Hán Việt.
-              Hanni dạy theo lộ trình HSK 3.0, mỗi bài chỉ 5–10 phút.
+              <span lang="zh" className="hanzi">世界</span> là thế giới.
+              Học tiếng Trung qua âm Hán Việt theo lộ trình HSK 3.0, mỗi bài 5–10 phút.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-4 flex flex-wrap gap-2.5 sm:mt-6 sm:gap-3">
               {/* Khách: vào thẳng bài 1 (học trước, đăng ký sau — kiểu
                * Duolingo). Người đã biết một chút làm bài kiểm tra trình độ
                * thay vì tự khai cấp ở khảo sát. */}
@@ -191,6 +190,7 @@ export default function Home() {
               alt="Cáo Hanni giơ thẻ từ bên bàn học, trước cửa sổ hoa văn Trung Hoa"
               fill
               sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1280px) 45vw, 570px"
+              loading="eager"
               fetchPriority="high"
               className="object-cover"
             />

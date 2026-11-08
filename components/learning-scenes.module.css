@@ -9,13 +9,25 @@
 .cover {
   height: auto;
   aspect-ratio: 8 / 5;
-  background: #f7efeb;
+  border-bottom: 1px solid var(--border);
+  background: radial-gradient(ellipse at 50% 36%, #fffdfb, var(--cover-tint, #f5e7df) 90%);
+}
+
+.cover:is([data-scene="pronunciation"], [data-scene="listening"], [data-scene="pinyin"]) {
+  --cover-tint: #f9e5df;
+}
+
+.cover:is([data-scene="speaking"], [data-scene="game"], [data-scene="video"]) {
+  --cover-tint: #f2ded6;
+}
+
+.cover:is([data-scene="dictionary"], [data-scene="exam"], [data-scene="scan"]) {
+  --cover-tint: #f0e8dd;
 }
 
 .compact { height: var(--scene-height, 96px); }
-.stage { object-fit: cover; object-position: center bottom; opacity: .55; }
 .imageBox { position: absolute; inset: 4px; z-index: 1; }
-.cover .imageBox { inset: 11% 13%; }
+.cover .imageBox { inset: 9% 12%; }
 .image { object-fit: contain; object-position: center; }
 
 @media (max-width: 639px) {
