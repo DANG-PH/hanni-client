@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 interface YTPlayer {
   seekTo: (s: number, allow: boolean) => void;
@@ -46,15 +46,19 @@ function loadApi(): Promise<void> {
  */
 export function YoutubePlayer({
   youtubeId,
+  thumbnailUrl,
   seekRef,
   onTick,
   onReady,
 }: {
   youtubeId: string;
+  thumbnailUrl?: string | null;
   seekRef: React.RefObject<((seconds: number) => void) | null>;
   onTick?: (currentSeconds: number) => void;
   onReady?: (durationSeconds: number) => void;
 }) {
+  const [playerStatus, setPlayerStatus] = useState<{ id: string; state: "ready" | "error" } | null>(null);
+  const state = playerStatus?.id === youtubeId ? playerStatus.state : "loading";
   const hostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
   const cbRef = useRef({ onTick, onReady });
@@ -65,6 +69,11 @@ export function YoutubePlayer({
   useEffect(() => {
     let cancelled = false;
     let timer: ReturnType<typeof setInterval> | null = null;
+    const readyTimeout = window.setTimeout(showError, 10000);
+
+    function showError() {
+      if (!cancelled) setPlayerStatus({ id: youtubeId, state: "error" });
+    }
 
     void loadApi().then(() => {
       if (cancelled || !hostRef.current || !window.YT) return;
@@ -73,11 +82,18 @@ export function YoutubePlayer({
         playerVars: { rel: 0, modestbranding: 1, playsinline: 1 },
         events: {
           onReady: () => {
+            if (cancelled) return;
+            window.clearTimeout(readyTimeout);
+            setPlayerStatus({ id: youtubeId, state: "ready" });
             try {
               cbRef.current.onReady?.(playerRef.current!.getDuration());
             } catch {
               /* ignore */
             }
+          },
+          onError: () => {
+            window.clearTimeout(readyTimeout);
+            showError();
           },
         },
       });
@@ -97,6 +113,7 @@ export function YoutubePlayer({
 
     return () => {
       cancelled = true;
+      window.clearTimeout(readyTimeout);
       if (timer) clearInterval(timer);
       seekRef.current = null;
       try {
@@ -108,8 +125,32 @@ export function YoutubePlayer({
   }, [youtubeId, seekRef]);
 
   return (
-    <div className="aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black">
+    <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-[#2c2522]">
       <div ref={hostRef} className="h-full w-full" />
+      {state !== "ready" && (
+        <div className="absolute inset-0 grid place-items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={thumbnailUrl ?? `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover opacity-55"
+          />
+          {state === "error" ? (
+            <a
+              href={`https://www.youtube.com/watch?v=${encodeURIComponent(youtubeId)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative rounded-xl bg-surface px-4 py-3 text-sm font-semibold text-primary"
+            >
+              Mở trên YouTube
+            </a>
+          ) : (
+            <span role="status" className="relative rounded-xl bg-black/65 px-4 py-2 text-sm font-semibold text-white">
+              Đang mở video…
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

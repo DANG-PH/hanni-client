@@ -43,9 +43,12 @@ function VerifyInner() {
         </p>
       )}
       {state === "fail" && (
-        <p className="text-primary">
-          Liên kết không hợp lệ hoặc đã hết hạn.
-        </p>
+        <div className="space-y-2">
+          <p className="text-primary">Liên kết không hợp lệ hoặc đã hết hạn.</p>
+          <Link href="/login" className="inline-flex min-h-10 items-center font-semibold text-primary hover:underline">
+            Về đăng nhập
+          </Link>
+        </div>
       )}
     </Card>
   );

@@ -332,6 +332,7 @@ export default function WatchDetailPage() {
             <div className="relative max-lg:[&>div:first-child]:rounded-b-none">
               <YoutubePlayer
                 youtubeId={data.youtubeId}
+                thumbnailUrl={data.thumbnailUrl}
                 seekRef={seekRef}
                 onTick={onTick}
               />
