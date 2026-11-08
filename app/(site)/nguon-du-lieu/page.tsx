@@ -55,7 +55,7 @@ export default function NguonDuLieuPage() {
   return (
     <div className="page-wrap max-w-3xl! space-y-8 py-12!">
       <section className="panel bg-[#fffaf7] p-5 shadow-none sm:p-7">
-        <div className="page-spot">
+        <div className="page-spot page-spot-intro">
           <div className="min-w-0">
             <p className="eyebrow">MINH BẠCH VỀ DỮ LIỆU</p>
             <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">

@@ -132,7 +132,7 @@ export default async function TeachersPage() {
       <section className="border-b border-border bg-[#fffbf8]">
         <div className="page-wrap grid grid-cols-1 gap-6 py-8! lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center lg:py-14!">
           <div className="min-w-0">
-            <div className="page-spot">
+            <div className="page-spot page-spot-intro">
               <div className="min-w-0">
                 <p className="eyebrow">DÀNH CHO GIÁO VIÊN · TRUNG TÂM · GIA SƯ</p>
                 <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">Lớp học tiếng Trung miễn phí cho giáo viên</h1>

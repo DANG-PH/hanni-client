@@ -312,7 +312,7 @@ function ClassroomRow() {
   const owned = data?.owned.length ?? 0;
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 p-4 sm:p-5">
-      <div className="min-w-0 flex-1 basis-44">
+      <div className="min-w-0 flex-1 basis-full sm:basis-44">
         <h2 className="flex items-center gap-2 font-bold"><Icon name="users" size={18} className="shrink-0 text-primary" /> Lớp học</h2>
         <p className="mt-1.5 text-sm leading-6 text-muted">
           {joined || owned ? `${joined} lớp đang học · ${owned} lớp đang dạy` : "Nhập mã giáo viên gửi hoặc tạo lớp để giao bài."}
@@ -331,7 +331,7 @@ function ReferralRow({ userId }: { userId: string }) {
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 p-4 sm:p-5">
-      <div className="min-w-0 flex-1 basis-44">
+      <div className="min-w-0 flex-1 basis-full sm:basis-44">
         <h2 className="flex items-center gap-2 font-bold"><Icon name="spark" size={18} className="shrink-0 text-primary" /> Mời bạn cùng học</h2>
         <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted">
           Cả hai nhận một lá chắn giữ chuỗi khi người bạn mời học xong ngày đầu tiên.

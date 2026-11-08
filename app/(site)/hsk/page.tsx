@@ -64,7 +64,7 @@ export default async function HskPage() {
   return (
     <div className="page-wrap max-w-4xl! space-y-8 py-10!">
       <section className="panel bg-[#fffaf7] p-5 shadow-none sm:p-7">
-        <div className="page-spot">
+        <div className="page-spot page-spot-intro">
           <div className="min-w-0">
             <span className="eyebrow">TRA CỨU</span>
             <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">

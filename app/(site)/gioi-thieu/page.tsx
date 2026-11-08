@@ -95,7 +95,7 @@ export default async function AboutPage() {
     <div className="pb-16">
       <section className="border-b border-border bg-surface">
         <div className="page-wrap py-12! lg:py-16!">
-          <div className="page-spot">
+          <div className="page-spot page-spot-intro">
             <div className="min-w-0">
               <p className="eyebrow">GIỚI THIỆU</p>
               <h1 className="mt-3 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">
