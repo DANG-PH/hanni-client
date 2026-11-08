@@ -235,11 +235,11 @@ export function PremiumModal({
                               <span className="mt-0.5 block text-xs font-medium text-accent">Tiết kiệm {save}%</span>
                             )}
                           </span>
-                          <span className="text-right md:mt-auto md:text-left">
+                          <span className="text-right md:mt-auto md:min-h-12 md:text-left">
                             <span className="block text-lg leading-tight font-bold whitespace-nowrap tabular-nums md:text-2xl">
                               {formatVnd(plan.priceVnd)}
                             </span>
-                            {pm && <span className="mt-0.5 block text-xs whitespace-nowrap text-muted">≈ {formatVnd(pm)}/tháng</span>}
+                            {pm !== null && <span className="mt-0.5 block text-xs whitespace-nowrap text-muted">≈ {formatVnd(pm)}/tháng</span>}
                           </span>
                         </label>
                       );
@@ -313,17 +313,20 @@ export function PremiumModal({
                   </ul>
                 </details>
 
-                <section aria-label="Câu hỏi thường gặp" className="mt-3 divide-y divide-border rounded-2xl border border-border">
-                  {FAQ.map((f) => (
-                    <details key={f.q} className="group px-4 py-3">
-                      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
-                        {f.q}
-                        <Icon name="chevron" size={15} className="shrink-0 text-muted transition-transform group-open:rotate-180" />
-                      </summary>
-                      <p className="mt-2 text-sm leading-6 text-muted">{f.a}</p>
-                    </details>
-                  ))}
-                </section>
+                <details className="group mt-2 rounded-2xl border border-border">
+                  <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3 py-2.5 text-sm font-semibold sm:px-4">
+                    Câu hỏi thường gặp
+                    <Icon name="chevron" size={15} className="shrink-0 text-muted transition-transform group-open:rotate-90" />
+                  </summary>
+                  <dl className="divide-y divide-border border-t border-border px-3 sm:px-4">
+                    {FAQ.map((f) => (
+                      <div key={f.q} className="py-3">
+                        <dt className="text-sm font-semibold">{f.q}</dt>
+                        <dd className="mt-1 text-xs leading-5 text-muted">{f.a}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </details>
               </>
             ) : (
               selected && (
