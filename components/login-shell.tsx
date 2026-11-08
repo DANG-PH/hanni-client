@@ -1,6 +1,5 @@
 "use client";
 
-import { SceneArt } from "@/components/learning-scenes";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -72,17 +71,20 @@ export function LoginShell({ children }: { children: ReactNode }) {
         <div className="login-story-content">
           <div className="login-video-frame">
             {videoFailed ? (
-              <div className="login-video-fallback">
-                <SceneArt kind={authMode ? "account" : "archives"} compact className="max-w-40" sizes="160px" />
-              </div>
+              <Image
+                src="/videologin-loop.webp"
+                alt=""
+                width={640}
+                height={360}
+                unoptimized
+                className="login-video login-video-fallback"
+              />
             ) : (
               <video
-                src="/videologin.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
-                controls={false}
                 disablePictureInPicture
                 disableRemotePlayback
                 preload="auto"
@@ -93,7 +95,8 @@ export function LoginShell({ children }: { children: ReactNode }) {
                 className="login-video"
                 onError={() => setVideoFailed(true)}
               >
-                Trình duyệt của bạn chưa hỗ trợ video.
+                <source src="/videologin.webm" type="video/webm" />
+                <source src="/videologin.mp4" type="video/mp4" onError={() => setVideoFailed(true)} />
               </video>
             )}
           </div>

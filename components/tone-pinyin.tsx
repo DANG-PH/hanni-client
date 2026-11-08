@@ -32,14 +32,18 @@ export function TonePinyin({
   pinyin: string;
   pinyinNum: string;
   tokens?: LineToken[];
-  size?: "sm" | "base" | "lg";
+  size?: "sm" | "base" | "lg" | "display";
   onWordClick?: (token: LineToken) => void;
 }) {
   const chars = Array.from(zh);
   const dia = pinyin.trim().split(/\s+/);
   const num = pinyinNum.trim().split(/\s+/);
-  const hanziSize =
-    size === "lg" ? "text-3xl" : size === "sm" ? "text-lg" : "text-2xl";
+  const hanziSize = {
+    sm: "text-lg",
+    base: "text-2xl",
+    lg: "text-3xl",
+    display: "text-5xl sm:text-6xl",
+  }[size];
 
   function renderChar(ch: string, i: number) {
     const isHan = /\p{Script=Han}/u.test(ch);
@@ -48,22 +52,22 @@ export function TonePinyin({
     return (
       <span key={i} className="flex flex-col items-center leading-none">
         <span
-          className={`mb-0.5 text-xs ${
+          className={`${size === "display" ? "mb-2 text-sm" : "mb-0.5 text-xs"} ${
             isHan ? TONE_CLASS[tone] : "text-transparent"
           }`}
         >
           {isHan ? stripTone(p) : "·"}
         </span>
-        <span className={`hanzi ${hanziSize}`}>{ch}</span>
+        <span lang="zh" className={`hanzi ${hanziSize}`}>{ch}</span>
       </span>
     );
   }
 
   if (!tokens) {
     return (
-      <div className="flex flex-wrap items-end gap-x-1 gap-y-2">
+      <span className="flex flex-wrap items-end gap-x-1 gap-y-2">
         {chars.map((ch, i) => renderChar(ch, i))}
-      </div>
+      </span>
     );
   }
 

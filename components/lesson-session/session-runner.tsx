@@ -16,6 +16,7 @@ import type {
   SessionStep,
   SessionWord,
 } from "@/lib/types";
+import styles from "./session.module.css";
 import { SessionComplete } from "./session-complete";
 import {
   ChoiceStep,
@@ -132,6 +133,7 @@ export function SessionRunner({ session }: { session: LessonSession }) {
 
   const advance = useCallback(() => {
     setPicked(null);
+    window.scrollTo(0, 0);
     if (index + 1 < queue.length) setIndex(index + 1);
     else void finish();
   }, [index, queue.length, finish]);
@@ -158,7 +160,8 @@ export function SessionRunner({ session }: { session: LessonSession }) {
   // Enter = Tiếp tục (sau khi đã trả lời, hoặc ở thẻ giới thiệu từ).
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key !== "Enter" || finished || confirmExit) return;
+      if (e.key !== "Enter" || e.defaultPrevented || e.repeat || finished || confirmExit) return;
+      if (e.target instanceof HTMLElement && e.target.closest("button, a[href], input, textarea, select, [contenteditable]")) return;
       if (step?.kind === "intro" || answered) {
         e.preventDefault();
         advance();
@@ -183,11 +186,12 @@ export function SessionRunner({ session }: { session: LessonSession }) {
   if (!step) return null;
 
   const progress = (index / queue.length) * 100;
+  const footer = step.kind === "intro" ? "intro" : answered ? "feedback" : undefined;
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <header className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
+        <div className={`${styles.frame} flex items-center gap-3 py-3`}>
           <button
             type="button"
             onClick={() => setConfirmExit(true)}
@@ -197,85 +201,90 @@ export function SessionRunner({ session }: { session: LessonSession }) {
             <Icon name="close" size={20} />
           </button>
           <div className="min-w-0 flex-1">
+            <div className="mb-1.5 flex items-center justify-between gap-2 text-xs">
+              <p className="min-w-0 truncate font-semibold" title={session.lesson.title}>
+                HSK {session.lesson.hskLevel === 7 ? "7–9" : session.lesson.hskLevel}
+                {" · "}Bài {session.lesson.orderIndex}: {session.lesson.title}
+              </p>
+              <span className="shrink-0 tabular-nums text-muted" aria-label={`Bước ${index + 1} trên ${queue.length}`}>
+                {index + 1} / {queue.length}
+              </span>
+            </div>
             <ProgressBar value={progress} label="Tiến độ bài học" />
-            <p className="mt-1 truncate text-xs text-muted">
-              HSK {session.lesson.hskLevel === 7 ? "7–9" : session.lesson.hskLevel}{" "}
-              · Bài {session.lesson.orderIndex}: {session.lesson.title}
-            </p>
           </div>
         </div>
       </header>
 
       <main
         key={item.key}
-        className="mx-auto w-full max-w-2xl flex-1 px-4 pt-8 pb-40"
-        style={{ animation: "reveal-in 280ms var(--motion-ease) both" }}
+        className={`${styles.frame} ${styles.main}`}
+        data-lesson-step={step.kind}
+        data-footer={footer}
       >
-        {step.kind === "intro" && word && <IntroStep word={word} />}
-        {step.kind === "choice" && word && (
-          <ChoiceStep step={step} word={word} picked={picked} onPick={answer} />
-        )}
-        {step.kind === "sentence" && (
-          <SentenceStep step={step} picked={picked} onPick={answer} />
-        )}
-        {step.kind === "match" && (
-          <MatchStep
-            words={step.wordIds
-              .map((id) => words.get(id))
-              .filter((w): w is SessionWord => !!w)}
-            onMistake={addMistake}
-            onDone={advance}
-          />
-        )}
+        <div className={step.kind === "intro" ? undefined : styles.exercise}>
+          {step.kind === "intro" && word && <IntroStep word={word} />}
+          {step.kind === "choice" && word && (
+            <ChoiceStep step={step} word={word} picked={picked} onPick={answer} />
+          )}
+          {step.kind === "sentence" && (
+            <SentenceStep step={step} picked={picked} onPick={answer} />
+          )}
+          {step.kind === "match" && (
+            <MatchStep
+              words={step.wordIds
+                .map((id) => words.get(id))
+                .filter((w): w is SessionWord => !!w)}
+              onMistake={addMistake}
+              onDone={advance}
+            />
+          )}
+        </div>
       </main>
 
-      {(step.kind === "intro" || answered) && (
-        <footer
-          className={`fixed inset-x-0 bottom-0 z-20 border-t ${
-            correct === null
-              ? "border-border bg-surface"
-              : correct
-                ? "sheet-up border-good/30 bg-good/10"
-                : "sheet-up border-danger/30 bg-danger/10"
-          }`}
-        >
-          <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center">
-            {correct !== null && word && (
-              <div className="flex min-w-0 flex-1 items-center gap-3">
-                {/* Cáo phản ứng theo câu trả lời: vỗ tay khi đúng, nắm tay cổ vũ khi sai. */}
-                <Mascot
-                  key={`${item.key}-${correct}`}
-                  emote={correct ? "e04-vui-mung" : "e05-co-len"}
-                  size={64}
-                  priority
-                  className="mascot-pop -my-3"
-                />
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={`flex items-center gap-1.5 font-bold ${
-                      correct ? "text-good" : "text-danger"
-                    }`}
-                  >
-                    <Icon name={correct ? "check" : "close"} size={18} />
-                    {correct ? "Chính xác!" : "Chưa đúng"}
-                  </p>
-                  <p className="mt-0.5 truncate text-sm">
-                    <span lang="zh" className="hanzi">
-                      {word.simplified}
-                    </span>{" "}
-                    <span className="text-muted">{word.pinyin}</span> —{" "}
-                    {shortMeaning(word.meaningVi ?? "")}
-                  </p>
+      {footer && (
+        <footer className={styles.footer}>
+          <div className={styles.frame}>
+            <div className={`${styles.footerInner} ${correct === null ? "" : `${styles.feedback} ${correct ? "bg-good/10" : "bg-danger/10"}`}`}>
+              {footer === "intro" && (
+                <p className="hidden text-xs text-muted md:block">Nhấn <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 font-sans">Enter</kbd> để tiếp tục</p>
+              )}
+              {correct !== null && word && (
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  {/* Cáo phản ứng theo câu trả lời: vỗ tay khi đúng, nắm tay cổ vũ khi sai. */}
+                  <Mascot
+                    key={`${item.key}-${correct}`}
+                    emote={correct ? "e04-vui-mung" : "e05-co-len"}
+                    size={64}
+                    priority
+                    className="mascot-pop -my-3"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={`flex items-center gap-1.5 font-bold ${
+                        correct ? "text-good" : "text-danger"
+                      }`}
+                    >
+                      <Icon name={correct ? "check" : "close"} size={18} />
+                      {correct ? "Chính xác!" : "Chưa đúng"}
+                    </p>
+                    <p className="mt-0.5 truncate text-sm">
+                      <span lang="zh" className="hanzi">
+                        {word.simplified}
+                      </span>{" "}
+                      <span className="text-muted">{word.pinyin}</span> —{" "}
+                      {shortMeaning(word.meaningVi ?? "")}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
-            <Button
-              onClick={advance}
-              className={`sm:ml-auto sm:min-w-40 ${correct === false ? "bg-none! bg-danger! border-danger!" : ""}`}
-            >
-              {correct === false ? "Đã hiểu" : "Tiếp tục"}
-              <Icon name="arrow" size={16} />
-            </Button>
+              )}
+              <Button
+                onClick={advance}
+                className={`sm:ml-auto sm:min-w-40 ${correct === false ? "bg-none! bg-danger! border-danger!" : ""}`}
+              >
+                {correct === false ? "Đã hiểu" : "Tiếp tục"}
+                <Icon name="arrow" size={16} />
+              </Button>
+            </div>
           </div>
         </footer>
       )}

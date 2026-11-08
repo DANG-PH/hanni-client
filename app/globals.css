@@ -778,12 +778,6 @@ body:has([data-bottom-nav]) {
   /* Khung trong suốt để cạnh video hòa trực tiếp vào gradient của panel. */
   background: transparent;
 }
-.login-video-fallback {
-  display: flex;
-  aspect-ratio: 16/9;
-  align-items: center;
-  justify-content: center;
-}
 .login-video {
   display: block;
   width: 100%;

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/icon";
 import { Mascot } from "@/components/mascot";
@@ -8,6 +9,7 @@ import { ToneCheck } from "@/components/tone/tone-check";
 import { mediaUrl } from "@/lib/api";
 import { TONE_RULE_TEXT } from "@/lib/tone-rules";
 import type { SessionStep, SessionWord } from "@/lib/types";
+import styles from "./session.module.css";
 
 let current: HTMLAudioElement | null = null;
 /** Phát audio của từ, dừng bản đang phát dở (chuyển bước nhanh không bị chồng tiếng). */
@@ -27,18 +29,19 @@ export function shortMeaning(meaning: string): string {
   return out.length > 48 ? `${out.slice(0, 47).trimEnd()}…` : out;
 }
 
-function SoundButton({ src, big = false }: { src: string | null; big?: boolean }) {
+function SoundButton({ src, big = false, label }: { src: string | null; big?: boolean; label?: string }) {
   if (!src) return null;
   return (
     <button
       type="button"
       onClick={() => playWord(src)}
-      aria-label="Nghe phát âm"
+      aria-label={label ?? "Nghe phát âm"}
       className={`motion-button inline-flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/15 ${
-        big ? "h-20 w-20" : "h-10 w-10"
+        label ? "min-h-11 gap-2 px-4 text-sm font-semibold" : big ? "h-20 w-20" : "h-11 w-11"
       }`}
     >
       <Icon name="sound" size={big ? 36 : 18} />
+      {label}
     </button>
   );
 }
@@ -54,31 +57,34 @@ export function IntroStep({ word }: { word: SessionWord }) {
   const hints = word.toneHints?.filter((h) => h.follows !== null) ?? [];
 
   return (
-    <div className="flex flex-col items-center text-center">
-      <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold tracking-wide text-primary">
-        TỪ MỚI
-      </span>
-      <div className="mt-5 flex items-end gap-4">
-        <TonePinyin
-          zh={word.simplified}
-          pinyin={word.pinyin}
-          pinyinNum={word.pinyinNumeric}
-          size="lg"
+    <div className={styles.intro}>
+      <section className={styles.wordPanel} aria-label="Từ mới">
+        <p className={styles.kicker}>Từ mới</p>
+        <h1 className={styles.word}>
+          <TonePinyin
+            zh={word.simplified}
+            pinyin={word.pinyin}
+            pinyinNum={word.pinyinNumeric}
+            size="display"
+          />
+        </h1>
+        <p className={styles.meaning}>{word.meaningVi ?? word.meaningEn ?? "Đang cập nhật nghĩa"}</p>
+        <SoundButton src={word.audioUrl} label="Nghe phát âm" />
+        <Image
+          src="/illustrations/hanni/new-word.webp"
+          alt=""
+          width={420}
+          height={280}
+          sizes="(max-width: 639px) 80px, (max-width: 767px) 116px, 210px"
+          className={styles.wordArt}
         />
-        <SoundButton src={word.audioUrl} />
-      </div>
-      <p className="mt-5 text-2xl font-bold">
-        {word.meaningVi ?? word.meaningEn ?? "Đang cập nhật nghĩa"}
-      </p>
-      {word.hanViet && (
-        // Cáo "À ha!" chỉ vào âm Hán Việt — lợi thế riêng của người Việt, đáng được chú ý nhất trên thẻ.
-        <div className="mt-4 flex w-full max-w-sm items-center gap-2 rounded-2xl border border-hanviet/20 bg-hanviet/5 py-2 pl-1 pr-4 text-left">
-          <Mascot emote="e11-a-ha" size={60} priority className="-my-1" />
-          <div className="min-w-0 flex-1">
-            <p className="text-sm">
-              Âm Hán Việt:{" "}
-              <strong className="text-hanviet">{word.hanViet}</strong>
-            </p>
+      </section>
+
+      <div className={styles.wordDetails}>
+        {word.hanViet && (
+          <section className={styles.detail}>
+            <h2><Icon name="book" size={16} /> Âm Hán Việt</h2>
+            <p className="mt-2 font-bold text-hanviet">{word.hanViet}</p>
             {hints.length > 0 && (
               <ul className="mt-2 flex flex-wrap gap-1.5">
                 {hints.map((h, i) => (
@@ -89,7 +95,7 @@ export function IntroStep({ word }: { word: SessionWord }) {
                         ? TONE_RULE_TEXT[h.rule]
                         : "Ngoại lệ — chữ này không theo quy luật, nhớ riêng nhé"
                     }
-                    className="rounded-lg bg-surface px-2 py-1 text-xs text-muted"
+                    className="rounded-md bg-surface-2 px-2 py-1 text-xs text-muted"
                   >
                     {h.hanViet} →{" "}
                     <span className={`font-bold ${TONE_CLASS[String(h.tone)]}`}>
@@ -100,30 +106,32 @@ export function IntroStep({ word }: { word: SessionWord }) {
                 ))}
               </ul>
             )}
-          </div>
-        </div>
-      )}
-      {word.mnemonicVi && (
-        <p className="mt-3 w-full max-w-sm rounded-2xl border border-accent/25 bg-accent/5 px-4 py-2.5 text-left text-sm leading-6">
-          <span className="font-semibold text-accent">Mẹo nhớ: </span>
-          {word.mnemonicVi}
-        </p>
-      )}
-      {/* Vừa biết thanh (mẹo Hán Việt ở trên) thì đọc thử luôn — chấm ngay trên máy. */}
-      <div className="mt-4 w-full max-w-sm">
-        <ToneCheck key={word.id} hanzi={word.simplified} pinyin={word.pinyin} pinyinNumeric={word.pinyinNumeric} audioUrl={word.audioUrl} />
+          </section>
+        )}
+        {word.mnemonicVi && (
+          <section className={styles.detail}>
+            <h2><Icon name="spark" size={16} /> Mẹo nhớ</h2>
+            <p className="mt-2 text-sm leading-6">{word.mnemonicVi}</p>
+          </section>
+        )}
+        {example && (
+          <section className={styles.detail}>
+            <h2><Icon name="message" size={16} /> Dùng trong câu</h2>
+            <p lang="zh" className="hanzi mt-2 text-xl leading-relaxed">{example.zh}</p>
+            {example.pinyin && <p className="mt-1 text-xs leading-5 text-muted">{example.pinyin}</p>}
+            {example.vi && <p className="mt-1 text-sm leading-6">{example.vi}</p>}
+          </section>
+        )}
+        <ToneCheck
+          key={word.id}
+          hanzi={word.simplified}
+          pinyin={word.pinyin}
+          pinyinNumeric={word.pinyinNumeric}
+          audioUrl={word.audioUrl}
+          align="start"
+          className={styles.tone}
+        />
       </div>
-      {example && (
-        <div className="mt-4 w-full max-w-sm rounded-2xl bg-surface-2 px-4 py-3 text-left">
-          <p lang="zh" className="hanzi text-lg">
-            {example.zh}
-          </p>
-          {example.pinyin && (
-            <p className="text-xs text-muted">{example.pinyin}</p>
-          )}
-          {example.vi && <p className="mt-1 text-sm">{example.vi}</p>}
-        </div>
-      )}
     </div>
   );
 }
@@ -184,7 +192,7 @@ function OptionGrid({
             </span>
             <span
               lang={hanzi ? "zh" : undefined}
-              className={hanzi ? "hanzi text-2xl" : "text-sm font-semibold"}
+              className={hanzi ? "hanzi min-w-0 break-words text-2xl" : "min-w-0 break-words text-sm font-semibold"}
             >
               {opt}
             </span>
@@ -212,13 +220,13 @@ export function ChoiceStep({
 
   return (
     <div className="flex flex-col items-center text-center">
-      <p className="text-sm font-semibold text-muted">
+      <h1 className={styles.exerciseTitle}>
         {step.prompt === "hanzi"
           ? "Từ này nghĩa là gì?"
           : step.prompt === "meaning"
             ? "Chọn chữ Hán đúng"
             : "Bạn nghe thấy từ nào?"}
-      </p>
+      </h1>
       <div className="my-7 flex min-h-28 items-center justify-center">
         {step.prompt === "hanzi" && (
           <div className="flex items-end gap-3">
@@ -258,7 +266,7 @@ export function SentenceStep({
   const fill = picked === null ? null : step.options[step.answer];
   return (
     <div className="flex flex-col items-center text-center">
-      <p className="text-sm font-semibold text-muted">Điền từ vào chỗ trống</p>
+      <h1 className={styles.exerciseTitle}>Điền từ vào chỗ trống</h1>
       <p lang="zh" className="hanzi my-6 text-3xl leading-relaxed">
         {step.before}
         <span
@@ -355,9 +363,11 @@ export function MatchStep({
 
   return (
     <div className="flex flex-col items-center text-center">
-      <p className="text-sm font-semibold text-muted">Ghép từ với nghĩa</p>
+      <h1 className={styles.exerciseTitle}>Ghép từ với nghĩa</h1>
+      <p className="mt-2 text-sm text-muted">{matched.size} / {words.length} cặp đã ghép</p>
       <div className="mt-6 grid w-full grid-cols-2 gap-3">
-        <div className="space-y-3">
+        <div className="min-w-0 space-y-3">
+          <p className="text-xs font-semibold text-muted">Chữ Hán</p>
           {left.map((t) => (
             <button
               key={t.wordId}
@@ -370,13 +380,14 @@ export function MatchStep({
               }}
               className={`motion-button flex min-h-14 w-full items-center justify-center rounded-2xl border-2 px-3 py-2 transition-colors ${tileClass(t, selZh === t.wordId)}`}
             >
-              <span lang="zh" className="hanzi text-2xl">
+              <span lang="zh" className="hanzi break-words text-2xl">
                 {t.label}
               </span>
             </button>
           ))}
         </div>
-        <div className="space-y-3">
+        <div className="min-w-0 space-y-3">
+          <p className="text-xs font-semibold text-muted">Nghĩa tiếng Việt</p>
           {right.map((t) => (
             <button
               key={t.wordId}
