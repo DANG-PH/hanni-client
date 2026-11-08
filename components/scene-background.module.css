@@ -1,6 +1,37 @@
-.backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: inherit; z-index: 0; }
-.image { object-fit: cover; object-position: var(--scene-focus, center); }
-:global([data-theme="dark"]) .image { filter: brightness(.46) saturate(.7); opacity: .45; }
-@media (prefers-color-scheme:dark) {
-  :global(html:not([data-theme="light"])) .image { filter: brightness(.46) saturate(.7); opacity: .45; }
+.backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 0;
+}
+
+.image {
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+/* A narrow art column crops the empty wall, so the objects keep their full height. */
+.edge {
+  inset-inline-start: auto;
+  width: min(47%, 360px);
+  border-radius: 0;
+  mask-image: linear-gradient(to right, transparent, #000 32%);
+}
+
+.edge .image {
+  object-position: right center;
+}
+
+@media (max-width: 767px) {
+  .edge {
+    inset-block-start: auto;
+    width: min(64%, 275px);
+    height: 155px;
+    opacity: .54;
+    mask-image: linear-gradient(to right, transparent, #000 75%),
+      linear-gradient(to bottom, transparent, #000 28%);
+    mask-composite: intersect;
+  }
 }

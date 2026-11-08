@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { Icon } from "./icon";
-import { ThemeToggle } from "./theme-toggle";
 
 /** Bố cục đăng nhập riêng; video minh họa tự phát không tiếng và lặp liên tục. */
 export function LoginShell({ children }: { children: ReactNode }) {
@@ -40,7 +39,6 @@ export function LoginShell({ children }: { children: ReactNode }) {
             </span>
           </Link>
           <div className="flex items-center gap-3">
-            <ThemeToggle />
             <span
               aria-label="Ngôn ngữ: Tiếng Việt"
               className="rounded-md bg-primary/8 px-2 py-1 text-xs font-bold tracking-wider text-primary"

@@ -93,9 +93,6 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#dc3526" };
 
-// Đặt data-theme trước khi React hydrate để không nháy màu.
-const THEME_INIT = `try{var t=localStorage.getItem('hanni-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}`;
-
 export default function RootLayout({
   children,
 }: {
@@ -104,12 +101,8 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${hanziSans.variable} h-full antialiased`}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
-      </head>
       <body className="min-h-full font-sans">
         <PwaRuntime />
         <ConnectivityNotice />

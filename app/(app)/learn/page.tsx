@@ -58,7 +58,7 @@ import { GettingStarted } from "@/components/learn/getting-started";
 import { TodayCard } from "@/components/learn/today-card";
 import { TopicExplorer } from "@/components/learn/topic-explorer";
 import { NotificationNudge } from "@/components/pwa/notification-nudge";
-import { Button, ErrorNote, LinkButton, Spinner } from "@/components/ui";
+import { Button, ErrorNote, LinkButton, ProgressBar, Spinner } from "@/components/ui";
 import { WordOfTheDayCard } from "@/components/word-of-the-day";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -89,31 +89,6 @@ export default function LearnPage() {
   );
 }
 
-function ProgressRing({ value }: { value: number }) {
-  const r = 34;
-  const c = 2 * Math.PI * r;
-  return (
-    <svg viewBox="0 0 80 80" className="h-24 w-24 shrink-0" aria-hidden="true">
-      <circle cx="40" cy="40" r={r} fill="none" strokeWidth="8" className="stroke-surface-2" />
-      <circle
-        cx="40"
-        cy="40"
-        r={r}
-        fill="none"
-        strokeWidth="8"
-        strokeLinecap="round"
-        className="stroke-primary transition-[stroke-dashoffset] duration-700"
-        strokeDasharray={c}
-        strokeDashoffset={c * (1 - value / 100)}
-        transform="rotate(-90 40 40)"
-      />
-      <text x="40" y="45" textAnchor="middle" className="fill-foreground text-[15px] font-extrabold">
-        {Math.round(value)}%
-      </text>
-    </svg>
-  );
-}
-
 /** Khách có thể học ngay; tài khoản giúp lưu tiến độ trên mọi thiết bị. */
 function GuestSaveCard({ learned }: { learned: number }) {
   return (
@@ -127,7 +102,7 @@ function GuestSaveCard({ learned }: { learned: number }) {
       <p className="mt-1.5 text-sm leading-6 text-muted">
         Tạo tài khoản miễn phí để giữ chuỗi ngày học, ôn lại từ đúng lúc sắp quên và học tiếp trên mọi thiết bị.
       </p>
-      <div className="mt-4 flex flex-wrap gap-2 lg:mt-auto">
+      <div className="mt-4 flex flex-wrap gap-2">
         <LinkButton href="/register?next=/learn">Tạo tài khoản</LinkButton>
         <LinkButton href="/login?next=/learn" variant="secondary">
           Đăng nhập
@@ -245,8 +220,8 @@ function LearnHome() {
   return (
     <div className="page-wrap learn-home space-y-6">
       <LearningWelcome name={user?.displayName} />
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <section className="panel lesson-hero relative flex flex-col gap-5 overflow-hidden p-5 sm:flex-row sm:items-center sm:p-7" aria-labelledby="next-lesson">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(240px,29%)] lg:items-start">
+        <section className="panel lesson-hero illustrated-banner" aria-labelledby="next-lesson">
           <SceneBackground kind="lesson-journey" eager />
           {error ? (
             <div className="space-y-3">
@@ -256,23 +231,16 @@ function LearnHome() {
               </Button>
             </div>
           ) : !data ? (
-            // Khung chờ cùng bố cục với nội dung thật (vòng 96px + khối chữ + nút). Khung 144px cũ thấp hơn ~200px trên
-            // điện thoại nên tải xong là đẩy thẻ bên cạnh/bên dưới xuống (bố cục nhảy).
-            <>
-              <div className="skeleton h-24 w-24 shrink-0 rounded-full" />
-              <div className="min-w-0 flex-1 space-y-2" aria-hidden="true">
+            <div className="lesson-copy w-full space-y-2" aria-hidden="true">
                 <div className="skeleton h-4 w-44 rounded" />
                 <div className="skeleton h-14 w-72 max-w-full rounded sm:h-8" />
                 <div className="skeleton h-5 w-56 max-w-full rounded" />
                 <div className="skeleton h-4 w-40 rounded" />
                 <div className="skeleton mt-4! h-12 w-52 rounded-xl" />
                 {!user && <div className="skeleton mt-2.5! h-12 w-52 rounded-xl sm:hidden" />}
-              </div>
-            </>
+            </div>
           ) : (
-            <>
-              <ProgressRing value={pct} />
-              <div className="lesson-copy min-w-0 flex-1">
+            <div className="lesson-copy">
                 <p className="text-xs font-bold tracking-wider text-primary">
                   LỘ TRÌNH HSK {data.level === 7 ? "7–9" : data.level} · {levelName(data.level).toUpperCase()}
                 </p>
@@ -287,11 +255,15 @@ function LearnHome() {
                       </span>{" "}
                       · {current.wordCount} từ · ~{lessonMinutes(current.wordCount)} phút
                     </p>
-                    <p className="mt-1 text-xs text-muted">
-                      Đã xong {data.completedLessons}/{data.totalLessons} bài · {unitsDone}/{units.length} chủ đề
-                    </p>
+                    <div className="lesson-progress">
+                      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs">
+                        <span className="text-muted">{data.completedLessons}/{data.totalLessons} bài · {unitsDone}/{units.length} chủ đề</span>
+                        <span className="font-semibold tabular-nums text-primary">{Math.round(pct)}%</span>
+                      </div>
+                      <ProgressBar value={pct} label="Tiến độ lộ trình" />
+                    </div>
                     <div className="mt-4 flex flex-wrap gap-2.5">
-                      <LinkButton href={`/bai-hoc/${current.id}`} className="cta-shine min-w-52 uppercase tracking-wide">
+                      <LinkButton href={`/bai-hoc/${current.id}`} className="lesson-start">
                         <Icon name="play" size={16} />
                         {data.completedLessons === 0 ? "Bắt đầu học" : "Học tiếp"}
                       </LinkButton>
@@ -328,8 +300,7 @@ function LearnHome() {
                     )}
                   </>
                 )}
-              </div>
-            </>
+            </div>
           )}
         </section>
         {user ? <TodayCard /> : <GuestSaveCard learned={guestDone.size} />}

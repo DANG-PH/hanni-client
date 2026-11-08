@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
-/* ===== Bảng màu ===== light là mặc định; có toggle sang dark. ===== */
+/* Bảng màu web HanNi */
 :root {
   color-scheme: light;
-  --background: #f7f8fa;
+  --background: #faf8f6;
   --surface: #ffffff;
-  --surface-2: #f0f2f5;
-  --foreground: #202b3e;
+  --surface-2: #f3eeeb;
+  --foreground: #282523;
   /* ≥4,5:1 trên trắng, nền xám, nền hồng nhạt (#727b8b cũ chỉ 3,8:1 trên nền xám — chữ nhỏ khó đọc). */
-  --muted: #646c7b;
-  --border: #e7e9ef;
+  --muted: #625a56;
+  --border: #e9e2dd;
   /* Đỏ thương hiệu đậm hơn (#dc3526 cũ chỉ 4,3:1 trên nền xám, 4:1 ở mục đang chọn `.chip-on` — chữ đỏ nhỏ trượt chuẩn 4,5:1;
    * #c62f22 vẫn 4,4:1 khi `.chip-on` nằm trên nền xám của trang). Các màu dưới cũng vậy: mọi màu dùng làm CHỮ đều ≥4,5:1 trên
    * trắng, nền xám và nền nhạt 10–15% của chính nó. */
@@ -26,51 +26,6 @@
   --lavender: #8e5383;
   --hero-from: #fff8f5;
   --hero-to: #f9e8df;
-}
-
-@media (prefers-color-scheme: dark) {
-  /* Chưa từng bấm toggle thì theo đúng chế độ tối của hệ điều hành/trình duyệt. */
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --background: #121720;
-    --surface: #1a2230;
-    --surface-2: #252e3d;
-    --foreground: #f1f3f8;
-    --muted: #a2acbc;
-    --border: #303a4a;
-    --primary: #ff796b;
-    --primary-fg: #26110d;
-    --hanviet: #e3b25c;
-    --chart-bar: #ec5d50;
-    --accent: #d8a24e;
-    --good: #55c489;
-    --warn: #e0a04a;
-    --danger: #e56b60;
-    --lavender: #c489b8;
-    --hero-from: #2c1c16;
-    --hero-to: #37231a;
-  }
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --background: #121720;
-  --surface: #1a2230;
-  --surface-2: #252e3d;
-  --foreground: #f1f3f8;
-  --muted: #a2acbc;
-  --border: #303a4a;
-  --primary: #ff796b;
-  --primary-fg: #26110d;
-  --hanviet: #e3b25c;
-  --chart-bar: #ec5d50;
-  --accent: #d8a24e;
-  --good: #55c489;
-  --warn: #e0a04a;
-  --danger: #e56b60;
-  --lavender: #c489b8;
-  --hero-from: #2c1c16;
-  --hero-to: #37231a;
 }
 
 @theme inline {
@@ -157,7 +112,7 @@
     max-width: 1680px;
   }
   .app-workspace {
-    background-image: radial-gradient(ellipse at 95% 0%, color-mix(in srgb, var(--primary) 4%, transparent), transparent 55%);
+    background: var(--background);
   }
   /* Trong không gian học, các phần hiện cùng lúc để giữ mạch đọc. */
   .app-workspace [data-reveal-state] {
@@ -892,13 +847,6 @@ body:has([data-bottom-nav]) {
   font-size: 12px;
   color: #ffffffbf;
 }
-:root[data-theme="dark"] .login-form-card {
-  box-shadow: 0 20px 55px -35px #0009;
-}
-:root[data-theme="dark"] .login-story {
-  --login-story-base: #a43d30;
-  --login-story-glow: #b94938;
-}
 @media (min-width: 1600px) {
   .login-header,
   .login-footer {
@@ -1167,9 +1115,6 @@ body:has([data-bottom-nav]) {
   }
   .auth-mobile-footer {
     display: none;
-  }
-  :root[data-theme="dark"] .auth-form-card {
-    box-shadow: 0 20px 55px -35px #0009;
   }
 }
 @media (max-width: 359px) {

@@ -2,21 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/** Nhịp từng hình của 3 cử động nút trợ lý (assets/assistant-button/manifest-v10.json ở repo hanni-mascot). */
+/** Thời lượng sáu khung hình của từng cử động trong bộ mascot. */
 const CLIPS = {
   blink: [180, 70, 90, 70, 160, 200],
   wave: [160, 120, 160, 160, 120, 180],
   peek: [160, 140, 180, 140, 140, 200],
 } as const;
 type Clip = keyof typeof CLIPS;
-const ORDER: Clip[] = ["blink", "wave", "peek", "blink"];
+const ORDER: readonly Clip[] = ["blink", "wave", "blink", "peek"];
 
-/**
- * Cáo trong bát đỏ trên nút trợ lý: đứng yên, 5 giây đầu nháy mắt rồi cứ 12–20 giây làm 1 cử động
- * (nháy mắt → vẫy tay → ló lên), rê chuột vào thì vẫy tay (nghỉ ít nhất 8 giây giữa 2 lần).
- * Mỗi cử động phát 6 hình vẽ riêng 1 lần rồi giữ hình cuối — cùng luật với launcher-idle.js của repo mascot.
- * Tab ẩn hoặc máy bật giảm chuyển động thì không đặt lịch.
- */
 export function LauncherFox() {
   const [clip, setClip] = useState<Clip>("blink");
   const [frame, setFrame] = useState(0);
@@ -24,70 +18,100 @@ export function LauncherFox() {
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const decoded = new Map<Clip, Promise<void>>();
     let timer = 0;
     let step = 0;
-    let seq = 0;
+    let sequence = 0;
     let busy = false;
+    let playback = 0;
     let lastStart = -Infinity;
-    let preloaded = false;
 
-    function play(id: Clip, manual = false) {
-      if (busy || document.hidden || reduce.matches) return;
-      if (!manual && performance.now() - lastStart < 8000) return schedule();
+    function canPlay() {
+      return !document.hidden && !reduce.matches;
+    }
+
+    function schedule(delay = 2600 + Math.random() * 1500) {
+      window.clearTimeout(timer);
+      if (canPlay()) {
+        timer = window.setTimeout(() => void play(ORDER[sequence++ % ORDER.length]), delay);
+      }
+    }
+
+    async function play(id: Clip) {
+      if (busy || !canPlay()) return;
+      window.clearTimeout(timer);
       busy = true;
+      const currentPlayback = ++playback;
+      try {
+        let ready = decoded.get(id);
+        if (!ready) {
+          const sprite = new window.Image();
+          sprite.src = `/mascot/launcher-${id}.webp`;
+          ready = sprite.decode();
+          decoded.set(id, ready);
+        }
+        await ready;
+      } catch {
+        decoded.delete(id);
+        if (currentPlayback === playback) {
+          busy = false;
+          schedule();
+        }
+        return;
+      }
+      if (currentPlayback !== playback || !canPlay()) return;
       lastStart = performance.now();
       setClip(id);
       setFrame(0);
+
       let i = 0;
-      const tick = () => {
+      function tick() {
         i += 1;
-        if (i >= 6) {
+        if (i === CLIPS[id].length) {
           busy = false;
           schedule();
           return;
         }
         setFrame(i);
         step = window.setTimeout(tick, CLIPS[id][i]);
-      };
+      }
       step = window.setTimeout(tick, CLIPS[id][0]);
     }
-    function schedule(delay = 12000 + Math.random() * 8000) {
+
+    function stop() {
+      playback += 1;
       window.clearTimeout(timer);
-      if (document.hidden || reduce.matches) return;
-      timer = window.setTimeout(() => {
-        // Lần đầu mới tải 2 dải còn lại — không bắt mọi trang tải trước 3 dải ảnh.
-        if (!preloaded) {
-          preloaded = true;
-          for (const c of ["wave", "peek"]) new window.Image().src = `/mascot/launcher-${c}.webp`;
-        }
-        play(ORDER[seq++ % ORDER.length]);
-      }, delay);
+      window.clearTimeout(step);
+      busy = false;
     }
-    function onVisibility() {
-      window.clearTimeout(timer);
-      if (!document.hidden && !busy) schedule(4500);
+
+    function onAvailabilityChange() {
+      stop();
+      setClip("blink");
+      setFrame(0);
+      schedule(1000);
     }
 
     waveRef.current = () => {
-      if (performance.now() - lastStart < 8000) return;
-      const img = new window.Image();
-      img.src = "/mascot/launcher-wave.webp";
-      void img.decode().then(() => play("wave", true), () => undefined);
+      if (performance.now() - lastStart >= 1600) void play("wave");
     };
-    schedule(5000);
-    document.addEventListener("visibilitychange", onVisibility);
+    schedule(950);
+    document.addEventListener("visibilitychange", onAvailabilityChange);
+    reduce.addEventListener("change", onAvailabilityChange);
     return () => {
-      window.clearTimeout(timer);
-      window.clearTimeout(step);
-      document.removeEventListener("visibilitychange", onVisibility);
+      stop();
+      waveRef.current = () => undefined;
+      document.removeEventListener("visibilitychange", onAvailabilityChange);
+      reduce.removeEventListener("change", onAvailabilityChange);
     };
   }, []);
 
-  // Bát đỏ chiếm ~73% khung ảnh và lệch xuống 8,5% — phóng ảnh 137% nút rồi kéo lên để bát trùng hình tròn của nút.
+  // Căn phần bát đỏ trong sprite vào đúng tâm của nút tròn.
   return (
     <span
       aria-hidden="true"
       onPointerEnter={() => waveRef.current()}
+      onPointerDown={() => waveRef.current()}
       className="absolute left-1/2 top-1/2 block h-[137%] w-[137%] -translate-x-1/2 -translate-y-[58.5%] bg-no-repeat drop-shadow-[0_6px_10px_rgb(0_0_0/0.18)]"
       style={{
         backgroundImage: `url(/mascot/launcher-${clip}.webp)`,

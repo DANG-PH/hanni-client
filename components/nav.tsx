@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Brand } from "./sidebar";
 import { Icon } from "./icon";
-import { ThemeToggle } from "./theme-toggle";
 
 const LINKS = [
   { href: "/learn", label: "Lộ trình HSK" },
@@ -52,9 +51,6 @@ export function Nav() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          <div className="hidden sm:block">
-            <ThemeToggle />
-          </div>
           {loading ? (
             <div
               className="skeleton h-9 w-24"
@@ -120,10 +116,6 @@ export function Nav() {
           >
             {user ? "Tài khoản của tôi" : "Đăng nhập"}
           </Link>
-          <div className="mt-2 flex items-center justify-between border-t border-border px-3 pt-2 text-xs text-muted">
-            <span>Giao diện sáng / tối</span>
-            <ThemeToggle />
-          </div>
         </nav>
       )}
     </header>

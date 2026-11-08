@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import useSWR from "swr";
 import { Icon } from "@/components/icon";
-import { LinkButton } from "@/components/ui";
+import { LinkButton, ProgressBar } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { parseSnapshot, partInfo, practiceHref, savedSnapshot, weakest } from "@/lib/mock-exam";
@@ -221,10 +221,16 @@ export function MockExamProgress({ exams: initial }: { exams: MockExamMeta[] }) 
   const next = exams.find((e) => e.best === undefined || e.best === null) ?? exams[0];
 
   return (
-    <div className="panel flex flex-col p-5">
+    <div className="panel exam-progress-card flex flex-col self-start p-5">
       {user ? (
         <>
-          <p className="text-sm font-bold">Tiến độ luyện đề</p>
+          <div className="flex items-center gap-2 text-sm font-bold">
+            <Icon name="target" size={18} className="text-primary" />
+            <h2>Tiến độ luyện đề</h2>
+          </div>
+          <div className="mt-3">
+            <ProgressBar value={exams.length ? (done.length / exams.length) * 100 : 0} label="Tỷ lệ đề đã làm" />
+          </div>
           <dl className="mt-3 space-y-2 text-sm">
             {[
               ["Đề đã làm", `${done.length}/${exams.length}`],
@@ -252,7 +258,7 @@ export function MockExamProgress({ exams: initial }: { exams: MockExamMeta[] }) 
         </div>
       )}
       {next && (
-        <LinkButton href={`/thi-thu-hsk/${next.slug}`} className="mt-4 lg:mt-auto">
+        <LinkButton href={`/thi-thu-hsk/${next.slug}`} className="mt-4">
           {user && done.length ? "Làm đề tiếp theo" : `Làm ${next.title}`}
           <Icon name="arrow" size={16} />
         </LinkButton>

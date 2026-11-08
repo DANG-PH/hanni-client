@@ -12,7 +12,6 @@ import { AssistantWidget } from "./assistant-widget";
 import { NotificationBell } from "./notification-bell";
 import { PremiumTopButton } from "./premium-nav-card";
 import { StreakCelebration } from "./streak-celebration";
-import { ThemeToggle } from "./theme-toggle";
 import { Icon } from "./icon";
 import { Avatar } from "./avatar";
 import { StudyLoader } from "./study-loader";
@@ -115,7 +114,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             )}
             {user && <PremiumTopButton />}
             {user && <NotificationBell />}
-            <ThemeToggle />
             {user ? (
               <Link
                 href="/account"

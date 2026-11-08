@@ -11,6 +11,7 @@
  */
 
 import Link from "next/link";
+import { useState } from "react";
 import { Icon } from "@/components/icon";
 import { PageHeading, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
@@ -25,6 +26,9 @@ import { SceneCover } from "@/components/learning-scenes";
 export default function PracticeHubPage() {
   // Khách dùng được (2026-10-18) — chỉ lưu tiến độ mới cần tài khoản.
   const { loading } = useAuth();
+  const [category, setCategory] = useState<number | null>(null);
+  const groups = category === null ? PRACTICE_SECTIONS : [PRACTICE_SECTIONS[category]];
+  const tools = groups.flatMap((section) => section.items);
   if (loading) return <Spinner />;
 
   return (
@@ -56,33 +60,33 @@ export default function PracticeHubPage() {
         </form>
       </PageHeading>
 
-      {PRACTICE_SECTIONS.map((section, i) => (
-        <section key={section.title} aria-labelledby={`hub-${i}`}>
-          <h2 id={`hub-${i}`} className="mb-3 text-sm font-bold text-muted">
+      <div className="practice-filters" role="group" aria-label="Nhóm luyện tập">
+        <button type="button" aria-pressed={category === null} onClick={() => setCategory(null)}>
+          Tất cả
+        </button>
+        {PRACTICE_SECTIONS.map((section, i) => (
+          <button key={section.title} type="button" aria-pressed={category === i} onClick={() => setCategory(i)}>
             {section.title}
-          </h2>
-          <ul className={`grid grid-cols-2 gap-3 lg:grid-cols-4 ${section.items.length === 2 ? "practice-pair" : ""}`}>
-            {section.items.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className="panel hover-card practice-tool flex h-full flex-col overflow-hidden"
-                >
-                  <SceneCover kind={item.scene} />
-                  <span className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
-                    <span className="flex items-start gap-2 text-sm font-bold">
-                      <Icon name={item.icon} size={16} className="mt-0.5 shrink-0 text-primary" />
-                      <span className="min-w-0 flex-1">{item.label}</span>
-                      <Icon name="chevron" size={13} className="mt-1 shrink-0 text-muted" />
-                    </span>
-                    <span className="text-xs leading-5 text-muted">{item.description}</span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+          </button>
+        ))}
+      </div>
+      <ul className="practice-grid" aria-label="Công cụ luyện tập">
+        {tools.map((item) => (
+          <li key={item.href}>
+            <Link href={item.href} className="panel practice-tool flex h-full flex-col overflow-hidden">
+              <SceneCover kind={item.scene} />
+              <span className="practice-tool-copy">
+                <span className="practice-tool-title">
+                  <Icon name={item.icon} size={16} className="mt-0.5 shrink-0 text-primary" />
+                  <span className="min-w-0 flex-1">{item.label}</span>
+                  <Icon name="chevron" size={14} className="mt-0.5 shrink-0 text-muted" />
+                </span>
+                <span className="practice-tool-description">{item.description}</span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
