@@ -134,10 +134,9 @@ export default function ProgressPage() {
         featured
         icon="chart"
         title="Tiến độ học tập"
-        description="Xem bạn đã học được gì, cần ôn gì và nên tập trung vào đâu trong tuần này."
+        description="Xem vốn từ, việc cần ôn và nhận xét học tập."
       >
         <LinkButton href="#hanni-coach" variant="secondary"><Icon name="spark" size={16} /> Hanni Coach</LinkButton>
-        <LinkButton href="/achievements" variant="secondary"><Icon name="trophy" size={16} /> Huy hiệu</LinkButton>
         <TourButton tourKey="progress" />
       </PageHeading>
       {error ? (
@@ -223,6 +222,7 @@ export default function ProgressPage() {
                 ["#bao-cao", "Báo cáo học tập"],
                 ["#theo-cap-hsk", "Từ vựng theo HSK"],
                 ["#lich-hoc", "Lịch học 30 ngày"],
+                ["/achievements", "Huy hiệu"],
               ].map(([href, label]) => (
                 <Link key={href} href={href} className="inline-flex min-h-10 items-center rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-muted hover:text-primary">{label}</Link>
               ))}
