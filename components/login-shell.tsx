@@ -93,7 +93,7 @@ export function LoginShell({ children }: { children: ReactNode }) {
                 aria-hidden="true"
                 tabIndex={-1}
                 className="login-video"
-                onError={() => setVideoFailed(true)}
+                onError={(event) => { if (event.target === event.currentTarget) setVideoFailed(true); }}
               >
                 <source src="/videologin.webm" type="video/webm" />
                 <source src="/videologin.mp4" type="video/mp4" onError={() => setVideoFailed(true)} />
