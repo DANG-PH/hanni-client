@@ -46,13 +46,11 @@ function loadApi(): Promise<void> {
  */
 export function YoutubePlayer({
   youtubeId,
-  thumbnailUrl,
   seekRef,
   onTick,
   onReady,
 }: {
   youtubeId: string;
-  thumbnailUrl?: string | null;
   seekRef: React.RefObject<((seconds: number) => void) | null>;
   onTick?: (currentSeconds: number) => void;
   onReady?: (durationSeconds: number) => void;
@@ -131,7 +129,7 @@ export function YoutubePlayer({
         <div className="absolute inset-0 grid place-items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={thumbnailUrl ?? `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
+            src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
             alt=""
             className="absolute inset-0 h-full w-full object-cover opacity-55"
           />
