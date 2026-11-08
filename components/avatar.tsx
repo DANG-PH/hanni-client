@@ -24,6 +24,7 @@ export function Avatar({
   user,
   size = 32,
   className = "",
+  onImageError,
 }: {
   user: {
     displayName?: string | null;
@@ -33,6 +34,7 @@ export function Avatar({
   };
   size?: number;
   className?: string;
+  onImageError?: () => void;
 }) {
   const src = user.avatarUrl ? mediaUrl(user.avatarUrl) : null;
   const [failed, setFailed] = useState(false);
@@ -48,7 +50,10 @@ export function Avatar({
       <img
         src={src}
         alt=""
-        onError={() => setFailed(true)}
+        onError={() => {
+          setFailed(true);
+          onImageError?.();
+        }}
         className={`shrink-0 rounded-full bg-surface-2 object-cover ${className}`}
         style={{ width: size, height: size }}
       />

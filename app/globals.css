@@ -444,6 +444,21 @@
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--foreground) 18%, transparent), transparent);
 }
+@media screen and (prefers-reduced-motion: no-preference) {
+  .assistant-stage[data-mood="greet"] .assistant-stage-figure > picture,
+  .assistant-stage[data-mood="idle"] .assistant-stage-figure > picture {
+    animation: mascot-pop 420ms var(--motion-ease) both, assistant-fox-idle 2.8s ease-in-out 420ms infinite;
+  }
+
+  .assistant-stage[data-mood="typing"] .assistant-stage-figure > picture {
+    animation: mascot-pop 420ms var(--motion-ease) both, assistant-fox-idle 2.1s ease-in-out 420ms infinite;
+  }
+}
+@keyframes assistant-fox-idle {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  38% { translate: 0 -4px; rotate: -1deg; }
+  72% { translate: 0 -1px; rotate: 1deg; }
+}
 .assistant-stage-status {
   display: inline-flex;
   align-items: center;

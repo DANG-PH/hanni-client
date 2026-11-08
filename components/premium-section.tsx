@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Button, Card } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { PremiumModal } from "@/components/premium-modal";
@@ -43,7 +43,7 @@ function formatDate(iso: string): string {
  * Xem `hanni-server/CLAUDE.md` mục Premium cho lý do KHÔNG khoá nội dung
  * học nào, chỉ mở thêm tiện ích.
  */
-export function PremiumSection() {
+export function PremiumSection({ children }: { children?: ReactNode }) {
   const { data, isLoading, mutate } = usePremiumStatus();
   const [open, setOpen] = useState(false);
   // Bấm "Huỷ" ở trang payOS/MoMo → biết ngay từ URL, không cần hỏi server.
@@ -90,18 +90,31 @@ export function PremiumSection() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (isLoading || !data) return null;
-
   return (
     <>
-      <Card>
-        {data.active ? (
+      <Card className="flex h-full min-w-0 flex-col shadow-none">
+        {!data ? (
+          <div className="flex items-start gap-3">
+            <span className="icon-tile bg-accent/10 text-accent"><Icon name="crown" /></span>
+            <div className="min-w-0">
+              <h2 className="font-semibold">Hanni Premium</h2>
+              <p className="mt-1 text-sm text-muted" role="status">
+                {isLoading ? "Đang kiểm tra trạng thái gói…" : "Chưa tải được trạng thái gói."}
+              </p>
+              {!isLoading && (
+                <button type="button" onClick={() => void mutate()} className="mt-1 min-h-9 text-sm font-semibold text-primary hover:underline">
+                  Thử lại
+                </button>
+              )}
+            </div>
+          </div>
+        ) : data.active ? (
           <div className="flex flex-wrap items-center gap-3">
             <span className="icon-tile bg-accent/10 text-accent">
               <Icon name="crown" />
             </span>
             <div>
-              <h2 className="flex items-center gap-2 font-semibold">
+              <h2 className="flex flex-wrap items-center gap-2 font-semibold">
                 Hanni Premium
                 <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-bold text-accent">
                   ĐANG DÙNG
@@ -135,9 +148,10 @@ export function PremiumSection() {
           </div>
         )}
         {note && <p className={`mt-3 text-sm ${note.ok ? "text-good" : "text-muted"}`}>{note.text}</p>}
+        {children && <div className="mt-auto pt-4">{children}</div>}
       </Card>
 
-      {open && (
+      {open && data && (
         <PremiumModal plans={data.plans} onClose={() => setOpen(false)} />
       )}
     </>

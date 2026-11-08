@@ -86,7 +86,7 @@ function MascotStage({ mood, size, compact }: { mood: Mood; size: number; compac
           <span aria-hidden="true" className="hanzi assistant-stage-char right-5 bottom-10">好</span>
         </>
       )}
-      <div className="relative">
+      <div className="assistant-stage-figure relative">
         <Mascot key={emote} emote={emote} size={size} priority className="mascot-pop relative z-10" />
         <span aria-hidden="true" className="assistant-stage-floor" />
       </div>

@@ -9,7 +9,7 @@ const CLIPS = {
   peek: [160, 140, 180, 140, 140, 200],
 } as const;
 type Clip = keyof typeof CLIPS;
-const ORDER: readonly Clip[] = ["blink", "wave", "blink", "peek"];
+const ORDER: readonly Clip[] = ["wave", "blink", "peek", "blink"];
 
 export function LauncherFox() {
   const [clip, setClip] = useState<Clip>("blink");
@@ -30,7 +30,7 @@ export function LauncherFox() {
       return !document.hidden && !reduce.matches;
     }
 
-    function schedule(delay = 2600 + Math.random() * 1500) {
+    function schedule(delay = 1500 + Math.random() * 850) {
       window.clearTimeout(timer);
       if (canPlay()) {
         timer = window.setTimeout(() => void play(ORDER[sequence++ % ORDER.length]), delay);
@@ -89,13 +89,13 @@ export function LauncherFox() {
       stop();
       setClip("blink");
       setFrame(0);
-      schedule(1000);
+      schedule(650);
     }
 
     waveRef.current = () => {
       if (performance.now() - lastStart >= 1600) void play("wave");
     };
-    schedule(950);
+    schedule(450);
     document.addEventListener("visibilitychange", onAvailabilityChange);
     reduce.addEventListener("change", onAvailabilityChange);
     return () => {

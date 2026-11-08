@@ -23,6 +23,8 @@ export function AvatarEditor({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [failedAvatar, setFailedAvatar] = useState<string | null>(null);
+  const avatarUnavailable = !!user.avatarUrl && failedAvatar === user.avatarUrl && !preview;
 
   async function pick(file: File) {
     if (!file.type.startsWith("image/")) {
@@ -42,8 +44,8 @@ export function AvatarEditor({
       await Promise.resolve(onChange());
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Tải ảnh thất bại");
-      setPreview(null);
     } finally {
+      setPreview(null);
       setBusy(false);
       URL.revokeObjectURL(local);
       if (inputRef.current) inputRef.current.value = "";
@@ -72,18 +74,20 @@ export function AvatarEditor({
         onClick={() => inputRef.current?.click()}
         disabled={busy}
         aria-label="Đổi ảnh đại diện"
-        className="group relative shrink-0 overflow-hidden rounded-full ring-2 ring-border transition hover:ring-primary/40 disabled:opacity-70"
-        style={{ width: size, height: size }}
+        className="group grid shrink-0 justify-items-center gap-2 rounded-xl text-xs font-semibold text-primary disabled:opacity-70"
       >
-        {preview ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <Avatar user={user} size={size} />
-        )}
-        <span className="absolute inset-0 flex items-center justify-center bg-black/45 text-xs font-medium text-white opacity-0 transition group-hover:opacity-100">
-          {busy ? "Đang tải…" : "Đổi ảnh"}
+        <span
+          className="block overflow-hidden rounded-full ring-2 ring-border transition group-hover:ring-primary/40"
+          style={{ width: size, height: size }}
+        >
+          {preview ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={preview} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <Avatar user={user} size={size} onImageError={() => setFailedAvatar(user.avatarUrl ?? null)} />
+          )}
         </span>
+        <span>{busy ? "Đang tải…" : "Đổi ảnh"}</span>
       </button>
       <input
         ref={inputRef}
@@ -104,7 +108,11 @@ export function AvatarEditor({
           Xoá ảnh
         </button>
       )}
-      {error && <p className="max-w-[10rem] text-center text-xs text-danger">{error}</p>}
+      {error ? (
+        <p className="max-w-24 text-center text-xs text-danger" role="status">{error}</p>
+      ) : avatarUnavailable && (
+        <p className="max-w-24 text-center text-xs text-muted">Ảnh chưa tải được</p>
+      )}
     </div>
   );
 }

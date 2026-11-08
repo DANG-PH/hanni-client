@@ -118,16 +118,17 @@ export default function AccountPage() {
           </Link>
         </section>
 
-        <section id="premium" aria-label="Premium" className="min-w-0 scroll-mt-24 space-y-2">
-          <PremiumSection />
-          <Link href="/progress#hanni-coach" className="flex min-h-14 items-center gap-3 rounded-xl border border-accent/25 bg-[#fffaf1] px-4 py-3 hover:border-accent/50">
-            <Icon name="spark" size={18} className="shrink-0 text-accent" />
-            <span className="min-w-0 flex-1">
-              <strong className="block text-sm">Hanni Coach</strong>
-              <span className="block text-xs leading-5 text-muted">Xem nhận xét và việc nên luyện tiếp</span>
-            </span>
-            <Icon name="arrow" size={16} className="shrink-0 text-accent" />
-          </Link>
+        <section id="premium" aria-label="Premium" className="min-w-0 scroll-mt-24">
+          <PremiumSection>
+            <Link href="/progress#hanni-coach" className="flex min-h-14 items-center gap-3 rounded-xl border border-accent/25 bg-[#fffaf1] px-4 py-3 hover:border-accent/50">
+              <Icon name="spark" size={18} className="shrink-0 text-accent" />
+              <span className="min-w-0 flex-1">
+                <strong className="block text-sm">Hanni Coach</strong>
+                <span className="block text-xs leading-5 text-muted">Xem nhận xét và việc nên luyện tiếp</span>
+              </span>
+              <Icon name="arrow" size={16} className="shrink-0 text-accent" />
+            </Link>
+          </PremiumSection>
         </section>
       </div>
 
