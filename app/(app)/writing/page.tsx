@@ -191,7 +191,7 @@ function WritingPage() {
         <TourButton tourKey="writing" />
       </PageHeading>
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
-        <Card id="bang-viet" className="order-2 flex min-w-0 scroll-mt-20 flex-col items-center gap-2 py-8 lg:order-1">
+        <Card id="bang-viet" className="order-2 flex min-w-0 flex-col items-center gap-2 py-8 lg:order-1">
           {indexError ? (
             <EmptyState
               title="Chưa tải được danh sách chữ"
