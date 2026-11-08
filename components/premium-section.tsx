@@ -92,7 +92,7 @@ export function PremiumSection({ children }: { children?: ReactNode }) {
 
   return (
     <>
-      <Card className="flex h-full min-w-0 flex-col shadow-none">
+      <Card className="flex h-full min-w-0 flex-col bg-linear-to-b from-[#fffaf1] to-surface shadow-none">
         {!data ? (
           <div className="flex items-start gap-3">
             <span className="icon-tile bg-accent/10 text-accent"><Icon name="crown" /></span>

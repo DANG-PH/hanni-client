@@ -35,6 +35,7 @@
  * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
  */
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -120,8 +121,15 @@ export default function AccountPage() {
 
         <section id="premium" aria-label="Premium" className="min-w-0 scroll-mt-24">
           <PremiumSection>
-            <Link href="/progress#hanni-coach" className="flex min-h-14 items-center gap-3 rounded-xl border border-accent/25 bg-[#fffaf1] px-4 py-3 hover:border-accent/50">
-              <Icon name="spark" size={18} className="shrink-0 text-accent" />
+            <Link href="/progress#hanni-coach" className="flex min-h-14 items-center gap-3 rounded-xl border border-accent/25 bg-[#fffaf1] px-3 py-3 hover:border-accent/50 sm:px-4">
+              <Image
+                src="/illustrations/hanni/coach-report.webp"
+                alt=""
+                width={180}
+                height={120}
+                sizes="(min-width: 1024px) 96px, 56px"
+                className="h-auto w-14 shrink-0 lg:w-24"
+              />
               <span className="min-w-0 flex-1">
                 <strong className="block text-sm">Hanni Coach</strong>
                 <span className="block text-xs leading-5 text-muted">Xem nhận xét và việc nên luyện tiếp</span>

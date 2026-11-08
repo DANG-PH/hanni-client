@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { mediaUrl } from "@/lib/api";
 
 const PALETTE = [
@@ -37,21 +37,21 @@ export function Avatar({
   onImageError?: () => void;
 }) {
   const src = user.avatarUrl ? mediaUrl(user.avatarUrl) : null;
-  const [failed, setFailed] = useState(false);
-  useEffect(() => setFailed(false), [src]);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
   const initial =
     Array.from((user.displayName || user.email || "H").trim())[0]?.toUpperCase() ??
     "H";
 
-  if (src && !failed) {
+  if (src && src !== failedSrc) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src={src}
         alt=""
+        onLoad={() => setFailedSrc(null)}
         onError={() => {
-          setFailed(true);
+          setFailedSrc(src);
           onImageError?.();
         }}
         className={`shrink-0 rounded-full bg-surface-2 object-cover ${className}`}
