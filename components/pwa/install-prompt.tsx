@@ -20,7 +20,7 @@ export function signalInstallMoment() {
 
 /** Để người học thao tác trọn vẹn khi chọn công cụ, học hoặc làm đề. */
 const QUIET_PATHS =
-  /^\/(login|register|forgot-password|reset-password|auth|bai-hoc|bat-dau|onboarding|install|luyen-tap)(\/|$)|^\/thi-thu-hsk\/(?!dang-bai)[^/]+$/;
+  /^\/(login|register|forgot-password|reset-password|auth|bai-hoc|bat-dau|onboarding|install|luyen-tap|tu-dien\/quet)(\/|$)|^\/thi-thu-hsk\/(?!dang-bai)[^/]+$/;
 
 function read(key: string): number {
   try {

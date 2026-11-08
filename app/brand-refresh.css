@@ -172,3 +172,12 @@
     height: 125px;
   }
 }
+
+@media (max-width: 639px) {
+  .feature-intro.cultural-intro { row-gap: 8px; }
+  .feature-intro .cultural-intro-copy { display: contents; }
+  .feature-intro .cultural-intro-copy > .eyebrow { grid-column: 1; }
+  .feature-intro .cultural-intro-copy > h1 { grid-column: 1; margin-top: 0; }
+  .feature-intro .cultural-intro-copy > p { grid-column: 1 / -1; margin-top: 4px; }
+  .feature-intro .cultural-intro-art { grid-column: 2; grid-row: 1 / span 2; }
+}

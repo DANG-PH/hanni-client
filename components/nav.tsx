@@ -26,7 +26,7 @@ export function Nav() {
       >
         Đến nội dung chính
       </a>
-      <div className="mx-auto flex min-h-[72px] max-w-7xl items-center gap-5 px-5 sm:px-8">
+      <div className="mx-auto flex min-h-[72px] max-w-7xl items-center gap-2 px-3 sm:gap-5 sm:px-8">
         <Link href="/" aria-label="Hanni — trang chủ" className="shrink-0">
           <span className="sm:hidden">
             <Brand compact />
