@@ -191,7 +191,7 @@ function WritingPage() {
         <TourButton tourKey="writing" />
       </PageHeading>
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
-        <Card className="order-2 flex min-w-0 flex-col items-center gap-2 py-8 lg:order-1">
+        <Card id="bang-viet" className="order-2 flex min-w-0 scroll-mt-20 flex-col items-center gap-2 py-8 lg:order-1">
           {indexError ? (
             <EmptyState
               title="Chưa tải được danh sách chữ"
@@ -303,7 +303,7 @@ function WritingPage() {
               </button>
             ))}
           </div>
-          <div className="grid max-h-[420px] grid-cols-5 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-6">
+          <div className="grid max-h-36 grid-cols-5 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-6 lg:max-h-[420px]">
             {!index ? (
               <div className="col-span-full py-6">
                 <Spinner />
@@ -317,7 +317,7 @@ function WritingPage() {
                 <button
                   key={entry.c}
                   onClick={() => setActive(entry.c)}
-                  aria-pressed={active === entry.c}
+                  aria-pressed={activeEntry?.c === entry.c}
                   lang="zh"
                   className={`hanzi motion-button flex h-11 items-center justify-center rounded-lg border text-xl ${active === entry.c ? "chip-on" : "border-border bg-surface hover:border-primary/40"}`}
                 >
@@ -327,9 +327,14 @@ function WritingPage() {
             )}
           </div>
           {index && (
-            <p className="text-center text-xs text-muted">
-              {filtered.length} / {index.length} chữ
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-2 lg:justify-center">
+              <p className="text-xs text-muted">{filtered.length} / {index.length} chữ</p>
+              {activeEntry && (
+                <a href="#bang-viet" className="flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-semibold text-primary lg:hidden">
+                  Đến bảng viết <Icon name="chevron" size={15} className="rotate-90" />
+                </a>
+              )}
+            </div>
           )}
         </Card>
       </div>
