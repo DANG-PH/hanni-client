@@ -36,13 +36,13 @@
  * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
  */
 
+import { SceneArt } from "@/components/learning-scenes";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { askAssistant } from "@/components/assistant-widget";
 import { AudioButton } from "@/components/audio-button";
 import { Icon } from "@/components/icon";
-import { Mascot } from "@/components/mascot";
 import { Button, ErrorNote, LinkButton, Spinner } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
 import { speakSequence, stopListening } from "@/lib/listening-audio";
@@ -111,7 +111,7 @@ export default function LessonReadingPage() {
 
   return (
     <div className="page-wrap max-w-3xl! space-y-5 py-8! sm:py-10!">
-      <div className="flex items-end justify-between gap-3">
+      <div className="page-spot panel bg-[#fffaf7] p-4 shadow-none sm:p-6">
         <div className="min-w-0">
           <Link href={`/learn/${lesson.id}`} className="inline-flex min-h-8 items-center gap-1 text-xs font-semibold text-muted hover:text-primary">
             <Icon name="back" size={14} /> {hskLabel(lesson.hskLevel)} · Bài {lesson.orderIndex}: {lesson.title}
@@ -119,8 +119,7 @@ export default function LessonReadingPage() {
           <p className="eyebrow mt-3">BÀI ĐỌC AI · CHỈ DÙNG TỪ {hskLabel(lesson.hskLevel).toUpperCase()}</p>
           <h1 className="mt-1 text-2xl font-extrabold tracking-tight">{reading ? reading.title : `Bài đọc cho "${lesson.title}"`}</h1>
         </div>
-        {/* Có bài thì cáo đọc sách cùng; AI đang viết thì cáo ghi chép. */}
-        <Mascot key={writing ? "w" : "r"} emote={writing ? "e39-ghi-chu" : "e16-doc-sach"} size={88} priority className="mascot-pop -mb-2" />
+        <SceneArt kind="library" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
       </div>
 
       {!reading ? (

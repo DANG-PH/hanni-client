@@ -247,3 +247,32 @@
 }
 
 .withoutScene { grid-template-columns: minmax(0, 1fr); }
+
+
+.featured {
+  grid-template-columns: minmax(0, 1fr) 210px;
+  padding: 20px 28px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(110deg, var(--surface) 35%, #f7e9e2);
+}
+
+.page.featured .scene {
+  grid-row: 1 / span 2;
+  height: 112px;
+}
+
+@media (max-width: 767px) {
+  .featured {
+    grid-template-columns: minmax(0, 1fr) 84px;
+    padding: 14px;
+  }
+
+  .page.featured .scene {
+    grid-row: 1;
+    width: 84px;
+    height: 76px;
+  }
+
+  .featured .pageDescription { display: block; }
+}

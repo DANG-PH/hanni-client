@@ -13,6 +13,7 @@
  * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
  */
 
+import { SceneArt } from "@/components/learning-scenes";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/icon";
@@ -131,11 +132,16 @@ export default async function TeachersPage() {
       <section className="border-b border-border bg-[#fffbf8]">
         <div className="page-wrap grid grid-cols-1 gap-6 py-8! lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center lg:py-14!">
           <div className="min-w-0">
-            <p className="eyebrow">DÀNH CHO GIÁO VIÊN · TRUNG TÂM · GIA SƯ</p>
-            <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">Lớp học tiếng Trung miễn phí cho giáo viên</h1>
-            <p className="mt-4 max-w-xl text-base leading-7 text-muted">
-              Tạo lớp, gửi mã cho học viên, giao bài từ lộ trình HSK hoặc đề thi thử — rồi xem ai đã làm, ai học đều mỗi ngày.
-            </p>
+            <div className="page-spot">
+              <div className="min-w-0">
+                <p className="eyebrow">DÀNH CHO GIÁO VIÊN · TRUNG TÂM · GIA SƯ</p>
+                <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">Lớp học tiếng Trung miễn phí cho giáo viên</h1>
+                <p className="mt-4 max-w-xl text-base leading-7 text-muted">
+                  Tạo lớp, gửi mã cho học viên, giao bài từ lộ trình HSK hoặc đề thi thử — rồi xem ai đã làm, ai học đều mỗi ngày.
+                </p>
+              </div>
+              <SceneArt kind="classroom" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
+            </div>
             <p className="mt-3 flex max-w-xl items-start gap-2 text-sm leading-6">
               <Icon name="check" size={18} className="mt-0.5 shrink-0 text-good" />
               <span>

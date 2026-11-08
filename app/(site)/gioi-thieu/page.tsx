@@ -9,6 +9,7 @@
  * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
  */
 
+import { SceneArt } from "@/components/learning-scenes";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/icon";
@@ -94,15 +95,20 @@ export default async function AboutPage() {
     <div className="pb-16">
       <section className="border-b border-border bg-surface">
         <div className="page-wrap py-12! lg:py-16!">
-          <p className="eyebrow">GIỚI THIỆU</p>
-          <h1 className="mt-3 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Học tiếng Trung bằng chính <span className="text-primary">tiếng Việt</span> của bạn.
-          </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-muted">
-            Hơn một nửa từ vựng tiếng Việt có gốc Hán. Đọc từ tiếng Trung theo âm Hán Việt, rất nhiều từ trùng luôn nghĩa tiếng Việt:
-            学生 là học sinh, 时间 là thời gian, 国家 là quốc gia — và dấu tiếng Việt còn gợi được thanh điệu tiếng Trung. Hanni biến
-            vốn từ bạn đã có thành lối tắt để nhớ tiếng Trung, điều các ứng dụng quốc tế không làm vì không được làm cho người Việt.
-          </p>
+          <div className="page-spot">
+            <div className="min-w-0">
+              <p className="eyebrow">GIỚI THIỆU</p>
+              <h1 className="mt-3 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">
+                Học tiếng Trung bằng chính <span className="text-primary">tiếng Việt</span> của bạn.
+              </h1>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-muted">
+                Hơn một nửa từ vựng tiếng Việt có gốc Hán. Đọc từ tiếng Trung theo âm Hán Việt, rất nhiều từ trùng luôn nghĩa tiếng Việt:
+                学生 là học sinh, 时间 là thời gian, 国家 là quốc gia — và dấu tiếng Việt còn gợi được thanh điệu tiếng Trung. Hanni biến
+                vốn từ bạn đã có thành lối tắt để nhớ tiếng Trung, điều các ứng dụng quốc tế không làm vì không được làm cho người Việt.
+              </p>
+            </div>
+            <SceneArt kind="hanviet" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
+          </div>
           <dl className="mt-8 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
             {[
               [fmt(ws?.total, "10.900+"), "từ vựng HSK 3.0"],

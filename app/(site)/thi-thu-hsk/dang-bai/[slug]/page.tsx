@@ -43,6 +43,7 @@
  * Nằm trong `(site)` (người đã đăng nhập vẫn có sidebar), khác `/thi-thu-hsk/
  * [slug]` là phòng thi khung tập trung.
  */
+import { SceneArt } from "@/components/learning-scenes";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -109,16 +110,21 @@ export default async function PracticeSetPage({ params }: { params: Promise<{ sl
       </nav>
 
       <header className="panel tint-primary p-6 sm:p-7">
-        <p className="text-xs font-bold tracking-wider text-primary">
-          LUYỆN TỪNG DẠNG BÀI · HSK {set.level} · {SECTION_VI[set.section].vi.toUpperCase()}{" "}
-          <span lang="zh" className="hanzi">
-            {PART_ZH[set.part - 1]}
-          </span>
-        </p>
-        <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight sm:text-3xl">{info.label}</h1>
-        <p className="mt-2 text-sm text-muted">
-          {set.count} câu từ {exams} đề thi thử HSK {set.level} — làm câu nào chấm và chữa câu đó, không tính giờ.
-        </p>
+        <div className="page-spot">
+          <div className="min-w-0">
+            <p className="text-xs font-bold tracking-wider text-primary">
+              LUYỆN TỪNG DẠNG BÀI · HSK {set.level} · {SECTION_VI[set.section].vi.toUpperCase()}{" "}
+              <span lang="zh" className="hanzi">
+                {PART_ZH[set.part - 1]}
+              </span>
+            </p>
+            <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight sm:text-3xl">{info.label}</h1>
+            <p className="mt-2 text-sm text-muted">
+              {set.count} câu từ {exams} đề thi thử HSK {set.level} — làm câu nào chấm và chữa câu đó, không tính giờ.
+            </p>
+          </div>
+          <SceneArt kind="exam" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
+        </div>
         {info.tip && (
           <p className="mt-4 flex items-start gap-2 rounded-2xl bg-surface/70 px-4 py-3 text-sm leading-6">
             <Icon name="spark" size={16} className="mt-1 shrink-0 text-primary" />

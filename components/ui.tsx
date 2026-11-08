@@ -172,6 +172,7 @@ export function PageHeading({
   tone = "primary",
   illustrated = true,
   scene,
+  featured = false,
 }: {
   icon?: IconName;
   eyebrow?: string;
@@ -180,10 +181,12 @@ export function PageHeading({
   children?: ReactNode;
   illustrated?: boolean;
   scene?: SceneKind;
+  featured?: boolean;
   tone?: "primary" | "good" | "accent" | "lavender";
 }) {
+  const artwork = illustrated && scene;
   return (
-    <header className={`${headingStyles.page} ${!illustrated || !scene ? headingStyles.withoutScene : ""}`} data-tone={tone}>
+    <header className={`${headingStyles.page} ${!artwork ? headingStyles.withoutScene : featured ? headingStyles.featured : ""}`} data-tone={tone}>
       <div className={headingStyles.identity}>
         <span className={headingStyles.pageIcon}>
           <Icon name={icon} size={22} />
@@ -195,7 +198,13 @@ export function PageHeading({
         </div>
       </div>
       {children && <div className={headingStyles.pageActions}>{children}</div>}
-      {illustrated && scene && <SceneArt kind={scene} className={headingStyles.scene} />}
+      {artwork && (
+        <SceneArt
+          kind={artwork}
+          className={headingStyles.scene}
+          sizes={featured ? "(max-width: 767px) 84px, 210px" : undefined}
+        />
+      )}
     </header>
   );
 }

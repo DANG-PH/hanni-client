@@ -37,6 +37,8 @@ export default function ClassroomsPage() {
   return (
     <div className="page-wrap space-y-6">
       <PageHeading
+        scene="classroom"
+        featured
         icon="users"
         title="Lớp học"
         description="Mở lớp để giao bài hoặc nhập mã do giáo viên gửi."

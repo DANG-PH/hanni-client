@@ -76,6 +76,8 @@ export default function AccountPage() {
   return (
     <div className="page-wrap space-y-5">
       <PageHeading
+        scene="account"
+        featured
         icon="user"
         title="Tài khoản"
         description="Quản lý hồ sơ, mục tiêu học tập và bảo mật."

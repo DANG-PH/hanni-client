@@ -8,6 +8,7 @@
  * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
  */
 
+import { SceneArt } from "@/components/learning-scenes";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -53,15 +54,20 @@ function SourceCard({
 export default function NguonDuLieuPage() {
   return (
     <div className="page-wrap max-w-3xl! space-y-8 py-12!">
-      <section className="reveal text-center">
-        <p className="eyebrow">MINH BẠCH VỀ DỮ LIỆU</p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-          Nguồn dữ liệu &amp; ghi công
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-muted">
-          Từ vựng, âm đọc và audio phát âm của Hanni lấy từ các nguồn mở dưới
-          đây, được chia sẻ lại đúng theo giấy phép gốc.
-        </p>
+      <section className="panel bg-[#fffaf7] p-5 shadow-none sm:p-7">
+        <div className="page-spot">
+          <div className="min-w-0">
+            <p className="eyebrow">MINH BẠCH VỀ DỮ LIỆU</p>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+              Nguồn dữ liệu &amp; ghi công
+            </h1>
+            <p className="mt-3 max-w-xl text-sm leading-7 text-muted">
+              Từ vựng, âm đọc và audio phát âm của Hanni lấy từ các nguồn mở dưới
+              đây, được chia sẻ lại đúng theo giấy phép gốc.
+            </p>
+          </div>
+          <SceneArt kind="archives" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
+        </div>
       </section>
 
       <div className="space-y-4">

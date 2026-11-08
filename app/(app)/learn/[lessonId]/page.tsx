@@ -83,6 +83,7 @@ export default function LessonDetailPage() {
         {lesson.hskLevel === 7 ? "7–9" : lesson.hskLevel}
       </LinkButton>
       <PageHeading
+        scene="learn"
         icon="book"
         eyebrow={`Bài ${String(lesson.orderIndex).padStart(2, "0")} · HSK ${lesson.hskLevel === 7 ? "7–9" : lesson.hskLevel}`}
         title={lesson.title}

@@ -94,7 +94,7 @@ export default function ScanPage() {
             tiếng Trung của chúng.
           </p>
         </div>
-        <SceneArt kind="scan" className="cultural-intro-art" />
+        <SceneArt kind="scan" className="cultural-intro-art" sizes="(max-width: 639px) 88px, 240px" />
       </section>
 
       <ScanTool />

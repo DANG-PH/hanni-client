@@ -1,5 +1,6 @@
 "use client";
 
+import { SceneArt } from "@/components/learning-scenes";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -72,14 +73,7 @@ export function LoginShell({ children }: { children: ReactNode }) {
           <div className="login-video-frame">
             {videoFailed ? (
               <div className="login-video-fallback">
-                <Image
-                  src="/favicon.ico"
-                  alt="Logo Hanni"
-                  width={120}
-                  height={120}
-                  unoptimized
-                  className="rounded-2xl"
-                />
+                <SceneArt kind={authMode ? "account" : "archives"} compact className="max-w-40" sizes="160px" />
               </div>
             ) : (
               <video

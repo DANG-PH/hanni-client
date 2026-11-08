@@ -2,7 +2,7 @@
   position: relative;
   width: 100%;
   min-width: 0;
-  height: 128px;
+  height: var(--scene-height, 128px);
   overflow: hidden;
 }
 
@@ -12,13 +12,13 @@
   background: #f7efeb;
 }
 
-.compact { height: 96px; }
+.compact { height: var(--scene-height, 96px); }
 .stage { object-fit: cover; object-position: center bottom; opacity: .55; }
 .imageBox { position: absolute; inset: 4px; z-index: 1; }
 .cover .imageBox { inset: 11% 13%; }
 .image { object-fit: contain; object-position: center; }
 
 @media (max-width: 639px) {
-  .art:not(.cover) { height: 94px; }
+  .art:not(.cover) { height: var(--scene-height, 94px); }
   .cover .imageBox { inset: 9% 10%; }
 }

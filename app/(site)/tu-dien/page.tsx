@@ -1,3 +1,4 @@
+import { SceneArt } from "@/components/learning-scenes";
 import { SceneBackground } from "@/components/scene-background";
 /**
  * BẢN ĐỒ TRANG — TỪ ĐIỂN (/tu-dien) — trang chủ tra cứu; ?q= kết quả 4 tab (Từ vựng · Hán tự · Ví dụ · Ngữ pháp);
@@ -326,17 +327,20 @@ async function LevelList({ level, page }: { level: number; page: number }) {
   return (
     <div className="page-wrap max-w-6xl! space-y-6 py-8!">
       <DictionarySearch />
-      <section>
-        <nav className="text-xs text-muted">
-          <Link href="/tu-dien" className="hover:text-primary">
-            Từ điển
-          </Link>{" "}
-          › {hskLabel(level)}
-        </nav>
-        <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Từ vựng {hskLabel(level)}</h1>
-        <p className="mt-1 text-sm text-muted">
-          {data ? `${data.total.toLocaleString("vi-VN")} từ theo chuẩn HSK 3.0, ` : ""}sắp theo mức thông dụng — kèm pinyin, âm Hán Việt, nghĩa.
-        </p>
+      <section className="page-spot">
+        <div className="min-w-0">
+          <nav className="text-xs text-muted">
+            <Link href="/tu-dien" className="hover:text-primary">
+              Từ điển
+            </Link>{" "}
+            › {hskLabel(level)}
+          </nav>
+          <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Từ vựng {hskLabel(level)}</h1>
+          <p className="mt-1 text-sm text-muted">
+            {data ? `${data.total.toLocaleString("vi-VN")} từ theo chuẩn HSK 3.0, ` : ""}sắp theo mức thông dụng — kèm pinyin, âm Hán Việt, nghĩa.
+          </p>
+        </div>
+        <SceneArt kind="dictionary" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
       </section>
       <nav aria-label="Chọn cấp HSK" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
         {LEVELS.map((l) => (

@@ -33,6 +33,7 @@
  * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(app)/layout.tsx.
  */
 
+import { SceneArt } from "@/components/learning-scenes";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState, type FormEvent, type ReactNode } from "react";
@@ -91,27 +92,30 @@ export default function ClassroomPage() {
 function Header({ data, children }: { data: ClassDetail; children?: ReactNode }) {
   return (
     <div className="panel flex flex-col gap-3 bg-[#fffbf8] p-4 shadow-none sm:flex-row sm:items-end sm:justify-between sm:p-6">
-      <div className="min-w-0">
-        <Link href="/lop-hoc" className="inline-flex min-h-8 items-center gap-1 text-xs font-semibold text-muted hover:text-primary">
-          <Icon name="back" size={14} /> Lớp học
-        </Link>
-        <h1 className="mt-1 text-2xl font-extrabold tracking-tight break-words">{data.class.name}</h1>
-        <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-muted">
-          {data.class.hskLevel && <span>{hskLabel(data.class.hskLevel)}</span>}
-          {data.class.hskLevel && <span aria-hidden>·</span>}
-          <span>{data.class.memberCount} học viên</span>
-          <span className="rounded-md bg-primary/8 px-2 py-0.5 text-xs font-semibold text-primary">
-            {data.role === "owner" ? "Bạn dạy lớp này" : "Bạn học lớp này"}
-          </span>
-          {data.role === "member" && (
-            <>
-              <span aria-hidden>·</span>
-              <span className="flex min-w-0 flex-wrap items-center gap-1.5 break-words">
-                Giáo viên <Avatar user={data.class.teacher} size={20} /> <b className="text-foreground">{data.class.teacher.displayName}</b>
-              </span>
-            </>
-          )}
-        </p>
+      <div className="page-spot min-w-0 flex-1">
+        <div className="min-w-0">
+          <Link href="/lop-hoc" className="inline-flex min-h-8 items-center gap-1 text-xs font-semibold text-muted hover:text-primary">
+            <Icon name="back" size={14} /> Lớp học
+          </Link>
+          <h1 className="mt-1 text-2xl font-extrabold tracking-tight break-words">{data.class.name}</h1>
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-muted">
+            {data.class.hskLevel && <span>{hskLabel(data.class.hskLevel)}</span>}
+            {data.class.hskLevel && <span aria-hidden>·</span>}
+            <span>{data.class.memberCount} học viên</span>
+            <span className="rounded-md bg-primary/8 px-2 py-0.5 text-xs font-semibold text-primary">
+              {data.role === "owner" ? "Bạn dạy lớp này" : "Bạn học lớp này"}
+            </span>
+            {data.role === "member" && (
+              <>
+                <span aria-hidden>·</span>
+                <span className="flex min-w-0 flex-wrap items-center gap-1.5 break-words">
+                  Giáo viên <Avatar user={data.class.teacher} size={20} /> <b className="text-foreground">{data.class.teacher.displayName}</b>
+                </span>
+              </>
+            )}
+          </p>
+        </div>
+        <SceneArt kind="classroom" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
       </div>
       {children}
     </div>

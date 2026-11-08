@@ -87,7 +87,7 @@ export default async function TuDaBietPage() {
             thì đã nằm sẵn trong đầu rồi.
           </p>
         </div>
-        <SceneArt kind="hanviet" className="cultural-intro-art" />
+        <SceneArt kind="hanviet" className="cultural-intro-art" sizes="(max-width: 639px) 88px, 240px" />
       </section>
 
       {!data ? (

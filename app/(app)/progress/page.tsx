@@ -130,6 +130,8 @@ export default function ProgressPage() {
     <div className="page-wrap space-y-8">
       <FeatureTour tourKey="progress" steps={PROGRESS_TOUR_STEPS} />
       <PageHeading
+        scene="progress"
+        featured
         icon="chart"
         title="Tiến độ học tập"
         description="Xem vốn từ, nhịp học và phần cần ôn tiếp."

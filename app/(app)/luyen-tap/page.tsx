@@ -34,6 +34,8 @@ export default function PracticeHubPage() {
   return (
     <div className="page-wrap practice-hub space-y-7">
       <PageHeading
+        scene="practice"
+        featured
         icon="grid"
         title="Luyện tập"
         description="Luyện thêm ngoài lộ trình — nghe, nói, viết đều lấy từ của bài bạn đang học."

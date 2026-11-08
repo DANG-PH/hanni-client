@@ -55,6 +55,8 @@ export default function SettingsPage() {
   return (
     <div className="page-wrap space-y-7">
       <PageHeading
+        scene="progress"
+        featured
         icon="settings"
         tone="lavender"
         eyebrow="Nhịp học của bạn"

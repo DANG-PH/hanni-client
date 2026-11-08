@@ -110,6 +110,8 @@ export default function AchievementsPage() {
   return (
     <div className="page-wrap space-y-7">
       <PageHeading
+        scene="awards"
+        featured
         icon="trophy"
         tone="accent"
         eyebrow="Những cột mốc của bạn"

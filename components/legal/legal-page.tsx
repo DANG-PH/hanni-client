@@ -1,3 +1,4 @@
+import { SceneArt } from "@/components/learning-scenes";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -15,9 +16,14 @@ export function LegalPage({
 }) {
   return (
     <div className="page-wrap max-w-3xl! py-10! sm:py-14!">
-      <p className="eyebrow">PHÁP LÝ</p>
-      <h1 className="mt-2 text-3xl font-extrabold tracking-tight">{title}</h1>
-      <p className="mt-2 text-xs text-muted">Cập nhật {updated}</p>
+      <div className="page-spot">
+        <div className="min-w-0">
+          <p className="eyebrow">PHÁP LÝ</p>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight">{title}</h1>
+          <p className="mt-2 text-xs text-muted">Cập nhật {updated}</p>
+        </div>
+        <SceneArt kind="archives" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
+      </div>
       <div className="mt-5 text-sm leading-7 text-muted">{intro}</div>
       <nav aria-label="Mục lục" className="mt-6 rounded-2xl border border-border bg-surface p-5">
         <p className="text-xs font-bold tracking-wide text-muted uppercase">Mục lục</p>

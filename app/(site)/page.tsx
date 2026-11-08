@@ -15,6 +15,7 @@
  * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
  */
 
+import Image from "next/image";
 import Link from "next/link";
 import { DictionarySearch } from "@/components/dictionary/dictionary-search";
 import { Icon, type IconName } from "@/components/icon";
@@ -31,14 +32,12 @@ import { useLevels, useWordStats } from "@/lib/hooks";
 const HANVIET_EXAMPLES: {
   zh: string;
   pinyin: string;
-  hanViet: string;
   meaning: string;
 }[] = [
-  { zh: "学生", pinyin: "xué shēng", hanViet: "học sinh", meaning: "học sinh" },
+  { zh: "学生", pinyin: "xué shēng", meaning: "học sinh" },
   {
     zh: "时间",
     pinyin: "shí jiān",
-    hanViet: "thời gian",
     meaning: "thời gian",
   },
   { zh: "国家", pinyin: "guó jiā", hanViet: "quốc gia", meaning: "quốc gia" },
@@ -147,10 +146,8 @@ export default function Home() {
   return (
     <div className="hanni-home">
       <section className="home-hero overflow-hidden border-b border-border">
-        {/* `grid-cols-1`: lưới không khai cột thì cột giãn theo bề rộng tối thiểu của ô tra (ô nhập + 4 nút) —
-         * ở 390px cột hero rộng 463px, `overflow-hidden` cắt mất tiêu đề, mô tả, nút tra (2026-10-19). */}
-        <div className="page-wrap relative grid grid-cols-1 items-center gap-10 py-10! md:grid-cols-[1.05fr_1fr] md:py-14! lg:gap-16">
-          <div className="reveal-group relative z-10 min-w-0 max-w-xl">
+        <div className="page-wrap home-hero-layout">
+          <div className="home-hero-copy min-w-0 max-w-xl">
             <span className="section-label">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" /> HỌC
               TIẾNG TRUNG CHO NGƯỜI VIỆT
@@ -187,28 +184,34 @@ export default function Home() {
               <Icon name="check" size={15} className="text-good" /> Không cần
               đăng ký để bắt đầu · Toàn bộ bài học miễn phí
             </p>
-            {/* Tra từ ngay trên trang chủ (audit S13) — Hanzii đặt ô tra cứu đầu trang
-             * chủ; từ điển 10.900+ từ là thế mạnh của Hanni mà trước đó trang chủ không có. */}
-            <div className="home-dictionary mt-7 rounded-2xl border border-border bg-surface/90 p-4 shadow-sm backdrop-blur">
-              <p className="mb-2 px-1 text-xs font-semibold text-muted">
-                Tra từ: Hán tự, pinyin, tiếng Việt hoặc cả câu
-              </p>
-              <DictionarySearch showTabs={false} />
-              <div className="mt-2.5 flex flex-wrap gap-1.5 px-1">
-                {QUICK_SEARCHES.map((q) => (
-                  <Link
-                    key={q}
-                    href={`/tu-dien?q=${encodeURIComponent(q)}`}
-                    className="inline-flex min-h-8 items-center rounded-lg bg-surface-2 px-2.5 text-xs text-muted hover:text-primary"
-                  >
-                    {q}
-                  </Link>
-                ))}
-              </div>
+          </div>
+          <div className="home-hero-visual">
+            <Image
+              src="/illustrations/hanni/front-door.webp"
+              alt="Cáo Hanni giơ thẻ từ bên bàn học, trước cửa sổ hoa văn Trung Hoa"
+              fill
+              sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1280px) 45vw, 570px"
+              fetchPriority="high"
+              className="object-cover"
+            />
+          </div>
+          <div className="home-dictionary min-w-0 max-w-xl rounded-2xl border border-border p-4">
+            <p className="mb-2 px-1 text-xs font-semibold text-muted">
+              Tra từ: Hán tự, pinyin, tiếng Việt hoặc cả câu
+            </p>
+            <DictionarySearch showTabs={false} />
+            <div className="mt-2.5 flex flex-wrap gap-1.5 px-1">
+              {QUICK_SEARCHES.map((q) => (
+                <Link
+                  key={q}
+                  href={`/tu-dien?q=${encodeURIComponent(q)}`}
+                  className="inline-flex min-h-8 items-center rounded-lg bg-surface-2 px-2.5 text-xs text-muted hover:text-primary"
+                >
+                  {q}
+                </Link>
+              ))}
             </div>
           </div>
-          {/* Thẻ học thử có tương tác; cùng một bố cục trên web và điện thoại. */}
-          <StudyArtwork />
         </div>
       </section>
 
@@ -260,48 +263,36 @@ export default function Home() {
         </ul>
       </section>
 
-      <section className="border-y border-border bg-surface">
-        <div className="page-wrap py-10! sm:py-12!">
-          <div className="reveal mx-auto max-w-2xl text-center">
+      <section aria-labelledby="thu-the-tu" className="border-y border-border bg-surface">
+        <div className="page-wrap grid items-center gap-7 py-10! sm:py-12! md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-12">
+          <div className="min-w-0">
             <span className="section-label">
-              <Icon name="spark" size={14} /> LỢI THẾ CHỈ NGƯỜI VIỆT MỚI CÓ
+              <Icon name="spark" size={14} /> HỌC QUA ÂM HÁN VIỆT
             </span>
-            <h2 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">
-              Bạn đã biết trước hàng nghìn từ tiếng Trung
-              <br className="hidden sm:block" /> — chỉ là chưa nhận ra
+            <h2 id="thu-the-tu" className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">
+              Thử đoán nghĩa một từ tiếng Trung
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-muted">
-              Hơn 60% từ vựng tiếng Việt vay mượn từ tiếng Hán và giữ nguyên âm
-              đọc — &quot;âm Hán Việt&quot;. Hanni hiện âm Hán Việt cạnh mỗi từ
-              để bạn liên tưởng ngay, thay vì học thuộc lòng từ đầu.
+            <p className="mt-3 max-w-lg text-sm leading-7 text-muted">
+              Hanni đặt âm Hán Việt cạnh mỗi từ để bạn nối cách đọc mới với một nghĩa quen thuộc.
+              Lật thẻ để xem bạn đã biết từ này chưa.
             </p>
-          </div>
-          <div className="reveal-group mt-7 grid gap-3 sm:grid-cols-3">
-            {HANVIET_EXAMPLES.map((ex) => (
-              <div key={ex.zh} className="reveal panel p-5 text-center">
-                <p lang="zh" className="hanzi text-4xl text-primary">
-                  {ex.zh}
-                </p>
-                <p className="mt-1.5 text-xs text-muted">{ex.pinyin}</p>
-                <p className="mt-3 text-sm">
-                  Hán Việt:{" "}
-                  <span className="font-bold text-hanviet">{ex.hanViet}</span>
-                </p>
-                <p className="mt-1 text-xs text-muted">
-                  Trùng khớp nghĩa tiếng Việt: &quot;{ex.meaning}&quot;
-                </p>
-              </div>
-            ))}
-          </div>
-          <p className="reveal mt-6 text-center text-sm">
+            <ul className="mt-5 grid gap-2 sm:grid-cols-3">
+              {HANVIET_EXAMPLES.map((ex) => (
+                <li key={ex.zh} className="flex items-center gap-2.5 rounded-xl border border-border bg-[#fffaf7] px-3 py-2.5 sm:flex-col sm:items-start sm:gap-1">
+                  <span lang="zh" className="hanzi text-2xl text-primary">{ex.zh}</span>
+                  <span className="text-xs text-muted">{ex.pinyin}</span>
+                  <span className="ml-auto text-xs font-semibold sm:ml-0">{ex.meaning}</span>
+                </li>
+              ))}
+            </ul>
             <Link
               href="/tu-da-biet"
-              className="font-medium text-primary hover:underline"
+              className="mt-4 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
             >
-              Xem những từ tiếng Trung bạn đã biết sẵn
-              <Icon name="arrow" size={14} className="ml-1 inline" />
+              Xem thêm từ quen thuộc <Icon name="arrow" size={15} />
             </Link>
-          </p>
+          </div>
+          <StudyArtwork />
         </div>
       </section>
 

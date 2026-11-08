@@ -92,7 +92,7 @@ export default async function NguPhapIndexPage({
           phải bản dịch máy. Tra cứu miễn phí, không cần đăng nhập.
         </p>
         </div>
-        <SceneArt kind="grammar" className="cultural-intro-art" />
+        <SceneArt kind="grammar" className="cultural-intro-art" sizes="(max-width: 639px) 88px, 240px" />
       </section>
 
       <nav aria-label="Lọc theo cấp HSK" className="flex flex-wrap gap-2">

@@ -19,6 +19,7 @@
  *
  * Server Component, cùng khuôn với `/tu-dien/[slug]`.
  */
+import { SceneArt } from "@/components/learning-scenes";
 import type { Metadata } from "next";
 import { cache } from "react";
 import Link from "next/link";
@@ -104,16 +105,15 @@ export default async function NguPhapPage({
       </nav>
 
       <article className="panel p-6 sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{p.titleVi}</h1>
+        <div className="page-spot">
+          <div className="min-w-0">
+            <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">HSK {p.hskLevel}</span>
+            <h1 className="mt-2 text-2xl font-bold tracking-tight">{p.titleVi}</h1>
             <p lang="zh" className="hanzi mt-2 text-3xl text-primary">
               {p.titleZh}
             </p>
           </div>
-          <span className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
-            HSK {p.hskLevel}
-          </span>
+          <SceneArt kind="grammar" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
         </div>
 
         <p className="mt-5 text-sm leading-7 text-muted">{p.summaryVi}</p>

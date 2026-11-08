@@ -1,0 +1,60 @@
+{
+  "generator": "image_gen",
+  "assets": [
+    {
+      "asset": "public/illustrations/hanni/front-door.webp",
+      "prompt": "Recompose the attached HanNi fox mascot into a brand-new 4:3 landscape full-bleed editorial hero scene for a Vietnamese website to learn Chinese. Preserve the recognizable red fox, oversized alert ears, big brown eyes, white muzzle, cream-and-vermilion Chinese embroidered jacket, cheerful expression. He is the central subject occupying 65% of the frame height, sitting at a low pale lacquer desk and holding up a blank ivory flashcard as if inviting the visitor to guess the word. Add an open red-stitched practice notebook and a brush to explain the activity. A large circular geometric red Chinese lattice window frames the fox in a soft ivory modern Chinese study alcove; a small flowering plum branch at one side. Bright natural daylight, broad cream color fields with red focal accents, clean modern editorial composition, tactile dimensional storybook character with finely detailed fur. Carefully frame ears, paws, flashcard and notebook with generous safe margins. Render the finished scene from edge to edge, no cutout, no border, no empty UI overlay area. No text or pseudo-writing anywhere, including any book spines. Crisp, attractive finished art, sophisticated learning brand, modern Chinese design, not an ornate fantasy room.",
+      "sourcePngSha256": "14c7158236a3fb52939cc6588dc71ba4e7a3836c94659b0a6ba706075942f6d7",
+      "assetSha256": "852b360e4559d310233c46be2f0b89346879d0d6df66047bb9c5ee9b0a3ae8d5",
+      "reference": "public/mascot/e01-chao.still.webp"
+    },
+    {
+      "asset": "public/illustrations/hanni/ranking.webp",
+      "prompt": "Transparent landscape 3:2 spot illustration. A staggered cluster of three small modern red lacquer and ivory porcelain podiums, with a distinctive vermilion winner pennant at the top and a single tasteful coin-medal with an abstract plum blossom emblem. A crisp ascending silhouette conveys competition and achievement instantly at thumbnail size. Close grouped composition with little empty space. HanNi Mandarin learning web app brand illustration. Warm ivory porcelain, tomato-vermilion red lacquer, faint antique gold details. Cohesive tactile storybook 3D with soft studio daylight, smooth satin surfaces and precise silhouette, genuinely Chinese stationery/design vocabulary. No characters or glyphs, no text, no numbers, no logo, no watermark. Keep every object and shadow fully within the frame with a modest margin.",
+      "sourcePngSha256": "fcd093ab49ab05e1e08822fa013b601a381729a7bd0acab7c4c486d612c399d0",
+      "assetSha256": "5b30b458b7ab23c7b3c655ab758abece272ecfd0abab0c3ce8bffb424e8b2a09"
+    },
+    {
+      "asset": "public/illustrations/hanni/classroom.webp",
+      "prompt": "Transparent landscape 3:2 spot illustration. A small modern Chinese shared study desk seen in 3/4 isometric view, with two distinct red-bound open notebooks facing each other, two upright brushes in one cream porcelain brush cup, and an assignment folio between them. The arrangement of two seats suggests studying together. Fully isolated complete desk, airy composition, visually clear at small size. HanNi Mandarin learning web app brand illustration. Warm ivory porcelain, tomato-vermilion red lacquer, faint antique gold details. Cohesive tactile storybook 3D with soft studio daylight, smooth satin surfaces and precise silhouette, genuinely Chinese stationery/design vocabulary. No characters or glyphs, no text, no numbers, no logo, no watermark. Keep every object and shadow fully within the frame with a modest margin.",
+      "sourcePngSha256": "2bf64792d4325400147e66a77a1e8589cc903cbd22ca04996459779f7268c83e",
+      "assetSha256": "47379e4dc74ec1a55e08b9a9086a0800cbb31e1c34f67fedeca48c6dc705aa9c"
+    },
+    {
+      "asset": "public/illustrations/hanni/progress.webp",
+      "prompt": "Transparent landscape 3:2 spot illustration. A red-and-ivory hinged desktop study calendar, three embossed red checkmarks on a minimalist ivory square calendar grid with no digits, a slender red pencil and three tiny milestone tokens rising diagonally alongside. Chinese cloud-shaped porcelain stand and minimal detailing. Easily reads as a growing learning habit, clean strong shapes for compact screen placement. HanNi Mandarin learning web app brand illustration. Warm ivory porcelain, tomato-vermilion red lacquer, faint antique gold details. Cohesive tactile storybook 3D with soft studio daylight, smooth satin surfaces and precise silhouette, genuinely Chinese stationery/design vocabulary. No characters or glyphs, no text, no numbers, no logo, no watermark. Keep every object and shadow fully within the frame with a modest margin.",
+      "sourcePngSha256": "4d0e92da7be523fc68f959ee669407db8108f9ca4dd6ef495147d0f13293f54e",
+      "assetSha256": "f349252e13b73326fe5be456607f50f94721cf587d38cc5f66ceea35408b42d3"
+    },
+    {
+      "asset": "public/illustrations/hanni/account.webp",
+      "prompt": "Transparent landscape 3:2 spot illustration. A personal study journal bound with Chinese red thread sits diagonally beside an ivory profile tile with a simple carved fox-head silhouette emblem and a tiny red seal handle. Three objects grouped into a single compact composition. Personal and welcoming, clean shapes, no human portraits, no text on the journal or tile. HanNi Mandarin learning web app brand illustration. Warm ivory porcelain, tomato-vermilion red lacquer, faint antique gold details. Cohesive tactile storybook 3D with soft studio daylight, smooth satin surfaces and precise silhouette, genuinely Chinese stationery/design vocabulary. No characters or glyphs, no text, no numbers, no logo, no watermark. Keep every object and shadow fully within the frame with a modest margin.",
+      "sourcePngSha256": "0e27d12998a0c2f447abcf4262709cf8efe6f0d0cdab8630700656cb6ec27af2",
+      "assetSha256": "68248d8c6d87efdc7555bc2c34cc2ab2156a105f9af34a0b718feac250e75c93"
+    },
+    {
+      "asset": "public/illustrations/hanni/awards.webp",
+      "prompt": "Transparent landscape 3:2 spot illustration. Three collectible Mandarin-study achievement pins displayed as a small overlapping fan, with a plum blossom, a calligraphy brush and a listening ear as the embossed symbols. Vermilion, warm ivory porcelain, a little jade accent. No pedestal and no lettering. Cluster large and readable at small size. HanNi Mandarin learning web app brand illustration. Warm ivory porcelain, tomato-vermilion red lacquer, faint antique gold details. Cohesive tactile storybook 3D with soft studio daylight, smooth satin surfaces and precise silhouette, genuinely Chinese stationery/design vocabulary. No characters or glyphs, no text, no numbers, no logo, no watermark. Keep every object and shadow fully within the frame with a modest margin.",
+      "sourcePngSha256": "698918e9d2eb4f85cfda2c546f83cc914d82a8eeef0fd154c88e172870f06998",
+      "assetSha256": "73b86d716157671121dab62903a5882b1fe0d9183e6e01cadd5fdbf22db3d686"
+    },
+    {
+      "asset": "public/illustrations/hanni/library.webp",
+      "prompt": "Transparent landscape 3:2 spot illustration. Three Chinese thread-bound storybooks, one opened and angled forward to show a simple miniature ink-wash illustration of an arched bridge and plum tree on ivory paper, with a vermilion woven bookmark. A distinct compact editorial accent for a Mandarin reading library. No writing anywhere. HanNi Mandarin learning web app brand illustration. Warm ivory porcelain, tomato-vermilion red lacquer, faint antique gold details. Cohesive tactile storybook 3D with soft studio daylight, smooth satin surfaces and precise silhouette, genuinely Chinese stationery/design vocabulary. No characters or glyphs, no text, no numbers, no logo, no watermark. Keep every object and shadow fully within the frame with a modest margin.",
+      "sourcePngSha256": "18b90809198c213517fe666b3c0fddc213c6e9071800a9a7f894b8755cba7256",
+      "assetSha256": "d82b502aeb14b7907c2a910bd9d1f10ea06e6d88fd491cf14aadfe26cde83378"
+    },
+    {
+      "asset": "public/illustrations/hanni/practice.webp",
+      "prompt": "Wide 3:2 transparent cutout illustration for HanNi, Chinese-language learning. A compact collection of three tools arranged together: short red-and-cream headphones set over an open ivory character practice notebook with empty pale red grid and a red calligraphy brush diagonal across a corner. Lacquered vermilion finish, ivory paper, bright gentle studio light, polished tactile 3D storybook rendering, Chinese knot in a single tasteful detail. A single clearly readable silhouette, all items fully in frame with minimal margins. No symbols, fake characters, words, logos or frame.",
+      "sourcePngSha256": "bfbc1d4a382a02576fcf7ee580f2e9984529bff260b076de9cab1b743973a77d",
+      "assetSha256": "8ac345889e4b29f94b6ee4983371b943d621669eca0b1060caae5c3a59aa2510"
+    },
+    {
+      "asset": "public/illustrations/hanni/archives.webp",
+      "prompt": "Wide 3:2 transparent cutout illustration for HanNi web app’s sources and policies. A clean composition of a pale ivory Chinese accordion-fold document (completely blank) and a rich red lacquer seal stamp with a simple plum blossom medallion at its handle, gathered together with fine red thread. Warm ivory, vermilion, a touch of muted brass, tactile polished 3D storybook style, gentle white studio lighting. Readable when small, compact crop, every object fully in frame. No type, words, glyphs, branding, fake symbols, frame or background.",
+      "sourcePngSha256": "a2cf32f041f2a20e4103351d238c3dd87f495e81cf0aa07365a595c3e6e20b0b",
+      "assetSha256": "3a8bfd58ae4115fd475bd779dbaa2923ff59f0f9880f28ee8620af1ff53618f5"
+    }
+  ]
+}

@@ -103,6 +103,8 @@ export default function LeaderboardPage() {
     <div className="page-wrap space-y-6">
       <FeatureTour tourKey="leaderboard" steps={LEADERBOARD_TOUR_STEPS} />
       <PageHeading
+        scene="ranking"
+        featured
         icon="trophy"
         tone="accent"
         eyebrow="Cùng học, cùng tiến bộ"

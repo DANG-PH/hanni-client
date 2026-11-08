@@ -13,6 +13,7 @@
  *                               → server: modules/onboarding/onboarding.controller.ts → OnboardingService.preview()
  */
 
+import { SceneArt } from "@/components/learning-scenes";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
@@ -271,6 +272,7 @@ function OnboardingShell({
                   <span>Mục tiêu học mỗi ngày</span>
                 </div>
               </div>
+              <SceneArt kind="progress" compact className={styles.introArtwork} sizes="150px" />
               <div className={styles.introQuote}>
                 <span className={styles.quoteBadge} aria-hidden="true">
                   <Icon name="check" size={18} />
@@ -375,10 +377,13 @@ function OnboardingWizard({
   return (
     <div className={styles.wizardColumn}>
       <section className={styles.wizardCard} aria-label="Khảo sát lộ trình học">
-        <p className={styles.mobilePurpose}>
-          3 câu hỏi để Hanni chọn bài bắt đầu, lộ trình thi và mục tiêu mỗi ngày
-          {authenticated ? "." : " — chưa cần tài khoản."}
-        </p>
+        <div className={styles.mobilePurpose}>
+          <p>
+            3 câu hỏi để Hanni chọn bài bắt đầu, lộ trình thi và mục tiêu mỗi ngày
+            {authenticated ? "." : " — chưa cần tài khoản."}
+          </p>
+          <SceneArt kind="progress" compact sizes="74px" />
+        </div>
         <div className={styles.progressHeader}>
           <div className={styles.progressMeta}>
             <span className={styles.progressLabel}>Câu {step} / 3</span>

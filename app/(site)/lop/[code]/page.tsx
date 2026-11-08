@@ -15,6 +15,7 @@
  * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
  */
 
+import { SceneArt } from "@/components/learning-scenes";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -42,6 +43,7 @@ export default function JoinClassPage() {
     <div className="mx-auto max-w-xl px-4 py-10 sm:py-14">
       {error || !data ? (
         <div className="panel space-y-4 p-6 text-center">
+          <SceneArt kind="classroom" compact className="mx-auto max-w-40" sizes="160px" />
           <h1 className="text-xl font-extrabold">Không tìm thấy lớp {clean}</h1>
           <p className="text-sm leading-6 text-muted">
             Mã lớp gồm 6 ký tự (không có số 0, 1 hay chữ O, I, L). Kiểm tra lại với giáo viên, hoặc nhập mã ở trang Lớp học.
@@ -52,6 +54,7 @@ export default function JoinClassPage() {
         </div>
       ) : (
         <div className="panel space-y-5 p-6 sm:p-8">
+          <SceneArt kind="classroom" compact className="mx-auto max-w-40" sizes="160px" />
           <div className="text-center">
             <p className="eyebrow">LỜI MỜI VÀO LỚP</p>
             <h1 className="mt-2 text-2xl font-extrabold tracking-tight break-words">{data.name}</h1>

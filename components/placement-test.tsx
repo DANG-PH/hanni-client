@@ -1,5 +1,6 @@
 "use client";
 
+import { SceneArt } from "@/components/learning-scenes";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/icon";
@@ -238,9 +239,7 @@ export function PlacementTest() {
         className="mx-auto w-full max-w-xl flex-1 px-4 py-6 text-center sm:py-10"
         style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
       >
-        <span className="icon-tile mx-auto">
-          <Icon name="chart" />
-        </span>
+        <SceneArt kind="exam" compact className="mx-auto max-w-40" sizes="160px" />
         <p className="mt-4 text-xs font-bold tracking-wider text-primary sm:mt-5">
           MIỄN PHÍ · KHÔNG CẦN ĐĂNG KÝ
         </p>

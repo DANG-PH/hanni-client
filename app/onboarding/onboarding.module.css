@@ -417,6 +417,8 @@
   gap: 10px;
 }
 
+.introArtwork { max-width: 150px; margin-top: 12px; }
+
 /* Trên điện thoại khối giới thiệu bên trái bị ẩn — mục đích khảo sát nói gọn ở đây. */
 .mobilePurpose {
   display: none;
@@ -798,7 +800,11 @@
   }
 
   .mobilePurpose {
-    display: block;
+    --scene-height: 62px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 74px;
+    align-items: center;
+    gap: 10px;
   }
 
   .wizardCard {

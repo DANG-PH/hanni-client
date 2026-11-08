@@ -1,5 +1,6 @@
 "use client";
 
+import { SceneArt } from "@/components/learning-scenes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -501,8 +502,13 @@ function Intro({
       </header>
       <main className="mx-auto max-w-3xl px-4 py-8">
         <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8">
-          <p className="text-xs font-bold tracking-wider text-primary">ĐỀ THI THỬ · ĐÚNG CẤU TRÚC ĐỀ THẬT</p>
-          <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight sm:text-3xl">{paper.title}</h1>
+          <div className="page-spot">
+            <div className="min-w-0">
+              <p className="text-xs font-bold tracking-wider text-primary">ĐỀ THI THỬ · ĐÚNG CẤU TRÚC ĐỀ THẬT</p>
+              <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight sm:text-3xl">{paper.title}</h1>
+            </div>
+            <SceneArt kind="exam" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
+          </div>
           <dl className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
               { k: "Số câu", v: `${paper.questionCount} câu` },

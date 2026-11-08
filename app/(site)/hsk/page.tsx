@@ -21,6 +21,7 @@
  * của từng cấp. Người đọc muốn biết "HSK 3 cần bao nhiêu từ" thì xem bảng
  * rồi bấm vào xem luôn 495 từ đó, không phải đọc 2000 chữ giới thiệu.
  */
+import { SceneArt } from "@/components/learning-scenes";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/icon";
@@ -62,19 +63,24 @@ export default async function HskPage() {
 
   return (
     <div className="page-wrap max-w-4xl! space-y-8 py-10!">
-      <section className="text-center">
-        <span className="eyebrow">TRA CỨU</span>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-          HSK 3.0 cần bao nhiêu từ vựng?
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-muted">
-          HSK 3.0 là khung đánh giá tiếng Trung mới, ban hành 11/2025 và có hiệu
-          lực từ <strong className="text-foreground">tháng 7/2026</strong>. Khác
-          bản cũ ở chỗ chia{" "}
-          <strong className="text-foreground">9 cấp thay vì 6</strong>, và yêu
-          cầu từ vựng tăng mạnh — HSK 6 cũ khoảng 5.000 từ, còn cấp 7–9 mới lên
-          tới ~11.000 từ.
-        </p>
+      <section className="panel bg-[#fffaf7] p-5 shadow-none sm:p-7">
+        <div className="page-spot">
+          <div className="min-w-0">
+            <span className="eyebrow">TRA CỨU</span>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+              HSK 3.0 cần bao nhiêu từ vựng?
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-muted">
+              HSK 3.0 là khung đánh giá tiếng Trung mới, ban hành 11/2025 và có hiệu
+              lực từ <strong className="text-foreground">tháng 7/2026</strong>. Khác
+              bản cũ ở chỗ chia{" "}
+              <strong className="text-foreground">9 cấp thay vì 6</strong>, và yêu
+              cầu từ vựng tăng mạnh — HSK 6 cũ khoảng 5.000 từ, còn cấp 7–9 mới lên
+              tới ~11.000 từ.
+            </p>
+          </div>
+          <SceneArt kind="learn" className="page-spot-art" sizes="(max-width: 639px) 76px, 160px" />
+        </div>
       </section>
 
       {rows.length === 0 ? (

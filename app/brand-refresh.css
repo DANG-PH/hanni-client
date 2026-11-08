@@ -1,4 +1,25 @@
 .hanni-home .home-hero { background: var(--surface); }
+.home-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  padding-block: clamp(28px, 4vw, 56px);
+}
+.home-hero-visual {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: clamp(16px, 2vw, 28px);
+  background: #f6e7d8;
+}
+@media (min-width: 768px) {
+  .home-hero-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: clamp(26px, 4vw, 64px);
+  }
+  .home-hero-visual { grid-area: 1 / 2 / span 2; }
+}
 .hanni-home .home-hero h1 { letter-spacing: -.045em; line-height: 1.14; font-weight: 750; }
 .hanni-home .section-label { letter-spacing: .09em; font-size: 10px; }
 .hanni-home .home-dictionary { box-shadow: none; background: var(--surface); }
@@ -7,6 +28,20 @@
 .hanni-home > section[aria-label="Kho học liệu"] dl > div + div { border-left: 1px solid var(--border); }
 .hanni-home > section[aria-label="Kho học liệu"] dd:first-of-type { color: var(--foreground); font-size: 25px; letter-spacing: -.035em; }
 .hanni-home > section[aria-label="Kho học liệu"] dd:last-child { margin-top: 4px; }
+.page-spot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px;
+  align-items: center;
+  gap: 16px;
+}
+.page-spot-art { --scene-height: 108px; }
+@media (max-width: 639px) {
+  .page-spot {
+    grid-template-columns: minmax(0, 1fr) 76px;
+    gap: 10px;
+  }
+  .page-spot-art { --scene-height: 68px; }
+}
 .site-navigation { background: color-mix(in srgb, var(--surface) 95%, transparent); }
 .site-navigation .nav-link { font-size: 13px; }
 .learn-home #path-title { font-size: 22px; letter-spacing: -.035em; }

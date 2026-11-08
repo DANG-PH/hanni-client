@@ -118,7 +118,7 @@ export default async function PinyinPage() {
           ))}
         </nav>
         </div>
-        <SceneArt kind="pinyin" className="cultural-intro-art" />
+        <SceneArt kind="pinyin" className="cultural-intro-art" sizes="(max-width: 639px) 88px, 240px" />
       </section>
 
       <section id="thanh-dieu" className="scroll-mt-24 space-y-4">
