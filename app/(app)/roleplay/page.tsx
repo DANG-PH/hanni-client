@@ -151,34 +151,48 @@ function ScenarioPicker({ onStart }: { onStart: (sessionId: string) => void }) {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {scenarios.data?.map((s) => (
-          <Card key={s.key} className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <span className="icon-tile bg-accent/10 text-accent">
-                <Icon name="message" size={18} />
-              </span>
-              <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-bold text-muted">
-                HSK{s.hskLevel}+
-              </span>
-            </div>
-            <div>
-              <h2 className="font-semibold">{s.titleVi}</h2>
-              <p className="mt-1 text-xs text-muted">
-                AI đóng vai: {s.persona}
-              </p>
-            </div>
-            <Button
-              variant="secondary"
-              className="mt-auto"
-              disabled={startingKey !== null}
-              onClick={() => void start(s.key)}
-            >
-              {startingKey === s.key ? "Đang bắt đầu…" : "Bắt đầu luyện"}
-            </Button>
-          </Card>
-        ))}
-      </div>
+      {scenarios.isLoading ? (
+        <div className="panel p-5"><Spinner /></div>
+      ) : scenarios.error && !scenarios.data?.length ? (
+        <ErrorNote>
+          Chưa tải được tình huống.{" "}
+          <button type="button" className="min-h-10 font-semibold underline" onClick={() => void scenarios.mutate()}>Thử lại</button>
+        </ErrorNote>
+      ) : !scenarios.data?.length ? (
+        <Card className="shadow-none">
+          <h2 className="font-semibold">Chưa có tình huống luyện nói</h2>
+          <p className="mt-1 text-sm text-muted">Bạn có thể luyện phát âm trong lúc chờ tình huống mới.</p>
+        </Card>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {scenarios.data?.map((s) => (
+            <Card key={s.key} className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="icon-tile bg-accent/10 text-accent">
+                  <Icon name="message" size={18} />
+                </span>
+                <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-bold text-muted">
+                  HSK{s.hskLevel}+
+                </span>
+              </div>
+              <div>
+                <h2 className="font-semibold">{s.titleVi}</h2>
+                <p className="mt-1 text-xs text-muted">
+                  AI đóng vai: {s.persona}
+                </p>
+              </div>
+              <Button
+                variant="secondary"
+                className="mt-auto"
+                disabled={startingKey !== null}
+                onClick={() => void start(s.key)}
+              >
+                {startingKey === s.key ? "Đang bắt đầu…" : "Bắt đầu luyện"}
+              </Button>
+            </Card>
+          ))}
+        </div>
+      )}
       {error && <ErrorNote>{error}</ErrorNote>}
 
       {!!sessions.data?.length && (

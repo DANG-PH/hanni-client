@@ -1,9 +1,11 @@
 :root {
   color-scheme: light dark;
+  scrollbar-width: none;
   font-family: system-ui, sans-serif;
   background: #f7f8fa;
   color: #202b3e;
 }
+::-webkit-scrollbar { display: none; }
 * {
   box-sizing: border-box;
 }

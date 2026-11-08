@@ -14,7 +14,7 @@ export function VideoShelf({ level }: { level?: number }) {
   const suitable = data?.filter((video) => video.hskLevel === null || !level || video.hskLevel <= level + 1) ?? [];
   const byLevel = (a: (typeof suitable)[number], b: (typeof suitable)[number]) =>
     (a.hskLevel ?? 1) - (b.hskLevel ?? 1);
-  const videos = (level && suitable.length >= 2 ? suitable : (data ?? []).toSorted(byLevel)).slice(0, 6);
+  const videos = (level && suitable.length >= 2 ? suitable : [...(data ?? [])].sort(byLevel)).slice(0, 6);
 
   function move(direction: 1 | -1) {
     const list = rail.current;

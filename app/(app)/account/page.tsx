@@ -36,7 +36,7 @@
  */
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AvatarEditor } from "@/components/avatar-editor";
 import { Icon } from "@/components/icon";
@@ -60,6 +60,12 @@ export default function AccountPage() {
   const { user, loading, logout, refresh } = useRequireAuth();
   const [leaving, setLeaving] = useState(false);
   const router = useRouter();
+  const ready = !loading && !!user;
+  useEffect(() => {
+    if (!ready) return;
+    const section = window.location.hash.slice(1);
+    if (section) document.getElementById(section)?.scrollIntoView({ block: "start", behavior: "instant" });
+  }, [ready]);
   if (loading || !user) return <Spinner />;
 
   async function signOut() {
@@ -123,7 +129,6 @@ export default function AccountPage() {
             <Icon name="arrow" size={16} className="shrink-0 text-accent" />
           </Link>
         </section>
-
       </div>
 
       <section aria-label="Cài đặt tài khoản" className="panel min-w-0 divide-y divide-border overflow-hidden shadow-none">

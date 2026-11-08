@@ -29,7 +29,7 @@
 }
 
 /* Quiet scrollbars across the web shell. Overflow and native scrolling remain enabled. */
-:where(html, body, *) { scrollbar-width: none; }
+* { scrollbar-width: none; }
 ::-webkit-scrollbar { display: none; }
 
 @theme inline {

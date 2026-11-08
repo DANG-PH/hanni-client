@@ -217,10 +217,9 @@ export default async function TuDienPage({ params }: { params: Promise<{ slug: s
       <DictionarySearch />
       <RememberWord s={main.simplified} p={main.pinyin} m={main.meaningVi} />
 
-      {/* Điện thoại / máy tính bảng: mục lục thành 1 hàng chip dính dưới thanh trên. */}
-      <nav aria-label="Mục lục" className="sticky top-16 z-20 -mx-4 flex gap-1.5 overflow-x-auto border-b border-border bg-background/95 px-4 py-2 backdrop-blur xl:hidden">
+      <nav aria-label="Mục lục" className="flex flex-wrap gap-1.5 xl:hidden">
         {toc.map((t) => (
-          <a key={t.id} href={`#${t.id}`} className="inline-flex min-h-8 shrink-0 items-center rounded-full border border-border bg-surface px-3 text-xs font-semibold text-muted hover:text-primary">
+          <a key={t.id} href={`#${t.id}`} className="inline-flex min-h-9 items-center rounded-full border border-border bg-surface px-3 text-xs font-semibold text-muted hover:text-primary">
             {t.label}
           </a>
         ))}

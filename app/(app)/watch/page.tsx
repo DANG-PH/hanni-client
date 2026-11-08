@@ -44,6 +44,7 @@ export default function WatchPage() {
   const [kind, setKind] = useState("");
   const [level, setLevel] = useState<number | undefined>();
   const [query, setQuery] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const { data, isLoading, error, mutate } = useVideos({
     kind: kind || undefined,
     level,
@@ -136,41 +137,53 @@ export default function WatchPage() {
               />
             </label>
           </SectionHeading>
-          <div className={styles.filterRow}>
-            <span className={styles.filterLabel}>Cấp độ</span>
-            <LevelFilter
-              options={[
-                { value: undefined, label: "Mọi cấp" },
-                ...levelsWithVideos.map((l) => ({ value: l, label: `HSK ${l}` })),
-              ]}
-              value={level}
-              onChange={setLevel}
-            />
-          </div>
-          <div className={styles.filterRow}>
-            <span className={styles.filterLabel}>Thể loại</span>
-            <SelectionGroup
-              className={styles.kinds}
-              label="Lọc thể loại video"
-              value={kind}
-            >
-              {KINDS.map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  aria-pressed={kind === value}
-                  aria-controls="video-results"
-                  onClick={() => setKind(value)}
-                >
-                  {label}
+          <button
+            type="button"
+            aria-expanded={filtersOpen}
+            aria-controls="video-filters"
+            className="mt-2 inline-flex min-h-10 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold md:hidden"
+            onClick={() => setFiltersOpen(!filtersOpen)}
+          >
+            <Icon name="settings" size={16} /> Bộ lọc{(kind || level) && " · đang dùng"}
+            <Icon name="chevron" size={14} className={filtersOpen ? "-rotate-90" : "rotate-90"} />
+          </button>
+          <div id="video-filters" className={filtersOpen ? undefined : "hidden md:block"}>
+            <div className={styles.filterRow}>
+              <span className={styles.filterLabel}>Cấp độ</span>
+              <LevelFilter
+                options={[
+                  { value: undefined, label: "Mọi cấp" },
+                  ...levelsWithVideos.map((l) => ({ value: l, label: `HSK ${l}` })),
+                ]}
+                value={level}
+                onChange={setLevel}
+              />
+            </div>
+            <div className={styles.filterRow}>
+              <span className={styles.filterLabel}>Thể loại</span>
+              <SelectionGroup
+                className={styles.kinds}
+                label="Lọc thể loại video"
+                value={kind}
+              >
+                {KINDS.map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={kind === value}
+                    aria-controls="video-results"
+                    onClick={() => setKind(value)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </SelectionGroup>
+              {(kind || level || query) && (
+                <button type="button" onClick={xoaBoLoc} className={styles.clear}>
+                  <Icon name="close" size={13} /> Xóa bộ lọc
                 </button>
-              ))}
-            </SelectionGroup>
-            {(kind || level || query) && (
-              <button type="button" onClick={xoaBoLoc} className={styles.clear}>
-                <Icon name="close" size={13} /> Xóa bộ lọc
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </div>
 

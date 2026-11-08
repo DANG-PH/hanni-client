@@ -88,67 +88,96 @@ export default async function HskPage() {
           Chưa tải được dữ liệu. Vui lòng thử lại sau.
         </p>
       ) : (
-        <section tabIndex={0} aria-label="Bảng từ vựng theo cấp HSK" className="panel overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-xs text-muted">
-                <th className="px-4 py-3 font-medium">Cấp</th>
-                <th className="px-4 py-3 font-medium">Bậc</th>
-                <th className="px-4 py-3 font-medium">Từ mới</th>
-                <th className="px-4 py-3 font-medium">Tích luỹ</th>
-                <th className="px-4 py-3 font-medium">Chữ đọc</th>
-                {/* HSK 3.0 tách riêng số chữ phải ĐỌC được và số chữ phải
-                 * VIẾT được — đây là thứ người học hay nhầm nhất khi so với
-                 * chuẩn cũ. Dữ liệu `writingChars` có sẵn trong DB từ lâu
-                 * nhưng chưa trang nào hiện. */}
-                <th className="px-4 py-3 font-medium">Chữ viết</th>
-                <th className="px-4 py-3 font-medium">Xem</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((l) => (
-                <tr
-                  key={l.level}
-                  className="border-b border-border/60 last:border-0"
-                >
-                  <td className="px-4 py-3 font-semibold">
-                    HSK {l.level === 7 ? "7–9" : l.level}
-                  </td>
-                  <td className="px-4 py-3 text-muted">
-                    {BAND_VI[l.band] ?? l.band}
-                  </td>
-                  <td className="px-4 py-3">
-                    {l.newWords2025.toLocaleString("vi-VN")}
-                  </td>
-                  <td className="px-4 py-3 font-medium">
-                    {l.cumulative2025.toLocaleString("vi-VN")}
-                  </td>
-                  <td className="px-4 py-3 text-muted">
-                    {l.readingChars?.toLocaleString("vi-VN") ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 text-muted">
-                    {l.writingChars?.toLocaleString("vi-VN") ?? "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/tu-dien?level=${l.level}`}
-                      className="text-primary hover:underline"
-                    >
-                      {l.wordsInDb.toLocaleString("vi-VN")} từ
-                    </Link>
-                    <span className="mx-1.5 text-muted">·</span>
-                    <Link
-                      href={`/ngu-phap?level=${l.level}`}
-                      className="text-primary hover:underline"
-                    >
-                      ngữ pháp
-                    </Link>
-                  </td>
+        <>
+          <div className="grid gap-3 md:hidden" aria-label="Từ vựng theo cấp HSK">
+            {rows.map((level) => (
+              <article key={level.level} className="panel min-w-0 space-y-3 p-4 shadow-none">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="font-bold">HSK {level.level === 7 ? "7–9" : level.level}</h2>
+                  <span className="text-xs font-semibold text-muted">{BAND_VI[level.band] ?? level.band}</span>
+                </div>
+                <dl className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-lg bg-surface-2/55 p-3">
+                  {([
+                    ["Từ mới", level.newWords2025],
+                    ["Tích luỹ", level.cumulative2025],
+                    ["Chữ đọc", level.readingChars],
+                    ["Chữ viết", level.writingChars],
+                  ] as const).map(([label, count]) => (
+                    <div key={label}>
+                      <dt className="text-xs text-muted">{label}</dt>
+                      <dd className="text-sm font-semibold tabular-nums">{count?.toLocaleString("vi-VN") ?? "—"}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-semibold text-primary">
+                  <Link href={`/tu-dien?level=${level.level}`} className="inline-flex min-h-10 items-center hover:underline">Từ vựng</Link>
+                  <Link href={`/ngu-phap?level=${level.level}`} className="inline-flex min-h-10 items-center hover:underline">Ngữ pháp</Link>
+                </div>
+              </article>
+            ))}
+          </div>
+          <section tabIndex={0} aria-label="Bảng từ vựng theo cấp HSK" className="panel hidden overflow-x-auto md:block">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-xs text-muted">
+                  <th className="px-4 py-3 font-medium">Cấp</th>
+                  <th className="px-4 py-3 font-medium">Bậc</th>
+                  <th className="px-4 py-3 font-medium">Từ mới</th>
+                  <th className="px-4 py-3 font-medium">Tích luỹ</th>
+                  <th className="px-4 py-3 font-medium">Chữ đọc</th>
+                  {/* HSK 3.0 tách riêng số chữ phải ĐỌC được và số chữ phải
+                   * VIẾT được — đây là thứ người học hay nhầm nhất khi so với
+                   * chuẩn cũ. Dữ liệu `writingChars` có sẵn trong DB từ lâu
+                   * nhưng chưa trang nào hiện. */}
+                  <th className="px-4 py-3 font-medium">Chữ viết</th>
+                  <th className="px-4 py-3 font-medium">Xem</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+              </thead>
+              <tbody>
+                {rows.map((l) => (
+                  <tr
+                    key={l.level}
+                    className="border-b border-border/60 last:border-0"
+                  >
+                    <td className="px-4 py-3 font-semibold">
+                      HSK {l.level === 7 ? "7–9" : l.level}
+                    </td>
+                    <td className="px-4 py-3 text-muted">
+                      {BAND_VI[l.band] ?? l.band}
+                    </td>
+                    <td className="px-4 py-3">
+                      {l.newWords2025.toLocaleString("vi-VN")}
+                    </td>
+                    <td className="px-4 py-3 font-medium">
+                      {l.cumulative2025.toLocaleString("vi-VN")}
+                    </td>
+                    <td className="px-4 py-3 text-muted">
+                      {l.readingChars?.toLocaleString("vi-VN") ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 text-muted">
+                      {l.writingChars?.toLocaleString("vi-VN") ?? "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/tu-dien?level=${l.level}`}
+                        className="text-primary hover:underline"
+                      >
+                        {l.wordsInDb.toLocaleString("vi-VN")} từ
+                      </Link>
+                      <span className="mx-1.5 text-muted">·</span>
+                      <Link
+                        href={`/ngu-phap?level=${l.level}`}
+                        className="text-primary hover:underline"
+                      >
+                        ngữ pháp
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        </>
       )}
 
       <section className="panel p-6">
