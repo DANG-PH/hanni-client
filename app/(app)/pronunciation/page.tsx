@@ -121,19 +121,15 @@ function PronunciationSession({ words }: { words: Word[] }) {
   const word = words[index];
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+    <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_248px]">
       <div className="space-y-5">
         <Card>
-          <SectionHeading
-            icon="mic"
-            eyebrow="Nghe · Đọc · So sánh"
-            title="Phòng luyện phát âm"
-            className="mb-5"
-          >
-            <span className="rounded-lg bg-primary/8 px-3 py-1.5 text-xs font-semibold text-primary">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-xs font-bold tracking-wide text-primary">NGHE MẪU · ĐỌC THỬ</p>
+            <span className="shrink-0 rounded-lg bg-primary/8 px-2.5 py-1 text-xs font-semibold tabular-nums text-primary">
               {index + 1} / {words.length}
             </span>
-          </SectionHeading>
+          </div>
           <PronunciationWord
             key={word.id}
             word={word}
@@ -183,13 +179,10 @@ function PronunciationSession({ words }: { words: Word[] }) {
             tone="good"
           />
           <p className="mt-3 text-sm leading-6 text-muted">
-            {speechSupported
-              ? "So sánh bản thu với âm mẫu để tự điều chỉnh. Hanni cũng dùng nhận diện giọng nói của trình duyệt để kiểm tra bạn đọc có đúng từ không (chưa đánh giá chuẩn thanh điệu)."
-              : "So sánh bản thu với âm mẫu để tự điều chỉnh. Trình duyệt này chưa hỗ trợ nhận diện giọng nói nên chưa chấm điểm phát âm tự động được."}
+            Sau khi dừng ghi âm, nghe lại giọng của bạn và xem đường cao độ so với giọng mẫu.
+            {speechSupported && " Trình duyệt còn có thể kiểm tra bạn đọc đúng từ nào."}
           </p>
-          <div className="mt-5 rounded-xl bg-primary/5 px-4 py-3 text-xs leading-5 text-primary">
-            Mỗi lần luyện là một cơ hội nói tự nhiên hơn.
-          </div>
+
         </Card>
         {stats.data && stats.data.totalAttempts > 0 && (
           <Card>
@@ -436,59 +429,62 @@ function PronunciationWord({
   }
 
   return (
-    <div className="space-y-5">
-      <div className="rounded-2xl border border-border bg-surface-2/60 px-5 py-10 text-center sm:py-12">
-        <span className="rounded-full bg-surface px-3 py-1 text-xs font-semibold text-muted">
-          HSK {word.hskLevel}
-        </span>
-        <p
-          lang="zh"
-          className="hanzi mt-6 break-all text-6xl leading-tight sm:text-7xl"
-        >
-          {word.simplified}
-        </p>
-        <p className="mt-4 text-xl font-medium text-primary">{word.pinyin}</p>
-        <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-muted">
-          {word.meaningVi ??
-            word.meaningEn ??
-            "Nghĩa của từ đang được cập nhật."}
-        </p>
-        <Button
-          variant="secondary"
-          className="mt-6"
-          disabled={phase !== "idle"}
-          onClick={() => {
-            playback.current?.pause();
-            model.play(0.85);
-          }}
-        >
-          <Icon name="sound" size={17} />
-          {model.playing ? "Nghe lại từ đầu" : "Nghe phát âm mẫu"}
-        </Button>
-        <p className="mt-3 text-xs text-muted">
-          {model.synthetic
-            ? "Giọng đọc tiếng Trung của thiết bị"
-            : "Bản thu phát âm từ thư viện"}
-        </p>
+    <div className="space-y-3">
+      <div className="grid items-center gap-4 rounded-xl border border-border bg-[#fff9f5] p-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:p-5">
+        <div className="min-w-0">
+          <p lang="zh" className="hanzi break-words text-5xl leading-tight sm:text-6xl">
+            {word.simplified}
+          </p>
+          <p className="mt-1 text-lg font-medium text-primary">{word.pinyin}</p>
+          <p className="mt-1 text-sm leading-5 text-muted [overflow-wrap:anywhere]">
+            {word.meaningVi ?? word.meaningEn ?? "Nghĩa của từ đang được cập nhật."}
+          </p>
+        </div>
+        <div className="grid min-w-0 gap-2">
+          <Button
+            variant="secondary"
+            disabled={phase !== "idle"}
+            onClick={() => {
+              playback.current?.pause();
+              model.play(0.85);
+            }}
+          >
+            <Icon name="sound" size={17} />
+            {model.playing ? "Nghe lại từ đầu" : "Nghe phát âm mẫu"}
+          </Button>
+          <Button
+            className="min-w-0"
+            variant={phase === "recording" ? "danger" : "primary"}
+            disabled={phase === "requesting"}
+            onClick={() => {
+              if (phase === "recording") stopRecording();
+              else void startRecording();
+            }}
+          >
+            <span
+              aria-hidden="true"
+              className={`h-2.5 w-2.5 bg-current ${phase === "recording" ? "rounded-sm motion-safe:animate-pulse" : "rounded-full"}`}
+            />
+            {phase === "recording"
+              ? "Dừng ghi âm"
+              : phase === "requesting"
+                ? "Đang kết nối micro…"
+                : recording
+                  ? "Ghi âm lại"
+                  : "Bắt đầu ghi âm"}
+          </Button>
+          {phase !== "idle" && (
+            <p role="status" className="text-xs text-muted">
+              {phase === "recording"
+                ? `Đang ghi · 00:${String(seconds).padStart(2, "0")}`
+                : "Đang chờ quyền micro…"}
+            </p>
+          )}
+        </div>
       </div>
       {model.error && <ErrorNote>{model.error}</ErrorNote>}
-
-      <div className="rounded-2xl border border-border p-5">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold">Bản ghi âm của bạn</h3>
-          <span
-            role="status"
-            className={`text-xs ${phase === "recording" ? "text-primary" : "text-muted"}`}
-          >
-            {phase === "recording"
-              ? `Đang ghi · 00:${String(seconds).padStart(2, "0")}`
-              : phase === "requesting"
-                ? "Đang chờ quyền micro…"
-                : "Tối đa 45 giây"}
-          </span>
-        </div>
-        {recording && phase === "idle" ? (
-          <div className="mt-4 space-y-3">
+      {recording && phase === "idle" && (
+          <div className="space-y-3 rounded-xl border border-border p-4">
             <audio
               ref={playback}
               key={recording.url}
@@ -533,40 +529,11 @@ function PronunciationWord({
               </p>
             )}
           </div>
-        ) : (
-          <p className="mt-4 text-sm leading-6 text-muted">
-            {phase === "recording"
-              ? "Hãy đọc từ phía trên. Nhấn dừng khi bạn đã đọc xong."
-              : "Nhấn bắt đầu và cho phép sử dụng micro để luyện nói."}
-          </p>
-        )}
-        <Button
-          className="mt-5 w-full"
-          variant={phase === "recording" ? "danger" : "primary"}
-          disabled={phase === "requesting"}
-          onClick={() => {
-            if (phase === "recording") stopRecording();
-            else void startRecording();
-          }}
-        >
-          <span
-            aria-hidden="true"
-            className={`h-2.5 w-2.5 bg-current ${phase === "recording" ? "rounded-sm motion-safe:animate-pulse" : "rounded-full"}`}
-          />
-          {phase === "recording"
-            ? "Dừng ghi âm"
-            : phase === "requesting"
-              ? "Đang kết nối micro…"
-              : recording
-                ? "Ghi âm lại"
-                : "Bắt đầu ghi âm"}
-        </Button>
-      </div>
+      )}
       {error && <ErrorNote>{error}</ErrorNote>}
       <p className="flex items-start gap-2 text-xs leading-5 text-muted">
         <Icon name="lock" size={14} className="mt-0.5 shrink-0" />
-        Bản ghi chỉ có trong trang đang mở, không được gửi lên máy chủ. Tải về
-        nếu muốn giữ lại trước khi chuyển từ.
+        Bản ghi không được gửi lên máy chủ. Bạn có thể tải về trước khi chuyển từ.
       </p>
     </div>
   );

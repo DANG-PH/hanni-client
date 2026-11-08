@@ -201,22 +201,24 @@
   flex-shrink: 0;
   margin-top: 3px;
 }
-.sessionBar,
-.sessionBar p {
+.activeWorkspace { gap: 14px; max-width: 1180px !important; }
+.sessionBar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.sessionBar {
   justify-content: space-between;
-  padding: 15px 18px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: var(--surface);
-  box-shadow: 0 8px 22px -22px color-mix(in srgb, var(--primary) 35%, transparent);
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--border);
+}
+.sessionBar p {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 639px) {
+  .sessionBar { padding: 0 0 10px; }
+  .sessionBar > button { min-height: 40px; }
 }
 @media (hover: hover) and (pointer: fine) {
   .setup:hover .setupHeading > span {

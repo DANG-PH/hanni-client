@@ -79,22 +79,12 @@ export default function AccountPage() {
         scene="account"
         featured
         icon="user"
-        title="Tài khoản"
-        description="Quản lý hồ sơ, mục tiêu học tập và bảo mật."
-      />
-      <nav aria-label="Các mục tài khoản" className="flex flex-wrap gap-2">
-        {[
-          ["#ho-so", "Hồ sơ"],
-          ["#muc-tieu", "Mục tiêu"],
-          ["#bao-mat", "Bảo mật"],
-          ["#premium", "Premium"],
-          ["#lop-va-ban", "Lớp và bạn bè"],
-        ].map(([href, label]) => (
-          <Link key={href} href={href} className="inline-flex min-h-10 items-center rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-muted hover:text-primary">
-            {label}
-          </Link>
-        ))}
-      </nav>
+        title="Tài khoản của tôi"
+        description="Hồ sơ, mục tiêu học tập và các quyền lợi của bạn."
+      >
+        <LinkButton href="/settings" variant="secondary"><Icon name="settings" size={16} /> Cài đặt học tập</LinkButton>
+        <Link href="#bao-mat" className="inline-flex min-h-11 items-center gap-2 px-2 text-sm font-semibold text-muted hover:text-primary"><Icon name="lock" size={16} /> Bảo mật</Link>
+      </PageHeading>
 
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(270px,1fr)]">
         <section id="ho-so" className="panel min-w-0 scroll-mt-24 overflow-hidden shadow-none" aria-label="Hồ sơ">
@@ -121,6 +111,18 @@ export default function AccountPage() {
           </dl>
           <Link href={`/u/${user.id}`} className="flex min-h-11 items-center justify-between gap-2 px-4 text-sm font-semibold text-primary hover:bg-primary/5 sm:px-5">
             Xem hồ sơ công khai <Icon name="arrow" size={16} />
+          </Link>
+        </section>
+
+        <section id="premium" aria-label="Premium" className="min-w-0 scroll-mt-24 space-y-2">
+          <PremiumSection />
+          <Link href="/progress#hanni-coach" className="flex min-h-14 items-center gap-3 rounded-xl border border-accent/25 bg-[#fffaf1] px-4 py-3 hover:border-accent/50">
+            <Icon name="spark" size={18} className="shrink-0 text-accent" />
+            <span className="min-w-0 flex-1">
+              <strong className="block text-sm">Hanni Coach</strong>
+              <span className="block text-xs leading-5 text-muted">Xem nhận xét và việc nên luyện tiếp</span>
+            </span>
+            <Icon name="arrow" size={16} className="shrink-0 text-accent" />
           </Link>
         </section>
 
@@ -165,10 +167,6 @@ export default function AccountPage() {
             </Button>
           </div>
         </section>
-        <section id="premium" aria-label="Premium" className="min-w-0 scroll-mt-24">
-          <PremiumSection />
-        </section>
-
         <section id="lop-va-ban" className="grid min-w-0 scroll-mt-24 items-start gap-4 md:grid-cols-2 lg:col-span-2" aria-label="Lớp học và bạn bè">
           <ClassroomCard />
           <ReferralCard userId={user.id} />

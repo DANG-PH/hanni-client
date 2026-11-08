@@ -19,7 +19,6 @@ import {
   type TourStep,
 } from "@/components/feature-tour";
 import { useRef, useState, type KeyboardEvent } from "react";
-import Link from "next/link";
 import { Icon } from "@/components/icon";
 import {
   LEADERBOARD_METRICS,
@@ -109,12 +108,24 @@ export default function LeaderboardPage() {
         tone="accent"
         eyebrow="Cùng học, cùng tiến bộ"
         title="Bảng xếp hạng"
-        description="Giải đấu tuần với người cùng bậc, và bảng xếp hạng theo chuỗi ngày học, số bài đã xong."
+        description="So sánh chuỗi ngày học và số bài hoàn thành trong cộng đồng HanNi."
       >
-        {user && <Link href="#giai-dau" className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-primary hover:underline"><Icon name="trophy" size={16} /> Giải đấu tuần</Link>}
         <TourButton tourKey="leaderboard" />
       </PageHeading>
 
+      <section aria-labelledby="league-intro" className="panel flex flex-wrap items-center justify-between gap-3 border-primary/15 bg-[#fffaf6] p-4 shadow-none">
+        <div className="min-w-0 flex-1 basis-60">
+          <h2 id="league-intro" className="flex items-center gap-2 text-sm font-bold">
+            <Icon name="trophy" size={18} className="shrink-0 text-primary" /> Giải đấu tuần là gì?
+          </h2>
+          <p className="mt-1 text-sm leading-6 text-muted">
+            Mỗi lượt ôn hoặc học một từ được tính 1 điểm tuần. Bạn đua với người cùng bậc, điểm tính lại từ 0 vào tuần mới.
+          </p>
+        </div>
+        <LinkButton href={user ? "#giai-dau" : "/register?next=/leaderboard"} variant="secondary">
+          {user ? "Xem hạng tuần của tôi" : "Tạo tài khoản để tham gia"} <Icon name="arrow" size={16} />
+        </LinkButton>
+      </section>
       <div className="space-y-3">
         <div
           ref={tablist}

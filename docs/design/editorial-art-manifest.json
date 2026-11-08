@@ -55,6 +55,18 @@
       "prompt": "Wide 3:2 transparent cutout illustration for HanNi web app’s sources and policies. A clean composition of a pale ivory Chinese accordion-fold document (completely blank) and a rich red lacquer seal stamp with a simple plum blossom medallion at its handle, gathered together with fine red thread. Warm ivory, vermilion, a touch of muted brass, tactile polished 3D storybook style, gentle white studio lighting. Readable when small, compact crop, every object fully in frame. No type, words, glyphs, branding, fake symbols, frame or background.",
       "sourcePngSha256": "a2cf32f041f2a20e4103351d238c3dd87f495e81cf0aa07365a595c3e6e20b0b",
       "assetSha256": "3a8bfd58ae4115fd475bd779dbaa2923ff59f0f9880f28ee8620af1ff53618f5"
+    },
+    {
+      "asset": "public/illustrations/hanni/new-word.webp",
+      "prompt": "Transparent 3:2 Mandarin lesson illustration of a fan of three blank ivory and vermilion Chinese flashcards, red-knot tassel, lacquer stand, and small plum blossom. Tactile storybook 3D.",
+      "sourcePngSha256": "e21adbc74ef0afc9a5e1c2df23de46d0cb00b2908e9c16c77cbcfaaba62e86bd",
+      "assetSha256": "68e81937b88dfca32c5c8dc63a5bb4510fa9392bf9dcf5156393802d5f1e6691"
+    },
+    {
+      "asset": "public/illustrations/hanni/coach-report.webp",
+      "prompt": "Transparent 3:2 Premium study report in ivory and gold with Chinese thread binding, raised bar chart, brass magnifying glass, and amber plum blossom seal. Tactile storybook 3D.",
+      "sourcePngSha256": "36d6287b4052af07692a9f35e2b73cc905e1be732a9c82c081fe88d55703bed0",
+      "assetSha256": "27e7a07a8a09bafb46cb3242a101e71fb4ef0409c4445b7cad9d40e87f38c2d4"
     }
   ]
 }

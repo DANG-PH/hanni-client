@@ -134,8 +134,9 @@ export default function ProgressPage() {
         featured
         icon="chart"
         title="Tiến độ học tập"
-        description="Xem vốn từ, nhịp học và phần cần ôn tiếp."
+        description="Xem bạn đã học được gì, cần ôn gì và nên tập trung vào đâu trong tuần này."
       >
+        <LinkButton href="#hanni-coach" variant="secondary"><Icon name="spark" size={16} /> Hanni Coach</LinkButton>
         <LinkButton href="/achievements" variant="secondary"><Icon name="trophy" size={16} /> Huy hiệu</LinkButton>
         <TourButton tourKey="progress" />
       </PageHeading>
@@ -219,14 +220,14 @@ export default function ProgressPage() {
             </div>
             <nav aria-label="Các phần tiến độ" className="flex flex-wrap gap-2">
               {[
-                ["#theo-cap-hsk", "Theo cấp HSK"],
-                ["#lich-hoc", "Lịch học"],
-                ["#bao-cao", "Báo cáo"],
-                ["/leaderboard", "Xếp hạng"],
+                ["#bao-cao", "Báo cáo học tập"],
+                ["#theo-cap-hsk", "Từ vựng theo HSK"],
+                ["#lich-hoc", "Lịch học 30 ngày"],
               ].map(([href, label]) => (
                 <Link key={href} href={href} className="inline-flex min-h-10 items-center rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-muted hover:text-primary">{label}</Link>
               ))}
             </nav>
+            <div id="bao-cao" className="scroll-mt-24"><PeriodReport /></div>
             <section id="theo-cap-hsk" className="scroll-mt-24" aria-labelledby="level-progress-title">
               <div className="mb-3">
                 <h2 id="level-progress-title" className="font-bold">Tiến độ theo cấp HSK</h2>
@@ -289,7 +290,6 @@ export default function ProgressPage() {
               <p className="mb-4 text-sm text-muted">Mỗi ô là một ngày. Ô xanh lá đánh dấu ngày đạt mục tiêu.</p>
               <ActivityCalendar days={30} />
             </section>
-            <div id="bao-cao" className="scroll-mt-24"><PeriodReport /></div>
             {!!leeches.data?.length && (
               <section>
                 <SectionHeading

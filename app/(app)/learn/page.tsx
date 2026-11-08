@@ -53,6 +53,7 @@ import { SceneBackground } from "@/components/scene-background";
 import { LearningWelcome } from "@/components/learning-welcome";
 import { ClassAssignmentsCard } from "@/components/classrooms/class-assignments-card";
 import { DailyQuestCard } from "@/components/daily-quest-card";
+import { VideoShelf } from "@/components/video-shelf";
 import { Icon, type IconName } from "@/components/icon";
 import { GettingStarted } from "@/components/learn/getting-started";
 import { TodayCard } from "@/components/learn/today-card";
@@ -72,8 +73,7 @@ import { lessonMinutes, toUnits } from "@/lib/units";
  * làm lại màn chính 2022), bố cục theo Hanbeego (user chỉ đích danh làm mẫu):
  * thẻ bài tiếp theo + vòng tiến độ, thẻ chuỗi ngày; tab cấp HSK để xem; chủ
  * đề hai cột (danh sách chủ đề | các bài); nhiệm vụ + từ vựng hôm nay ở cuối.
- * Gọn lại 2026-10-21: giải đấu tuần sang trang Xếp hạng (như Duolingo để giải đấu ở tab riêng), kệ video bỏ khỏi
- * đây (video vẫn ở trang Luyện tập) — trang chủ còn ít khối, tải ít hơn.
+ * Giải đấu tuần nằm trong Xếp hạng. Kệ video đặt sau lộ trình để giữ nút Học tiếp ở đầu.
  */
 
 // Mở thẳng /learn: hỏi lộ trình ngay khi mã trang nạp, song song với `/auth/session` — trước đó phải đợi biết ai
@@ -369,6 +369,8 @@ function LearnHome() {
           <TopicExplorer key={data.level} lessons={data.lessons} currentLessonId={data.currentLessonId} />
         </section>
       )}
+
+      {data && <VideoShelf level={courseLevel ?? viewing} />}
 
       {/* Kéo 2 thẻ cao bằng nhau — để `items-start` thì đáy lệch nhau, thẻ ngắn chừa mảng trống bên dưới. Chỉ hiện
        * khi lộ trình đã tải: hiện trước thì lộ trình chèn lên trên đẩy chúng xuống hơn 700px — Lighthouse đo bố cục

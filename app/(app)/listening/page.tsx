@@ -83,7 +83,7 @@ function ListeningSession({ words }: { words: Word[] }) {
   const word = words[index];
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+    <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_248px]">
       <div className="space-y-5">
         <Card>
           <SectionHeading
@@ -91,7 +91,7 @@ function ListeningSession({ words }: { words: Word[] }) {
             eyebrow="Nghe & viết"
             title="Bạn vừa nghe từ gì?"
             tone="accent"
-            className="mb-5"
+            className="mb-3"
           >
             <span className="rounded-lg bg-primary/8 px-3 py-1.5 text-xs font-semibold text-primary">
               {index + 1} / {words.length}
@@ -234,17 +234,17 @@ function ListeningWord({
     input.normalize("NFKC").replace(/[\s。！？.!?,，、]/g, "");
 
   return (
-    <div className="space-y-6">
-      <div className="overflow-hidden rounded-2xl bg-[#161d2c] p-6 text-center text-white sm:p-8">
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-primary/10 bg-[#fff9f5] p-4">
         <div
           aria-hidden="true"
-          className="mb-4 flex h-10 items-center justify-center gap-1.5 text-white/40"
+          className="order-3 hidden h-10 items-center justify-center gap-1 sm:flex"
         >
           {[12, 23, 16, 32, 24, 38, 17, 27, 36, 18, 29, 13, 24].map(
             (height, i) => (
               <span
                 key={i}
-                className={`w-1 rounded-full ${audio.playing ? "bg-[#ff8679] motion-safe:animate-pulse" : "bg-white/25"}`}
+                className={`w-1 rounded-full ${audio.playing ? "bg-primary motion-safe:animate-pulse" : "bg-primary/20"}`}
                 style={{ height, animationDelay: `${i * 60}ms` }}
               />
             ),
@@ -257,18 +257,18 @@ function ListeningWord({
             else audio.play(rate);
           }}
           aria-label={audio.playing ? "Dừng âm thanh" : "Nghe từ cần luyện"}
-          className="motion-button mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-fg shadow-lg shadow-black/10 transition-transform hover:scale-105"
+          className="motion-button flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-fg"
         >
           <Icon name={audio.playing ? "close" : "play"} size={27} />
         </button>
-        <p aria-live="polite" className="mt-4 text-sm font-medium">
-          {audio.playing ? "Đang phát âm thanh…" : "Nhấn để nghe từ vựng"}
-        </p>
-        <p className="mt-2 text-xs text-white/55">
-          {audio.synthetic
-            ? "Giọng đọc tiếng Trung của thiết bị"
-            : "Bản thu phát âm từ thư viện"}
-        </p>
+        <div className="min-w-0 flex-1">
+          <p aria-live="polite" className="text-sm font-semibold">
+            {audio.playing ? "Đang phát âm thanh…" : "Nhấn để nghe từ vựng"}
+          </p>
+          <p className="mt-1 text-xs text-muted">
+            {audio.synthetic ? "Giọng đọc của thiết bị" : "Bản thu từ thư viện"}
+          </p>
+        </div>
       </div>
       {audio.error && <ErrorNote>{audio.error}</ErrorNote>}
 

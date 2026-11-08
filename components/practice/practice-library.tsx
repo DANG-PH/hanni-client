@@ -41,8 +41,8 @@ export function PracticeLibrary(props: LibraryProps) {
   if (loading) return <Spinner />;
   return (
     <>
-      {!user && <GuestNote />}
       <LibraryContent {...props} />
+      {!user && <GuestNote />}
     </>
   );
 }
@@ -50,7 +50,7 @@ export function PracticeLibrary(props: LibraryProps) {
 /** Mời lưu đúng lúc: khách đang luyện thử, kết quả chưa được lưu. */
 function GuestNote() {
   return (
-    <div className="page-wrap pb-0!">
+    <div className="page-wrap pt-0!">
       <p className="flex flex-col gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm sm:flex-row sm:items-center">
         <span className="min-w-0 flex-1">
           Bạn đang luyện thử — kết quả chưa được lưu. Tạo tài khoản miễn phí để Hanni ghi lại từ bạn hay sai và nhắc ôn đúng lúc.
@@ -117,44 +117,36 @@ function LibraryContent({
     );
 
   return (
-    <div className="page-wrap learning-workspace">
-      <PageHeading
-        scene={skill === "pronunciation" ? "pronunciation" : skill === "listening" ? "listening" : "grammar"}
-        illustrated={!started}
-        icon={skillIcons[skill]}
-        tone={skill === "listening" ? "accent" : "primary"}
-        eyebrow="Luyện tập mỗi ngày"
-        title={title}
-        description={description}
-      >
-        <Link
-          href="/learn"
-          className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-muted hover:text-primary"
-        >
-          Lộ trình của bạn <Icon name="arrow" size={16} />
-        </Link>
-      </PageHeading>
+    <div className={`page-wrap learning-workspace ${started ? styles.activeWorkspace : ""}`}>
+      {!started && (
+        <PageHeading
+          scene={skill === "pronunciation" ? "pronunciation" : skill === "listening" ? "listening" : "grammar"}
+          icon={skillIcons[skill]}
+          tone={skill === "listening" ? "accent" : "primary"}
+          title={title}
+          description={description}
+        />
+      )}
 
       {started ? (
         <>
           <div className={styles.sessionBar}>
-            <p>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold tracking-tight">{title}</h1>
+              <p className="mt-1">
               {useLessonScope ? (
                 <>
-                  <span className={styles.levelBadge}>
-                    HSK {lesson?.hskLevel ?? "…"}
-                  </span>{" "}
-                  Bài: {lesson?.title ?? "…"} ·{" "}
+                  {lesson && hskLabel(lesson.hskLevel)}{lesson && " · "}{lesson?.title ?? "Bài đang học"} ·{" "}
                   {words.data?.items.length ?? 0} từ
                 </>
               ) : (
                 <>
-                  <span className={styles.levelBadge}>HSK {level}</span> Nhóm{" "}
-                  {page} · {words.data?.items.length ?? 0} từ
+                  {hskLabel(level)} · Nhóm {page} · {words.data?.items.length ?? 0} từ
                 </>
               )}
-            </p>
-            <Button variant="ghost" onClick={() => setStarted(false)}>
+              </p>
+            </div>
+            <Button variant="secondary" onClick={() => setStarted(false)}>
               <Icon name="settings" size={16} /> Đổi bài luyện
             </Button>
           </div>
@@ -177,7 +169,7 @@ function LibraryContent({
             ) : words.isLoading ? (
               <Spinner />
             ) : words.data?.items.length ? (
-              <div key={lessonId ?? `${level}-${page}`}>
+              <div key={useLessonScope ? activeLessonId : `${level}-${page}`}>
                 {children(words.data.items)}
               </div>
             ) : (
@@ -264,10 +256,7 @@ function LibraryContent({
                 setStarted(true);
                 requestAnimationFrame(() => {
                   sessionRef.current?.focus({ preventScroll: true });
-                  sessionRef.current?.scrollIntoView({
-                    block: "start",
-                    behavior: "instant",
-                  });
+                  window.scrollTo({ top: 0, behavior: "instant" });
                 });
               }}
             >
@@ -344,12 +333,9 @@ export function PracticeTips({
   return (
     <aside className="space-y-4">
       {children}
-      <div className="reveal panel p-5">
-        <div className="mb-5 flex items-center gap-2 font-semibold">
-          <Icon name="spark" size={18} className="text-primary" />
-          {title}
-        </div>
-        <ol className="space-y-4">
+      <details className="panel p-4">
+        <summary className="cursor-pointer text-sm font-semibold">{title}</summary>
+        <ol className="mt-4 space-y-3">
           {tips.map((tip, i) => (
             <li key={tip} className="flex gap-3 text-sm leading-6 text-muted">
               <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/8 text-xs font-semibold text-primary">
@@ -359,7 +345,7 @@ export function PracticeTips({
             </li>
           ))}
         </ol>
-      </div>
+      </details>
       <Link
         href="/study"
         className="hover-card panel flex items-center justify-between gap-3 p-5"

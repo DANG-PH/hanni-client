@@ -18,6 +18,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { DictionarySearch } from "@/components/dictionary/dictionary-search";
+import { VideoShelf } from "@/components/video-shelf";
 import { Icon, type IconName } from "@/components/icon";
 import { ToneCheck } from "@/components/tone/tone-check";
 import { LinkButton } from "@/components/ui";
@@ -295,6 +296,10 @@ export default function Home() {
           <StudyArtwork />
         </div>
       </section>
+
+      <div className="page-wrap py-9! empty:hidden sm:py-12!">
+        <VideoShelf />
+      </div>
 
       {/* Thử phương pháp ngay trên trang chủ (như SuperChinese cho xem thử bài học) — chấm
        * thanh điệu chạy hẳn trên máy nên khách dùng được, không tốn lượt AI. */}

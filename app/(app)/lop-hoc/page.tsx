@@ -15,11 +15,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Avatar } from "@/components/avatar";
 import { JoinClassForm } from "@/components/classrooms/join-class-form";
 import { Icon } from "@/components/icon";
-import { Button, ErrorNote, LinkButton, PageHeading, Spinner } from "@/components/ui";
+import { Button, ErrorNote, PageHeading, Spinner } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { createClassroom, useMyClassrooms } from "@/lib/classrooms";
 import { HSK_LEVELS, hskLabel } from "@/lib/pos";
@@ -28,7 +28,24 @@ export default function ClassroomsPage() {
   const { user, loading } = useRequireAuth();
   const { data, error, isLoading, mutate } = useMyClassrooms();
 
-  if (loading || !user || isLoading) return <Spinner />;
+  const ready = !loading && !!user && !isLoading;
+  useEffect(() => {
+    if (!ready) return;
+    function revealAction() {
+      const id = window.location.hash.slice(1);
+      if (id !== "nhap-ma-lop" && id !== "tao-lop") return;
+      const target = document.getElementById(id);
+      const disclosure = target?.closest("details");
+      if (!disclosure) return;
+      disclosure.open = true;
+      target?.scrollIntoView({ block: "start" });
+    }
+    revealAction();
+    window.addEventListener("hashchange", revealAction);
+    return () => window.removeEventListener("hashchange", revealAction);
+  }, [ready]);
+
+  if (!ready) return <Spinner />;
 
   const owned = data?.owned ?? [];
   const joined = data?.joined ?? [];
@@ -41,14 +58,10 @@ export default function ClassroomsPage() {
         featured
         icon="users"
         title="Lớp học"
-        description="Mở lớp để giao bài hoặc nhập mã do giáo viên gửi."
+        description="Xem bài được giao trong lớp bạn học, hoặc quản lý các lớp bạn dạy."
       >
-        {count > 0 && (
-          <>
-            <LinkButton href="#nhap-ma-lop" variant="secondary">Nhập mã lớp</LinkButton>
-            <LinkButton href="#tao-lop"><Icon name="plus" size={16} /> Tạo lớp</LinkButton>
-          </>
-        )}
+        <a href="#nhap-ma-lop" className="motion-button inline-flex items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-fg">Vào lớp bằng mã</a>
+        <a href="#tao-lop" className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 text-sm font-semibold"><Icon name="plus" size={16} /> Tạo lớp</a>
       </PageHeading>
 
       {error && (
@@ -60,13 +73,14 @@ export default function ClassroomsPage() {
         </ErrorNote>
       )}
 
-      <div className={count ? "grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(290px,34%)]" : undefined}>
+      <div className="grid gap-5">
         {count > 0 && (
           <section className="panel min-w-0 overflow-hidden shadow-none" aria-labelledby="my-classrooms">
             <div className="border-b border-border px-4 py-4 sm:px-5">
               <h2 id="my-classrooms" className="font-bold">Lớp của tôi</h2>
               <p className="mt-1 text-sm text-muted">{joined.length} lớp đang học · {owned.length} lớp đang dạy</p>
             </div>
+            <div className={joined.length && owned.length ? "grid sm:grid-cols-2 sm:divide-x sm:divide-border" : undefined}>
             {joined.length > 0 && (
               <section aria-labelledby="lop-hoc" className="p-4 sm:p-5">
                 <h3 id="lop-hoc" className="mb-2 text-xs font-bold tracking-wide text-muted">ĐANG HỌC</h3>
@@ -92,7 +106,7 @@ export default function ClassroomsPage() {
               </section>
             )}
             {owned.length > 0 && (
-              <section aria-labelledby="lop-day" className={`p-4 sm:p-5 ${joined.length ? "border-t border-border" : ""}`}>
+              <section aria-labelledby="lop-day" className={`min-w-0 p-4 sm:p-5 ${joined.length ? "max-sm:border-t max-sm:border-border" : ""}`}>
                 <h3 id="lop-day" className="mb-2 text-xs font-bold tracking-wide text-muted">ĐANG DẠY</h3>
                 <ul className="divide-y divide-border">
                   {owned.map((c) => (
@@ -115,39 +129,46 @@ export default function ClassroomsPage() {
                 </ul>
               </section>
             )}
+            </div>
           </section>
         )}
 
-        <div className={`grid min-w-0 gap-4 ${count ? "" : "md:grid-cols-2"}`}>
-          <section id="nhap-ma-lop" aria-labelledby="vai-hoc-vien" className="panel scroll-mt-24 space-y-4 bg-[#fffbf8] p-4 shadow-none sm:p-5">
-            <div className="flex items-center gap-3">
+        <div className="grid min-w-0 items-start gap-4 md:grid-cols-2">
+          <details name="classroom-actions" className="panel min-w-0 bg-[#fffbf8] shadow-none" open={!count || undefined}>
+            <summary className="flex min-h-16 cursor-pointer list-none items-center gap-3 p-4 [&::-webkit-details-marker]:hidden">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/8 text-primary"><Icon name="users" size={19} /></span>
-              <div>
-                <p className="text-xs text-muted">Dành cho học viên</p>
-                <h2 id="vai-hoc-vien" className="text-base font-bold">Vào lớp bằng mã</h2>
-              </div>
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs text-muted">Dành cho học viên</span>
+                <strong id="vai-hoc-vien" className="block">Tôi có mã lớp</strong>
+              </span>
+              <Icon name="chevron" size={16} className="shrink-0 rotate-90 text-muted" />
+            </summary>
+            <div id="nhap-ma-lop" className="scroll-mt-36 space-y-3 border-t border-border p-4">
+              <p className="text-sm leading-6 text-muted">Nhập mã 6 ký tự do giáo viên gửi để xem lớp trước khi tham gia.</p>
+              <JoinClassForm />
+              <details className="border-t border-border pt-3 text-xs leading-5 text-muted">
+                <summary className="min-h-8 cursor-pointer font-semibold text-foreground">Giáo viên xem được gì?</summary>
+                Giáo viên có thể xem tiến độ học và bài được giao của bạn trong lớp. Email và mật khẩu được giữ riêng tư.
+              </details>
             </div>
-            <p className="text-sm leading-6 text-muted">Nhập mã 6 ký tự để xem thông tin lớp trước khi tham gia.</p>
-            <JoinClassForm />
-            <details className="border-t border-border pt-3 text-xs leading-5 text-muted">
-              <summary className="min-h-8 cursor-pointer font-semibold text-foreground">Giáo viên xem được gì?</summary>
-              Giáo viên có thể xem tiến độ học và bài được giao của bạn trong lớp. Email và mật khẩu được giữ riêng tư.
-            </details>
-          </section>
-          <section id="tao-lop" aria-labelledby="vai-giao-vien" className="panel scroll-mt-24 space-y-4 p-4 shadow-none sm:p-5">
-            <div className="flex items-center gap-3">
+          </details>
+          <details name="classroom-actions" className="panel min-w-0 shadow-none">
+            <summary className="flex min-h-16 cursor-pointer list-none items-center gap-3 p-4 [&::-webkit-details-marker]:hidden">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/8 text-primary"><Icon name="plus" size={19} /></span>
-              <div>
-                <p className="text-xs text-muted">Dành cho giáo viên</p>
-                <h2 id="vai-giao-vien" className="text-base font-bold">Tạo lớp miễn phí</h2>
-              </div>
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs text-muted">Dành cho giáo viên</span>
+                <strong id="vai-giao-vien" className="block">Tôi muốn mở lớp</strong>
+              </span>
+              <Icon name="chevron" size={16} className="shrink-0 rotate-90 text-muted" />
+            </summary>
+            <div id="tao-lop" className="scroll-mt-36 space-y-3 border-t border-border p-4">
+              <p className="text-sm leading-6 text-muted">Đặt tên lớp, nhận mã mời rồi giao bài HSK và theo dõi tiến độ học viên.</p>
+              <CreateClassForm />
+              <Link href="/hop-tac" className="inline-flex min-h-9 items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+                Xem cách quản lý lớp <Icon name="arrow" size={15} />
+              </Link>
             </div>
-            <p className="text-sm leading-6 text-muted">Tạo lớp để nhận mã mời, giao bài HSK và xem tiến độ học viên.</p>
-            <CreateClassForm />
-            <Link href="/hop-tac" className="inline-flex min-h-9 items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
-              Xem cách quản lý lớp <Icon name="arrow" size={15} />
-            </Link>
-          </section>
+          </details>
         </div>
       </div>
     </div>

@@ -52,6 +52,8 @@ export function WeeklyLeagueCard() {
 
       {board.isLoading ? (
         <p className="my-6 text-sm text-muted">Đang tải…</p>
+      ) : board.error && !data ? (
+        <p className="my-4 text-sm text-muted">Chưa tải được giải đấu. <button type="button" className="font-semibold text-primary underline" onClick={() => void board.mutate()}>Thử lại</button></p>
       ) : !data?.rows.length ? (
         <p className="my-4 text-sm text-muted">
           Ôn tập vài từ hôm nay để bắt đầu tham gia giải đấu tuần này.
@@ -94,10 +96,10 @@ export function WeeklyLeagueCard() {
           ))}
         </ul>
       )}
-      {/* Bảng còn thưa (ít người cùng bậc) thì giải thích luật chơi thay cho khoảng trống — người
-       * mới không biết "lượt ôn" tính thế nào, lên hạng ra sao (2026-10-19). */}
-      {data && data.rows.length < 4 && (
-        <div className="mt-4 space-y-3 rounded-xl bg-surface-2/60 p-3.5 text-xs leading-5 text-muted">
+      {data && (
+        <details className="mt-4 rounded-xl bg-surface-2/60 p-3.5 text-xs leading-5 text-muted">
+          <summary className="cursor-pointer font-semibold text-foreground">Cách tính điểm và lên bậc</summary>
+          <div className="mt-3 space-y-3">
           <ol className="flex flex-wrap items-center gap-1" aria-label="Các bậc giải đấu">
             {data.tiers.map((t, i) => (
               <li
@@ -120,7 +122,8 @@ export function WeeklyLeagueCard() {
             <li>Hết tuần, nhóm đầu bảng lên bậc, cuối bảng xuống bậc (khi nhóm có từ 5 người).</li>
             <li>Bạn chỉ đua với người cùng bậc — mời bạn bè cùng học để bảng sôi hơn.</li>
           </ul>
-        </div>
+          </div>
+        </details>
       )}
       <Link
         href="/study"

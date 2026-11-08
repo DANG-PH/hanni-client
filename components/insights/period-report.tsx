@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/icon";
 import { Mascot } from "@/components/mascot";
 import { PremiumModal } from "@/components/premium-modal";
@@ -33,6 +34,12 @@ export function PeriodReport() {
   const { data, error, isLoading, mutate } = useInsightsReport(period, offset);
   const meta = PERIODS.find((p) => p.key === period)!;
   const name = meta.names[offset];
+
+  useEffect(() => {
+    if (window.location.hash === "#hanni-coach") {
+      document.getElementById("hanni-coach")?.scrollIntoView({ block: "start" });
+    }
+  }, []);
 
   return (
     <section aria-labelledby="period-report" className="space-y-4">
@@ -66,21 +73,23 @@ export function PeriodReport() {
         )}
       </div>
 
-      {error && !data ? (
-        <ErrorNote>
-          Chưa tải được báo cáo.{" "}
-          <button type="button" onClick={() => void mutate()} className="font-semibold underline">
-            Thử lại
-          </button>
-        </ErrorNote>
-      ) : !data ? (
-        isLoading && <div className="panel h-72 animate-pulse" />
-      ) : (
-        <div className={`space-y-4 transition-opacity ${isLoading ? "opacity-60" : ""}`}>
-          <StatsCard report={data} name={name} />
-          <CoachCard report={data} name={name} next={meta.next} />
-        </div>
-      )}
+      <div id="hanni-coach" className="scroll-mt-24">
+        {error && !data ? (
+          <ErrorNote>
+            Chưa tải được báo cáo.{" "}
+            <button type="button" onClick={() => void mutate()} className="font-semibold underline">
+              Thử lại
+            </button>
+          </ErrorNote>
+        ) : !data ? (
+          isLoading && <div className="panel h-72 animate-pulse" />
+        ) : (
+          <div className={`space-y-4 transition-opacity ${isLoading ? "opacity-60" : ""}`}>
+            <CoachCard report={data} name={name} next={meta.next} />
+            <StatsCard report={data} name={name} />
+          </div>
+        )}
+      </div>
     </section>
   );
 }
@@ -209,18 +218,23 @@ function CoachCard({ report, name, next }: { report: InsightsReport; name: strin
   const hasTips = report.hardWords.some((w) => tipFor(w.simplified));
 
   return (
-    <Card>
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <span className="icon-tile bg-accent/10 text-accent">
-          <Icon name="spark" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h3 className="flex flex-wrap items-center gap-2 font-semibold">
+    <Card className="border-accent/25 bg-[#fffaf1]">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="flex flex-wrap items-center gap-2 font-bold">
             Hanni Coach
-            <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-bold text-accent">PREMIUM</span>
+            <span className="rounded-md bg-accent/10 px-2 py-0.5 text-xs font-bold text-accent">PREMIUM</span>
           </h3>
-          <p className="text-xs text-muted">Nhận xét {name.toLowerCase()} bằng AI, dựa trên đúng số liệu của bạn</p>
+          <p className="mt-1 text-sm leading-5 text-muted">Nhận xét {name.toLowerCase()} bằng AI, dựa trên đúng số liệu của bạn.</p>
         </div>
+        <Image
+          src="/illustrations/hanni/coach-report.webp"
+          alt=""
+          width={180}
+          height={120}
+          sizes="(max-width: 639px) 76px, 112px"
+          className="h-auto w-[76px] shrink-0 sm:w-28"
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.45fr_1fr]">
@@ -231,18 +245,16 @@ function CoachCard({ report, name, next }: { report: InsightsReport; name: strin
                 Hanni Coach đọc số liệu {name.toLowerCase()} rồi viết riêng cho bạn: điều làm tốt, điều cần chú ý, mẹo
                 nhớ những từ bạn hay quên theo <strong>âm Hán Việt</strong> và kế hoạch {next} có con số cụ thể.
               </p>
-              <p className="mt-3 text-xs font-semibold tracking-wide text-muted uppercase">Ví dụ</p>
-              <div aria-hidden className="mt-1 select-none space-y-1.5 rounded-xl bg-surface p-3 text-sm blur-[2.5px]">
-                <p>Tuần này bạn học 4/7 ngày, nhiều hơn 2 ngày so với tuần trước, thêm 32 từ mới.</p>
-                <p>便宜 (tiện nghi): đồ “tiện nghi” mà giá lại “rẻ” — nhớ ngay nghĩa rẻ.</p>
-                <p>Tuần tới: luyện 10 câu nghe ghép tranh, ôn 30 thẻ mỗi ngày.</p>
-              </div>
+              <details className="mt-2 text-sm">
+                <summary className="cursor-pointer py-2 font-semibold text-accent">Xem ví dụ nhận xét</summary>
+                <p className="rounded-lg bg-surface px-3 py-2 leading-6">Tuần này bạn học 4 ngày. Tuần tới, thử luyện 10 câu nghe ghép tranh và ôn 15 từ đến hạn mỗi ngày.</p>
+              </details>
               <Button className="mt-4" onClick={() => setUpgrade(true)} disabled={!premium.data}>
                 <Icon name="crown" size={17} /> Mở Hanni Coach với Premium
               </Button>
             </div>
           ) : !report.ai.enabled ? (
-            <p className="text-sm text-muted">Hanni Coach đang tạm tắt — số liệu bên trên vẫn đầy đủ.</p>
+            <p className="text-sm text-muted">Hanni Coach đang tạm tắt — bạn vẫn có thể xem báo cáo học tập.</p>
           ) : !active ? (
             <div className="rounded-2xl bg-surface-2/60 p-4 text-sm leading-6">
               {name} chưa có buổi học nào nên Hanni Coach chưa có gì để nhận xét. Học 1 bài là có ngay số liệu đầu
