@@ -40,7 +40,7 @@ const HANVIET_EXAMPLES: {
     pinyin: "shí jiān",
     meaning: "thời gian",
   },
-  { zh: "国家", pinyin: "guó jiā", hanViet: "quốc gia", meaning: "quốc gia" },
+  { zh: "国家", pinyin: "guó jiā", meaning: "quốc gia" },
 ];
 
 /** Từ khoá gợi ý dưới ô tra (như "Từ khóa hot" của Hanzii) — trộn Hán tự, tiếng Việt,
