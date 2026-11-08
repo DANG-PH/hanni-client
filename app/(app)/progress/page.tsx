@@ -57,7 +57,6 @@ import {
   ProgressBar,
   SectionHeading,
   Spinner,
-  Stat,
 } from "@/components/ui";
 import { Icon } from "@/components/icon";
 import { PeriodReport } from "@/components/insights/period-report";
@@ -81,7 +80,7 @@ const PROGRESS_TOUR_STEPS: TourStep[] = [
     icon: "chart",
     title: "Bốn con số nói bốn chuyện khác nhau",
     description:
-      '"Đang học" là vốn từ bạn đã chạm tới; "Đến hạn ôn" là việc cần làm hôm nay; "Ôn trong 24 giờ" là từ sắp tới lịch ôn; "Đã thuộc" chỉ tính từ đã ôn đúng khoảng 21 ngày nên tăng chậm nhất.',
+      '"Đang học" là từ bạn đang ghi nhớ; "Đến hạn ôn" là việc cần làm hôm nay; "Ôn trong 24 giờ" là từ sắp tới lịch ôn; "Đã thuộc" chỉ tính từ đã ôn đúng khoảng 21 ngày nên tăng chậm nhất.',
   },
   {
     icon: "spark",
@@ -132,28 +131,10 @@ export default function ProgressPage() {
       <FeatureTour tourKey="progress" steps={PROGRESS_TOUR_STEPS} />
       <PageHeading
         icon="chart"
-        tone="good"
-        eyebrow="Hành trình của bạn"
         title="Tiến độ học tập"
-        description="Bạn đã học được gì và nên ôn gì tiếp."
+        description="Xem vốn từ, nhịp học và phần cần ôn tiếp."
       >
-        {/* Nhãn theo số liệu thật: 0 từ đến hạn mà ghi "Tiếp tục ôn tập" là hứa suông (vào chỉ thấy "không có từ cần
-         * ôn"); màn /study luôn có việc — ôn flashcard theo bài đã học. "Học tiếp" nằm ở thẻ gợi ý bên dưới. */}
-        <LinkButton href="/study">
-          <Icon name="cards" size={17} />
-          {data && data.totals.due > 0 ? `Ôn ${data.totals.due} từ đến hạn` : "Ôn flashcard"}
-        </LinkButton>
-        {/* Huy hiệu không có mục riêng ở sidebar (xem lib/nav.ts) — cùng trả
-         * lời "mình đang ở đâu" với trang này nên gom lối vào tại đây. */}
-        <LinkButton href="/achievements" variant="secondary">
-          <Icon name="trophy" size={17} />
-          Huy hiệu
-        </LinkButton>
-        {/* Điện thoại: "Xếp hạng" đã có trong menu "Thêm" — 4 nút ở đầu trang tràn thành 2 hàng. */}
-        <LinkButton href="/leaderboard" variant="secondary" className="max-sm:hidden">
-          <Icon name="flame" size={17} />
-          Bảng xếp hạng
-        </LinkButton>
+        <LinkButton href="/achievements" variant="secondary"><Icon name="trophy" size={16} /> Huy hiệu</LinkButton>
         <TourButton tourKey="progress" />
       </PageHeading>
       {error ? (
@@ -171,110 +152,141 @@ export default function ProgressPage() {
       ) : (
         data && (
           <>
-            <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
-              <Card>
-                <p className="eyebrow">Vốn từ của bạn</p>
-                <p className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="text-4xl font-extrabold tracking-tight">{touched.toLocaleString("vi-VN")}</span>
-                  <span className="text-base font-semibold">từ đã học</span>
-                  <span className="text-sm text-muted">· {data.totals.learned.toLocaleString("vi-VN")} từ đã thuộc</span>
-                </p>
-                {focus && (
-                  <div className="mt-4">
-                    <div className="mb-1.5 flex items-center justify-between text-sm">
-                      <span className="font-semibold">{focus.level >= 7 ? "HSK 7–9" : `HSK ${focus.level}`}</span>
-                      <span className="text-muted">
-                        {(focus.learned + focus.learning).toLocaleString("vi-VN")}/{focus.totalWords.toLocaleString("vi-VN")} từ
-                      </span>
+            <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(270px,32%)]">
+              <section className="panel min-w-0 overflow-hidden shadow-none" aria-labelledby="progress-vocab">
+                <div className="space-y-4 p-4 sm:p-5">
+                  <h2 id="progress-vocab" className="text-sm font-bold text-muted">Vốn từ của bạn</h2>
+                  <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <strong className="text-3xl tabular-nums tracking-tight">{touched.toLocaleString("vi-VN")}</strong>
+                    <span className="text-sm font-semibold">từ đã học</span>
+                  </p>
+                  {focus && (
+                    <div>
+                      <div className="mb-2 flex flex-wrap items-center justify-between gap-1 text-sm">
+                        <span className="font-semibold">{focus.level >= 7 ? "HSK 7–9" : `HSK ${focus.level}`}</span>
+                        <span className="text-muted">
+                          {(focus.learned + focus.learning).toLocaleString("vi-VN")}/{focus.totalWords.toLocaleString("vi-VN")} từ đã học
+                        </span>
+                      </div>
+                      <div
+                        role="img"
+                        aria-label={`Đã thuộc ${focus.learned}, đang học ${focus.learning}, tổng ${focus.totalWords} từ`}
+                        className="flex h-2.5 overflow-hidden rounded-full bg-surface-2"
+                      >
+                        <span className="bg-good" style={{ width: `${(focus.learned / Math.max(1, focus.totalWords)) * 100}%` }} />
+                        <span className="bg-primary/70" style={{ width: `${(focus.learning / Math.max(1, focus.totalWords)) * 100}%` }} />
+                      </div>
                     </div>
-                    <div
-                      role="img"
-                      aria-label={`HSK ${focus.level}: ${focus.learned} từ đã thuộc, ${focus.learning} từ đang học, trên ${focus.totalWords} từ`}
-                      className="flex h-3 overflow-hidden rounded-full bg-surface-2"
-                    >
-                      <span className="bg-good" style={{ width: `${(focus.learned / Math.max(1, focus.totalWords)) * 100}%` }} />
-                      <span className="bg-primary/70" style={{ width: `${(focus.learning / Math.max(1, focus.totalWords)) * 100}%` }} />
-                    </div>
-                    <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
-                      <span className="inline-flex items-center gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-good" /> Đã thuộc
-                      </span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-primary/70" /> Đang học
-                      </span>
-                      <span>“Đã thuộc” = ôn đúng đủ khoảng 21 ngày</span>
-                    </p>
-                  </div>
-                )}
-              </Card>
-              <Card className="border-primary/15 bg-primary/5!">
-                <div className="mb-3 flex items-center gap-2 text-primary">
-                  <Icon name="spark" size={19} />
-                  <h2 className="text-sm font-semibold">Gợi ý cho hôm nay</h2>
+                  )}
                 </div>
-                {/* Chỉ giục ôn khi có từ ĐẾN HẠN thật — từ ôn trong 24 giờ tới thì để mai, hôm nay học bài mới. */}
-                <p className="text-base font-semibold">
+                <dl className="grid grid-cols-2 gap-px border-t border-border bg-border sm:grid-cols-4">
+                  {[
+                    { label: "Đã thuộc", value: data.totals.learned, color: "text-good" },
+                    { label: "Đang học", value: data.totals.learning, color: "text-primary" },
+                    { label: "Đến hạn ôn", value: data.totals.due, color: "text-foreground" },
+                    { label: "Ôn trong 24 giờ", value: data.totals.atRisk, color: "text-foreground" },
+                  ].map((stat) => (
+                    <div key={stat.label} className="min-w-0 bg-surface px-3 py-3 sm:px-4">
+                      <dt className="text-xs leading-5 text-muted">{stat.label}</dt>
+                      <dd className={`mt-1 text-xl font-bold tabular-nums [overflow-wrap:anywhere] ${stat.color}`}>{stat.value.toLocaleString("vi-VN")}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+
+              <section className="panel min-w-0 bg-[#fffbf8] p-4 shadow-none sm:p-5" aria-labelledby="progress-next">
+                <p className="text-xs font-semibold text-primary">VIỆC TIẾP THEO</p>
+                <h2 id="progress-next" className="mt-2 font-bold">
+                  {data.totals.due > 0 ? `Ôn ${data.totals.due} từ đến hạn` : "Học tiếp lộ trình"}
+                </h2>
+                <p className="mt-1 text-sm leading-6 text-muted">
                   {data.totals.due > 0
-                    ? `Bạn có ${data.totals.due} từ đến lịch ôn`
-                    : "Hôm nay học thêm một bài mới"}
-                </p>
-                <p className="mt-2 text-sm leading-6 text-muted">
-                  {data.totals.due > 0
-                    ? "Ôn đúng lúc sắp quên là cách nhớ lâu nhất."
+                    ? "Ôn các từ đã tới lịch để nhớ lâu hơn."
                     : data.totals.atRisk > 0
-                      ? `${data.totals.atRisk} từ sẽ đến hạn ôn trong 24 giờ tới — Hanni sẽ nhắc.`
-                      : "Chưa có từ nào đến hạn ôn."}
+                      ? `${data.totals.atRisk} từ sẽ đến hạn trong 24 giờ tới.`
+                      : "Hôm nay bạn có thể bắt đầu một bài mới."}
                 </p>
-                <Link
-                  href={data.totals.due > 0 ? "/study?review=1" : "/learn"}
-                  className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary"
-                >
-                  {data.totals.due > 0 ? "Mở buổi ôn tập" : "Học tiếp lộ trình"}
-                  <Icon name="arrow" size={16} />
-                </Link>
-              </Card>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <LinkButton href={data.totals.due > 0 ? "/study?review=1" : "/learn"}>
+                    <Icon name={data.totals.due > 0 ? "cards" : "play"} size={16} />
+                    {data.totals.due > 0 ? "Bắt đầu ôn" : "Học tiếp"}
+                  </LinkButton>
+                  {data.totals.due === 0 && <LinkButton href="/study" variant="ghost">Ôn flashcard</LinkButton>}
+                </div>
+              </section>
             </div>
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-              <Stat
-                label="Đã thuộc"
-                value={data.totals.learned}
-                icon="check"
-                tone="text-good bg-good/8"
-                hint="Vốn từ đã ghi nhớ"
-              />
-              <Stat
-                label="Đang học"
-                value={data.totals.learning}
-                icon="book"
-                hint="Từng bước làm quen"
-              />
-              <Stat
-                label="Đến hạn ôn"
-                value={data.totals.due}
-                icon="clock"
-                hint="Cần gặp lại hôm nay"
-              />
-              <Stat
-                label="Ôn trong 24 giờ"
-                value={data.totals.atRisk}
-                icon="refresh"
-                tone="text-warn bg-warn/8"
-                hint="Sắp tới lịch ôn"
-              />
-            </div>
-            <PeriodReport />
-            <section>
-              <SectionHeading
-                icon="clock"
-                tone="accent"
-                title="Lịch hoạt động 30 ngày"
-                description="Mỗi ô là 1 ngày — đậm dần theo mức độ ôn tập, xanh lá khi đạt mục tiêu ngày."
-                className="mb-5"
-              />
-              <Card>
-                <ActivityCalendar days={30} />
-              </Card>
+            <nav aria-label="Các phần tiến độ" className="flex flex-wrap gap-2">
+              {[
+                ["#theo-cap-hsk", "Theo cấp HSK"],
+                ["#lich-hoc", "Lịch học"],
+                ["#bao-cao", "Báo cáo"],
+                ["/leaderboard", "Xếp hạng"],
+              ].map(([href, label]) => (
+                <Link key={href} href={href} className="inline-flex min-h-10 items-center rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-muted hover:text-primary">{label}</Link>
+              ))}
+            </nav>
+            <section id="theo-cap-hsk" className="scroll-mt-24" aria-labelledby="level-progress-title">
+              <div className="mb-3">
+                <h2 id="level-progress-title" className="font-bold">Tiến độ theo cấp HSK</h2>
+                <p className="mt-1 text-sm text-muted">Mở từng cấp để xem số từ đã thuộc và cần ôn.</p>
+              </div>
+              {data.levels.length ? (
+                <div className="panel divide-y divide-border overflow-hidden shadow-none">
+                  {data.levels.map((level) => {
+                    const label = level.level >= 7 ? "HSK 7–9" : `HSK ${level.level}`;
+                    return (
+                      <details key={level.level} open={level.level === focus?.level} className="group">
+                        <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 marker:hidden hover:bg-primary/5 sm:px-5">
+                          <span className="min-w-0">
+                            <span className="block break-words text-sm font-bold">{label} · {level.nameVi}</span>
+                            <span className="mt-1 block text-xs text-muted">{BAND_VI[level.band] ?? level.band}</span>
+                          </span>
+                          <span className="flex shrink-0 items-center gap-2">
+                            <span className="text-right">
+                              <span className="block text-sm font-bold tabular-nums text-primary">{Math.round(level.percentComplete)}%</span>
+                              <span className="block text-xs text-muted">{level.learned}/{level.totalWords} từ</span>
+                            </span>
+                            <Icon name="chevron" size={16} className="shrink-0 text-muted group-open:rotate-90" />
+                          </span>
+                        </summary>
+                        <div className="space-y-3 bg-[#fffbf8] px-4 py-4 sm:px-5">
+                          <ProgressBar value={level.percentComplete} label={`Tiến độ ${label}`} />
+                          <dl className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+                            {[
+                              ["Đã thuộc", level.learned],
+                              ["Đang học", level.learning],
+                              ["Đến hạn", level.due],
+                              ["Chưa bắt đầu", level.notStarted],
+                            ].map(([title, value]) => (
+                              <div key={title}>
+                                <dt className="text-muted">{title}</dt>
+                                <dd className="mt-1 font-semibold">{value}</dd>
+                              </div>
+                            ))}
+                          </dl>
+                          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-2">
+                            {level.atRisk > 0 && <span className="text-xs text-muted">{level.atRisk} từ đến hạn trong 24 giờ</span>}
+                            <Link href={`/tu-dien?level=${level.level}`} className="inline-flex min-h-9 items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                              Xem từ vựng <Icon name="arrow" size={14} />
+                            </Link>
+                          </div>
+                        </div>
+                      </details>
+                    );
+                  })}
+                </div>
+              ) : (
+                <EmptyState title="Chưa có tiến độ từ vựng" description="Bắt đầu một bài để xem tiến độ theo cấp HSK.">
+                  <LinkButton href="/learn">Bắt đầu học <Icon name="arrow" size={16} /></LinkButton>
+                </EmptyState>
+              )}
             </section>
+            <section id="lich-hoc" className="panel scroll-mt-24 p-4 shadow-none sm:p-5">
+              <h2 className="mb-1 font-bold">Lịch học 30 ngày</h2>
+              <p className="mb-4 text-sm text-muted">Mỗi ô là một ngày. Ô xanh lá đánh dấu ngày đạt mục tiêu.</p>
+              <ActivityCalendar days={30} />
+            </section>
+            <div id="bao-cao" className="scroll-mt-24"><PeriodReport /></div>
             {!!leeches.data?.length && (
               <section>
                 <SectionHeading
@@ -404,107 +416,6 @@ export default function ProgressPage() {
                 </Card>
               </section>
             )}
-            <section>
-              <SectionHeading
-                icon="chart"
-                tone="good"
-                title="Tiến độ theo cấp HSK"
-                description="Mỗi từ bạn nhớ đều góp vào hành trình này."
-                className="mb-5"
-              />
-              {data.levels.length ? (
-                <div className="space-y-4">
-                  {data.levels.map((l) => (
-                    <Card key={l.level} className="hover-card">
-                      <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                          <span className="icon-tile text-base font-semibold">
-                            {String(l.level).padStart(2, "0")}
-                          </span>
-                          <div>
-                            <h3 className="font-semibold">
-                              HSK {l.level} · {l.nameVi}
-                            </h3>
-                            <p className="mt-1 text-xs text-muted">
-                              {BAND_VI[l.band] ?? l.band}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="sm:text-right">
-                          <span className="text-xl font-semibold text-primary">
-                            {Math.round(l.percentComplete)}%
-                          </span>
-                          <p className="mt-1 text-xs text-muted">
-                            {l.learned} / {l.totalWords} từ đã thuộc
-                          </p>
-                        </div>
-                      </div>
-                      <ProgressBar
-                        value={l.percentComplete}
-                        label={`Tiến độ HSK ${l.level}`}
-                      />
-                      <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-muted sm:grid-cols-4">
-                        {[
-                          {
-                            title: "Đã thuộc",
-                            value: l.learned,
-                            color: "bg-good",
-                          },
-                          {
-                            title: "Đang học",
-                            value: l.learning,
-                            color: "bg-primary",
-                          },
-                          { title: "Đến hạn", value: l.due, color: "bg-warn" },
-                          {
-                            title: "Chưa bắt đầu",
-                            value: l.notStarted,
-                            color: "bg-muted/40",
-                          },
-                        ].map((s) => (
-                          <span
-                            key={s.title}
-                            className="flex items-center gap-2"
-                          >
-                            <span
-                              className={`h-1.5 w-1.5 rounded-full ${s.color}`}
-                            />
-                            {s.title}:{" "}
-                            <span className="font-medium text-foreground">
-                              {s.value}
-                            </span>
-                          </span>
-                        ))}
-                      </div>
-                      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 text-xs">
-                        <span className="text-muted">
-                          {l.atRisk > 0
-                            ? `${l.atRisk} từ ôn trong 24 giờ tới`
-                            : l.learned > 0
-                              ? "Tiếp tục duy trì nhịp ôn tập của bạn"
-                              : "Bắt đầu với những từ đầu tiên"}
-                        </span>
-                        <Link
-                          href={`/tu-dien?level=${l.level}`}
-                          className="inline-flex min-h-8 items-center gap-1.5 font-semibold text-primary"
-                        >
-                          Khám phá từ vựng <Icon name="arrow" size={14} />
-                        </Link>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <EmptyState
-                  title="Một khởi đầu mới"
-                  description="Tiến độ sẽ xuất hiện ở đây khi bạn bắt đầu học từ vựng."
-                >
-                  <LinkButton href="/learn">
-                    Bắt đầu lộ trình <Icon name="arrow" size={16} />
-                  </LinkButton>
-                </EmptyState>
-              )}
-            </section>
           </>
         )
       )}

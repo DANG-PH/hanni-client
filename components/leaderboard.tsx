@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Avatar } from "@/components/avatar";
 import { Icon, type IconName } from "@/components/icon";
-import { LinkButton, SectionHeading } from "@/components/ui";
+import { SectionHeading } from "@/components/ui";
 import type {
   Leaderboard,
   LeaderboardMetric,
@@ -15,7 +15,6 @@ import styles from "./leaderboard.module.css";
 export const LEADERBOARD_METRICS: (LeaderboardMetric & {
   icon: IconName;
   description: string;
-  encouragement: string;
   href: string;
   action: string;
 })[] = [
@@ -25,8 +24,6 @@ export const LEADERBOARD_METRICS: (LeaderboardMetric & {
     unit: "ngày",
     icon: "flame",
     description: "Xếp hạng theo chuỗi ngày học liên tiếp hiện tại.",
-    encouragement:
-      "Một chút hôm nay, thêm một ngày bền bỉ. Giữ nhịp học của bạn nhé!",
     href: "/study",
     action: "Học tiếp hôm nay",
   },
@@ -36,8 +33,6 @@ export const LEADERBOARD_METRICS: (LeaderboardMetric & {
     unit: "bài",
     icon: "check",
     description: "Xếp hạng theo số bài học đã hoàn thành.",
-    encouragement:
-      "Thêm một bài học, thêm một điều mới. Tiếp tục hành trình nhé!",
     href: "/learn",
     action: "Tiếp tục học bài",
   },
@@ -49,157 +44,45 @@ export function metricDetails(key: LeaderboardMetricKey) {
 
 const number = (value: number) => value.toLocaleString("vi-VN");
 
-export function LeaderboardOverview({
-  board,
-  user,
-}: {
-  board: Leaderboard;
-  /** null = khách xem — ô "Vị trí của bạn" thành lời mời tạo tài khoản. */
-  user: Me | null;
-}) {
-  const leaders = board.rows
-    .filter((row) => row.rank >= 1 && row.rank <= 3)
-    .slice(0, 3);
+export function LeaderboardOverview({ board, user }: { board: Leaderboard; user: Me | null }) {
+  const leaders = board.rows.slice(0, 3);
   const details = metricDetails(board.metric);
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px] xl:gap-5">
-      {leaders.length > 0 && (
-        <section
-          className={`panel min-w-0 overflow-hidden ${styles.spotlight}`}
-          aria-labelledby="leaders-title"
-        >
-          <div className="flex items-start justify-between gap-3 px-5 pt-5 sm:px-6">
-            <div>
-              <h2
-                id="leaders-title"
-                className="flex items-center gap-2 text-base font-semibold"
-              >
-                <Icon name="trophy" size={18} className="text-accent" />
-                Những gương mặt nổi bật
-              </h2>
-              <p className="mt-1 text-xs leading-5 text-muted">
-                Cùng lan tỏa tinh thần học mỗi ngày.
-              </p>
-            </div>
-            <span className="hidden rounded-full border border-accent/20 bg-accent/8 px-2.5 py-1 text-xs font-semibold tracking-wider text-accent sm:block">
-              TOP {leaders.length}
-            </span>
-          </div>
-          <ol className={styles.podium} aria-label="Những người học dẫn đầu">
-            {leaders.map((row) => (
-              <li
-                key={row.userId}
-                value={row.rank}
-                data-rank={row.rank}
-                className={styles.podiumEntry}
-              >
-                <div className={styles.podiumAvatar}>
-                  {row.rank === 1 && (
-                    <Icon
-                      name="trophy"
-                      size={22}
-                      className={styles.winnerIcon}
-                    />
-                  )}
-                  <Avatar
-                    user={{ ...row, id: row.userId }}
-                    size={52}
-                    className={styles.avatar}
-                  />
-                  <span className={styles.medal}>
-                    <span className="sr-only">Hạng </span>
-                    {row.rank}
-                  </span>
-                </div>
-                <p className={styles.podiumName} title={row.displayName}>
-                  {row.displayName}
-                </p>
-                <span
-                  className={`mt-1 text-xs font-semibold ${row.isMe ? "text-primary" : "text-muted"}`}
-                >
-                  {row.isMe ? "Bạn" : `Hạng ${row.rank}`}
+    <div className={user ? styles.overview : undefined}>
+      <section className={`panel ${styles.leaders}`} aria-labelledby="leaders-title">
+        <h2 id="leaders-title" className="flex items-center gap-2 text-sm font-bold">
+          <Icon name="trophy" size={17} className="text-primary" />
+          Dẫn đầu bảng
+        </h2>
+        <ol className={styles.podium}>
+          {leaders.map((row) => (
+            <li key={row.userId} value={row.rank}>
+              <Link href={`/u/${row.userId}`} className={styles.leader} data-rank={row.rank}>
+                <span className={styles.medal}>#{row.rank}</span>
+                <Avatar user={{ ...row, id: row.userId }} size={44} />
+                <span className={styles.podiumName}>{row.isMe ? "Bạn" : row.displayName}</span>
+                <span className="text-sm tabular-nums text-muted">
+                  <strong className="text-foreground">{number(row.value)}</strong> {board.unit}
                 </span>
-                <div className={styles.podiumStep}>
-                  <strong className="block text-lg leading-6 font-bold tabular-nums sm:text-xl">
-                    {number(row.value)}
-                  </strong>
-                  <span className="text-xs text-muted">{board.unit}</span>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
-
-      {!user ? (
-        <section
-          className={`panel order-first min-w-0 border-primary/15 p-5 xl:order-last xl:flex xl:flex-col xl:p-6 ${leaders.length === 0 ? "xl:col-span-2" : ""}`}
-          aria-labelledby="your-rank-title"
-        >
-          <h2 id="your-rank-title" className="text-sm font-semibold">
-            Muốn có tên trên bảng?
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-muted">
-            Tạo tài khoản miễn phí — mỗi bài học, mỗi lượt ôn đều được tính, học đều là lên hạng.
-          </p>
-          <LinkButton href="/register?next=/leaderboard" className="mt-4 w-full xl:mt-auto">
-            Tạo tài khoản
-            <Icon name="arrow" size={16} />
-          </LinkButton>
-        </section>
-      ) : (
-      <section
-        className={`panel order-first min-w-0 border-primary/15 p-5 xl:order-last xl:flex xl:flex-col xl:p-6 ${leaders.length === 0 ? "xl:col-span-2" : ""}`}
-        aria-labelledby="your-rank-title"
-      >
-        <div className="flex items-center gap-2.5">
-          <Avatar user={user} size={34} />
-          <div className="min-w-0">
-            <h2 id="your-rank-title" className="text-sm font-semibold">
-              Vị trí của bạn
-            </h2>
-            <p className="truncate text-xs text-muted">{user.displayName}</p>
-          </div>
-          <Icon
-            name={details.icon}
-            size={19}
-            className="ml-auto shrink-0 text-primary"
-          />
-        </div>
-        <dl className="my-4 grid grid-cols-2 divide-x divide-border xl:my-5">
-          <div className="pr-3">
-            <dt className="text-xs text-muted">Thứ hạng</dt>
-            <dd className="mt-1 text-2xl font-bold tracking-tight text-primary tabular-nums [overflow-wrap:anywhere]">
-              {board.me.rank === null ? (
-                <span className="text-base font-semibold">Chưa xếp hạng</span>
-              ) : (
-                <>
-                  <span className="mr-0.5 text-lg font-medium">#</span>
-                  {number(board.me.rank)}
-                </>
-              )}
-            </dd>
-            <dd className="mt-1 text-xs text-muted">
-              trong {number(board.me.totalRanked)} người học
-            </dd>
-          </div>
-          <div className="pl-4">
-            <dt className="text-xs text-muted">{board.label}</dt>
-            <dd className="mt-1 text-2xl font-bold tracking-tight tabular-nums [overflow-wrap:anywhere]">
-              {number(board.me.value)}
-            </dd>
-            <dd className="mt-1 text-xs text-muted">{board.unit}</dd>
-          </div>
-        </dl>
-        <p className="mb-4 hidden text-xs leading-5 text-muted xl:block">
-          {details.encouragement}
-        </p>
-        <LinkButton href={details.href} className="w-full xl:mt-auto">
-          {details.action}
-          <Icon name="arrow" size={16} />
-        </LinkButton>
+              </Link>
+            </li>
+          ))}
+        </ol>
       </section>
+      {user && (
+        <section className={`panel ${styles.personal}`} aria-labelledby="your-rank-title">
+          <h2 id="your-rank-title" className="text-sm font-bold">Vị trí của bạn</h2>
+          <p className="mt-2 text-2xl font-bold tabular-nums text-primary">
+            {board.me.rank === null ? <span className="text-base">Chưa xếp hạng</span> : `#${number(board.me.rank)}`}
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            {number(board.me.value)} {board.unit} · {number(board.me.totalRanked)} người trong bảng
+          </p>
+          <Link href={details.href} className="mt-2 inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-primary hover:underline">
+            {details.action} <Icon name="arrow" size={16} />
+          </Link>
+        </section>
       )}
     </div>
   );

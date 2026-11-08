@@ -19,154 +19,135 @@ import { useState, type FormEvent } from "react";
 import { Avatar } from "@/components/avatar";
 import { JoinClassForm } from "@/components/classrooms/join-class-form";
 import { Icon } from "@/components/icon";
-import { Button, ErrorNote, PageHeading, Spinner } from "@/components/ui";
+import { Button, ErrorNote, LinkButton, PageHeading, Spinner } from "@/components/ui";
 import { useRequireAuth } from "@/lib/auth";
 import { createClassroom, useMyClassrooms } from "@/lib/classrooms";
 import { HSK_LEVELS, hskLabel } from "@/lib/pos";
 
-/** 4 bước của cả luồng — người mới vào trang (chưa có lớp nào) thấy ngay ai làm gì. */
-const FLOW: { who: string; text: string }[] = [
-  { who: "Giáo viên", text: "tạo lớp, nhận mã 6 ký tự" },
-  { who: "Giáo viên", text: "gửi mã hoặc đường dẫn qua Zalo, Messenger" },
-  { who: "Học viên", text: "vào lớp — bài được giao hiện ở Trang chủ" },
-  { who: "Giáo viên", text: "xem ai đã làm bài, ai học đều mỗi ngày" },
-];
-
-/**
- * Lớp học (2026-10-19, làm lại 2026-10-20 — user: "ai được tạo lớp? chưa hiểu luồng"): AI CŨNG tạo được
- * lớp, người tạo là giáo viên của lớp đó — vai trò theo từng lớp, không theo tài khoản, không cần duyệt
- * hay gói giáo viên (như Google Classroom với tài khoản cá nhân, Duolingo for Schools). Học viên vào lớp
- * bằng mã/đường dẫn giáo viên gửi. Chưa có lớp nào thì trang chia đúng 2 vai.
- */
 export default function ClassroomsPage() {
   const { user, loading } = useRequireAuth();
-  const { data, error, isLoading } = useMyClassrooms();
+  const { data, error, isLoading, mutate } = useMyClassrooms();
 
   if (loading || !user || isLoading) return <Spinner />;
 
   const owned = data?.owned ?? [];
   const joined = data?.joined ?? [];
-  const isNew = owned.length + joined.length === 0;
+  const count = owned.length + joined.length;
 
   return (
-    <div className="page-wrap space-y-7">
+    <div className="page-wrap space-y-6">
       <PageHeading
         icon="users"
         title="Lớp học"
-        description="Vào lớp của giáo viên bằng mã, hoặc tự mở lớp để giao bài — miễn phí."
-      />
+        description="Mở lớp để giao bài hoặc nhập mã do giáo viên gửi."
+      >
+        {count > 0 && (
+          <>
+            <LinkButton href="#nhap-ma-lop" variant="secondary">Nhập mã lớp</LinkButton>
+            <LinkButton href="#tao-lop"><Icon name="plus" size={16} /> Tạo lớp</LinkButton>
+          </>
+        )}
+      </PageHeading>
 
-      {error && <ErrorNote>Chưa tải được danh sách lớp.</ErrorNote>}
-
-      {owned.length > 0 && (
-        <section aria-labelledby="lop-day" className="space-y-3">
-          <h2 id="lop-day" className="font-bold">
-            Lớp bạn dạy
-          </h2>
-          <ul className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-            {owned.map((c) => (
-              <li key={c.id}>
-                <Link href={`/lop-hoc/${c.id}`} className="hover-card panel flex items-center gap-3 p-4">
-                  <span className="icon-tile flex h-10 w-10 shrink-0 items-center justify-center">
-                    <Icon name="users" size={18} />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold">{c.name}</span>
-                    <span className="mt-0.5 block text-xs text-muted">
-                      {c.hskLevel ? `${hskLabel(c.hskLevel)} · ` : ""}
-                      {c.memberCount} học viên · {c.assignmentCount} bài đã giao
-                    </span>
-                  </span>
-                  <span className="rounded-lg bg-surface-2 px-2 py-1 font-mono text-xs font-bold tracking-widest">{c.code}</span>
-                  <Icon name="arrow" size={16} className="shrink-0 text-muted" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+      {error && (
+        <ErrorNote>
+          Chưa tải được danh sách lớp.{" "}
+          <button type="button" className="min-h-10 font-semibold underline" onClick={() => void mutate()}>
+            Thử lại
+          </button>
+        </ErrorNote>
       )}
 
-      {joined.length > 0 && (
-        <section aria-labelledby="lop-hoc" className="space-y-3">
-          <h2 id="lop-hoc" className="font-bold">
-            Lớp bạn học
-          </h2>
-          <ul className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-            {joined.map((c) => (
-              <li key={c.id}>
-                <Link href={`/lop-hoc/${c.id}`} className="hover-card panel flex items-center gap-3 p-4">
-                  <Avatar user={c.teacher} size={40} />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold">{c.name}</span>
-                    <span className="mt-0.5 block truncate text-xs text-muted">
-                      Giáo viên {c.teacher.displayName} · {c.memberCount} học viên
-                    </span>
-                  </span>
-                  {c.pendingCount > 0 && (
-                    <span className="shrink-0 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-fg">
-                      {c.pendingCount} bài cần làm
-                    </span>
-                  )}
-                  <Icon name="arrow" size={16} className="shrink-0 text-muted" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <div className={count ? "grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(290px,34%)]" : undefined}>
+        {count > 0 && (
+          <section className="panel min-w-0 overflow-hidden shadow-none" aria-labelledby="my-classrooms">
+            <div className="border-b border-border px-4 py-4 sm:px-5">
+              <h2 id="my-classrooms" className="font-bold">Lớp của tôi</h2>
+              <p className="mt-1 text-sm text-muted">{joined.length} lớp đang học · {owned.length} lớp đang dạy</p>
+            </div>
+            {joined.length > 0 && (
+              <section aria-labelledby="lop-hoc" className="p-4 sm:p-5">
+                <h3 id="lop-hoc" className="mb-2 text-xs font-bold tracking-wide text-muted">ĐANG HỌC</h3>
+                <ul className="divide-y divide-border">
+                  {joined.map((c) => (
+                    <li key={c.id}>
+                      <Link href={`/lop-hoc/${c.id}`} className="flex min-h-16 items-center gap-3 rounded-lg px-2 py-3 hover:bg-primary/5">
+                        <Avatar user={c.teacher} size={36} />
+                        <span className="min-w-0 flex-1">
+                          <strong className="block break-words text-sm">{c.name}</strong>
+                          <span className="mt-1 block break-words text-xs leading-5 text-muted">
+                            {c.teacher.displayName} · {c.memberCount} học viên
+                          </span>
+                          {c.pendingCount > 0 && (
+                            <span className="mt-1 block text-xs font-semibold text-primary">{c.pendingCount} bài cần làm</span>
+                          )}
+                        </span>
+                        <Icon name="chevron" size={16} className="shrink-0 text-muted" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+            {owned.length > 0 && (
+              <section aria-labelledby="lop-day" className={`p-4 sm:p-5 ${joined.length ? "border-t border-border" : ""}`}>
+                <h3 id="lop-day" className="mb-2 text-xs font-bold tracking-wide text-muted">ĐANG DẠY</h3>
+                <ul className="divide-y divide-border">
+                  {owned.map((c) => (
+                    <li key={c.id}>
+                      <Link href={`/lop-hoc/${c.id}`} className="flex min-h-16 items-center gap-3 rounded-lg px-2 py-3 hover:bg-primary/5">
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/8 text-primary">
+                          <Icon name="users" size={18} />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <strong className="block break-words text-sm">{c.name}</strong>
+                          <span className="mt-1 block text-xs leading-5 text-muted">
+                            {c.hskLevel ? `${hskLabel(c.hskLevel)} · ` : ""}{c.memberCount} học viên · {c.assignmentCount} bài đã giao
+                          </span>
+                          <span className="mt-1 block text-xs text-muted">Mã lớp <b className="ml-1 font-mono text-foreground">{c.code}</b></span>
+                        </span>
+                        <Icon name="chevron" size={16} className="shrink-0 text-muted" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </section>
+        )}
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <section aria-labelledby="vai-hoc-vien" className="panel space-y-4 p-5 sm:p-6">
-          <div>
-            <p className="eyebrow">{isNew ? "Học viên" : "Vào thêm lớp"}</p>
-            <h2 id="vai-hoc-vien" className="mt-1 text-lg font-bold">
-              Có mã lớp từ giáo viên?
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-muted">Nhập mã 6 ký tự giáo viên gửi qua Zalo, Messenger.</p>
-          </div>
-          <JoinClassForm />
-          <p className="flex items-start gap-1.5 text-xs leading-5 text-muted">
-            <Icon name="info" size={14} className="mt-0.5 shrink-0" />
-            Vào lớp thì giáo viên thấy chuỗi ngày, phút học, bài đã xong, điểm thi thử của bạn — không thấy email.
-          </p>
-        </section>
-
-        <section id="tao-lop" aria-labelledby="vai-giao-vien" className="panel scroll-mt-24 space-y-4 p-5 sm:p-6">
-          <div>
-            <p className="eyebrow">{isNew ? "Giáo viên" : "Mở thêm lớp"}</p>
-            <h2 id="vai-giao-vien" className="mt-1 text-lg font-bold">
-              Dạy tiếng Trung? Mở lớp miễn phí
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-muted">
-              Giao bài từ lộ trình HSK hoặc đề thi thử, xem ai đã làm, ai học đều.{" "}
-              <Link href="/hop-tac" className="font-semibold text-primary hover:underline">
-                Xem màn giáo viên
-              </Link>
-            </p>
-          </div>
-          <CreateClassForm />
-        </section>
+        <div className={`grid min-w-0 gap-4 ${count ? "" : "md:grid-cols-2"}`}>
+          <section id="nhap-ma-lop" aria-labelledby="vai-hoc-vien" className="panel scroll-mt-24 space-y-4 bg-[#fffbf8] p-4 shadow-none sm:p-5">
+            <div className="flex items-center gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/8 text-primary"><Icon name="users" size={19} /></span>
+              <div>
+                <p className="text-xs text-muted">Dành cho học viên</p>
+                <h2 id="vai-hoc-vien" className="text-base font-bold">Vào lớp bằng mã</h2>
+              </div>
+            </div>
+            <p className="text-sm leading-6 text-muted">Nhập mã 6 ký tự để xem thông tin lớp trước khi tham gia.</p>
+            <JoinClassForm />
+            <details className="border-t border-border pt-3 text-xs leading-5 text-muted">
+              <summary className="min-h-8 cursor-pointer font-semibold text-foreground">Giáo viên xem được gì?</summary>
+              Giáo viên có thể xem tiến độ học và bài được giao của bạn trong lớp. Email và mật khẩu được giữ riêng tư.
+            </details>
+          </section>
+          <section id="tao-lop" aria-labelledby="vai-giao-vien" className="panel scroll-mt-24 space-y-4 p-4 shadow-none sm:p-5">
+            <div className="flex items-center gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/8 text-primary"><Icon name="plus" size={19} /></span>
+              <div>
+                <p className="text-xs text-muted">Dành cho giáo viên</p>
+                <h2 id="vai-giao-vien" className="text-base font-bold">Tạo lớp miễn phí</h2>
+              </div>
+            </div>
+            <p className="text-sm leading-6 text-muted">Tạo lớp để nhận mã mời, giao bài HSK và xem tiến độ học viên.</p>
+            <CreateClassForm />
+            <Link href="/hop-tac" className="inline-flex min-h-9 items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+              Xem cách quản lý lớp <Icon name="arrow" size={15} />
+            </Link>
+          </section>
+        </div>
       </div>
-
-      {isNew && (
-        <section aria-labelledby="cach-hoat-dong" className="rounded-2xl border border-border p-4 sm:p-5">
-          <h2 id="cach-hoat-dong" className="text-sm font-bold">
-            Lớp học hoạt động thế nào
-          </h2>
-          <ol className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {FLOW.map((step, i) => (
-              <li key={step.text} className="flex items-start gap-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                  {i + 1}
-                </span>
-                <span className="min-w-0 text-sm leading-5">
-                  <span className="font-semibold">{step.who}:</span> {step.text}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
     </div>
   );
 }
@@ -198,7 +179,7 @@ function CreateClassForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-3">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_10rem]">
+      <div className="grid grid-cols-1 gap-3">
         <label className="block min-w-0 text-xs font-medium text-muted">
           Tên lớp
           <input

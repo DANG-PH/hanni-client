@@ -90,7 +90,7 @@ export default function ClassroomPage() {
 
 function Header({ data, children }: { data: ClassDetail; children?: ReactNode }) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div className="panel flex flex-col gap-3 bg-[#fffbf8] p-4 shadow-none sm:flex-row sm:items-end sm:justify-between sm:p-6">
       <div className="min-w-0">
         <Link href="/lop-hoc" className="inline-flex min-h-8 items-center gap-1 text-xs font-semibold text-muted hover:text-primary">
           <Icon name="back" size={14} /> Lớp học
@@ -100,10 +100,13 @@ function Header({ data, children }: { data: ClassDetail; children?: ReactNode })
           {data.class.hskLevel && <span>{hskLabel(data.class.hskLevel)}</span>}
           {data.class.hskLevel && <span aria-hidden>·</span>}
           <span>{data.class.memberCount} học viên</span>
+          <span className="rounded-md bg-primary/8 px-2 py-0.5 text-xs font-semibold text-primary">
+            {data.role === "owner" ? "Bạn dạy lớp này" : "Bạn học lớp này"}
+          </span>
           {data.role === "member" && (
             <>
               <span aria-hidden>·</span>
-              <span className="inline-flex items-center gap-1.5">
+              <span className="flex min-w-0 flex-wrap items-center gap-1.5 break-words">
                 Giáo viên <Avatar user={data.class.teacher} size={20} /> <b className="text-foreground">{data.class.teacher.displayName}</b>
               </span>
             </>
@@ -144,10 +147,10 @@ function TeacherView({ data }: { data: OwnerView }) {
     <div className="page-wrap space-y-6">
       <Header data={data} />
 
-      <section aria-label="Mời học viên" className="panel grid gap-5 p-5 sm:p-6 lg:grid-cols-[auto_1fr] lg:items-center">
-        <div className="text-center lg:pr-6 lg:text-left">
+      <section aria-label="Mời học viên" className="panel grid gap-4 p-4 shadow-none sm:p-5 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
+        <div className="rounded-xl bg-[#fbefea] px-5 py-3 lg:px-6">
           <p className="text-xs font-semibold tracking-wide text-muted uppercase">Mã lớp</p>
-          <p className="mt-1 font-mono text-4xl font-extrabold tracking-[0.25em] text-primary">{data.class.code}</p>
+          <p className="mt-1 break-all font-mono text-3xl font-bold tracking-[0.2em] text-primary">{data.class.code}</p>
         </div>
         <div className="min-w-0 space-y-3">
           <p className="text-sm leading-6 text-muted">

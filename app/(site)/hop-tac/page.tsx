@@ -88,52 +88,38 @@ function TeacherPreview() {
     ["Học viên C", "6 ngày trước", 0, 0, false],
   ];
   return (
-    <figure className="panel relative overflow-hidden p-4 sm:p-5" aria-label="Minh hoạ màn hình lớp học của giáo viên">
-      <span className="absolute top-3 right-3 rounded-full bg-surface-2 px-2 py-0.5 text-xs font-semibold text-muted">Minh hoạ</span>
-      <p className="text-xs font-semibold text-muted">Lớp của bạn</p>
-      <p className="mt-0.5 font-bold">HSK 1 — tối thứ 3, 5</p>
-      <div className="mt-3 flex items-center gap-3 rounded-xl bg-surface-2/70 p-3">
-        <span className="text-xs text-muted">Mã lớp</span>
-        <span className="font-mono text-lg font-extrabold tracking-[0.2em] text-primary">HN4K7P</span>
-        <span className="ml-auto inline-flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1 text-xs font-semibold text-primary-fg">
-          <Icon name="share" size={13} /> Gửi
-        </span>
-      </div>
-      <div className="mt-3 rounded-xl border border-border p-3">
-        <p className="flex items-center gap-2 text-xs font-semibold">
-          <Icon name="flag" size={14} className="text-primary" /> Bài 2 · Gia đình — còn 2 ngày
-        </p>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2">
-            <span className="block h-full w-2/3 rounded-full bg-good" />
-          </span>
-          <span className="text-xs text-muted">2/3 đã làm</span>
+    <figure className="panel min-w-0 overflow-hidden shadow-none" aria-label="Ví dụ màn hình lớp của giáo viên">
+      <figcaption className="flex flex-wrap items-start justify-between gap-2 border-b border-border bg-[#fffbf8] p-4 sm:p-5">
+        <div>
+          <p className="text-xs font-semibold text-primary">GÓC GIÁO VIÊN</p>
+          <p className="mt-1 font-bold">HSK 1 · Lớp tối</p>
         </div>
-      </div>
-      <table className="mt-3 w-full text-left text-xs">
-        <thead className="text-muted">
-          <tr>
-            <th className="py-1.5 font-medium">Học viên</th>
-            <th className="py-1.5 font-medium">Học lần cuối</th>
-            <th className="py-1.5 text-right font-medium">Chuỗi</th>
-            <th className="py-1.5 text-right font-medium">Phút/7 ngày</th>
-            <th className="py-1.5 text-right font-medium">Bài 2</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
+        <span className="rounded-md bg-surface-2 px-2 py-1 text-xs font-semibold text-muted">Dữ liệu minh họa</span>
+      </figcaption>
+      <div className="space-y-4 p-4 sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#f9eee9] px-3 py-2">
+          <span className="text-sm text-muted">Mã mời học viên</span>
+          <strong className="font-mono tracking-widest text-primary">HN4K7P</strong>
+        </div>
+        <div>
+          <p className="flex items-center gap-2 text-sm font-bold"><Icon name="flag" size={15} className="text-primary" /> Bài 2 · Gia đình</p>
+          <div className="mt-2 flex items-center gap-3">
+            <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2"><span className="block h-full w-2/3 rounded-full bg-good" /></span>
+            <span className="text-xs text-muted">2/3 đã làm</span>
+          </div>
+        </div>
+        <ul className="divide-y divide-border border-t border-border">
           {rows.map(([name, last, streak, minutes, done]) => (
-            <tr key={name}>
-              <td className="py-2 font-semibold">{name}</td>
-              <td className={`py-2 ${done ? "" : "text-danger"}`}>{last}</td>
-              <td className="py-2 text-right tabular-nums">{streak}</td>
-              <td className="py-2 text-right tabular-nums">{minutes}</td>
-              <td className="py-2 text-right">
-                {done ? <Icon name="check" size={14} className="ml-auto text-good" /> : <span className="text-muted">chưa</span>}
-              </td>
-            </tr>
+            <li key={name} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-2.5">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold">{name}</p>
+                <p className="mt-0.5 text-xs text-muted">{last} · {minutes} phút/tuần · {streak} ngày liên tiếp</p>
+              </div>
+              <span className={`text-xs font-semibold ${done ? "text-good" : "text-muted"}`}>{done ? "Đã làm" : "Chưa làm"}</span>
+            </li>
           ))}
-        </tbody>
-      </table>
+        </ul>
+      </div>
     </figure>
   );
 }
@@ -142,8 +128,8 @@ export default async function TeachersPage() {
   const s = await stats();
   return (
     <div className="pb-16">
-      <section className="border-b border-border bg-surface">
-        <div className="page-wrap grid grid-cols-1 gap-8 py-10! lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center lg:py-14!">
+      <section className="border-b border-border bg-[#fffbf8]">
+        <div className="page-wrap grid grid-cols-1 gap-6 py-8! lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center lg:py-14!">
           <div className="min-w-0">
             <p className="eyebrow">DÀNH CHO GIÁO VIÊN · TRUNG TÂM · GIA SƯ</p>
             <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">Lớp học tiếng Trung miễn phí cho giáo viên</h1>

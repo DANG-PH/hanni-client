@@ -49,7 +49,6 @@ import {
   ErrorNote,
   LinkButton,
   PageHeading,
-  SectionHeading,
   Spinner,
 } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
@@ -71,195 +70,110 @@ export default function AccountPage() {
   }
 
   const timezone = TIMEZONES.find((item) => item.value === user.timezone);
+  const locale = user.locale.toLowerCase();
+  const language = locale.startsWith("vi") ? "Tiếng Việt" : locale.startsWith("en") ? "Tiếng Anh" : user.locale;
 
   return (
-    <div className="page-wrap space-y-7">
+    <div className="page-wrap space-y-5">
       <PageHeading
         icon="user"
-        tone="lavender"
-        eyebrow="Không gian của bạn"
-        title="Tài khoản của tôi"
-        description="Hồ sơ, mật khẩu, lớp học, Premium và mời bạn bè."
-      >
-        <LinkButton href="/settings" variant="secondary">
-          <Icon name="settings" size={17} />
-          Cài đặt học tập
-        </LinkButton>
-      </PageHeading>
-      <div className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-5">
-          <Card className="overflow-hidden p-0! border-primary/20 shadow-md">
-            <div className="relative flex h-32 items-end justify-between overflow-hidden border-b border-primary/15 bg-gradient-to-r from-primary/15 via-primary/8 to-accent/10 px-7 py-3">
-              {/* Nhãn ở góc TRÊN: góc dưới bên trái là chỗ avatar kéo lên đè. */}
-              <div className="flex items-center gap-2 self-start">
-                <span className="whitespace-nowrap rounded-full bg-surface/80 px-3 py-1 text-xs font-bold text-primary shadow-2xs">
-                  Học viên Hanni
-                </span>
-              </div>
-              <span
-                aria-hidden="true"
-                className="hanzi -mb-6 text-9xl font-bold text-primary/12 select-none"
-              >
-                你好
+        title="Tài khoản"
+        description="Quản lý hồ sơ, mục tiêu học tập và bảo mật."
+      />
+      <nav aria-label="Các mục tài khoản" className="flex flex-wrap gap-2">
+        {[
+          ["#ho-so", "Hồ sơ"],
+          ["#muc-tieu", "Mục tiêu"],
+          ["#bao-mat", "Bảo mật"],
+          ["#premium", "Premium"],
+          ["#lop-va-ban", "Lớp và bạn bè"],
+        ].map(([href, label]) => (
+          <Link key={href} href={href} className="inline-flex min-h-10 items-center rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-muted hover:text-primary">
+            {label}
+          </Link>
+        ))}
+      </nav>
+
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(270px,1fr)]">
+        <section id="ho-so" className="panel min-w-0 scroll-mt-24 overflow-hidden shadow-none" aria-label="Hồ sơ">
+          <div className="flex items-center gap-3 bg-[#fffbf8] p-4 sm:gap-5 sm:p-5">
+            <AvatarEditor user={user} size={64} onChange={refresh} />
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg font-bold [overflow-wrap:anywhere]">{user.displayName}</h2>
+              <p className="mt-1 text-sm text-muted [overflow-wrap:anywhere]">{user.email}</p>
+              <span className={`mt-2 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs ${user.emailVerifiedAt ? "bg-good/8 text-good" : "bg-surface-2 text-muted"}`}>
+                <Icon name={user.emailVerifiedAt ? "check" : "info"} size={13} className="shrink-0" />
+                {user.emailVerifiedAt ? "Đã xác minh email" : "Chưa xác minh email"}
               </span>
             </div>
-            <div className="relative px-6 pb-6 sm:px-7">
-              <div className="-mt-9 mb-5 flex flex-wrap items-end justify-between gap-4">
-                <AvatarEditor user={user} size={80} onChange={refresh} />
-                <span className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1.5 text-xs text-muted">
-                  <Icon
-                    name={user.emailVerifiedAt ? "check" : "info"}
-                    size={13}
-                  />
-                  {user.emailVerifiedAt
-                    ? "Email đã xác minh"
-                    : "Email chưa xác minh"}
-                </span>
-              </div>
-              <h2 className="break-words text-xl font-semibold">
-                {user.displayName}
-              </h2>
-              <p className="mt-1 break-all text-sm text-muted">{user.email}</p>
-              <dl className="mt-6 divide-y divide-border border-t border-border text-sm">
-                <div className="flex flex-wrap justify-between gap-2 py-4">
-                  <dt className="text-muted">Tên hiển thị</dt>
-                  <dd className="break-words font-medium">
-                    {user.displayName}
-                  </dd>
-                </div>
-                <div className="flex flex-wrap justify-between gap-2 py-4">
-                  <dt className="text-muted">Múi giờ học tập</dt>
-                  <dd className="font-medium">
-                    {timezone?.label ?? user.timezone}
-                  </dd>
-                </div>
-                <div className="flex flex-wrap justify-between gap-2 py-4">
-                  <dt className="text-muted">Ngôn ngữ tài khoản</dt>
-                  <dd className="font-medium">
-                    {user.locale.toLowerCase().startsWith("vi")
-                      ? "Tiếng Việt"
-                      : user.locale.toLowerCase().startsWith("en")
-                        ? "Tiếng Anh"
-                        : user.locale}
-                  </dd>
-                </div>
-              </dl>
+          </div>
+          <dl className="grid grid-cols-2 gap-px border-y border-border bg-border">
+            <div className="min-w-0 bg-surface px-4 py-3 sm:px-5">
+              <dt className="text-xs text-muted">Múi giờ học tập</dt>
+              <dd className="mt-1 text-sm font-semibold [overflow-wrap:anywhere]">{timezone?.label ?? user.timezone}</dd>
             </div>
-          </Card>
-          <Card>
-            <div className="flex items-start gap-3">
-              <span className="icon-tile">
-                <Icon name="lock" />
-              </span>
-              <div>
-                <h2 className="font-semibold">Bảo mật tài khoản</h2>
-                <p className="mt-1 text-sm leading-6 text-muted">
-                  {user.hasPassword
-                    ? "Đổi mật khẩu ngay tại đây, hoặc đặt lại qua email nếu bạn quên."
-                    : "Bạn đang đăng nhập qua Google. Có thể đặt thêm mật khẩu để đăng nhập bằng email."}
-                </p>
-              </div>
+            <div className="min-w-0 bg-surface px-4 py-3 sm:px-5">
+              <dt className="text-xs text-muted">Ngôn ngữ</dt>
+              <dd className="mt-1 text-sm font-semibold [overflow-wrap:anywhere]">{language}</dd>
             </div>
+          </dl>
+          <Link href={`/u/${user.id}`} className="flex min-h-11 items-center justify-between gap-2 px-4 text-sm font-semibold text-primary hover:bg-primary/5 sm:px-5">
+            Xem hồ sơ công khai <Icon name="arrow" size={16} />
+          </Link>
+        </section>
 
-            <PasswordForm
-              hasPassword={user.hasPassword}
-              onChanged={() => void refresh()}
-            />
+        <section id="muc-tieu" className="panel min-w-0 scroll-mt-24 p-4 shadow-none sm:p-5" aria-labelledby="account-goal-title">
+          <h2 id="account-goal-title" className="flex items-center gap-2 font-bold">
+            <Icon name="target" size={18} className="text-primary" /> Mục tiêu mỗi ngày
+          </h2>
+          {user.settings ? (
+            <p className="mt-3 flex flex-wrap items-baseline gap-x-2">
+              <strong className="text-2xl tabular-nums">{user.settings.dailyGoalValue}</strong>
+              <span className="text-sm text-muted">{user.settings.dailyGoalType === "MINUTES" ? "phút học" : "từ ôn"}</span>
+            </p>
+          ) : (
+            <p className="mt-2 text-sm leading-6 text-muted">Chọn mục tiêu phù hợp trong cài đặt học tập.</p>
+          )}
+          <Link href="/settings" className="mt-1 inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-primary hover:underline">
+            Cài đặt học tập <Icon name="arrow" size={15} />
+          </Link>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 border-t border-border pt-2">
+            {[
+              ["/progress", "Tiến độ"],
+              ["/achievements", "Huy hiệu"],
+              ["/learn", "Lộ trình HSK"],
+            ].map(([href, label]) => (
+              <Link key={href} href={href} className="inline-flex min-h-9 items-center text-sm font-semibold text-muted hover:text-primary">{label}</Link>
+            ))}
+          </div>
+        </section>
 
-            <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-4">
-              {user.hasPassword && (
-                <LinkButton href="/forgot-password" variant="ghost">
-                  Quên mật khẩu?
-                </LinkButton>
-              )}
-              <Button
-                variant="ghost"
-                disabled={leaving}
-                onClick={() => void signOut()}
-              >
-                <Icon name="logout" size={17} />
-                {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
-              </Button>
-            </div>
-          </Card>
+        <section id="bao-mat" className="panel min-w-0 scroll-mt-24 p-4 shadow-none sm:p-5" aria-labelledby="account-security-title">
+          <h2 id="account-security-title" className="flex items-center gap-2 font-bold">
+            <Icon name="lock" size={18} className="text-primary" /> Bảo mật và đăng nhập
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            {user.hasPassword ? "Đổi mật khẩu hoặc đặt lại qua email nếu bạn quên." : "Bạn có thể đặt thêm mật khẩu để đăng nhập bằng email."}
+          </p>
+          <PasswordForm hasPassword={user.hasPassword} onChanged={() => void refresh()} />
+          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3">
+            {user.hasPassword && <LinkButton href="/forgot-password" variant="ghost">Quên mật khẩu?</LinkButton>}
+            <Button variant="ghost" disabled={leaving} onClick={() => void signOut()}>
+              <Icon name="logout" size={16} /> {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
+            </Button>
+          </div>
+        </section>
+        <section id="premium" aria-label="Premium" className="min-w-0 scroll-mt-24">
+          <PremiumSection />
+        </section>
+
+        <section id="lop-va-ban" className="grid min-w-0 scroll-mt-24 items-start gap-4 md:grid-cols-2 lg:col-span-2" aria-label="Lớp học và bạn bè">
           <ClassroomCard />
           <ReferralCard userId={user.id} />
+        </section>
+        <div className="lg:col-span-2">
           <DangerZone hasPassword={user.hasPassword} />
         </div>
-        <aside className="space-y-5">
-          <Card>
-            <h2 className="mb-5 flex items-center gap-2 font-semibold">
-              <Icon name="target" className="text-primary" size={19} />
-              Nhịp học của bạn
-            </h2>
-            {user.settings ? (
-              <>
-                <p className="text-3xl font-semibold">
-                  {user.settings.dailyGoalValue}
-                  <span className="ml-2 text-sm font-normal text-muted">
-                    {user.settings.dailyGoalType === "MINUTES"
-                      ? "phút / ngày"
-                      : "từ ôn / ngày"}
-                  </span>
-                </p>
-              </>
-            ) : (
-              <p className="text-sm leading-6 text-muted">
-                Chọn mục tiêu và lịch ôn phù hợp trong cài đặt học tập.
-              </p>
-            )}
-            <Link
-              href="/settings"
-              className="mt-5 flex items-center justify-between border-t border-border pt-4 text-sm font-medium text-primary"
-            >
-              Điều chỉnh mục tiêu <Icon name="arrow" size={16} />
-            </Link>
-          </Card>
-          <PremiumSection />
-          <Card>
-            <SectionHeading
-              icon="route"
-              tone="lavender"
-              title="Hành trình của tôi"
-              className="mb-2"
-            />
-            {[
-              {
-                href: "/progress",
-                icon: "chart" as const,
-                label: "Tiến độ học tập",
-              },
-              {
-                href: "/achievements",
-                icon: "trophy" as const,
-                label: "Bộ sưu tập huy hiệu",
-              },
-              { href: "/learn", icon: "route" as const, label: "Lộ trình HSK" },
-              {
-                href: `/u/${user.id}`,
-                icon: "user" as const,
-                label: "Hồ sơ công khai",
-              },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="group flex items-center gap-3 rounded-xl px-2 py-3 text-sm text-muted transition-colors hover:bg-primary/5 hover:text-primary"
-              >
-                <Icon name={item.icon} size={18} />
-                <span className="flex-1">{item.label}</span>
-                <Icon name="arrow" size={15} />
-              </Link>
-            ))}
-          </Card>
-          <div className="rounded-2xl border border-primary/15 bg-primary/5 p-5">
-            <p className="hanzi mb-2 text-2xl text-primary">学无止境</p>
-            <p className="text-sm font-medium">Học không có điểm dừng.</p>
-            <p className="mt-2 text-xs leading-5 text-muted">
-              Hanni đồng hành cùng bạn qua từng bài học nhỏ.
-            </p>
-          </div>
-        </aside>
       </div>
     </div>
   );
@@ -407,21 +321,14 @@ function ClassroomCard() {
               : "Giáo viên gửi mã lớp cho bạn? Nhập ở đây để nhận bài được giao ngay ở Trang chủ."}
           </p>
         </div>
-        {count > 0 && (
-          <LinkButton href="/lop-hoc" variant="secondary" className="shrink-0 px-3! text-xs">
-            Mở lớp học
-          </LinkButton>
-        )}
       </div>
       <div className="mt-4">
         <JoinClassForm id="account-class-code" />
       </div>
-      <p className="mt-3 text-sm text-muted">
-        Bạn dạy tiếng Trung?{" "}
-        <Link href="/lop-hoc#tao-lop" className="font-semibold text-primary hover:underline">
-          Tạo lớp miễn phí
-        </Link>
-      </p>
+      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold text-primary">
+        <Link href="/lop-hoc" className="inline-flex min-h-9 items-center hover:underline">Mở lớp học</Link>
+        <Link href="/lop-hoc#tao-lop" className="inline-flex min-h-9 items-center hover:underline">Tạo lớp miễn phí</Link>
+      </div>
     </Card>
   );
 }

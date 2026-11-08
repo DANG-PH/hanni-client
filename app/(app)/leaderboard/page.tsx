@@ -19,6 +19,7 @@ import {
   type TourStep,
 } from "@/components/feature-tour";
 import { useRef, useState, type KeyboardEvent } from "react";
+import Link from "next/link";
 import { Icon } from "@/components/icon";
 import {
   LEADERBOARD_METRICS,
@@ -55,7 +56,7 @@ const LEADERBOARD_TOUR_STEPS: TourStep[] = [
     icon: "trophy",
     title: "Giải đấu tuần",
     description:
-      "Thi đua theo tuần với người cùng bậc: đầu bảng lên bậc, cuối bảng xuống bậc — thẻ \"Giải đấu tuần\" ở đầu trang này.",
+      "Thi đua theo tuần với người cùng bậc: đầu bảng lên bậc, cuối bảng xuống bậc — mở mục Giải đấu tuần ở đầu trang để xem.",
   },
 ];
 
@@ -108,19 +109,16 @@ export default function LeaderboardPage() {
         title="Bảng xếp hạng"
         description="Giải đấu tuần với người cùng bậc, và bảng xếp hạng theo chuỗi ngày học, số bài đã xong."
       >
+        {user && <Link href="#giai-dau" className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-primary hover:underline"><Icon name="trophy" size={16} /> Giải đấu tuần</Link>}
         <TourButton tourKey="leaderboard" />
       </PageHeading>
-
-      {/* Giải đấu tuần ở đây chứ không ở trang chủ học (2026-10-21) — như Duolingo để giải đấu ở tab riêng; trang chủ
-       * chỉ giữ việc cần làm hôm nay. Thông báo kết quả tuần mở `/leaderboard#giai-dau`. */}
-      {user && <WeeklyLeagueCard />}
 
       <div className="space-y-3">
         <div
           ref={tablist}
           role="tablist"
           aria-label="Tiêu chí xếp hạng"
-          className="grid grid-cols-2 gap-1.5 rounded-2xl border border-border bg-surface-2/70 p-1.5"
+          className="grid max-w-md grid-cols-2 gap-1 rounded-xl border border-border bg-surface-2/70 p-1"
         >
           {tabs.map((tab, index) => (
             <button
@@ -134,7 +132,7 @@ export default function LeaderboardPage() {
               onFocus={() => setFocusedMetric(tab.key)}
               onClick={() => setMetric(tab.key)}
               onKeyDown={(event) => moveTabFocus(event, index)}
-              className={`flex min-h-12 items-center justify-center gap-2 rounded-xl border px-2 py-2.5 text-xs font-semibold transition-colors sm:text-sm ${
+              className={`flex min-h-11 items-center justify-center gap-2 rounded-lg border px-2 py-2 text-xs font-semibold transition-colors sm:text-sm ${
                 metric === tab.key
                   ? "border-primary/15 bg-surface text-primary shadow-sm"
                   : "border-transparent text-muted hover:bg-surface/70 hover:text-foreground"
@@ -205,6 +203,15 @@ export default function LeaderboardPage() {
           )}
         </div>
       ))}
+      {user ? <WeeklyLeagueCard /> : (
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4">
+          <div>
+            <h2 className="text-sm font-bold">Có tên trên bảng xếp hạng</h2>
+            <p className="mt-1 text-sm text-muted">Tạo tài khoản để lưu chuỗi ngày học và số bài hoàn thành.</p>
+          </div>
+          <LinkButton href="/register?next=/leaderboard">Tạo tài khoản <Icon name="arrow" size={16} /></LinkButton>
+        </section>
+      )}
     </div>
   );
 }
