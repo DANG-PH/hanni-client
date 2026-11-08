@@ -88,7 +88,7 @@ export default function ClassroomsPage() {
         </ErrorNote>
       )}
 
-      <div className="grid gap-5">
+      <div className="grid gap-6">
         {count > 0 && (
           <section className="panel min-w-0 overflow-hidden shadow-none" aria-labelledby="my-classrooms">
             <div className="border-b border-border px-4 py-4 sm:px-5">
@@ -148,7 +148,7 @@ export default function ClassroomsPage() {
           </section>
         )}
 
-        <section className="panel mx-auto w-full max-w-3xl min-w-0 p-4 shadow-none sm:p-5" aria-labelledby="class-actions-heading">
+        <section className="panel min-w-0 p-4 shadow-none sm:p-5" aria-labelledby="class-actions-heading">
           <h2 id="class-actions-heading" className="mb-3 font-bold">Tham gia hoặc tạo lớp</h2>
           <div role="group" aria-label="Chọn thao tác lớp học" className="grid grid-cols-2 gap-2">
             {CLASS_ACTIONS.map(({ id, role, label, icon }) => {
@@ -176,7 +176,7 @@ export default function ClassroomsPage() {
           </div>
 
           <div className="mt-4 border-t border-border pt-4">
-            <div id="nhap-ma-lop-form" className="space-y-3" hidden={action !== "nhap-ma-lop"}>
+            <div id="nhap-ma-lop-form" className="max-w-md space-y-3" hidden={action !== "nhap-ma-lop"}>
               <p className="text-sm leading-6 text-muted">Nhập mã 6 ký tự do giáo viên gửi để xem lớp trước khi tham gia.</p>
               <JoinClassForm />
               <details className="text-xs leading-5 text-muted">
@@ -184,7 +184,7 @@ export default function ClassroomsPage() {
                 Giáo viên có thể xem tiến độ học và bài được giao của bạn trong lớp. Email và mật khẩu được giữ riêng tư.
               </details>
             </div>
-            <div id="tao-lop-form" className="space-y-3" hidden={action !== "tao-lop"}>
+            <div id="tao-lop-form" className="max-w-3xl space-y-3" hidden={action !== "tao-lop"}>
               <p className="text-sm leading-6 text-muted">Đặt tên lớp để nhận mã mời, giao bài HSK và theo dõi tiến độ học viên.</p>
               <CreateClassForm />
               <Link href="/hop-tac" className="inline-flex min-h-9 items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
