@@ -33,7 +33,8 @@ async function open(list: (attempt: number) => { status: number; body: unknown }
 }
 
 before(async () => {
-  browser = await chromium.launch();
+  // CHROME_PATH để chạy bằng Chrome có sẵn của máy (máy GitHub Actions), bỏ trống thì dùng Chromium của Playwright.
+  browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined });
 });
 
 beforeEach(async () => {
