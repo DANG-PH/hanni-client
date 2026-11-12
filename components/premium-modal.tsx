@@ -13,11 +13,11 @@ import type { PaymentProvider, PremiumPlan } from "@/lib/types";
 type IconName = Parameters<typeof Icon>[0]["name"];
 
 /** Các tiện ích bổ sung và hạn mức của hai phiên bản, xem `hanni-server/CLAUDE.md` mục Premium. */
-const BENEFITS: { icon: IconName; title: string; desc: string; free: string; premium: string }[] = [
-  { icon: "camera", title: "Quét ảnh học từ", desc: "Thực đơn, biển hiệu, sách, món ăn — ra từ vựng kèm Hán Việt, lưu thẳng vào ôn tập.", free: "3 ảnh/ngày", premium: "100 ảnh/ngày" },
-  { icon: "spark", title: "Trợ lý AI Hanni", desc: "Hỏi ngữ pháp, từ vựng, nhờ giải thích câu sai trong đề thi thử.", free: "15 lượt/ngày", premium: "Không giới hạn" },
-  { icon: "mic", title: "Luyện nói với AI", desc: "Đóng vai tình huống đời thường, có gợi ý câu và nhận xét cuối buổi.", free: "15 lượt/ngày", premium: "Không giới hạn" },
-  { icon: "pencil", title: "AI chấm câu, mẹo nhớ, dịch câu", desc: "Đặt câu với từ mới để AI sửa, mẹo nhớ theo âm Hán Việt, phân tích câu ngay ở ô tra từ điển.", free: "10 lượt/ngày", premium: "200 lượt/ngày" },
+const BENEFITS: { icon: IconName; title: string; summary: string; desc: string; free: string; premium: string }[] = [
+  { icon: "camera", title: "Quét ảnh học từ", summary: "Quét ảnh học từ", desc: "Thực đơn, biển hiệu, sách, món ăn — ra từ vựng kèm Hán Việt, lưu thẳng vào ôn tập.", free: "3 ảnh/ngày", premium: "100 ảnh/ngày" },
+  { icon: "spark", title: "Trợ lý AI Hanni", summary: "Trợ lý AI Hanni", desc: "Hỏi ngữ pháp, từ vựng, nhờ giải thích câu sai trong đề thi thử.", free: "15 lượt/ngày", premium: "Không giới hạn" },
+  { icon: "mic", title: "Luyện nói với AI", summary: "Luyện nói với AI", desc: "Đóng vai tình huống đời thường, có gợi ý câu và nhận xét cuối buổi.", free: "15 lượt/ngày", premium: "Không giới hạn" },
+  { icon: "pencil", title: "AI chấm câu, mẹo nhớ, dịch câu", summary: "Sửa câu, dịch & mẹo nhớ", desc: "Đặt câu với từ mới để AI sửa, mẹo nhớ theo âm Hán Việt, phân tích câu ngay ở ô tra từ điển.", free: "10 lượt/ngày", premium: "200 lượt/ngày" },
 ];
 
 const FAQ: { q: string; a: string }[] = [
@@ -162,7 +162,7 @@ export function PremiumModal({
           aria-modal="true"
           aria-labelledby="premium-title"
           tabIndex={-1}
-          className="relative flex max-h-[92dvh] w-full max-w-[880px] flex-col overflow-hidden rounded-t-3xl border border-border bg-surface shadow-2xl outline-none sm:rounded-2xl"
+          className="relative flex max-h-[94dvh] w-full max-w-[1040px] flex-col overflow-hidden rounded-t-3xl border border-border bg-surface shadow-2xl outline-none sm:rounded-2xl"
           style={{ animation: "reveal-in 420ms var(--motion-ease) both" }}
         >
           <header className="relative shrink-0 border-b border-accent/15 bg-linear-to-br from-accent/15 via-accent/5 to-transparent px-4 py-4 sm:px-7 sm:py-5">
@@ -193,7 +193,34 @@ export function PremiumModal({
 
           <div ref={content} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-7 sm:py-5">
             {step === "choose" ? (
-              <>
+              <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,.85fr)_minmax(0,1.3fr)] lg:gap-x-5">
+                <section aria-labelledby="premium-benefits" className="rounded-2xl border border-accent/20 bg-linear-to-br from-[#fff7e7] to-[#fffcf5] px-3 py-3 sm:px-4 sm:py-4">
+                  <h3 id="premium-benefits" className="text-sm font-semibold">Quyền lợi trong mọi gói</h3>
+                  <div className="mt-2 flex items-center gap-2.5 border-b border-accent/15 pb-2.5">
+                    <Image
+                      src="/illustrations/hanni/coach-report.webp"
+                      alt=""
+                      width={180}
+                      height={120}
+                      sizes="(min-width: 1024px) 76px, 48px"
+                      className="h-auto w-12 shrink-0 lg:w-[76px]"
+                    />
+                    <div className="min-w-0">
+                      <h4 id="premium-coach" className="text-sm font-bold text-accent">Hanni Coach</h4>
+                      <p className="mt-0.5 text-xs leading-5 text-muted">Nhận xét tuần, tháng, quý và gợi ý ôn từ.</p>
+                    </div>
+                  </div>
+                  <ul className="mt-2 space-y-2 lg:space-y-3">
+                    {BENEFITS.map((benefit) => (
+                      <li key={benefit.title} className="flex items-start gap-2 text-xs leading-5">
+                        <Icon name={benefit.icon} size={15} className="mt-0.5 shrink-0 text-accent" />
+                        <span className="min-w-0 flex-1">{benefit.summary}</span>
+                        <strong className="shrink-0 font-semibold text-accent">{benefit.premium}</strong>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+
                 <fieldset className="min-w-0">
                   <legend className="font-semibold">Chọn gói</legend>
                   <div className="mt-2.5 grid gap-2 md:grid-cols-3 md:gap-3">
@@ -247,7 +274,7 @@ export function PremiumModal({
                   </div>
                   {others.length > 0 && (
                     <div className="mt-2.5 flex flex-wrap items-center gap-2 text-xs">
-                      <span className="text-muted">Gói khác</span>
+                      <span className="sr-only">Gói khác</span>
                       {others.map((plan) => {
                         const on = plan.key === selectedKey;
                         return (
@@ -273,24 +300,7 @@ export function PremiumModal({
                   )}
                 </fieldset>
 
-                <section aria-labelledby="premium-coach" className="mt-4 flex items-center gap-3 rounded-2xl border border-accent/20 bg-linear-to-br from-[#fff7e7] to-[#fffcf5] px-3 py-3 sm:mt-5 sm:gap-4 sm:px-5">
-                  <Image
-                    src="/illustrations/hanni/coach-report.webp"
-                    alt=""
-                    width={180}
-                    height={120}
-                    sizes="(min-width: 640px) 104px, 64px"
-                    className="h-auto w-16 shrink-0 sm:w-[104px]"
-                  />
-                  <div className="min-w-0">
-                    <h3 id="premium-coach" className="text-sm font-bold text-accent">Hanni Coach</h3>
-                    <p className="mt-0.5 text-sm leading-5 text-muted">
-                      Xem nhận xét theo tuần, tháng, quý và gợi ý ôn những từ hay quên.
-                    </p>
-                  </div>
-                </section>
-
-                <details className="group mt-3 rounded-2xl border border-border">
+                <details className="group rounded-2xl border border-border lg:col-span-2">
                   <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3 py-2.5 text-sm font-semibold sm:px-4">
                     So sánh quyền lợi
                     <Icon name="chevron" size={15} className="shrink-0 text-muted transition-transform group-open:rotate-90" />
@@ -313,7 +323,7 @@ export function PremiumModal({
                   </ul>
                 </details>
 
-                <details className="group mt-2 rounded-2xl border border-border">
+                <details className="group rounded-2xl border border-border lg:col-span-2">
                   <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3 py-2.5 text-sm font-semibold sm:px-4">
                     Câu hỏi thường gặp
                     <Icon name="chevron" size={15} className="shrink-0 text-muted transition-transform group-open:rotate-90" />
@@ -327,7 +337,7 @@ export function PremiumModal({
                     ))}
                   </dl>
                 </details>
-              </>
+              </div>
             ) : (
               selected && (
                 <>
@@ -466,7 +476,7 @@ export function PremiumModal({
                   )
                 )}
                 <Button
-                  className={`justify-center [--primary:var(--accent)] [--primary-fg:#fff] ${step === "confirm" ? "flex-1" : ""}`}
+                  className={`justify-center ${step === "confirm" ? "flex-1" : ""}`}
                   disabled={!selected || busy || configured.isLoading}
                   onClick={() => (step === "choose" ? setStep("confirm") : void pay())}
                 >
