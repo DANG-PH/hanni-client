@@ -207,12 +207,12 @@ export function PremiumModal({
                     />
                     <div className="min-w-0">
                       <h4 id="premium-coach" className="text-sm font-bold text-accent">Hanni Coach</h4>
-                      <p className="mt-0.5 text-xs leading-5 text-muted">Nhận xét tuần, tháng, quý và gợi ý ôn từ.</p>
+                      <p className="mt-0.5 text-xs leading-5 text-muted lg:text-sm">Nhận xét tuần, tháng, quý và gợi ý ôn từ.</p>
                     </div>
                   </div>
                   <ul className="mt-2 space-y-2 lg:space-y-3">
                     {BENEFITS.map((benefit) => (
-                      <li key={benefit.title} className="flex items-start gap-2 text-xs leading-5">
+                      <li key={benefit.title} className="flex items-start gap-2 text-[13px] leading-5 lg:text-sm">
                         <Icon name={benefit.icon} size={15} className="mt-0.5 shrink-0 text-accent" />
                         <span className="min-w-0 flex-1">{benefit.summary}</span>
                         <strong className="shrink-0 font-semibold text-accent">{benefit.premium}</strong>
