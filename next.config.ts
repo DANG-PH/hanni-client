@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
       // trống). TẠM THỜI (307) để mở lại được: 308 bị trình duyệt nhớ luôn. Code trang + dữ liệu giữ nguyên.
       { source: "/messages", destination: "/learn", permanent: false },
       { source: "/connections", destination: "/learn", permanent: false },
+      // Đường dẫn ngắn khai ở Play Console (mục an toàn dữ liệu): trang yêu cầu xoá tài khoản.
+      { source: "/xoa-tai-khoan", destination: "/chinh-sach-bao-mat#xoa-tai-khoan", permanent: false },
       // Tự thêm video đã bỏ (2026-10-17); không có dòng này thì /watch/add rơi vào /watch/[id].
       { source: "/watch/add", destination: "/watch", permanent: true },
       // Bộ thẻ "học thử 8 từ" cũ (2026-10-28): trùng với học thử bài 1 (`/bat-dau` → phiên học thật, có luyện + chấm).

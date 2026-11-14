@@ -3,13 +3,16 @@
  * Trang này gọi API nào (← file client gọi) và code server ở đâu (→ đường dẫn trong hanni-server/src/). Sinh từ mã
  * nguồn ngày 27/10/2026; sửa luồng gọi API thì sửa khối này cho khớp. Bảng đủ: tài liệu tra cứu kỹ thuật (tab Tra cứu).
  *
- *   (Trang tĩnh — không gọi API nào.)
+ *   Form yêu cầu xoá tài khoản (mục "Xoá tài khoản và dữ liệu")
+ *     API → POST /reports (← components/legal/account-deletion-form.tsx)
+ *     server: modules/reports/reports.controller.ts → ReportsService.create()
  *
  * Khung quanh trang (menu, thanh trên, chuông, trợ lý AI) gọi API riêng — xem khối BẢN ĐỒ ở app/(site)/layout.tsx.
  */
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AccountDeletionForm } from "@/components/legal/account-deletion-form";
 import { LegalPage } from "@/components/legal/legal-page";
 
 export const metadata: Metadata = {
@@ -29,10 +32,10 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="Chính sách bảo mật"
-      updated="21/10/2026"
+      updated="14/11/2026"
       intro={
         <p>
-          Trang này nói rõ Hanni lưu những gì về bạn, vì sao, và bạn kiểm soát dữ liệu đó thế nào. Bạn dùng được phần lớn Hanni (bài
+          Trang này nói rõ Hanni (web và ứng dụng Hanni trên Android) lưu những gì về bạn, vì sao, và bạn kiểm soát dữ liệu đó thế nào. Bạn dùng được phần lớn Hanni (bài
           học, từ điển, đề thi thử…) khi chưa có tài khoản — lúc đó tiến độ chỉ nằm tạm trên trình duyệt của bạn.
         </p>
       }
@@ -45,6 +48,7 @@ export default function PrivacyPage() {
             "Tiến độ học: từ đã học và lịch ôn, bài đã xong, chuỗi ngày, phút học mỗi ngày, kết quả luyện nghe/phát âm, điểm và bài làm đề thi thử, huy hiệu.",
             "Nội dung bạn tạo: hội thoại với trợ lý AI và luyện nói, câu bạn tự đặt để AI chấm, lớp học bạn tạo hoặc tham gia. Bình luận video và tin nhắn viết trước khi Hanni gỡ hai tính năng này (20/10/2026) vẫn được lưu tới khi bạn xoá tài khoản.",
             "Cài đặt: mục tiêu ngày, giờ nhắc học, đăng ký nhận thông báo đẩy của trình duyệt.",
+            "Báo cáo bạn gửi: nội dung AI hoặc người dùng bạn báo cáo, lý do, ghi chú.",
           ]),
         },
         {
@@ -96,9 +100,33 @@ export default function PrivacyPage() {
           title: "Quyền của bạn",
           body: ul([
             "Sửa tên, ảnh, múi giờ, mục tiêu ở Tài khoản và Cài đặt; tắt email tổng kết tuần và thông báo đẩy bất cứ lúc nào.",
-            "Xoá tài khoản ở Tài khoản → Vùng nguy hiểm: toàn bộ tiến độ, nội dung bạn tạo và dữ liệu cá nhân bị xoá vĩnh viễn ngay lập tức.",
+            "Xoá tài khoản bất cứ lúc nào — xem mục Xoá tài khoản và dữ liệu ngay dưới đây.",
             "Muốn hỏi thêm về dữ liệu của mình: liên hệ qua form Liên hệ (cuối trang Dành cho giáo viên).",
           ]),
+        },
+        {
+          id: "xoa-tai-khoan",
+          title: "Xoá tài khoản và dữ liệu",
+          body: (
+            <>
+              <p>Áp dụng cho tài khoản Hanni dùng trên web hanni.dangpham.id.vn và ứng dụng Hanni trên Android. Có 2 cách:</p>
+              {ul([
+                "Đăng nhập được: vào Tài khoản → Vùng nguy hiểm (trong ứng dụng hoặc trên web), gõ XÓA (và mật khẩu nếu có) rồi bấm xoá. Tài khoản bị xoá ngay lập tức.",
+                "Không đăng nhập được (quên mật khẩu, mất máy…): gửi yêu cầu bằng form bên dưới. Hanni xoá tài khoản trong vòng 7 ngày.",
+              ])}
+              <p>
+                <Link href="/account" className="inline-flex min-h-8 items-center font-semibold text-primary hover:underline">
+                  Đăng nhập để xoá tài khoản
+                </Link>
+              </p>
+              <p>
+                Khi xoá, Hanni xoá vĩnh viễn: thông tin tài khoản, ảnh đại diện, tiến độ học, bài làm đề thi thử, hội thoại với AI, câu bạn tự
+                đặt, lớp học bạn tạo, cài đặt, đăng ký thông báo, đơn thanh toán. Báo cáo nội dung bạn từng gửi được giữ lại để cải thiện bộ lọc
+                nhưng không còn gắn với tài khoản nào.
+              </p>
+              <AccountDeletionForm />
+            </>
+          ),
         },
         {
           id: "thay-doi",
