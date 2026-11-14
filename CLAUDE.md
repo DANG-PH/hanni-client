@@ -377,6 +377,14 @@ npm run dev                    # cần hanni-server chạy ở cổng 8000
 
 ## Trạng thái hiện tại
 
+### Xoá tài khoản trên web cho CH Play (2026-11-14 — nhánh `xoa-tai-khoan`, user: "sau này up bản mobile lên CH Play")
+Google Play bắt app có tạo tài khoản phải có trang web nhận yêu cầu xoá tài khoản mà KHÔNG cần mở app (đường dẫn khai ở mục Data safety).
+`/chinh-sach-bao-mat` thêm mục `#xoa-tai-khoan`: 2 cách xoá (đăng nhập → `/account` xoá ngay; không đăng nhập được → form
+`components/legal/account-deletion-form.tsx` gửi `POST /reports` loại `account-deletion`, admin xoá tay trong 7 ngày — xem
+`hanni-server/CLAUDE.md` mục "Báo cáo nội dung"), danh sách dữ liệu bị xoá, báo cáo đã gửi giữ lại ở dạng ẩn danh. `/xoa-tai-khoan`
+chuyển tới mục đó (`next.config.ts`) — đường dẫn khai trên Play Console, đổi thì đổi cả ở đó. Sửa danh sách dữ liệu bị xoá thì sửa luôn
+bảng Data safety trong hướng dẫn CH Play (`~/Hanni-chplay/build.py` → PDF ở repo mobile `docs/ch-play/`).
+
 ### Linh vật cáo động + phản hồi sống động (2026-10-29 — user: "tích hợp hanni mascot… dự án trông hơi tĩnh… đủ độ wow")
 Bộ emote v11 của repo `DANG-PH/hanni-mascot` (12 biểu cảm × 6 hình vẽ riêng, nút trợ lý 3 cử động). Ảnh ở `public/mascot/`: `<id>.webp`
 (WebP động 256px tự lặp, ~80 KB), `<id>.still.webp` (ảnh tĩnh cho máy bật giảm chuyển động), `@512` cho e01/e04/e05, `launcher-*.webp`
